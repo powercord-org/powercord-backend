@@ -10,7 +10,8 @@ module.exports = (app, config, db) => {
       'user-modify-playback-state',
       'user-read-playback-state',
       'user-read-private',
-      'playlist-read-private'
+      'playlist-read-private',
+      'user-library-read'
     ].join(' ')
   });
 
