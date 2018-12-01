@@ -15,7 +15,7 @@ module.exports = (app, config, db) =>
       return res.status(403).send('You don\'t seem to have Spotify Premium on this account.');
     }
     
-    const jwt = await encode(req.session.user.id);
+    const jwt = await encode({ id: req.session.user.id });
 
     await db.insertOne({
       id: req.session.user.id,
@@ -26,5 +26,5 @@ module.exports = (app, config, db) =>
       }
     });
 
-    res.status(200).send(`here. is a gift<br>${jwt}`);
+    res.status(200).send(`Here's your token:<br><br><code>${jwt}</code>`);
   });
