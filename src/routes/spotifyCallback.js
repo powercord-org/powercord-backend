@@ -10,10 +10,6 @@ module.exports = (app, config, db) =>
 
     const token = await SpotifyOAuth.getToken(req.query.code);
     const user = await SpotifyOAuth.getUserByBearer(token.access_token);
-
-    if (user.product !== 'premium') {
-      return res.status(403).send('You don\'t seem to have Spotify Premium on this account.');
-    }
     
     const jwt = await encode({ id: req.session.user.id });
 
