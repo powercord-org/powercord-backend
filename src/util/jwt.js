@@ -20,6 +20,6 @@ module.exports = {
     return sign(obj, private, { algorithm: 'RS256' });
   },
   decode (jwt) {
-    return verify(jwt, public, { algoritms: [ 'RS256' ]});
+    return verify(jwt, public, { algorithms: [ 'RS256' ]});
   }
 };
