@@ -10,8 +10,8 @@ const { sign, verify } = (() => {
 const { public, private } = (() => {
   const { readFileSync } = require('fs');
   return {
-    public: readFileSync('../public.pem', 'utf8'),
-    private: readFileSync('../private.key', 'utf8')
+    public: readFileSync('public.pem', 'utf8'),
+    private: readFileSync('private.key', 'utf8')
   }
 })();
 
