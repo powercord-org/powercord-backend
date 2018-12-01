@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const bodyParser = require('body-parser');
 
 const config = require('./config.json');
 const routes = require('./routes/');
@@ -9,6 +10,7 @@ const getDB = require('./db.js');
   const db = await getDB();
   const app = express();
 
+  app.use(bodyParser.urlencoded({ extended: false }));
   app.use(session({
     secret: config.secret,
     saveUninitialized: true,
