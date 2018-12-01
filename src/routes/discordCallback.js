@@ -17,7 +17,7 @@ module.exports = (app, config, db) =>
     }
 
     if (await db.findOne({ id: user.id })) {
-      return res.status(409).send('This Discord account is already linked.');
+      await db.removeOne({ id: user.id });
     }
 
     req.session.user = user;
