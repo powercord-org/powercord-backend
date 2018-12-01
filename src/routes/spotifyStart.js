@@ -5,11 +5,11 @@ module.exports = (app, config, db) => {
     response_type: 'code',
     client_id: config.spotifyID,
     redirect_uri: `${config.domain}/auth/spotifycb`,
+    show_dialog: true,
     scope: [
       'user-read-currently-playing',
       'user-modify-playback-state',
       'user-read-playback-state',
-      'user-read-private',
       'playlist-read-private',
       'user-library-read'
     ].join(' ')
