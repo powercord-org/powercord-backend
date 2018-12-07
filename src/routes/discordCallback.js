@@ -8,12 +8,12 @@ module.exports = (app, config, db) =>
 
     const bearer = await DiscordOAuth.getBearer(req.query.code);
     if (bearer.error) {
-      return res.status(500).send(`Something went wrong: <code>${bearer.error}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Aethcord's support server</a> for assistance.`);
+      return res.status(500).send(`Something went wrong: <code>${bearer.error}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
     }
 
     const user = await DiscordOAuth.getUserByBearer(bearer.access_token);
     if (!user.id) {
-      return res.status(500).send(`Something went wrong: <code>${user.message}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Aethcord's support server</a> for assistance.`);
+      return res.status(500).send(`Something went wrong: <code>${user.message}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
     }
 
     if (await db.findOne({ id: user.id })) {

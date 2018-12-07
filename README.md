@@ -1,2 +1,2 @@
-# aethcord-backend
-The backend for aetheryx/aethcord.
+# powercord-backend
+The backend for [aetheryx/powercord](https://github.com/aetheryx/powercord).

@@ -18,7 +18,7 @@ module.exports = class GenericRequest {
       uri,
       query: {},
       headers: {
-        'User-Agent': 'aethcord-backend (https://github.com/aetheryx/aethcord-backend)'
+        'User-Agent': 'powercord-backend (https://github.com/aetheryx/powercord-backend)'
       }
     };
   }

@@ -17,7 +17,7 @@ module.exports = (app, config, db) => {
 
   app.get('/auth/spotify', async (req, res) => {
     if (!req.session.user) {
-      return res.status(412).send(`No user profile found in session. Start at <a href="/link">${config.domain}/link<a>.<br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Aethcord's support server</a> for assistance.`);
+      return res.status(412).send(`No user profile found in session. Start at <a href="/link">${config.domain}/link<a>.<br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
     }
 
     res.redirect(`https://accounts.spotify.com/authorize?${params}`);
