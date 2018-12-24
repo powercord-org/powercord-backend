@@ -4,7 +4,29 @@
   <body>
     <% include _parts/navbar %>
     <div class='container'>
-      
+      <div class='pc-header'>The best Discord client mod you'll ever need</div>
+      <div class='features'>
+        <%- include("_parts/feature", {
+          name: "Spotify modal",
+          banner: "/assets/features/spotify.png",
+          description: "Pause, skip, forward and seek directly from Discord. You can even rightclick to play playlists, toggle repeat or even change the volume!"
+        }) %>
+        <%- include("_parts/feature", {
+          name: "Built-in translator",
+          banner: "/assets/features/translations.png",
+          description: "Ever wonder what does weird Dutch guys are yapping on about? Just right click their message to translate back to English to give them the \"nee jij\" they deserve!"
+        }) %>
+        <%- include("_parts/feature", {
+          name: "Neater codeblocks",
+          banner: "/assets/features/codeblocks.png",
+          description: "See linecount, formatting type and directly copy code from a codeblock!"
+        }) %>
+        <%- include("_parts/feature", {
+          name: "Powerful plugin API",
+          banner: ":thonking:",
+          description: "Plugin developers, you get covered! Advanced dependency management, settings API, commands API and more!"
+        }) %>
+      </div>
     </div>
     <% include _parts/footer %>
   </body>

@@ -31,12 +31,24 @@ a:hover {
   text-decoration: underline;
 }
 
+.container {
+  flex: 1;
+  padding: 0 10%;
+}
+
+.pc-header {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+
 /* Navbar */
 .navbar {
   display: flex;
   padding: 0 25px;
   align-items: center;
-  height: 70px;
+  min-height: 70px;
+  max-height: 70px;
   margin-bottom: 25px;
 }
 
@@ -52,8 +64,8 @@ a:hover {
 }
 
 .navbar .title img {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   transform: rotate(45deg);
   margin-right: 15px;
 }
@@ -76,8 +88,8 @@ a:hover {
 .navbar .account img {
   border-radius: 50%;
   margin-right: 15px;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
 }
 
 .navbar .account .details {
@@ -101,16 +113,13 @@ a:hover {
 }
 /* END: Navbar */
 
-.container {
-  flex: 1;
-  padding: 0 10%;
-}
-
 /* Footer */
 .footer {
-  height: 32px;
+  min-height: 32px;
+  max-height: 32px;
   font-size: 14px;
   display: flex;
+  margin-top: 20px;
   padding: 0 25px;
   align-items: center;
   background-color: #576aa5;
@@ -120,3 +129,29 @@ a:hover {
   margin-right: 5px;
 }
 /* END: Footer */
+
+/* Home feature block */
+.features {
+  display: flex;
+  justify-content: space-between;
+}
+
+.features .feature {
+  width: 23%;
+  padding: 10px;
+  background-color: #576aa5;
+  box-shadow: 0 2px 5px #576aa5;
+  border-radius: 5px;
+}
+
+.features .feature .name {
+  text-align: center;
+  font-family: 'Uni Sans', sans-serif;
+  font-size: 20px;
+}
+
+.features .feature .banner {
+  width: 100%;
+  margin: 15px 0;
+}
+/* END: Home feature block */
