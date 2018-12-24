@@ -1,19 +1,33 @@
 const { get, post } = require('../http/');
-const config = require('../config.json');
+const config = require('../../config.json');
 
 module.exports = {
   BASE_URL: 'https://discordapp.com/api/v7',
 
-  getBearer (code) {
+  getOrRefreshToken (props) {
     return post(`${this.BASE_URL}/oauth2/token`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
+      .set('Authorization', `Basic ${Buffer.from(`${config.spotifyID}:${config.spotifySecret}`).toString('base64')}`)
       .send({
         client_id: config.discordID,
         client_secret: config.discordSecret,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: `${config.domain}/auth/discordcb`
+        redirect_uri: `${config.domain}/oauth/discord`,
+        ...props
       }).then(r => r.body);
+  },
+
+  getToken (code) {
+    return this.getOrRefreshToken({
+      grant_type: 'authorization_code',
+      code
+    });
+  },
+
+  refreshToken (refresh_token) {
+    return this.getOrRefreshToken({
+      grant_type: 'refresh_token',
+      refresh_token
+    });
   },
 
   getUserByBearer (bearer) {

@@ -1,11 +1,16 @@
 // const { SpotifyOAuth } = require('../rest/');
 // const { decode } = require('../util/jwt.js');
 
-module.exports = (app, config, db) => {
+module.exports = (app) => {
   // UI routes
-  app.get('/', (_, res) => res.render('index'))
+  app.get('/', (req, res) => res.render('index', req.session));
 
   // Oauth routes
+  app.get('/oauth/discord', require('./oauth/discord'));
+  app.get('/logout', (req, res) => {
+    res.cookie('token', '', { maxAge: -1 });
+    res.redirect('/');
+  });
 
   // API
 }

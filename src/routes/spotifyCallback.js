@@ -10,7 +10,7 @@ module.exports = (app, config, db) =>
 
     const token = await SpotifyOAuth.getToken(req.query.code);
     const user = await SpotifyOAuth.getUserByBearer(token.access_token);
-    
+
     const jwt = await encode({ id: req.session.user.id });
 
     await db.insertOne({

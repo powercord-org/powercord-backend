@@ -7,15 +7,26 @@
     <div class='item'>
       <a href='/'>Home</a>
       <a href='/contributors'>Contributors</a>
-      <a href='/dashboard'>Dashboard</a>
+      <% if (isAdmin) { %>
+        <a href='/dashboard'>Dashboard</a>
+      <% } %>
     </div>
   </div>
-  <a href='/oauth/discord' class='login'>Login with Discord</a>
-  <!-- <div class='account'>
-    <img src='http://bowser65.xyz/assets/img/avatar.jpg' alt='Your avatar' />
-    <div class='details'>
-      <div class='as'>Logged in as</div>
-      <div class='name'>Bowser65<span>#4680</span></div>
-      <a href='/logout' class='logout'>Logout</a>
-    </div> -->
+  <% if (typeof discord === 'undefined') { %>
+    <a href='/oauth/discord' class='login'>Login with Discord</a>
+  <% } else { %>
+    <div class='account'>
+      <% if (discord.avatar) { %>
+        <% var ext = discord.avatar.startsWith('a_') ? 'gif' : 'png' %>
+        <img src='https://cdn.discordapp.com/avatars/<%= discord.id %>/<%= discord.avatar %>.<%= ext %>' alt='Your avatar' />
+      <% } else { %>
+        <img src='https://cdn.discordapp.com/embed/avatars/<%= discord.discriminator % 5 %>.png ' alt='Your avatar' />
+      <% } %>
+      <div class='details'>
+        <div class='as'>Logged in as</div>
+        <div class='name'><%= discord.username %><span>#<%= discord.discriminator %></span></div>
+        <a href='/logout' class='logout'>Logout</a>
+      </div>
+    </div>
+  <% } %>
 </nav>

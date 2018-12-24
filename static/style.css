@@ -95,11 +95,12 @@ a:hover {
 .navbar .account .details {
   display: flex;
   flex-direction: column;
+  font-size: 14px;
   justify-content: space-between;
 }
 
 .navbar .account .details .as {
-  font-size: 14px;
+  font-size: 12px;
   opacity: .6;
 }
 

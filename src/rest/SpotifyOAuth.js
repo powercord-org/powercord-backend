@@ -1,5 +1,5 @@
 const { get, post } = require('../http/');
-const config = require('../config.json');
+const config = require('../../config.json');
 
 module.exports = {
   BASE_URL: 'https://accounts.spotify.com/api',
@@ -10,7 +10,7 @@ module.exports = {
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .set('Authorization', `Basic ${Buffer.from(`${config.spotifyID}:${config.spotifySecret}`).toString('base64')}`)
       .send({
-        redirect_uri: `${config.domain}/auth/spotifycb`,
+        redirect_uri: `${config.domain}/oauth/spotify`,
         ...props
       }).then(r => r.body);
   },

@@ -6,6 +6,7 @@
   "spotifySecret": "",
   "githubID": "",
   "githubSecret": "",
+  "admins": ["284122164582416385"],
   "domain": "http://localhost",
   "secret": "aethcord is the betterest name :^)"
 }
