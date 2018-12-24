@@ -2,7 +2,7 @@ const { SpotifyOAuth } = require('../rest/');
 const { decode } = require('../util/jwt.js');
 
 module.exports = (app, config, db) =>
-  app.post('/accessToken', async (req, res) => {
+  app.post('/accessToken', async (req, res, next) => {
     const { token } = req.body;
     if (!token) {
       return res.status(401).send('Missing token');
@@ -25,7 +25,7 @@ module.exports = (app, config, db) =>
     const { auth } = await db.findOne({ id });
 
     if (Date.now() >= auth.expiryDate) {
-      const tokens = await SpotifyOAuth.refreshToken(auth.refresh_token);
+      const tokens = await SpotifyOAuth.refreshToken(auth.refresh_token).catch(next);
       auth.access_token = tokens.access_token;
       await db.updateOne({ id }, {
         $set: {

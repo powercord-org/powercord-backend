@@ -1,17 +1,17 @@
 const { DiscordOAuth } = require('../rest/');
 
 module.exports = (app, config, db) =>
-  app.get('/auth/discordcb', async (req, res) => {
+  app.get('/auth/discordcb', async (req, res, next) => {
     if (!req.query.code) {
       return res.status(400).send('Missing code querystring');
     }
 
-    const bearer = await DiscordOAuth.getBearer(req.query.code);
+    const bearer = await DiscordOAuth.getBearer(req.query.code).catch(next);
     if (bearer.error) {
       return res.status(500).send(`Something went wrong: <code>${bearer.error}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
     }
 
-    const user = await DiscordOAuth.getUserByBearer(bearer.access_token);
+    const user = await DiscordOAuth.getUserByBearer(bearer.access_token).catch(next);
     if (!user.id) {
       return res.status(500).send(`Something went wrong: <code>${user.message}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
     }
