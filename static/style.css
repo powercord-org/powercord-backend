@@ -1,0 +1,122 @@
+@font-face {
+  font-family: "Uni Sans";
+  src: url("unisanscaps.otf")
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background-color: #7289DA;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Lato', sans-serif;
+  color: #fff;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  padding: 0 25px;
+  align-items: center;
+  height: 70px;
+  margin-bottom: 25px;
+}
+
+.navbar .title {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .title h1 {
+  font-family: 'Uni Sans', sans-serif;
+  margin: 0;
+  margin-top: 2px;
+}
+
+.navbar .title img {
+  width: 60px;
+  height: 60px;
+  transform: rotate(45deg);
+  margin-right: 15px;
+}
+
+.navbar .items {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.navbar .items a {
+  margin-right: 15px;
+}
+
+.navbar .account {
+  display: flex;
+}
+
+.navbar .account img {
+  border-radius: 50%;
+  margin-right: 15px;
+  width: 60px;
+  height: 60px;
+}
+
+.navbar .account .details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.navbar .account .details .as {
+  font-size: 14px;
+  opacity: .6;
+}
+
+.navbar .account .details .name span {
+  opacity: .6;
+}
+
+.navbar .account .details .logout,
+.navbar .account .details .logout:hover {
+  color: #f00;
+}
+/* END: Navbar */
+
+.container {
+  flex: 1;
+  padding: 0 10%;
+}
+
+/* Footer */
+.footer {
+  height: 32px;
+  font-size: 14px;
+  display: flex;
+  padding: 0 25px;
+  align-items: center;
+  background-color: #576aa5;
+}
+
+.footer div {
+  margin-right: 5px;
+}
+/* END: Footer */

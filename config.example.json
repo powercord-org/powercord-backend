@@ -4,6 +4,8 @@
   "discordSecret": "",
   "spotifyID": "",
   "spotifySecret": "",
+  "githubID": "",
+  "githubSecret": "",
   "domain": "http://localhost",
-  "secret": "asdf"
+  "secret": "aethcord is the betterest name :^)"
 }
