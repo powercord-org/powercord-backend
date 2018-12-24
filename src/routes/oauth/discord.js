@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
     return res.redirect(`https://discordapp.com/oauth2/authorize?${data}`);
   }
 
-  let bearer, user;
+  let token, user;
   try {
     token = await DiscordOAuth.getToken(req.query.code);
     if (token.error) {

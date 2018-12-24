@@ -1,4 +1,4 @@
-const { get, post } = require('../http/');
+const { get, post } = require('../http');
 const config = require('../../config.json');
 
 module.exports = {
@@ -7,7 +7,6 @@ module.exports = {
   getOrRefreshToken (props) {
     return post(`${this.BASE_URL}/oauth2/token`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
-      .set('Authorization', `Basic ${Buffer.from(`${config.spotifyID}:${config.spotifySecret}`).toString('base64')}`)
       .send({
         client_id: config.discordID,
         client_secret: config.discordSecret,

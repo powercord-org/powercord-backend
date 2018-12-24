@@ -3,15 +3,17 @@ const { DiscordOAuth, SpotifyOAuth } = require('../rest');
 
 module.exports = async (req, res, next) => {
   req.session.isAdmin = false;
-  if (res.cookies && res.cookies.token) {
+  if (req.cookies.token) {
     let userId;
     try {
-      userId = await decode(res.cookies.token)
+      userId = await decode(req.cookies.token)
     } catch (err) {
+      console.log(err);
       switch (err.message) {
         case 'invalid signature':
         case 'jwt malformed':
           res.cookie('token', '', { maxAge: -1 });
+          req.session = { isAdmin: false };
           return next();
         default:
           throw err;
@@ -22,6 +24,7 @@ module.exports = async (req, res, next) => {
     const doc = await req.db.tokens.findOne({ id: userId });
     if (!doc) {
       res.cookie('token', '', { maxAge: -1 });
+      req.session = { isAdmin: false };
       return next();
     }
     const { discord, spotify, github } = doc;
@@ -43,6 +46,7 @@ module.exports = async (req, res, next) => {
       const user = await DiscordOAuth.getUserByBearer(discord.access_token);
       if (!user.id) {
         res.cookie('token', '', { maxAge: -1 });
+        req.session = { isAdmin: false };
         return next();
       }
       req.session.discord = user;

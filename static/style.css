@@ -96,21 +96,20 @@ a:hover {
   display: flex;
   flex-direction: column;
   font-size: 14px;
-  justify-content: space-between;
+  justify-content: center;
 }
 
-.navbar .account .details .as {
-  font-size: 12px;
-  opacity: .6;
+.navbar .account .details .name {
+  font-size: 18px;
 }
 
 .navbar .account .details .name span {
   opacity: .6;
+  font-size: 14px;
 }
 
-.navbar .account .details .logout,
-.navbar .account .details .logout:hover {
-  color: #f00;
+.navbar .account .details .logout {
+  opacity: .6;
 }
 /* END: Navbar */
 
@@ -141,7 +140,7 @@ a:hover {
   width: 23%;
   padding: 10px;
   background-color: #576aa5;
-  box-shadow: 0 2px 5px #576aa5;
+  box-shadow: 0 2px 5px #465686;
   border-radius: 5px;
 }
 
@@ -156,3 +155,33 @@ a:hover {
   margin: 15px 0;
 }
 /* END: Home feature block */
+
+/* Link account */
+.container .account {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin: 20px 0;
+}
+
+.container .account img {
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+}
+
+.container .account .info {
+  flex: 1;
+}
+
+.container .account.spotify {
+  background-color: #1DB954;
+  box-shadow: 0 2px 5px #15853c;
+}
+
+.container .account.github {
+  background-color: #292d32;
+  box-shadow: 0 2px 5px #101213;
+}
+/* END: Link account */
