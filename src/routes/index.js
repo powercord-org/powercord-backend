@@ -14,6 +14,7 @@ module.exports = (app) => {
   // Dashboard routes
   app.get('/dashboard', authMiddleware.admin, dashboard.ui.plugins);
   app.get('/dashboard/contributors', authMiddleware.admin, dashboard.ui.contributors);
+  app.post('/dashboard/contributors', authMiddleware.admin, dashboard.process.contributors);
 
   // Oauth routes
   app.get('/oauth/discord', discord.authorize);
