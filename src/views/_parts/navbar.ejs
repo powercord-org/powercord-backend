@@ -20,7 +20,7 @@
         <% var ext = discord.avatar.startsWith('a_') ? 'gif' : 'png' %>
         <img src='https://cdn.discordapp.com/avatars/<%= discord.id %>/<%= discord.avatar %>.<%= ext %>' alt='Your avatar' />
       <% } else { %>
-        <img src='https://cdn.discordapp.com/embed/avatars/<%= discord.discriminator % 5 %>.png ' alt='Your avatar' />
+        <img src='https://cdn.discordapp.com/embed/avatars/<%= discord.discriminator % 5 %>.png' alt='Your avatar' />
       <% } %>
       <div class='details'>
         <div class='name'><%= discord.username %><span>#<%= discord.discriminator %></span></div>

@@ -5,6 +5,7 @@
 
 * {
   box-sizing: border-box;
+  outline: none;
 }
 
 html, body {
@@ -19,6 +20,12 @@ body {
   flex-direction: column;
   font-family: 'Lato', sans-serif;
   color: #fff;
+}
+
+h2 {
+  font-family: 'Uni Sans', sans-serif;
+  font-size: 20px;
+  margin: 0;
 }
 
 a {
@@ -140,7 +147,7 @@ a:hover {
   width: 23%;
   padding: 10px;
   background-color: #576aa5;
-  box-shadow: 0 2px 5px #465686;
+  box-shadow: 0 2px 7px #465686;
   border-radius: 5px;
 }
 
@@ -177,11 +184,93 @@ a:hover {
 
 .container .account.spotify {
   background-color: #1DB954;
-  box-shadow: 0 2px 5px #15853c;
+  box-shadow: 0 2px 7px #15853c;
 }
 
 .container .account.github {
   background-color: #292d32;
-  box-shadow: 0 2px 5px #101213;
+  box-shadow: 0 2px 7px #101213;
+}
+
+.container .account.discord {
+  background-color: #576aa5;
+  box-shadow: 0 2px 7px #465686;
 }
 /* END: Link account */
+
+/* Dashboard */
+.dashboard .header {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard .header h2 {
+  flex: 1;
+}
+
+.dashboard .create {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  background-color: #15853c;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  -webkit-transition: .3s;
+  transition: .3s;
+  border-radius: 5px;
+  -webkit-appearance: none;
+  margin: 15px 0;
+}
+/* END: Dashboard */
+
+/* Dashboard plugin */
+/* END: Dashboard plugin */
+
+/* Dashboard plugin editor */
+/* END: Dashboard plugin editor */
+
+/* Dashboard contributor */
+.dashboard .contributor {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px #465686 solid;
+}
+
+.dashboard .contributor img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.dashboard .contributor .name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dashboard .contributor .name span,
+.dashboard .contributor .name .id {
+  opacity: .6;
+  font-size: 12px;
+}
+
+.dashboard .contributor .rank {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+.dashboard .contributor .rank label {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+/* END: Dashboard contributor */

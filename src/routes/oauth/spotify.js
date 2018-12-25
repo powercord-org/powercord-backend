@@ -3,10 +3,6 @@ const { SpotifyOAuth } = require('../../rest');
 
 module.exports = {
   async authorize (req, res) {
-    if (!req.session.discord) {
-      return res.redirect('/');
-    }
-
     if (!req.query.code) {
       const data = encode({
         response_type: 'code',
@@ -34,7 +30,7 @@ module.exports = {
       return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
     }
 
-    await req.db.tokens.updateOne({ id: req.session.discord.id }, {
+    await req.db.users.updateOne({ id: req.session.discord.id }, {
       $set: {
         spotify: {
           access_token: token.access_token,
@@ -49,14 +45,12 @@ module.exports = {
   },
 
   async unlink (req, res) {
-    if (req.session.discord) {
-      req.session.spotify = null
-      await req.db.tokens.updateOne({ id: req.session.discord.id }, {
-        $set: {
-          spotify: null
-        }
-      });
-    }
+    req.session.spotify = undefined;
+    await req.db.users.updateOne({ id: req.session.discord.id }, {
+      $set: {
+        spotify: null
+      }
+    });
     return res.redirect('/');
   }
 };

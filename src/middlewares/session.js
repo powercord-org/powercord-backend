@@ -1,5 +1,5 @@
 const { decode } = require('../util/jwt');
-const { DiscordOAuth, SpotifyOAuth } = require('../rest');
+const { DiscordOAuth, SpotifyOAuth, GithubOAuth } = require('../rest');
 
 module.exports = async (req, res, next) => {
   req.session.isAdmin = false;
@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
         case 'invalid signature':
         case 'jwt malformed':
           res.cookie('token', '', { maxAge: -1 });
-          req.session = { isAdmin: false };
+          req.session.discord = undefined;
           return next();
         default:
           throw err;
@@ -21,19 +21,19 @@ module.exports = async (req, res, next) => {
     }
 
     req.session.isAdmin = req.config.admins.includes(userId);
-    const doc = await req.db.tokens.findOne({ id: userId });
+    const doc = await req.db.users.findOne({ id: userId });
     if (!doc) {
       res.cookie('token', '', { maxAge: -1 });
-      req.session = { isAdmin: false };
+      req.session.discord = undefined;
       return next();
     }
     const { discord, spotify, github } = doc;
 
     // Discord (oauth)
     if (Date.now() >= discord.expiryDate) {
-      const tokens = await SpotifyOAuth.refreshToken(discord.refresh_token);
+      const tokens = await DiscordOAuth.refreshToken(discord.refresh_token);
       discord.access_token = tokens.access_token;
-      await req.db.tokens.updateOne({ id: userId }, {
+      await req.db.users.updateOne({ id: userId }, {
         $set: {
           'discord.access_token': discord.access_token,
           'discord.expiryDate': Date.now() + (discord.expires_in * 1000)
@@ -46,9 +46,21 @@ module.exports = async (req, res, next) => {
       const user = await DiscordOAuth.getUserByBearer(discord.access_token);
       if (!user.id) {
         res.cookie('token', '', { maxAge: -1 });
-        req.session = { isAdmin: false };
+        req.session.discord = undefined;
         return next();
       }
+
+      // Save username/avatars
+      await req.db.users.updateOne({ id: user.id }, {
+        $set: {
+          'metadata.username': user.username,
+          'metadata.discriminator': user.discriminator,
+          'metadata.avatar': user.avatar ?
+            `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}` :
+            `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`
+        }
+      });
+
       req.session.discord = user;
     }
 
@@ -57,7 +69,7 @@ module.exports = async (req, res, next) => {
       if (Date.now() >= spotify.expiryDate) {
         const tokens = await SpotifyOAuth.refreshToken(spotify.refresh_token);
         spotify.access_token = tokens.access_token;
-        await req.db.tokens.updateOne({ id: userId }, {
+        await req.db.users.updateOne({ id: userId }, {
           $set: {
             'spotify.access_token': tokens.access_token,
             'spotify.expiryDate': Date.now() + (tokens.expires_in * 1000)
@@ -71,7 +83,24 @@ module.exports = async (req, res, next) => {
       }
     }
 
-    // Github (@todo)
+    if (github) {
+      // Github (oauth)
+      if (Date.now() >= github.expiryDate) {
+        const tokens = await GithubOAuth.refreshToken(github.refresh_token);
+        github.access_token = tokens.access_token;
+        await req.db.users.updateOne({ id: userId }, {
+          $set: {
+            'github.access_token': tokens.access_token,
+            'github.expiryDate': Date.now() + (tokens.expires_in * 1000)
+          }
+        });
+      }
+
+      // Github
+      if (!req.session.github) {
+        req.session.github = await GithubOAuth.getUserByBearer(github.access_token)
+      }
+    }
   }
   next();
 };

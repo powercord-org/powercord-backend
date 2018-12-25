@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <% include ../_parts/head %>
+  <body>
+    <% include ../_parts/navbar %>
+    <div class='container dashboard'>
+      <div class='header'>
+        <h2><%= current %></h2>
+        <% if (current === 'plugins') { %>
+          <a href='/dashboard/contributors'>Manage contributors</a>
+        <% } else { %>
+          <a href='/dashboard/plugins'>Manage plugins</a>
+        <% } %>
+      </div>
+      <% if (current === 'plugins') { %>
+        <a href='/dashboard/create' class='create'>Create a new plugin</a>
+      <% } else { %>
+        <form>
+          <button type='submit' class='create'>Save contributors</button>
+      <% } %>
+
+      <% for(var i=0; i < items.length; i++) { %>
+        <%- include('../_parts/' + current.substr(0, current.length - 1), { item: items[i] }) %>
+      <% } %>
+
+      <% if (current !== 'plugins') { %>
+        </form>
+      <% } %>
+    </div>
+    <% include ../_parts/footer %>
+  </body>
+</html>
