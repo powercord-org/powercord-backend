@@ -8,7 +8,7 @@ module.exports = {
         client_id: req.config.githubID,
         redirect_uri: `${req.config.domain}/oauth/github`,
         show_dialog: true,
-        scope: req.query.write ? 'repo' : ''
+        scope: req.query.write !== undefined ? 'repo' : ''
       });
 
       return res.redirect(`https://github.com/login/oauth/authorize?${data}`);
@@ -26,15 +26,15 @@ module.exports = {
     await req.db.users.updateOne({ id: req.session.discord.id }, {
       $set: {
         github: {
-          access_token: token.access_token,
-          refresh_token: token.refresh_token,
-          expiryDate: Date.now() + (token.expires_in * 1000)
+          scope: token.scope,
+          access_token: token.access_token
         }
       }
     });
 
     req.session.github = user;
-    res.redirect('/');
+    req.session.github.scope = token.scope;
+    res.redirect(token.scope === 'repo' ? '/dashboard' : '/');
   },
 
   async unlink (req, res) {

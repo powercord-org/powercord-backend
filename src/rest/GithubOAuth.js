@@ -5,7 +5,7 @@ module.exports = {
   BASE_URL: 'https://github.com/login/oauth',
   BASE_ME_URL: 'https://api.github.com/user',
 
-  getOrRefreshToken (props) {
+  getToken (code) {
     return post(`${this.BASE_URL}/access_token`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .set('Accept', 'application/json')
@@ -13,22 +13,9 @@ module.exports = {
         client_id: config.githubID,
         client_secret: config.githubSecret,
         redirect_uri: `${config.domain}/oauth/github`,
-        ...props
+        grant_type: 'authorization_code',
+        code
       }).then(r => r.body);
-  },
-
-  getToken (code) {
-    return this.getOrRefreshToken({
-      grant_type: 'authorization_code',
-      code
-    });
-  },
-
-  refreshToken (refresh_token) {
-    return this.getOrRefreshToken({
-      grant_type: 'refresh_token',
-      refresh_token
-    });
   },
 
   getUserByBearer (bearer) {

@@ -9,14 +9,14 @@
         <% if (current === 'plugins') { %>
           <a href='/dashboard/contributors'>Manage contributors</a>
         <% } else { %>
-          <a href='/dashboard/plugins'>Manage plugins</a>
+          <a href='/dashboard'>Manage plugins</a>
         <% } %>
       </div>
       <% if (current === 'plugins') { %>
-        <a href='/dashboard/create' class='create'>Create a new plugin</a>
+        <a href='/dashboard/create' class='btn create'>Create a new plugin</a>
       <% } else { %>
         <form method="post">
-          <button type='submit' class='create'>Save contributors</button>
+          <button type='submit' class='btn create'>Save contributors</button>
       <% } %>
 
       <% for(var i=0; i < items.length; i++) { %>

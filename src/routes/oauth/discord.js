@@ -73,7 +73,7 @@ module.exports = {
 
   async unlink (req, res) {
     if (req.session.discord) {
-      if (!req.query.confirm && (req.session.discord.metadata.contributor || req.session.discord.metadata.developer)) {
+      if (req.query.confirm === undefined && (req.session.discord.metadata.contributor || req.session.discord.metadata.developer)) {
         return res.send("You'll lose your contributor/developer role if you continue. We just wanted to make sure you're aware of that. <a href='?confirm'>I'm sure</a>")
       }
       await req.db.users.deleteOne({ id: req.session.discord.id });

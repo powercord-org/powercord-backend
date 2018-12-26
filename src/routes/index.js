@@ -6,13 +6,20 @@ const discord = require('./oauth/discord')
 const spotify = require('./oauth/spotify')
 const github = require('./oauth/github')
 
+// @todo: CSRF tokens
 module.exports = (app) => {
   // UI routes
   app.get('/', (req, res) => res.render('index', req.session));
   app.get('/contributors', contributors);
 
-  // Dashboard routes
+  // Dashboard routes - REST hahayes
   app.get('/dashboard', authMiddleware.admin, dashboard.ui.plugins);
+  app.get('/dashboard/create', authMiddleware.admin, dashboard.ui.create);
+  app.post('/dashboard/create', authMiddleware.admin, dashboard.process.create);
+  app.get('/dashboard/edit/:id', authMiddleware.admin, dashboard.ui.edit);
+  app.post('/dashboard/edit/:id', authMiddleware.admin, dashboard.process.edit);
+  app.get('/dashboard/delete/:id', authMiddleware.admin, dashboard.process.delete);
+
   app.get('/dashboard/contributors', authMiddleware.admin, dashboard.ui.contributors);
   app.post('/dashboard/contributors', authMiddleware.admin, dashboard.process.contributors);
 
@@ -29,7 +36,7 @@ module.exports = (app) => {
     res.redirect('/');
   });
 
-  // API
+  // API - RESTer than the dashboard
 }
 
 /*

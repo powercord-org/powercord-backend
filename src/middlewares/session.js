@@ -83,22 +83,11 @@ module.exports = async (req, res, next) => {
       }
     }
 
+    // Github
     if (github) {
-      // Github (oauth)
-      if (Date.now() >= github.expiryDate) {
-        const tokens = await GithubOAuth.refreshToken(github.refresh_token);
-        github.access_token = tokens.access_token;
-        await req.db.users.updateOne({ id: userId }, {
-          $set: {
-            'github.access_token': tokens.access_token,
-            'github.expiryDate': Date.now() + (tokens.expires_in * 1000)
-          }
-        });
-      }
-
-      // Github
       if (!req.session.github) {
-        req.session.github = await GithubOAuth.getUserByBearer(github.access_token)
+        req.session.github = await GithubOAuth.getUserByBearer(github.access_token);
+        req.session.github.scope = github.scope;
       }
     }
   }
