@@ -165,6 +165,10 @@ form .input-field label {
   margin-bottom: 10px;
 }
 
+form .input-field.error label {
+  color: #f44336;
+}
+
 form .input-field input {
   background-color: #576aa5;
   border: 1px #354163; solid;
@@ -198,7 +202,7 @@ form .input-field input {
 }
 
 .btn.delete {
-  background-color: #f44336
+  background-color: #f44336;
 }
 /* END: Form */
 

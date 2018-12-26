@@ -42,6 +42,7 @@ module.exports = {
             `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
           contributor: false,
           developer: false,
+          github: null
         },
         discord: {
           access_token: token.access_token,
@@ -73,10 +74,10 @@ module.exports = {
 
   async unlink (req, res) {
     if (req.session.discord) {
-      if (req.query.confirm === undefined && (req.session.discord.metadata.contributor || req.session.discord.metadata.developer)) {
+      if (req.query.confirm === undefined && (req.session.tokens.metadata.contributor || req.session.tokens.metadata.developer)) {
         return res.send("You'll lose your contributor/developer role if you continue. We just wanted to make sure you're aware of that. <a href='?confirm'>I'm sure</a>")
       }
-      await req.db.users.deleteOne({ id: req.session.discord.id });
+      await req.db.users.deleteOne({ id: req.session.tokens.id });
       res.cookie('token', '', { maxAge: -1 });
       req.session.discord = undefined;
     }

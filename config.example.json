@@ -2,6 +2,7 @@
   "port": 80,
   "discordID": "",
   "discordSecret": "",
+  "discordHook": "",
   "spotifyID": "",
   "spotifySecret": "",
   "githubID": "",

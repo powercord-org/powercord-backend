@@ -21,13 +21,13 @@ module.exports = async (req, res, next) => {
     }
 
     req.session.isAdmin = req.config.admins.includes(userId);
-    const doc = await req.db.users.findOne({ id: userId });
-    if (!doc) {
+    req.session.tokens = await req.db.users.findOne({ id: userId });
+    if (!req.session.tokens) {
       res.cookie('token', '', { maxAge: -1 });
       req.session.discord = undefined;
       return next();
     }
-    const { discord, spotify, github } = doc;
+    const { discord, spotify, github } = req.session.tokens;
 
     // Discord (oauth)
     if (Date.now() >= discord.expiryDate) {
@@ -86,8 +86,15 @@ module.exports = async (req, res, next) => {
     // Github
     if (github) {
       if (!req.session.github) {
-        req.session.github = await GithubOAuth.getUserByBearer(github.access_token);
-        req.session.github.scope = github.scope;
+        const user = await GithubOAuth.getUserByBearer(github.access_token);
+        if (user) {
+          await req.db.users.updateOne({ id: user.id }, {
+            $set: {
+              'metadata.github': user.login
+            }
+          });
+          req.session.github = user;
+        }
       }
     }
   }

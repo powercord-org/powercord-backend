@@ -1,19 +1,54 @@
-const ui = require('./ui');
 const { ObjectId } = require('mongodb');
+const { post, put, patch, del } = require('../../http');
+const ui = require('./ui');
 
 const process = {
   async create (req, res) {
-    const success = process._process(req, res, true);
-    if (!success) {
+    const user = await process._process(req, res, true);
+    if (!user) {
       return
     }
 
+    // Create GH repo
+    await post(`https://api.github.com/orgs/${req.config.githubOrg}/repos`)
+      .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+      .send({ name: req.body.name })
+      .execute();
+
+    // Create GH webhook
+    await post(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/hooks`)
+      .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+      .send({
+        config: {
+          url: `${req.config.domain}/hook`,
+          content_type: 'json',
+          secret: req.config.secret
+        }
+      }).execute();
+
+    // Invite the correspondig developer
+    await put(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/collaborators/${user.metadata.github}`)
+      .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+      .send({ permission: 'push' })
+      .execute();
+
+    // Send invitation link via webhook
+    await post(req.config.discordHook)
+    .set('Content-Type', 'application/json')
+    .send({
+      content: `<@${req.body.developer}> your plugin repository is ready! https://github.com/${req.config.githubOrg}/${req.body.name}/invitations\nYour plugin will go live as soon as you add the manifest.json file`,
+      username: 'Powercord',
+      avatar_url: `${req.config.domain}/assets/powercord.png`
+    }).execute()
+
+    // Insert in database
     await req.db.plugins.insertOne({
       name: req.body.name,
       developer: req.body.developer,
       manifest: null
     });
-    return res.redirect('/dashboard')
+
+    return res.redirect('/dashboard');
   },
 
   async edit (req, res) {
@@ -22,9 +57,32 @@ const process = {
       return res.redirect('/dashboard')
     }
 
-    const success = process._process(req, res, false);
+    const success = await process._process(req, res, false);
     if (!success) {
       return
+    }
+
+    if (item.name !== req.body.name) {
+      await patch(`https://api.github.com/repos/${req.config.githubOrg}/${item.name}`)
+        .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+        .send({ name: req.body.name })
+        .execute();
+    }
+
+    // @todo: Remove old developer/better management of developers
+    if (item.developer !== req.body.developer) {
+      // Invite the correspondig developer
+      await put(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/collaborators/${user.metadata.github}`)
+        .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+        .send({ permission: 'push' })
+        .execute();
+
+      // Send invitation link via webhook
+      await post(req.config.discordHook).send({
+        content: `<@${req.body.develper}> your plugin repository is ready! https://github.com/${req.config.githubOrg}/${req.body.name}/invitations`,
+        username: 'Powercord',
+        avatar_url: `${req.config.domain}/assets/powercord.png`
+      }).execute();
     }
 
     await req.db.plugins.updateOne({ _id: ObjectId(req.params.id) }, {
@@ -41,11 +99,13 @@ const process = {
     // Validation step 1
     if (req.body.name === undefined || req.body.name.trim().length < 2) {
       nameErr = 'You must fill this field with at least 2 characters'
+    } else if (!req.body.name.match(/^[a-z0-9_-]+$/i)) {
+      nameErr = 'Only letters, numbers, dashes and underscores'
     }
     if (req.body.developer === undefined) {
       iErr = 'You must fill this field'
     }
-    if (nameErr || idErr) {
+    if (!!nameErr || !!idErr) {
       res.render('dashboard/editor', {
         create: create,
         nameErr, idErr,
@@ -67,7 +127,7 @@ const process = {
       return false;
     }
 
-    return true;
+    return user;
   },
 
   async delete (req, res) {
@@ -75,6 +135,10 @@ const process = {
     if (!item) {
       return res.redirect('/dashboard');
     }
+
+    await del(`https://api.github.com/repos/${req.config.githubOrg}/${item.name}`)
+      .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+      .execute()
 
     await req.db.plugins.deleteOne({ _id: ObjectId(req.params.id) });
     return res.redirect('/dashboard');

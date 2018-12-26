@@ -2,7 +2,7 @@ const { ObjectId } = require('mongodb');
 
 module.exports = {
   async plugins (req, res) {
-    if (!req.session.github || req.session.github.scope !== 'repo') {
+    if (!req.session.github || req.session.tokens.github.scope === '') {
       return res.redirect('/oauth/github?write')
     }
 
