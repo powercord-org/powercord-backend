@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 
-const config = require('../config.json')
+const config = require('../config.json');
 const routes = require('./routes');
 
 (async () => {

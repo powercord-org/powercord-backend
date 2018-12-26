@@ -8,13 +8,14 @@ module.exports = {
         client_id: req.config.githubID,
         redirect_uri: `${req.config.domain}/oauth/github`,
         show_dialog: true,
-        scope: req.query.write !== undefined ? 'repo delete_repo' : ''
+        scope: typeof req.query.write !== 'undefined' ? 'repo delete_repo' : ''
       });
 
       return res.redirect(`https://github.com/login/oauth/authorize?${data}`);
     }
 
-    let token, user;
+    let token;
+    let user;
     try {
       token = await GithubOAuth.getToken(req.query.code);
       user = await GithubOAuth.getUserByBearer(token.access_token);
@@ -38,7 +39,7 @@ module.exports = {
   },
 
   async unlink (req, res) {
-    req.session.github = undefined;
+    delete req.session.github;
     await req.db.users.updateOne({ id: req.session.discord.id }, {
       $set: {
         github: null

@@ -21,7 +21,8 @@ module.exports = {
       return res.redirect(`https://accounts.spotify.com/authorize?${data}`);
     }
 
-    let token, user;
+    let token;
+    let user;
     try {
       token = await SpotifyOAuth.getToken(req.query.code);
       user = await SpotifyOAuth.getUserByBearer(token.access_token);
@@ -45,7 +46,7 @@ module.exports = {
   },
 
   async unlink (req, res) {
-    req.session.spotify = undefined;
+    delete req.session.spotify;
     await req.db.users.updateOne({ id: req.session.discord.id }, {
       $set: {
         spotify: null

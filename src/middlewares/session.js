@@ -6,14 +6,14 @@ module.exports = async (req, res, next) => {
   if (req.cookies.token) {
     let userId;
     try {
-      userId = await decode(req.cookies.token)
+      userId = await decode(req.cookies.token);
     } catch (err) {
       console.log(err);
       switch (err.message) {
         case 'invalid signature':
         case 'jwt malformed':
           res.cookie('token', '', { maxAge: -1 });
-          req.session.discord = undefined;
+          delete req.session.discord;
           return next();
         default:
           throw err;
@@ -24,7 +24,7 @@ module.exports = async (req, res, next) => {
     req.session.tokens = await req.db.users.findOne({ id: userId });
     if (!req.session.tokens) {
       res.cookie('token', '', { maxAge: -1 });
-      req.session.discord = undefined;
+      delete req.session.discord;
       return next();
     }
     const { discord, spotify, github } = req.session.tokens;
@@ -46,7 +46,7 @@ module.exports = async (req, res, next) => {
       const user = await DiscordOAuth.getUserByBearer(discord.access_token);
       if (!user.id) {
         res.cookie('token', '', { maxAge: -1 });
-        req.session.discord = undefined;
+        delete req.session.discord;
         return next();
       }
 
@@ -55,9 +55,9 @@ module.exports = async (req, res, next) => {
         $set: {
           'metadata.username': user.username,
           'metadata.discriminator': user.discriminator,
-          'metadata.avatar': user.avatar ?
-            `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}` :
-            `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`
+          'metadata.avatar': user.avatar
+            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}`
+            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`
         }
       });
 
@@ -79,7 +79,7 @@ module.exports = async (req, res, next) => {
 
       // Spotify
       if (!req.session.spotify) {
-        req.session.spotify = await SpotifyOAuth.getUserByBearer(spotify.access_token)
+        req.session.spotify = await SpotifyOAuth.getUserByBearer(spotify.access_token);
       }
     }
 

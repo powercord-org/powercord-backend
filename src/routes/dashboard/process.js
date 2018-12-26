@@ -2,11 +2,11 @@ const { ObjectId } = require('mongodb');
 const { post, put, patch, del } = require('../../http');
 const ui = require('./ui');
 
-const process = {
+const processReqs = {
   async create (req, res) {
-    const user = await process._process(req, res, true);
+    const user = await processReqs._process(req, res, true);
     if (!user) {
-      return
+      return;
     }
 
     // Create GH repo
@@ -34,12 +34,12 @@ const process = {
 
     // Send invitation link via webhook
     await post(req.config.discordHook)
-    .set('Content-Type', 'application/json')
-    .send({
-      content: `<@${req.body.developer}> your plugin repository is ready! https://github.com/${req.config.githubOrg}/${req.body.name}/invitations\nYour plugin will go live as soon as you add the manifest.json file`,
-      username: 'Powercord',
-      avatar_url: `${req.config.domain}/assets/powercord.png`
-    }).execute()
+      .set('Content-Type', 'application/json')
+      .send({
+        content: `<@${req.body.developer}> your plugin repository is ready! https://github.com/${req.config.githubOrg}/${req.body.name}/invitations\nYour plugin will go live as soon as you add the manifest.json file`,
+        username: 'Powercord',
+        avatar_url: `${req.config.domain}/assets/powercord.png`
+      }).execute();
 
     // Insert in database
     await req.db.plugins.insertOne({
@@ -52,14 +52,14 @@ const process = {
   },
 
   async edit (req, res) {
-    const item = await req.db.plugins.findOne({ _id: ObjectId(req.params.id) });
+    const item = await req.db.plugins.findOne({ _id: new ObjectId(req.params.id) });
     if (!item) {
-      return res.redirect('/dashboard')
+      return res.redirect('/dashboard');
     }
 
-    const success = await process._process(req, res, false);
-    if (!success) {
-      return
+    const user = await processReqs._process(req, res, false);
+    if (!user) {
+      return;
     }
 
     if (item.name !== req.body.name) {
@@ -85,31 +85,36 @@ const process = {
       }).execute();
     }
 
-    await req.db.plugins.updateOne({ _id: ObjectId(req.params.id) }, {
+    await req.db.plugins.updateOne({ _id: new ObjectId(req.params.id) }, {
       $set: {
         name: req.body.name,
         developer: req.body.developer
       }
     });
-    return res.redirect('/dashboard')
+    return res.redirect('/dashboard');
   },
 
   async _process (req, res, create) {
-    let nameErr, idErr
+    let nameErr,
+      idErr;
     // Validation step 1
-    if (req.body.name === undefined || req.body.name.trim().length < 2) {
-      nameErr = 'You must fill this field with at least 2 characters'
+    if (typeof req.body.name === 'undefined' || req.body.name.trim().length < 2) {
+      nameErr = 'You must fill this field with at least 2 characters';
     } else if (!req.body.name.match(/^[a-z0-9_-]+$/i)) {
-      nameErr = 'Only letters, numbers, dashes and underscores'
+      nameErr = 'Only letters, numbers, dashes and underscores';
     }
-    if (req.body.developer === undefined) {
-      iErr = 'You must fill this field'
+    if (typeof req.body.developer === 'undefined') {
+      idErr = 'You must fill this field';
     }
     if (!!nameErr || !!idErr) {
       res.render('dashboard/editor', {
-        create: create,
-        nameErr, idErr,
-        item: { name: req.body.name || '', developer: req.body.developer || '' },
+        create,
+        nameErr,
+        idErr,
+        item: {
+          name: req.body.name || '',
+          developer: req.body.developer || ''
+        },
         ...req.session
       });
       return false;
@@ -119,9 +124,12 @@ const process = {
     const user = await req.db.users.findOne({ id: req.body.developer });
     if (!user || !user.github) {
       res.render('dashboard/editor', {
-        create: create,
+        create,
         idErr: !user ? 'This user does not exist in the database' : 'This user haven\'t linked a GitHub account',
-        item: { name: req.body.name, developer: req.body.developer },
+        item: {
+          name: req.body.name,
+          developer: req.body.developer
+        },
         ...req.session
       });
       return false;
@@ -131,24 +139,24 @@ const process = {
   },
 
   async delete (req, res) {
-    const item = await req.db.plugins.findOne({ _id: ObjectId(req.params.id) });
+    const item = await req.db.plugins.findOne({ _id: new ObjectId(req.params.id) });
     if (!item) {
       return res.redirect('/dashboard');
     }
 
     await del(`https://api.github.com/repos/${req.config.githubOrg}/${item.name}`)
       .set('Authorization', `token ${req.session.tokens.github.access_token}`)
-      .execute()
+      .execute();
 
-    await req.db.plugins.deleteOne({ _id: ObjectId(req.params.id) });
+    await req.db.plugins.deleteOne({ _id: new ObjectId(req.params.id) });
     return res.redirect('/dashboard');
   },
 
   async contributors (req, res) {
-    const users = await req.db.users.find({}).toArray()
-    await process.asyncForEach(users, async user => {
-      const contrib = req.body[`c-${user.id}`] === 'on'
-      const developer = req.body[`d-${user.id}`] === 'on'
+    const users = await req.db.users.find({}).toArray();
+    await processReqs.asyncForEach(users, async user => {
+      const contrib = req.body[`c-${user.id}`] === 'on';
+      const developer = req.body[`d-${user.id}`] === 'on';
 
       if (user.metadata.contributor !== contrib || user.metadata.developer !== developer) {
         await req.db.users.updateOne({ id: user.id }, {
@@ -158,16 +166,16 @@ const process = {
           }
         });
       }
-    })
+    });
 
     ui.contributors(req, res);
   },
 
   async asyncForEach (array, callback) {
     for (let index = 0; index < array.length; index++) {
-      await callback(array[index], index, array);
+      await callback(array[index], index, array); // eslint-disable-line callback-return
     }
   }
 };
 
-module.exports = process;
+module.exports = processReqs;

@@ -16,4 +16,4 @@ module.exports = {
   del (url) { // delete is a reserved keyword
     return new GenericRequest('DELETE', url);
   }
-}
+};

@@ -1,4 +1,7 @@
-const ui = require('./ui')
-const process = require('./process')
+const ui = require('./ui');
+const processRequests = require('./process');
 
-module.exports = { ui, process };
+module.exports = {
+  ui,
+  process: processRequests
+};

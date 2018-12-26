@@ -15,7 +15,8 @@ module.exports = {
       return res.redirect(`https://discordapp.com/oauth2/authorize?${data}`);
     }
 
-    let token, user;
+    let token;
+    let user;
     try {
       token = await DiscordOAuth.getToken(req.query.code);
       if (token.error) {
@@ -37,9 +38,9 @@ module.exports = {
         metadata: {
           username: user.username,
           discriminator: user.discriminator,
-          avatar: user.avatar ?
-            `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}` :
-            `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
+          avatar: user.avatar
+            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}`
+            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
           contributor: false,
           developer: false,
           github: null
@@ -68,18 +69,18 @@ module.exports = {
     res.cookie('token', await encode(user.id), {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true
-    })
+    });
     res.redirect('/');
   },
 
   async unlink (req, res) {
     if (req.session.discord) {
-      if (req.query.confirm === undefined && (req.session.tokens.metadata.contributor || req.session.tokens.metadata.developer)) {
-        return res.send("You'll lose your contributor/developer role if you continue. We just wanted to make sure you're aware of that. <a href='?confirm'>I'm sure</a>")
+      if (typeof req.query.confirm === 'undefined' && (req.session.tokens.metadata.contributor || req.session.tokens.metadata.developer)) {
+        return res.send('You\'ll lose your contributor/developer role if you continue. We just wanted to make sure you\'re aware of that. <a href=\'?confirm\'>I\'m sure</a>');
       }
       await req.db.users.deleteOne({ id: req.session.tokens.id });
       res.cookie('token', '', { maxAge: -1 });
-      req.session.discord = undefined;
+      delete req.session.discord;
     }
     return res.redirect('/');
   }

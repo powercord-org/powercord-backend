@@ -1,10 +1,10 @@
-const authMiddleware = require('../middlewares/auth')
+const authMiddleware = require('../middlewares/auth');
 
-const contributors = require('./contributors')
-const dashboard = require('./dashboard')
-const discord = require('./oauth/discord')
-const spotify = require('./oauth/spotify')
-const github = require('./oauth/github')
+const contributors = require('./contributors');
+const dashboard = require('./dashboard');
+const discord = require('./oauth/discord');
+const spotify = require('./oauth/spotify');
+const github = require('./oauth/github');
 
 // @todo: CSRF tokens
 module.exports = (app) => {
@@ -32,16 +32,9 @@ module.exports = (app) => {
   app.get('/oauth/github/unlink', authMiddleware.auth, github.unlink);
   app.get('/logout', authMiddleware.auth, (req, res) => {
     res.cookie('token', '', { maxAge: -1 });
-    req.session.discord = undefined;
+    delete req.session.discord;
     res.redirect('/');
   });
 
   // API - RESTer than the dashboard
-}
-
-/*
-module.exports = require('fs')
-  .readdirSync(__dirname)
-  .filter(file => file !== 'index.js')
-  .map(filename => require(`${__dirname}/${filename}`));
-  */
+};

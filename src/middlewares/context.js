@@ -7,5 +7,5 @@ module.exports = async () => {
     req.config = config;
     req.db = db;
     next();
-  }
+  };
 };

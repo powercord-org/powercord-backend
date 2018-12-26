@@ -1,25 +1,25 @@
 const { sign, verify } = (() => {
-  const { sign, verify } = require('jsonwebtoken');
+  const { sign: s, verify: v } = require('jsonwebtoken');
   const { promisify } = require('util');
   return {
-    sign: promisify(sign),
-    verify: promisify(verify)
-  }
+    sign: promisify(s),
+    verify: promisify(v)
+  };
 })();
 
-const { public, private } = (() => {
+const { pub, priv } = (() => {
   const { readFileSync } = require('fs');
   return {
-    public: readFileSync('public.pem', 'utf8'),
-    private: readFileSync('private.key', 'utf8')
-  }
+    pub: readFileSync('public.pem', 'utf8'),
+    priv: readFileSync('private.key', 'utf8')
+  };
 })();
 
 module.exports = {
   encode (obj) {
-    return sign(obj, private, { algorithm: 'RS256' });
+    return sign(obj, priv, { algorithm: 'RS256' });
   },
   decode (jwt) {
-    return verify(jwt, public, { algorithms: [ 'RS256' ]});
+    return verify(jwt, pub, { algorithms: [ 'RS256' ] });
   }
 };

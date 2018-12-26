@@ -12,6 +12,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  font-size: 16px;
 }
 
 body {
@@ -170,9 +171,9 @@ form .input-field.error label {
 }
 
 form .input-field input {
+  color: #fff;
   background-color: #576aa5;
-  border: 1px #354163; solid;
-  box-shadow: none;
+  border: 1px #354163 solid;
   outline: none;
   padding: 10px;
   border-radius: 5px;
