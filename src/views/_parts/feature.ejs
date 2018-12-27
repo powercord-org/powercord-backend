@@ -1,5 +1,9 @@
 <div class='feature'>
   <div class='name'><%= name %></div>
-  <img class='banner' src='<%= banner %>' alt='banner'/>
+  <% if (banner.endsWith('mp4')) { %>
+    <video class='banner' src='<%= banner %>' autoplay loop muted></video>
+  <% } else { %>
+    <img class='banner' src='<%= banner %>' alt='banner'/>
+  <% } %>
   <div class='desc'><%= description %></div>
 </div>

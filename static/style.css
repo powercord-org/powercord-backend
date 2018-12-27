@@ -46,7 +46,7 @@ a:hover {
 
 .pc-header {
   text-align: center;
-  font-size: 18px;
+  font-size: 24px;
   margin-bottom: 25px;
 }
 
@@ -67,8 +67,8 @@ a:hover {
 
 .navbar .title h1 {
   font-family: 'Uni Sans', sans-serif;
-  margin: 0;
-  margin-top: 2px;
+  font-size: 26px;
+  margin: 1px 0 0;
 }
 
 .navbar .title img {
@@ -126,21 +126,34 @@ a:hover {
   margin-top: 20px;
   padding: 5px 10px;
   background-color: #576aa5;
-  min-height: 56px;
+  min-height: 38px;
   max-height: 56px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.footer-inner {
+.footer .inner {
   font-size: 14px;
   display: flex;
   align-items: center;
 }
 
-.footer div {
-  margin-right: 5px;
+.footer .inner > * {
+  margin: 3px 0;
+  display: flex;
+  align-items: center;
+}
+
+.footer .inner .separator:after {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  border-radius: 2px;
+  background-color: #fff;
+  margin: 2px 5px 0;
 }
 /* END: Footer */
 
@@ -167,7 +180,7 @@ form .input-field label {
 }
 
 form .input-field.error label {
-  color: #f44336;
+  color: #ab0c00;
 }
 
 form .input-field input {

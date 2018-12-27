@@ -95,8 +95,8 @@ const processReqs = {
   },
 
   async _process (req, res, create) {
-    let nameErr,
-      idErr;
+    let nameErr;
+    let idErr;
     // Validation step 1
     if (typeof req.body.name === 'undefined' || req.body.name.trim().length < 2) {
       nameErr = 'You must fill this field with at least 2 characters';
