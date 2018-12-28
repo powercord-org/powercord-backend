@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <% include ../_parts/head %>
+  <% include ../_parts/head.ejs %>
   <body>
-    <% include ../_parts/navbar %>
+    <% include ../_parts/navbar.ejs %>
     <div class='container dashboard'>
       <div class='header'>
         <h2><%= current %></h2>
         <% if (current === 'plugins') { %>
-          <a href='/dashboard/contributors'>Manage contributors</a>
+          <a href='/dashboard/users'>Manage users</a>
         <% } else { %>
           <a href='/dashboard'>Manage plugins</a>
         <% } %>
@@ -16,7 +16,7 @@
         <a href='/dashboard/create' class='btn create'>Create a new plugin</a>
       <% } else { %>
         <form method="post">
-          <button type='submit' class='btn create'>Save contributors</button>
+          <button type='submit' class='btn create'>Save user settings</button>
       <% } %>
 
       <% for(var i=0; i < items.length; i++) { %>
@@ -27,6 +27,6 @@
         </form>
       <% } %>
     </div>
-    <% include ../_parts/footer %>
+    <% include ../_parts/footer.ejs %>
   </body>
 </html>

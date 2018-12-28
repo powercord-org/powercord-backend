@@ -42,6 +42,7 @@ module.exports = {
     delete req.session.github;
     await req.db.users.updateOne({ id: req.session.discord.id }, {
       $set: {
+        'metadata.github': null,
         github: null
       }
     });

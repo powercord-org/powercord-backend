@@ -1,7 +1,14 @@
+<% var id = name.replace(' ', '_') %>
 <div class='feature'>
   <div class='name'><%= name %></div>
   <% if (banner.endsWith('mp4')) { %>
-    <video class='banner' src='<%= banner %>' autoplay loop muted></video>
+    <div class='video' onmouseenter='document.querySelector("#<%= id %>").play()' onmouseleave='document.querySelector("#<%= id %>").pause(); document.querySelector("#<%= id %>").currentTime = 0'>
+      <div class='text'>
+        <img src='https://cdn.discordapp.com/emojis/400065362529484811.png' alt=':eyes:'/>
+        Hover for a preview
+      </div>
+      <video class='banner' src='<%= banner %>' loop muted id='<%= id %>'></video>
+    </div>
   <% } else { %>
     <img class='banner' src='<%= banner %>' alt='banner'/>
   <% } %>

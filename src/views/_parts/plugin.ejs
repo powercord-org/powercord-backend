@@ -1,15 +1,12 @@
 <div class='plugin'>
-  <div class='header'>
-    <div class='name'><%= item.name %></div>
-    <div class='by'>by <%= item.user[0].metadata.username %>#<%= item.user[0].metadata.discriminator %></div>
-  </div>
-  <div class='info'>
-    <% if (item.manifest === null) { %>
-      <div class='no-manifest'>There is no manifest for this plugin</div>
-    <% } else { %>
-      ah
-    <% } %>
-  </div>
+  <% if (item.manifest === null) { %>
+    <div class='header'>
+      <div class='name'><%= item.name %></div>
+      <div class='by'>by <%= item.user[0].metadata.username %><span>#<%= item.user[0].metadata.discriminator %></span></div>
+    </div>
+    <div class='info no-manifest'>There is no manifest for this plugin</div>
+  <% } else { %>
+  <% } %>
   <% if (isAdmin) { %>
     <div class='actions'>
       <a class='btn create' href='/dashboard/edit/<%= item._id %>'>Edit</a>

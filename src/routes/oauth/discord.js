@@ -56,6 +56,11 @@ module.exports = {
     } else {
       await req.db.users.updateOne({ id: user.id }, {
         $set: {
+          'metadata.username': user.username,
+          'metadata.discriminator': user.discriminator,
+          'metadata.avatar': user.avatar
+            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}`
+            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
           discord: {
             access_token: token.access_token,
             refresh_token: token.refresh_token,

@@ -44,10 +44,10 @@ module.exports = {
     });
   },
 
-  async contributors (req, res) {
+  async users (req, res) {
     res.render('dashboard/index', {
       items: await req.db.users.find({}).toArray(),
-      current: 'contributors',
+      current: 'users',
       ...req.session
     });
   }

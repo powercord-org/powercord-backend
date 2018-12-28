@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <% include ../_parts/head %>
+  <% include ../_parts/head.ejs %>
   <body>
-    <% include ../_parts/navbar %>
+    <% include ../_parts/navbar.ejs %>
     <div class='container dashboard'>
       <div class='editor header'>
         <h2><%= create ? 'Create' : 'Edit' %> a plugin</h2>
@@ -25,6 +25,6 @@
         <button type='submit' class='btn create'><%= create ? 'Create' : 'Edit' %></button>
       </form>
     </div>
-    <% include ../_parts/footer %>
+    <% include ../_parts/footer.ejs %>
   </body>
 </html>

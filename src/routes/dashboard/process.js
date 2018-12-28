@@ -152,7 +152,7 @@ const processReqs = {
     return res.redirect('/dashboard');
   },
 
-  async contributors (req, res) {
+  async users (req, res) {
     const users = await req.db.users.find({}).toArray();
     await processReqs.asyncForEach(users, async user => {
       const contrib = req.body[`c-${user.id}`] === 'on';
@@ -168,7 +168,7 @@ const processReqs = {
       }
     });
 
-    ui.contributors(req, res);
+    ui.users(req, res);
   },
 
   async asyncForEach (array, callback) {

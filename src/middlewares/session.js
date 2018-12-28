@@ -3,10 +3,10 @@ const { DiscordOAuth, SpotifyOAuth, GithubOAuth } = require('../rest');
 
 module.exports = async (req, res, next) => {
   req.session.isAdmin = false;
-  if (req.cookies.token) {
+  if (req.cookies.token || req.headers.authorization) {
     let userId;
     try {
-      userId = await decode(req.cookies.token);
+      userId = await decode(req.cookies.token || req.headers.authorization);
     } catch (err) {
       console.log(err);
       switch (err.message) {

@@ -12,7 +12,7 @@ module.exports = (app) => {
   app.get('/', (req, res) => res.render('index', req.session));
   app.get('/contributors', contributors);
 
-  // Dashboard routes - REST hahayes
+  // Dashboard routes - RESTful hahayes
   app.get('/dashboard', authMiddleware.admin, dashboard.ui.plugins);
   app.get('/dashboard/create', authMiddleware.admin, dashboard.ui.create);
   app.post('/dashboard/create', authMiddleware.admin, dashboard.process.create);
@@ -20,8 +20,8 @@ module.exports = (app) => {
   app.post('/dashboard/edit/:id', authMiddleware.admin, dashboard.process.edit);
   app.get('/dashboard/delete/:id', authMiddleware.admin, dashboard.process.delete);
 
-  app.get('/dashboard/contributors', authMiddleware.admin, dashboard.ui.contributors);
-  app.post('/dashboard/contributors', authMiddleware.admin, dashboard.process.contributors);
+  app.get('/dashboard/users', authMiddleware.admin, dashboard.ui.users);
+  app.post('/dashboard/users', authMiddleware.admin, dashboard.process.users);
 
   // Oauth routes
   app.get('/oauth/discord', discord.authorize);
@@ -36,5 +36,8 @@ module.exports = (app) => {
     res.redirect('/');
   });
 
-  // API - RESTer than the dashboard
+  // API - RESTfuler than the dashboard
+
+  // hahayes
+  app.get('/coffee', (_, res) => res.sendStatus(418));
 };

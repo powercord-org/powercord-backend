@@ -93,11 +93,68 @@ a:hover {
   display: flex;
 }
 
-.navbar .account img {
-  border-radius: 50%;
+.navbar .account .avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
   margin-right: 15px;
   width: 50px;
   height: 50px;
+}
+
+.navbar .account .avatar .img {
+  border-radius: 50%;
+  width: 100%;
+}
+
+.navbar .account .avatar .nitro,
+.navbar .account .avatar .hypesquad,
+.navbar .account .avatar .admin {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+}
+
+.navbar .account .avatar .nitro {
+  bottom: -9px;
+  right: -5px
+}
+
+.navbar .account .avatar .hypesquad {
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  bottom: -6px;
+  right: -5px
+}
+
+.navbar .account .avatar .nitro + .hypesquad {
+  right: initial;
+  left: -5px;
+}
+
+.navbar .account .avatar .hypesquad-bg {
+  z-index: 2;
+  content: '';
+  width: 13px;
+  height: 13px;
+  display: block;
+  background-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+}
+
+.navbar .account .avatar .nitro + .hypesquad + .hypesquad-bg {
+  right: initial;
+  left: 0;
+}
+
+.navbar .account .avatar .admin {
+  top: -15px;
+  left: -1px;
+  transform: rotate(-23deg);
 }
 
 .navbar .account .details {
@@ -119,6 +176,7 @@ a:hover {
 .navbar .account .details .logout {
   opacity: .6;
 }
+
 /* END: Navbar */
 
 /* Footer */
@@ -155,6 +213,7 @@ a:hover {
   background-color: #fff;
   margin: 2px 5px 0;
 }
+
 /* END: Footer */
 
 /* Form */
@@ -218,6 +277,7 @@ form .input-field input {
 .btn.delete {
   background-color: #f44336;
 }
+
 /* END: Form */
 
 /* Home feature block */
@@ -244,6 +304,33 @@ form .input-field input {
   width: 100%;
   margin: 15px 0;
 }
+
+.features .feature .video {
+  position: relative;
+}
+
+.features .feature .video .text {
+  position: absolute;
+  bottom: 18px;
+  padding-bottom: 5px;
+  padding-top: 20px;
+  opacity: 1;
+  transition: opacity .3s;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  background-image: linear-gradient(to top, rgba(0, 0, 0, .9), rgba(0, 0, 0, .6) 65%, rgba(0, 0, 0, 0));
+}
+
+.features .feature .video .text img {
+  width: 32px;
+  margin: 0 10px;
+}
+
+.features .feature .video:hover .text {
+  opacity: 0;
+}
+
 /* END: Home feature block */
 
 /* Link account */
@@ -279,7 +366,47 @@ form .input-field input {
   background-color: #576aa5;
   box-shadow: 0 2px 7px #465686;
 }
+
 /* END: Link account */
+
+/* Contributor */
+.contributors {
+  margin: 15px 0;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.contributor {
+  padding: 10px 15px;
+  width: 24%;
+  background-color: #576aa5;
+  box-shadow: 0 2px 7px #465686;
+  display: flex;
+  align-items: center;
+}
+
+.contributor img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.contributor .info .username {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.contributor .info .username span {
+  font-size: 14px;
+  opacity: .6;
+}
+
+.contributor .info a {
+  font-size: 14px;
+}
+/* END: Contributor */
 
 /* Dashboard */
 .dashboard .header {
@@ -293,13 +420,57 @@ form .input-field input {
 /* END: Dashboard */
 
 /* Dashboard plugin */
+.plugins {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.plugin {
+  width: 23%;
+  background-color: #576aa5;
+  box-shadow: 0 2px 7px #465686;
+  padding: 10px 15px;
+}
+
+.plugin .header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.plugin .header .name {
+  font-family: 'Uni Sans', sans-serif;
+  font-size: 18px;
+}
+
+.plugin .header .by {
+  font-size: 16px;
+}
+
+.plugin .header .by span {
+  font-size: 12px;
+  opacity: .6;
+}
+
+.plugin .info.no-manifest {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.plugin .actions .btn {
+  margin: 0 5px 0 0;
+  padding: 5px 10px;
+}
+
 /* END: Dashboard plugin */
 
 /* Dashboard plugin editor */
 /* END: Dashboard plugin editor */
 
-/* Dashboard contributor */
-.dashboard .contributor {
+/* Dashboard user */
+.dashboard .user {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
@@ -307,34 +478,36 @@ form .input-field input {
   border-bottom: 1px #465686 solid;
 }
 
-.dashboard .contributor img {
+.dashboard .user img {
   height: 50px;
   width: 50px;
   border-radius: 50%;
   margin-right: 10px;
 }
 
-.dashboard .contributor .name {
+.dashboard .user .name {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.dashboard .contributor .name span,
-.dashboard .contributor .name .id {
+.dashboard .user .name span,
+.dashboard .user .name .id {
   opacity: .6;
   font-size: 12px;
 }
 
-.dashboard .contributor .rank {
+.dashboard .user .rank {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   flex: 1;
 }
-.dashboard .contributor .rank label {
+
+.dashboard .user .rank label {
   display: flex;
   align-items: center;
   margin-left: 15px;
 }
-/* END: Dashboard contributor */
+
+/* END: Dashboard user */

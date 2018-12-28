@@ -1,0 +1,19 @@
+<div class='user'>
+  <img src='<%= item.metadata.avatar %>' alt='Avatar'/>
+  <div class='name'>
+    <div class='username'>
+      <%= item.metadata.username %><span>#<%= item.metadata.discriminator %></span>
+    </div>
+    <div class='id'><%= item.id %></div>
+  </div>
+  <div class='rank'>
+    <label for='c-<%= item.id %>'>
+      Contributor
+      <input type='checkbox' id='c-<%= item.id %>' name='c-<%= item.id %>' <%= item.metadata.contributor ? 'checked' : '' %>/>
+    </label>
+    <label for='d-<%= item.id %>'>
+      Developer
+      <input type='checkbox' id='d-<%= item.id %>' name='d-<%= item.id %>' <%= item.metadata.developer ? 'checked' : '' %>/>
+    </label>
+  </div>
+</div>
