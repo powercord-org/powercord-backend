@@ -9,6 +9,13 @@ const processReqs = {
       return;
     }
 
+    // Insert in database
+    const entry = await req.db.plugins.insertOne({
+      name: req.body.name,
+      developer: req.body.developer,
+      manifest: null
+    });
+
     // Create GH repo
     await post(`https://api.github.com/orgs/${req.config.githubOrg}/repos`)
       .set('Authorization', `token ${req.session.tokens.github.access_token}`)
@@ -20,7 +27,7 @@ const processReqs = {
       .set('Authorization', `token ${req.session.tokens.github.access_token}`)
       .send({
         config: {
-          url: `${req.config.domain}/hook`,
+          url: `${req.config.domain}/hook/${entry.insertedId}`,
           content_type: 'json',
           secret: req.config.secret
         }
@@ -40,13 +47,6 @@ const processReqs = {
         username: 'Powercord',
         avatar_url: `${req.config.domain}/assets/powercord.png`
       }).execute();
-
-    // Insert in database
-    await req.db.plugins.insertOne({
-      name: req.body.name,
-      developer: req.body.developer,
-      manifest: null
-    });
 
     return res.redirect('/dashboard');
   },

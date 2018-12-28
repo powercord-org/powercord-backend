@@ -6,6 +6,8 @@ const discord = require('./oauth/discord');
 const spotify = require('./oauth/spotify');
 const github = require('./oauth/github');
 
+const hook = require('./hook');
+
 // @todo: CSRF tokens
 module.exports = (app) => {
   // UI routes
@@ -35,6 +37,9 @@ module.exports = (app) => {
     delete req.session.discord;
     res.redirect('/');
   });
+
+  // Github Webhook
+  app.post('/hook/:id', authMiddleware.github, hook);
 
   // API - RESTfuler than the dashboard
 

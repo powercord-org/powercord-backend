@@ -13,8 +13,18 @@ const routes = require('./routes');
   app.set('view engine', 'ejs');
   app.set('views', join(__dirname, '/views'));
 
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({
+    extended: false,
+    verify: (req, _, buf) => {
+      req.rawBody = buf.toString();
+    }
+  }));
+  app.use(bodyParser.json({
+    verify: (req, _, buf) => {
+      req.rawBody = buf.toString();
+    }
+  }));
+
   app.use(cookieParser());
   app.use(session({
     secret: config.secret,

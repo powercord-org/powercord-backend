@@ -454,9 +454,24 @@ form .input-field input {
   opacity: .6;
 }
 
+.plugin .info {
+  padding: 20px 0;
+}
+
+.plugin .info .element {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.plugin .info .element img {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+
 .plugin .info.no-manifest {
   text-align: center;
-  padding: 20px 0;
 }
 
 .plugin .actions .btn {
@@ -465,9 +480,6 @@ form .input-field input {
 }
 
 /* END: Dashboard plugin */
-
-/* Dashboard plugin editor */
-/* END: Dashboard plugin editor */
 
 /* Dashboard user */
 .dashboard .user {
@@ -509,5 +521,4 @@ form .input-field input {
   align-items: center;
   margin-left: 15px;
 }
-
 /* END: Dashboard user */
