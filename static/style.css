@@ -135,20 +135,27 @@ a:hover {
 
 .navbar .account .avatar .hypesquad-bg {
   z-index: 2;
-  content: '';
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   display: block;
   background-color: #fff;
-  border-radius: 50%;
+  transform: rotate(45deg);
   position: absolute;
-  right: 0;
-  bottom: -1px;
+  right: -1px;
+  bottom: -3px;
+}
+
+.navbar .account .avatar .hypesquad-bg.nr {
+  transform: initial;
+}
+
+.navbar .account .avatar .hypesquad-bg.hb {
+  bottom: 0;
 }
 
 .navbar .account .avatar .nitro + .hypesquad + .hypesquad-bg {
   right: initial;
-  left: 0;
+  left: -1px;
 }
 
 .navbar .account .avatar .admin {
