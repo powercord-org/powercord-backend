@@ -22,6 +22,10 @@ module.exports = {
   },
 
   github (req, res, next) {
+    if (!req.headers['x-github-delivery']) {
+      return res.sendStatus(400);
+    }
+
     // Check if already received
     if (handledPayloads.includes(req.headers['x-github-delivery'])) {
       return res.sendStatus(200);

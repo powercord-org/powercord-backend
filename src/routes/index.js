@@ -8,7 +8,12 @@ const github = require('./oauth/github');
 
 const hook = require('./hook');
 
-// @todo: CSRF tokens
+const { v1 } = require('./api');
+
+/*
+ * @todo: CSRF tokens
+ * @todo: Allow ppl to register their themes
+ */
 module.exports = (app) => {
   // UI routes
   app.get('/', (req, res) => res.render('index', req.session));
@@ -42,6 +47,8 @@ module.exports = (app) => {
   app.post('/hook/:id', authMiddleware.github, hook);
 
   // API - RESTfuler than the dashboard
+  v1.call(this, app, '/api/v1');
+  v1.call(this, app, '/api');
 
   // hahayes
   app.get('/coffee', (_, res) => res.sendStatus(418));
