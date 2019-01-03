@@ -37,6 +37,11 @@ const routes = require('./routes');
   app.use('/assets', express.static(resolve(__dirname, '..', 'static')));
   routes.call(this, app);
 
+  app.use((err, req, res) => {
+    console.error(err.body);
+    res.status(500).send(`fucky wucky ${err.message}`);
+  });
+
   app.listen(config.port, () => {
     console.log(`Express server listening to ${config.port}.`);
   });
