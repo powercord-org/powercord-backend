@@ -52,6 +52,13 @@ const processReqs = {
   },
 
   async edit (req, res) {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        status: 400,
+        error: 'Invalid ID'
+      });
+    }
+
     const item = await req.db.plugins.findOne({ _id: new ObjectId(req.params.id) });
     if (!item) {
       return res.redirect('/dashboard');
@@ -139,6 +146,13 @@ const processReqs = {
   },
 
   async delete (req, res) {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        status: 400,
+        error: 'Invalid ID'
+      });
+    }
+
     const item = await req.db.plugins.findOne({ _id: new ObjectId(req.params.id) });
     if (!item) {
       return res.redirect('/dashboard');

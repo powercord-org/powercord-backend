@@ -11,6 +11,13 @@ module.exports = {
     },
 
     getPlugin: async (req, res) => {
+      if (!ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({
+          status: 400,
+          error: 'Invalid ID'
+        });
+      }
+
       const plugin = await req.db.plugins.findOne({
         _id: new ObjectId(req.params.id),
         manifest: { $not: { $eq: null } }
