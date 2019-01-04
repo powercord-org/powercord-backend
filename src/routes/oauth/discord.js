@@ -75,7 +75,8 @@ module.exports = {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true
     });
-    res.redirect('/');
+    res.redirect(req.session._redirect || '/');
+    delete req.session._redirect;
   },
 
   async unlink (req, res) {
@@ -83,6 +84,7 @@ module.exports = {
       if (typeof req.query.confirm === 'undefined' && (req.session.tokens.metadata.contributor || req.session.tokens.metadata.developer)) {
         return res.send('You\'ll lose your contributor/developer role if you continue. We just wanted to make sure you\'re aware of that. <a href=\'?confirm\'>I\'m sure</a>');
       }
+
       await req.db.users.deleteOne({ id: req.session.tokens.id });
       res.cookie('token', '', { maxAge: -1 });
       delete req.session.discord;

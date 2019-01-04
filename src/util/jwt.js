@@ -1,3 +1,5 @@
+const { secret } = require('../../config.json');
+
 const { sign, verify } = (() => {
   const { sign: s, verify: v } = require('jsonwebtoken');
   const { promisify } = require('util');
@@ -7,19 +9,11 @@ const { sign, verify } = (() => {
   };
 })();
 
-const { pub, priv } = (() => {
-  const { readFileSync } = require('fs');
-  return {
-    pub: readFileSync('public.pem', 'utf8'),
-    priv: readFileSync('private.key', 'utf8')
-  };
-})();
-
 module.exports = {
   encode (obj) {
-    return sign(obj, priv, { algorithm: 'RS256' });
+    return sign(obj, secret, { algorithm: 'HS512' });
   },
   decode (jwt) {
-    return verify(jwt, pub, { algorithms: [ 'RS256' ] });
+    return verify(jwt, secret, { algorithms: [ 'HS512' ] });
   }
 };

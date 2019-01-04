@@ -13,7 +13,7 @@ module.exports = {
     app.get(`${basePath}/plugins`, pluginsV1.getPlugins);
     app.get(`${basePath}/plugins/:id`, pluginsV1.getPlugin);
 
-    app.get(`${basePath}/users/whotfami`, auth, usersV1.whoAmI);
+    app.get(`${basePath}/users/link`, usersV1.link);
     app.get(`${basePath}/users/@me`, auth, usersV1.getMe);
 
     app.get(`${basePath}/tea`, tea);

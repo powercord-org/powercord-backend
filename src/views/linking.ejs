@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <title>Powercord account linking</title>
+  <style>
+    @font-face {
+      font-family: "Uni Sans";
+      src: url("/assets/unisanscaps.otf")
+    }
+
+    html, body { height: 100%; display: flex; align-items: center; justify-content: center; margin: 0; color: #fff; background-color: #7289DA; }
+    p {
+      font-size: 24px;
+      font-family: 'Uni Sans', sans-serif;
+    }
+  </style>
+</head>
+<body>
+<p style='display: none;'>You can close that window</p>
+<script>
+  fetch('http://localhost:6462', {
+    headers: {
+      'X-Powercord-Token': '<%= jwt %>'
+    }
+  }).finally(() => document.querySelector('p').removeAttribute('style'))
+</script>
+</body>
+</html>

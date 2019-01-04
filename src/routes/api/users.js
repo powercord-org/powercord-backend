@@ -1,9 +1,14 @@
 module.exports = {
   v1: {
-    whoAmI: (req, res) => {
-      res.send(req.session.jwt);
+    link: (req, res) => {
+      if (!req.session.discord) {
+        req.session._redirect = '/api/v1/users/link';
+        return res.redirect('/oauth/discord');
+      }
+      res.render('linking', {
+        jwt: req.session.jwt
+      });
     },
-
     getMe: (req, res) => {
       res.json({
         id: req.session.tokens.id,

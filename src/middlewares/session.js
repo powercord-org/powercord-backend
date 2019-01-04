@@ -12,6 +12,7 @@ module.exports = async (req, res, next) => {
       console.log(err);
       switch (err.message) {
         case 'invalid signature':
+        case 'invalid algorithm':
         case 'jwt malformed':
           res.cookie('token', '', { maxAge: -1 });
           delete req.session.discord;

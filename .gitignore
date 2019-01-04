@@ -9,5 +9,3 @@ node_modules/
 
 # Secret files
 config.json
-*.pem
-*.key
