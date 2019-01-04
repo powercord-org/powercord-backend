@@ -43,6 +43,8 @@ module.exports = {
             : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
           contributor: false,
           developer: false,
+          tester: false,
+          hunter: false,
           github: null
         },
         discord: {
