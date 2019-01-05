@@ -1,9 +1,0 @@
-{
-  "port": 80,
-  "discordID": "",
-  "discordSecret": "",
-  "spotifyID": "",
-  "spotifySecret": "",
-  "domain": "http://localhost",
-  "secret": "asdf"
-}

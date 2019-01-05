@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <% include ../_parts/head.ejs %>
+  <body>
+    <% include ../_parts/navbar.ejs %>
+    <div class='container dashboard'>
+      <div class='editor header'>
+        <h2><%= create ? 'Create' : 'Edit' %> a plugin</h2>
+      </div>
+      <form method='post'>
+        <div class='fields'>
+          <div class='input-field<%= typeof nameErr !== 'undefined' ? ' error' : '' %>'>
+            <label for='name'>
+              Plugin name <%= typeof nameErr !== 'undefined' ? '(' + nameErr + ')' : '' %>
+            </label>
+            <input type='text' name='name' id='name' value='<%= item.name %>'/>
+          </div>
+          <div class='input-field<%= typeof idErr !== 'undefined' ? ' error' : '' %>'>
+            <label for='developer'>
+              Developer Discord ID <%= typeof idErr !== 'undefined' ? '(' + idErr + ')' : '' %>
+            </label>
+            <input type='text' name='developer' id='developer' value='<%= item.developer %>'/>
+          </div>
+        </div>
+        <button type='submit' class='btn create'><%= create ? 'Create' : 'Edit' %></button>
+      </form>
+    </div>
+    <% include ../_parts/footer.ejs %>
+  </body>
+</html>

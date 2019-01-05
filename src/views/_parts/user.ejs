@@ -1,0 +1,27 @@
+<div class='user'>
+  <img src='<%= item.metadata.avatar %>' alt='Avatar'/>
+  <div class='name'>
+    <div class='username'>
+      <%= item.metadata.username %><span>#<%= item.metadata.discriminator %></span>
+    </div>
+    <div class='id'><%= item.id %></div>
+  </div>
+  <div class='rank'>
+    <label for='d-<%= item.id %>'>
+      Developer
+      <input type='checkbox' id='d-<%= item.id %>' name='d-<%= item.id %>' <%= item.metadata.developer ? 'checked' : '' %>/>
+    </label>
+    <label for='c-<%= item.id %>'>
+      Contributor
+      <input type='checkbox' id='c-<%= item.id %>' name='c-<%= item.id %>' <%= item.metadata.contributor ? 'checked' : '' %>/>
+    </label>
+    <label for='t-<%= item.id %>'>
+      Beta Tester
+      <input type='checkbox' id='t-<%= item.id %>' name='t-<%= item.id %>' <%= item.metadata.tester ? 'checked' : '' %>/>
+    </label>
+    <label for='h-<%= item.id %>'>
+      Bug Hunter
+      <input type='checkbox' id='h-<%= item.id %>' name='h-<%= item.id %>' <%= item.metadata.hunter ? 'checked' : '' %>/>
+    </label>
+  </div>
+</div>

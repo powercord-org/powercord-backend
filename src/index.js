@@ -1,25 +1,47 @@
+const { resolve, join } = require('path');
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 
-const config = require('./config.json');
-const routes = require('./routes/');
-const getDB = require('./db.js');
+const config = require('../config.json');
+const routes = require('./routes');
 
 (async () => {
-  const db = await getDB();
   const app = express();
 
-  app.use(bodyParser.urlencoded({ extended: false }));
+  app.set('view engine', 'ejs');
+  app.set('views', join(__dirname, '/views'));
+
+  app.use(bodyParser.urlencoded({
+    extended: false,
+    verify: (req, _, buf) => {
+      req.rawBody = buf.toString();
+    }
+  }));
+  app.use(bodyParser.json({
+    verify: (req, _, buf) => {
+      req.rawBody = buf.toString();
+    }
+  }));
+
+  app.use(cookieParser());
   app.use(session({
     secret: config.secret,
     saveUninitialized: true,
     resave: false
   }));
 
-  for (const route of routes) {
-    route.call(this, app, config, db);
-  }
+  app.use(await require('./middlewares/context.js')());
+  app.use(require('./middlewares/session.js'));
+  app.use('/assets', express.static(resolve(__dirname, '..', 'static')));
+  routes.call(this, app);
+
+  // Express does not recognizes properly error handlers with 3 parameters
+  app.use((err, req, res, _) => { // eslint-disable-line no-unused-vars
+    console.error(err);
+    res.status(500).send(`fucky wucky ${err.message}`);
+  });
 
   app.listen(config.port, () => {
     console.log(`Express server listening to ${config.port}.`);

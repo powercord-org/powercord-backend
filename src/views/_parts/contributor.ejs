@@ -1,0 +1,9 @@
+<div class='contributor'>
+  <img src='<%= contributor.avatar %>' alt='Avatar'/>
+  <div class='info'>
+    <div class='username'><%= contributor.username %><span>#<%= contributor.discriminator %></span></div>
+    <% if (contributor.github) { %>
+      <a href='https://github.com/<%= contributor.github %>'>GitHub</a>
+    <% } %>
+  </div>
+</div>

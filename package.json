@@ -1,0 +1,32 @@
+{
+  "name": "powercord-backend",
+  "version": "1.0.0",
+  "description": "The backend for Powercord",
+  "main": "src/index.js",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "jsonwebtoken": "^8.4.0",
+    "mongodb": "^3.1.10"
+  },
+  "devDependencies": {
+    "eslint": "^5.11.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aetheryx/powercord-backend.git"
+  },
+  "author": "aetheryx",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aetheryx/powercord-backend/issues"
+  },
+  "homepage": "https://powercord.xyz"
+}

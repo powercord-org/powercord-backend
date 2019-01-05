@@ -1,0 +1,531 @@
+@font-face {
+  font-family: "Uni Sans";
+  src: url("unisanscaps.otf")
+}
+
+* {
+  box-sizing: border-box;
+  outline: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-size: 16px;
+}
+
+body {
+  background-color: #7289DA;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Lato', sans-serif;
+  color: #fff;
+}
+
+h2 {
+  font-family: 'Uni Sans', sans-serif;
+  font-size: 20px;
+  margin: 0;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.container {
+  flex: 1;
+  padding: 0 10%;
+}
+
+.pc-header {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 25px;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  padding: 0 25px;
+  align-items: center;
+  min-height: 70px;
+  max-height: 70px;
+  margin-bottom: 25px;
+}
+
+.navbar .title {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .title h1 {
+  font-family: 'Uni Sans', sans-serif;
+  font-size: 26px;
+  margin: 1px 0 0;
+}
+
+.navbar .title img {
+  width: 50px;
+  height: 50px;
+  transform: rotate(45deg);
+  margin-right: 15px;
+}
+
+.navbar .items {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.navbar .items a {
+  margin-right: 15px;
+}
+
+.navbar .account {
+  display: flex;
+}
+
+.navbar .account .avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  width: 50px;
+  height: 50px;
+}
+
+.navbar .account .avatar .img {
+  border-radius: 50%;
+  width: 100%;
+}
+
+.navbar .account .avatar .nitro,
+.navbar .account .avatar .hypesquad,
+.navbar .account .avatar .admin {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+}
+
+.navbar .account .avatar .nitro {
+  bottom: -9px;
+  right: -5px
+}
+
+.navbar .account .avatar .hypesquad {
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  bottom: -6px;
+  right: -5px
+}
+
+.navbar .account .avatar .nitro + .hypesquad {
+  right: initial;
+  left: -5px;
+}
+
+.navbar .account .avatar .hypesquad-bg {
+  z-index: 2;
+  width: 14px;
+  height: 14px;
+  display: block;
+  background-color: #fff;
+  transform: rotate(45deg);
+  position: absolute;
+  right: -1px;
+  bottom: -3px;
+}
+
+.navbar .account .avatar .hypesquad-bg.nr {
+  transform: initial;
+}
+
+.navbar .account .avatar .hypesquad-bg.hb {
+  bottom: 0;
+}
+
+.navbar .account .avatar .nitro + .hypesquad + .hypesquad-bg {
+  right: initial;
+  left: -1px;
+}
+
+.navbar .account .avatar .admin {
+  top: -15px;
+  left: -1px;
+  transform: rotate(-23deg);
+}
+
+.navbar .account .details {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  justify-content: center;
+}
+
+.navbar .account .details .name {
+  font-size: 18px;
+}
+
+.navbar .account .details .name span {
+  opacity: .6;
+  font-size: 14px;
+}
+
+.navbar .account .details .logout {
+  opacity: .6;
+}
+
+/* END: Navbar */
+
+/* Footer */
+.footer {
+  margin-top: 20px;
+  padding: 5px 10px;
+  background-color: #576aa5;
+  min-height: 38px;
+  max-height: 56px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.footer .inner {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.footer .inner > * {
+  margin: 3px 0;
+  display: flex;
+  align-items: center;
+}
+
+.footer .inner .separator:after {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  border-radius: 2px;
+  background-color: #fff;
+  margin: 2px 5px 0;
+}
+
+/* END: Footer */
+
+/* Form */
+form {
+  padding: 0 20px;
+}
+
+form .fields {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+form .input-field {
+  width: 48%;
+  display: flex;
+  flex-direction: column;
+  padding: 15px 0;
+}
+
+form .input-field label {
+  margin-bottom: 10px;
+}
+
+form .input-field.error label {
+  color: #ab0c00;
+}
+
+form .input-field input {
+  color: #fff;
+  background-color: #576aa5;
+  border: 1px #354163 solid;
+  outline: none;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 7px #354163;
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 15px;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  -webkit-appearance: none;
+  font-family: 'Lato', sans-serif;
+  margin: 15px 0;
+}
+
+.btn.create {
+  background-color: #4caf50;
+}
+
+.btn.delete {
+  background-color: #f44336;
+}
+
+/* END: Form */
+
+/* Home feature block */
+.features {
+  display: flex;
+  justify-content: space-between;
+}
+
+.features .feature {
+  width: 23%;
+  padding: 10px;
+  background-color: #576aa5;
+  box-shadow: 0 2px 7px #465686;
+  border-radius: 5px;
+}
+
+.features .feature .name {
+  text-align: center;
+  font-family: 'Uni Sans', sans-serif;
+  font-size: 20px;
+}
+
+.features .feature .banner {
+  width: 100%;
+  margin: 15px 0;
+}
+
+.features .feature .video {
+  position: relative;
+}
+
+.features .feature .video .text {
+  position: absolute;
+  bottom: 18px;
+  padding-bottom: 5px;
+  padding-top: 20px;
+  opacity: 1;
+  transition: opacity .3s;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  background-image: linear-gradient(to top, rgba(0, 0, 0, .9), rgba(0, 0, 0, .6) 65%, rgba(0, 0, 0, 0));
+}
+
+.features .feature .video .text img {
+  width: 32px;
+  margin: 0 10px;
+}
+
+.features .feature .video:hover .text {
+  opacity: 0;
+}
+
+/* END: Home feature block */
+
+/* Link account */
+.container .account {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin: 20px 0;
+}
+
+.container .account img {
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+}
+
+.container .account .info {
+  flex: 1;
+}
+
+.container .account.spotify {
+  background-color: #1DB954;
+  box-shadow: 0 2px 7px #15853c;
+}
+
+.container .account.github {
+  background-color: #292d32;
+  box-shadow: 0 2px 7px #101213;
+}
+
+.container .account.discord {
+  background-color: #576aa5;
+  box-shadow: 0 2px 7px #465686;
+}
+
+/* END: Link account */
+
+/* Contributor */
+.contributors {
+  margin: 15px 0;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.contributor {
+  padding: 10px 15px;
+  width: 24%;
+  background-color: #576aa5;
+  box-shadow: 0 2px 7px #465686;
+  display: flex;
+  align-items: center;
+}
+
+.contributor img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.contributor .info .username {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.contributor .info .username span {
+  font-size: 14px;
+  opacity: .6;
+}
+
+.contributor .info a {
+  font-size: 14px;
+}
+/* END: Contributor */
+
+/* Dashboard */
+.dashboard .header {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard .header h2 {
+  flex: 1;
+}
+/* END: Dashboard */
+
+/* Dashboard plugin */
+.plugins {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.plugin {
+  width: 23%;
+  background-color: #576aa5;
+  box-shadow: 0 2px 7px #465686;
+  padding: 10px 15px;
+}
+
+.plugin .header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.plugin .header .name {
+  font-family: 'Uni Sans', sans-serif;
+  font-size: 18px;
+}
+
+.plugin .header .by {
+  font-size: 16px;
+}
+
+.plugin .header .by span {
+  font-size: 12px;
+  opacity: .6;
+}
+
+.plugin .info {
+  padding: 20px 0;
+}
+
+.plugin .info .element {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.plugin .info .element img {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+
+.plugin .info.no-manifest {
+  text-align: center;
+}
+
+.plugin .actions .btn {
+  margin: 0 5px 0 0;
+  padding: 5px 10px;
+}
+
+/* END: Dashboard plugin */
+
+/* Dashboard user */
+.dashboard .user {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px #465686 solid;
+}
+
+.dashboard .user img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.dashboard .user .name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dashboard .user .name span,
+.dashboard .user .name .id {
+  opacity: .6;
+  font-size: 12px;
+}
+
+.dashboard .user .rank {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.dashboard .user .rank label {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+/* END: Dashboard user */

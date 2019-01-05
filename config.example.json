@@ -1,0 +1,14 @@
+{
+  "port": 80,
+  "discordID": "",
+  "discordSecret": "",
+  "discordHook": "",
+  "spotifyID": "",
+  "spotifySecret": "",
+  "githubID": "",
+  "githubSecret": "",
+  "githubOrg": "",
+  "admins": ["284122164582416385"],
+  "domain": "http://localhost",
+  "secret": "aethcord is the betterest name :^)"
+}

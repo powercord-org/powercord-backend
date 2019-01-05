@@ -1,0 +1,65 @@
+<!-- hey cutie -->
+<nav class='navbar'>
+  <div class='title'>
+    <img src='/assets/logo.svg' alt='Powercord logo' />
+    <h1>Powercord</h1>
+  </div>
+  <div class='items'>
+    <div class='item'>
+      <a href='/'>Home</a>
+      <!--
+        <a href='/install'>Install</a>
+        <a href='/docs'>Documentation</a>
+      -->
+      <a href='/contributors'>Contributors</a>
+      <% if (isAdmin) { %>
+        <a href='/dashboard'>Dashboard</a>
+      <% } %>
+    </div>
+  </div>
+  <% if (typeof discord === 'undefined') { %>
+    <a href='/oauth/discord' class='login'>Login with Discord</a>
+  <% } else { %>
+    <div class='account'>
+      <div class='avatar'>
+        <% if (discord.avatar) { %>
+          <%
+            var ext = discord.avatar.startsWith('a_') ? 'gif' : 'png';
+            var flags = discord.flags;
+          %>
+          <img src='https://cdn.discordapp.com/avatars/<%= discord.id %>/<%= discord.avatar %>.<%= ext %>' alt='Your avatar' class='img'/>
+        <% } else { %>
+          <img src='https://cdn.discordapp.com/embed/avatars/<%= discord.discriminator % 5 %>.png' alt='Your avatar' class='img'/>
+        <% } %>
+
+        <% if (typeof discord.premium_type !== 'undefined') { %>
+          <img src='https://discordapp.com/assets/386884eecd36164487505ddfbac35a9d.svg' alt='NiscordDotro' class='nitro' title='Nitro'/>
+        <% } %>
+        <% if (flags - (1 << 8) >= 0) { %>
+          <img src='https://discordapp.com/assets/9fdc63ef8a3cc1617c7586286c34e4f1.svg' alt='HypeSquad Balance' class='hypesquad' title='HypeSquad Balance'/>
+          <span class='hypesquad-bg'></span>
+          <% flags = flags - (1 << 8) %>
+        <% } %>
+        <% if (flags - (1 << 7) >= 0) { %>
+          <img src='https://discordapp.com/assets/48cf0556d93901c8cb16317be2436523.svg' alt='HypeSquad Brilliance' class='hypesquad' title='HypeSquad Brilliance'/>
+          <span class='hypesquad-bg nr'></span>
+          <% flags = flags - (1 << 7) %>
+        <% } %>
+        <% if (flags - (1 << 6) >= 0) { %>
+          <img src='https://discordapp.com/assets/64ae1208b6aefc0a0c3681e6be36f0ff.svg' alt='HypeSquad Bravery' class='hypesquad' title='HypeSquad Bravery'/>
+          <span class='hypesquad-bg nr hb'></span>
+          <% flags = flags - (1 << 6) %>
+        <% } %>
+
+        <% if (isAdmin) { %>
+          <img src='/assets/crown.svg' alt='Admin' class='admin' title='Admin'/>
+        <% } %>
+      </div>
+      <div class='details'>
+        <div class='name'><%= discord.username %><span>#<%= discord.discriminator %></span></div>
+        <a href='/logout' class='logout'>Logout</a>
+      </div>
+    </div>
+  <% } %>
+</nav>
+<!-- move along, nothing to see citizen -->
