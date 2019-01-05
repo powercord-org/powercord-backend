@@ -15,7 +15,7 @@ module.exports = {
 
     app.get(`${basePath}/users/link`, usersV1.link);
     app.get(`${basePath}/users/@me`, auth, usersV1.getMe);
-    app.get(`${basePath}/users/:id`, auth, usersV1.getSomeone);
+    app.get(`${basePath}/users/:id`, usersV1.getSomeone);
 
     app.get(`${basePath}/tea`, tea);
   }

@@ -37,8 +37,9 @@ const routes = require('./routes');
   app.use('/assets', express.static(resolve(__dirname, '..', 'static')));
   routes.call(this, app);
 
-  app.use((err, req, res) => {
-    console.error(err.body);
+  // Express does not recognizes properly error handlers with 3 parameters
+  app.use((err, req, res, _) => { // eslint-disable-line no-unused-vars
+    console.error(err);
     res.status(500).send(`fucky wucky ${err.message}`);
   });
 
