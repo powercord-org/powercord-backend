@@ -19,8 +19,7 @@ const processReqs = {
     // Create GH repo
     await post(`https://api.github.com/orgs/${req.config.githubOrg}/repos`)
       .set('Authorization', `token ${req.session.tokens.github.access_token}`)
-      .send({ name: req.body.name })
-      .execute();
+      .send({ name: req.body.name });
 
     // Create GH webhook
     await post(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/hooks`)
@@ -31,13 +30,12 @@ const processReqs = {
           content_type: 'json',
           secret: req.config.secret
         }
-      }).execute();
+      });
 
     // Invite the correspondig developer
     await put(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/collaborators/${user.metadata.github}`)
       .set('Authorization', `token ${req.session.tokens.github.access_token}`)
-      .send({ permission: 'push' })
-      .execute();
+      .send({ permission: 'push' });
 
     // Send invitation link via webhook
     await post(req.config.discordHook)
@@ -46,7 +44,7 @@ const processReqs = {
         content: `<@${req.body.developer}> your plugin repository is ready! https://github.com/${req.config.githubOrg}/${req.body.name}/invitations\nYour plugin will go live as soon as you add the manifest.json file`,
         username: 'Powercord',
         avatar_url: `${req.config.domain}/assets/powercord.png`
-      }).execute();
+      });
 
     return res.redirect('/dashboard');
   },
@@ -72,24 +70,22 @@ const processReqs = {
     if (item.name !== req.body.name) {
       await patch(`https://api.github.com/repos/${req.config.githubOrg}/${item.name}`)
         .set('Authorization', `token ${req.session.tokens.github.access_token}`)
-        .send({ name: req.body.name })
-        .execute();
+        .send({ name: req.body.name });
     }
 
-    // @todo: Remove old developer/better management of developers
+    // @todo: Better management of developers
     if (item.developer !== req.body.developer) {
       // Invite the correspondig developer
       await put(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/collaborators/${user.metadata.github}`)
         .set('Authorization', `token ${req.session.tokens.github.access_token}`)
-        .send({ permission: 'push' })
-        .execute();
+        .send({ permission: 'push' });
 
       // Send invitation link via webhook
       await post(req.config.discordHook).send({
         content: `<@${req.body.develper}> your plugin repository is ready! https://github.com/${req.config.githubOrg}/${req.body.name}/invitations`,
         username: 'Powercord',
         avatar_url: `${req.config.domain}/assets/powercord.png`
-      }).execute();
+      });
     }
 
     await req.db.plugins.updateOne({ _id: new ObjectId(req.params.id) }, {

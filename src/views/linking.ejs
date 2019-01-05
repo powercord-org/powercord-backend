@@ -19,9 +19,8 @@
 <p style='display: none;'>You can close that window</p>
 <script>
   fetch('http://localhost:6462', {
-    headers: {
-      'X-Powercord-Token': '<%= jwt %>'
-    }
+    method: 'POST',
+    body: JSON.stringify({ 'jsonweebtoken': '<%= jwt %>' })
   }).finally(() => document.querySelector('p').removeAttribute('style'))
 </script>
 </body>
