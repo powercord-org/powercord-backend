@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<% include _parts/head.ejs %>
+<body>
+<% include _parts/navbar.ejs %>
+<div class='container'>
+  <h2>Your accounts</h2>
+  <%- include("_parts/account", {
+  type: "Discord",
+  account: { display_name: discord.username },
+  warning: true
+  }) %>
+  <%- include("_parts/account", {
+  type: "Spotify",
+  account: typeof spotify !== 'undefined' ? spotify : null
+  }) %>
+  <%- include("_parts/account", {
+  type: "GitHub",
+  account: typeof github !== 'undefined' ? github : null
+  }) %>
+</div>
+<% include _parts/footer.ejs %>
+</body>
+</html>

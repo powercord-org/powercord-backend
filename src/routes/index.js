@@ -17,6 +17,7 @@ const { v1 } = require('./api');
 module.exports = (app) => {
   // UI routes
   app.get('/', (req, res) => res.render('index', req.session));
+  app.get('/me', (req, res) => res.render('me', req.session));
   app.get('/contributors', contributors);
 
   // Dashboard routes - RESTful hahayes

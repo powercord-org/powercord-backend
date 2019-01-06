@@ -57,7 +57,10 @@
       </div>
       <div class='details'>
         <div class='name'><%= discord.username %><span>#<%= discord.discriminator %></span></div>
-        <a href='/logout' class='logout'>Logout</a>
+        <div>
+          <a href='/me' class='logout'>My Account</a> -
+          <a href='/logout' class='logout'>Logout</a>
+        </div>
       </div>
     </div>
   <% } %>
