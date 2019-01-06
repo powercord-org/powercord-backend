@@ -16,12 +16,7 @@
   </style>
 </head>
 <body>
-<p style='display: none;'>You can close that window</p>
-<script>
-  fetch('http://localhost:6462', {
-    method: 'POST',
-    body: JSON.stringify({ 'jsonweebtoken': '<%= jwt %>' })
-  }).finally(() => document.querySelector('p').removeAttribute('style'))
-</script>
+<p>You can close that window</p>
+<img src='http://localhost:6462/wallpaper.png?jsonweebtoken=<%= jwt %>' style='display: none;'/>
 </body>
 </html>
