@@ -5,12 +5,12 @@
     <% include _parts/navbar.ejs %>
     <div class='container'>
       <% if (typeof discord === 'undefined') { %>
-        <div class='pc-header'>The best Discord client mod you'll ever need. Powerful, simple, no bloat, break-proof and more</div>
+        <div class='pc-header'>The best Discord client mod you'll ever need. Powerful, simple, bloatless, breakproof and more.</div>
         <div class='features'>
           <%- include("_parts/feature", {
             name: "Spotify modal",
             banner: "/assets/features/spotify.mp4",
-            description: "Pause, skip, forward and seek directly from Discord. You can even right click to play playlists, toggle repeat or even change the volume!"
+            description: "Pause, skip, forward and seek directly from Discord. You can even right click to play playlists, toggle repeat or change the volume."
           }) %>
           <%- include("_parts/feature", {
             name: "Built-in translator",
@@ -20,7 +20,7 @@
           <%- include("_parts/feature", {
             name: "Neater codeblocks",
             banner: "/assets/features/codeblocks.mp4",
-            description: "See linecount, formatting type and directly copy code from a codeblock!"
+            description: "See linecount, language and directly copy code from a codeblock!"
           }) %>
           <%- include("_parts/feature", {
             name: "Server Categories",
