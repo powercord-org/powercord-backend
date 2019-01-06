@@ -1,0 +1,17 @@
+/* ok i'm not good at doing responsive shit. cleanup/improve for a FREE contributor badge no clickbait!!!1!1 */
+
+@media (min-width: 1500px) {
+  /* Contributors */
+  .contributor {
+    width: 24%;
+  }
+  /* END Contributors */
+}
+
+@media (min-width: 1300px) {
+  /* Home feature block */
+  .features .feature {
+    width: 24%;
+  }
+  /* END Home feature block */
+}

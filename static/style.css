@@ -69,6 +69,7 @@ a:hover {
   font-family: 'Uni Sans', sans-serif;
   font-size: 26px;
   margin: 1px 0 0;
+  display: none;
 }
 
 .navbar .title img {
@@ -290,11 +291,13 @@ form .input-field input {
 /* Home feature block */
 .features {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
 }
 
 .features .feature {
-  width: 23%;
+  width: 100%;
+  margin-bottom: 25px;
   padding: 10px;
   background-color: #576aa5;
   box-shadow: 0 2px 7px #465686;
@@ -385,8 +388,7 @@ form .input-field input {
 
 .contributor {
   padding: 10px 15px;
-  width: 24%;
-  margin-right: 1%;
+  width: 100%;
   margin-bottom: 1%;
   background-color: #576aa5;
   box-shadow: 0 2px 7px #465686;
