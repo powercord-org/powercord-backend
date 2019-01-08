@@ -14,7 +14,8 @@ module.exports = {
           'user-modify-playback-state',
           'user-read-playback-state',
           'playlist-read-private',
-          'user-library-read'
+          'user-library-read',
+          'user-library-modify'
         ].join(' ')
       });
 
