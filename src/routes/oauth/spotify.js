@@ -43,7 +43,7 @@ module.exports = {
     });
 
     req.session.spotify = user;
-    res.redirect('/');
+    res.redirect('/me');
   },
 
   async unlink (req, res) {
@@ -53,6 +53,6 @@ module.exports = {
         spotify: null
       }
     });
-    return res.redirect('/');
+    return res.redirect('/me');
   }
 };

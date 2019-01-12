@@ -35,7 +35,7 @@ module.exports = {
     });
 
     req.session.github = user;
-    res.redirect(token.scope !== '' ? '/dashboard' : '/');
+    res.redirect(token.scope !== '' ? '/dashboard' : '/me');
   },
 
   async unlink (req, res) {
@@ -46,6 +46,6 @@ module.exports = {
         github: null
       }
     });
-    return res.redirect('/');
+    return res.redirect('/me');
   }
 };

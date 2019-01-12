@@ -77,7 +77,7 @@ module.exports = {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true
     });
-    res.redirect(req.session._redirect || '/');
+    res.redirect(req.session._redirect || '/me');
     delete req.session._redirect;
   },
 
@@ -91,6 +91,6 @@ module.exports = {
       res.cookie('token', '', { maxAge: -1 });
       delete req.session.discord;
     }
-    return res.redirect('/');
+    return res.redirect('/me');
   }
 };
