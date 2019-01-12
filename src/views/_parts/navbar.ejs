@@ -8,8 +8,8 @@
     <div class='item'>
       <a href='/'>Home</a>
       <!--
-        <a href='/install'>Install</a>
-        <a href='/docs'>Documentation</a>
+      <a href='/install'>Install</a>
+      <a href='/docs'>Documentation</a>
       -->
       <a href='/contributors'>Contributors</a>
       <% if (isAdmin) { %>
@@ -17,7 +17,7 @@
       <% } %>
     </div>
   </div>
-  <% if (typeof discord === 'undefined') { %>
+  <% if (typeof jwt === 'undefined') { %>
     <a href='/oauth/discord' class='login'>Login with Discord</a>
   <% } else { %>
     <div class='account'>

@@ -15,22 +15,21 @@ module.exports = async (req, res, next) => {
         case 'invalid algorithm':
         case 'jwt malformed':
           res.cookie('token', '', { maxAge: -1 });
-          delete req.session.discord;
           return next();
         default:
           throw err;
       }
     }
 
-    req.session.jwt = token;
-    req.session.isAdmin = req.config.admins.includes(userId);
-    req.session.tokens = await req.db.users.findOne({ id: userId });
-    if (!req.session.tokens) {
+    req.session.user = await req.db.users.findOne({ id: userId });
+    if (!req.session.user) {
       res.cookie('token', '', { maxAge: -1 });
-      delete req.session.discord;
       return next();
     }
-    const { discord, spotify, github } = req.session.tokens;
+
+    req.session.jwt = token;
+    req.session.isAdmin = req.config.admins.includes(userId);
+    const { discord, spotify, github } = req.session.user;
 
     // Discord (oauth)
     if (Date.now() >= discord.expiryDate) {
