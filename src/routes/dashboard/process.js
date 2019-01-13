@@ -18,12 +18,12 @@ const processReqs = {
 
     // Create GH repo
     await post(`https://api.github.com/orgs/${req.config.githubOrg}/repos`)
-      .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+      .set('Authorization', `token ${req.session.user.github.access_token}`)
       .send({ name: req.body.name });
 
     // Create GH webhook
     await post(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/hooks`)
-      .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+      .set('Authorization', `token ${req.session.user.github.access_token}`)
       .send({
         config: {
           url: `${req.config.domain}/hook/${entry.insertedId}`,
@@ -34,7 +34,7 @@ const processReqs = {
 
     // Invite the correspondig developer
     await put(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/collaborators/${user.metadata.github}`)
-      .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+      .set('Authorization', `token ${req.session.user.github.access_token}`)
       .send({ permission: 'push' });
 
     // Send invitation link via webhook
@@ -69,7 +69,7 @@ const processReqs = {
 
     if (item.name !== req.body.name) {
       await patch(`https://api.github.com/repos/${req.config.githubOrg}/${item.name}`)
-        .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+        .set('Authorization', `token ${req.session.user.github.access_token}`)
         .send({ name: req.body.name });
     }
 
@@ -77,7 +77,7 @@ const processReqs = {
     if (item.developer !== req.body.developer) {
       // Invite the correspondig developer
       await put(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/collaborators/${user.metadata.github}`)
-        .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+        .set('Authorization', `token ${req.session.user.github.access_token}`)
         .send({ permission: 'push' });
 
       // Send invitation link via webhook
@@ -155,7 +155,7 @@ const processReqs = {
     }
 
     await del(`https://api.github.com/repos/${req.config.githubOrg}/${item.name}`)
-      .set('Authorization', `token ${req.session.tokens.github.access_token}`)
+      .set('Authorization', `token ${req.session.user.github.access_token}`)
       .execute();
 
     await req.db.plugins.deleteOne({ _id: new ObjectId(req.params.id) });
