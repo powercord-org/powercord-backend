@@ -2,22 +2,47 @@ module.exports = {
   v1: {
     getMe: (req, res) => {
       res.json({
-        id: req.session.tokens.id,
+        id: req.session.user.id,
         spotify: req.session.spotify
           ? {
             name: req.session.spotify.display_name,
-            token: req.session.tokens.spotify.access_token
+            token: req.session.user.spotify.access_token
           }
           : null,
         github: req.session.github ? { name: req.session.github.name } : null
       });
     },
 
+    getSettings: (req, res) => {
+      res.json(req.user.settings || {
+        isEncrypted: false,
+        payload: '{}'
+      });
+    },
+
+    saveSettings: (req, res) => {
+      if (typeof req.body.isEncrypted === 'undefined' || typeof req.body.payload === 'undefined') {
+        res.sendStatus(400);
+      }
+
+      req.db.users.updateOne({ id: req.session.user.id }, {
+        $set: {
+          settings: {
+            timestamp: Date.now(),
+            isEncrypted: req.body.isEncrypted,
+            payload: req.body.payload
+          }
+        }
+      });
+      res.sendStatus(204);
+    },
+
     link: (req, res) => {
-      if (!req.session.discord) {
+      if (!req.session.jwt) {
         req.session._redirect = '/api/v1/users/link';
         return res.redirect('/oauth/discord');
       }
+
       res.render('linking', {
         jwt: req.session.jwt
       });
