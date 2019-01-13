@@ -14,7 +14,7 @@ module.exports = {
     },
 
     getSettings: (req, res) => {
-      res.json(req.user.settings || {
+      res.json(req.session.user.settings || {
         isEncrypted: false,
         payload: '{}'
       });
@@ -22,7 +22,7 @@ module.exports = {
 
     saveSettings: (req, res) => {
       if (typeof req.body.isEncrypted === 'undefined' || typeof req.body.payload === 'undefined') {
-        res.sendStatus(400);
+        return res.sendStatus(400);
       }
 
       req.db.users.updateOne({ id: req.session.user.id }, {
