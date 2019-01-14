@@ -5,17 +5,15 @@
     <h1>Powercord</h1>
   </div>
   <div class='items'>
-    <div class='item'>
-      <a href='/'>Home</a>
-      <!--
-      <a href='/install'>Install</a>
-      <a href='/docs'>Documentation</a>
-      -->
-      <a href='/contributors'>Contributors</a>
-      <% if (isAdmin) { %>
-        <a href='/dashboard'>Dashboard</a>
-      <% } %>
-    </div>
+    <a href='/'>Home</a>
+    <!--
+    <a href='/install'>Install</a>
+    <a href='/docs'>Documentation</a>
+    -->
+    <a href='/contributors'>Contributors</a>
+    <% if (isAdmin) { %>
+      <a href='/dashboard'>Dashboard</a>
+    <% } %>
   </div>
   <% if (typeof jwt === 'undefined') { %>
     <a href='/oauth/discord' class='login'>Login with Discord</a>
