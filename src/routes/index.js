@@ -40,7 +40,7 @@ module.exports = (app) => {
   app.get('/oauth/github/unlink', authMiddleware.auth, github.unlink);
   app.get('/logout', authMiddleware.auth, (req, res) => {
     res.cookie('token', '', { maxAge: -1 });
-    delete req.session.discord;
+    delete req.session.jwt;
     res.redirect('/');
   });
 

@@ -48,6 +48,7 @@ module.exports = async (req, res, next) => {
       const user = await DiscordOAuth.getUserByBearer(discord.access_token);
       if (!user.id) {
         res.cookie('token', '', { maxAge: -1 });
+        delete req.session.jwt;
         delete req.session.discord;
         return next();
       }
