@@ -5,23 +5,25 @@ module.exports = {
     getPlugins: async (req, res) => {
       const plugins = await req.db.plugins.find({ manifest: { $not: { $eq: null } } }).skip((req.query.page || 0) * 20).limit(20).toArray();
       res.json(plugins.map(p => ({
-        id: p._id,
+        _id: p._id,
+        id: p.name,
         ...p.manifest
       })));
     },
 
     getPlugin: async (req, res) => {
-      if (!ObjectId.isValid(req.params.id)) {
-        return res.status(400).json({
-          status: 400,
-          error: 'Invalid ID'
+      let plugin;
+      if (ObjectId.isValid(req.params.id)) {
+        plugin = await req.db.plugins.findOne({
+          _id: new ObjectId(req.params.id),
+          manifest: { $not: { $eq: null } }
+        });
+      } else {
+        plugin = await req.db.plugins.findOne({
+          name: req.params.id,
+          manifest: { $not: { $eq: null } }
         });
       }
-
-      const plugin = await req.db.plugins.findOne({
-        _id: new ObjectId(req.params.id),
-        manifest: { $not: { $eq: null } }
-      });
 
       if (!plugin) {
         return res.status(404).json({
@@ -31,7 +33,7 @@ module.exports = {
       }
 
       res.json({
-        id: plugin._id,
+        id: plugin.name,
         ...plugin.manifest
       });
     }
