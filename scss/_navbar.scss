@@ -106,25 +106,25 @@
         left: -1px;
         transform: rotate(-23deg);
       }
+    }
 
-      .details {
-        display: flex;
-        flex-direction: column;
-        font-size: 14px;
-        justify-content: center;
+    .details {
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+      justify-content: center;
 
-        .name {
-          font-size: 18px;
+      .name {
+        font-size: 18px;
 
-          span {
-            opacity: .6;
-            font-size: 14px;
-          }
-        }
-
-        a {
+        span {
           opacity: .6;
+          font-size: 14px;
         }
+      }
+
+      a {
+        opacity: .6;
       }
     }
   }

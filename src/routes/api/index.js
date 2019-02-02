@@ -2,12 +2,6 @@ const { auth } = require('../../middlewares/auth');
 const { v1: pluginsV1 } = require('./plugins');
 const { v1: usersV1 } = require('./users');
 
-function tea (_, res) {
-  res.statusMessage = 'I\'m a coffeepot';
-  res.set('Content-Type', 'text/plain');
-  res.status(419).send('I\'m a coffeepot');
-}
-
 module.exports = {
   v1: (app, basePath) => {
     app.get(`${basePath}/plugins`, pluginsV1.getPlugins);
@@ -18,7 +12,5 @@ module.exports = {
     app.post(`${basePath}/users/@me/settings`, auth, usersV1.saveSettings);
     app.get(`${basePath}/users/link`, usersV1.link);
     app.get(`${basePath}/users/:id`, usersV1.getSomeone);
-
-    app.get(`${basePath}/tea`, tea);
   }
 };

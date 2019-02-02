@@ -52,7 +52,4 @@ module.exports = (app) => {
   // API - RESTfuler than the dashboard
   v1.call(this, app, '/api/v1');
   v1.call(this, app, '/api');
-
-  // hahayes
-  app.get('/coffee', (_, res) => res.sendStatus(418));
 };

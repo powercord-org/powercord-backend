@@ -15,17 +15,17 @@
     flex: 1;
   }
 
-  .spotify {
+  &.spotify {
     background-color: #1DB954;
     box-shadow: 0 2px 7px #15853c;
   }
 
-  .github {
+  &.github {
     background-color: #292d32;
     box-shadow: 0 2px 7px #101213;
   }
 
-  .discord {
+  &.discord {
     background-color: #576aa5;
     box-shadow: 0 2px 7px #465686;
   }
