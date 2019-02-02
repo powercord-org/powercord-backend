@@ -1,5 +1,5 @@
 const { decode } = require('../util/jwt');
-const { DiscordOAuth, SpotifyOAuth, GithubOAuth } = require('../rest');
+const { DiscordOAuth, SpotifyOAuth, GithubOAuth } = require('../util/rest');
 
 module.exports = async (req, res, next) => {
   req.session.isAdmin = false;

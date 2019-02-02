@@ -1,5 +1,5 @@
 const { encode } = require('querystring');
-const { SpotifyOAuth } = require('../../rest');
+const { SpotifyOAuth } = require('../../util/rest');
 
 module.exports = {
   async authorize (req, res) {

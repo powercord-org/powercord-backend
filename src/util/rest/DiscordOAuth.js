@@ -1,5 +1,5 @@
 const { get, post } = require('../http');
-const config = require('../../config.json');
+const config = require('../../../config.json');
 
 module.exports = {
   BASE_URL: 'https://discordapp.com/api/v7',

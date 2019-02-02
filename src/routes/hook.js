@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongodb');
-const { get } = require('../http');
+const { get } = require('../util/http');
 
 const manifestKeys = [ 'name', 'version', 'description', 'author', 'license', 'repo' ];
 

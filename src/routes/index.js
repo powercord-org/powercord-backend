@@ -23,12 +23,14 @@ module.exports = (app) => {
   app.get('/contributors', contributors);
 
   // Dashboard routes - RESTful hahayes
-  app.get('/dashboard', authMiddleware.admin, dashboard.ui.plugins);
-  app.get('/dashboard/create', authMiddleware.admin, dashboard.ui.create);
-  app.post('/dashboard/create', authMiddleware.admin, dashboard.process.create);
-  app.get('/dashboard/edit/:id', authMiddleware.admin, dashboard.ui.edit);
-  app.post('/dashboard/edit/:id', authMiddleware.admin, dashboard.process.edit);
-  app.get('/dashboard/delete/:id', authMiddleware.admin, dashboard.process.delete);
+  app.get('/dashboard', authMiddleware.admin, (_, res) => res.redirect('/dashboard/plugins'));
+
+  app.get('/dashboard/plugins', authMiddleware.admin, dashboard.ui.plugins);
+  app.get('/dashboard/plugins/create', authMiddleware.admin, dashboard.ui.create);
+  app.post('/dashboard/plugins/create', authMiddleware.admin, dashboard.process.create);
+  app.get('/dashboard/plugins/edit/:id', authMiddleware.admin, dashboard.ui.edit);
+  app.post('/dashboard/plugins/edit/:id', authMiddleware.admin, dashboard.process.edit);
+  app.get('/dashboard/plugins/delete/:id', authMiddleware.admin, dashboard.process.delete);
 
   app.get('/dashboard/users', authMiddleware.admin, dashboard.ui.users);
   app.post('/dashboard/users', authMiddleware.admin, dashboard.process.users);
