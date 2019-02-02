@@ -1,8 +1,13 @@
+@import 'vars';
+
+@import 'form';
 @import 'global';
 @import 'navbar';
 @import 'footer';
+@import 'account';
 @import 'features';
-@import 'form';
+@import 'contributors';
+@import 'cookieConsent';
 
 // Dashboard
 @import 'dashboard/dashboard';

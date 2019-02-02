@@ -1,0 +1,38 @@
+<div id="cookie-consent">
+    <img src="https://cdn.discordapp.com/emojis/361558714521485313.png" alt="cookie">
+    <div>Cookies help us deliver our Service. By using the website or clicking I agree, you agree to
+        <a href="/legal/privacy">our use of cookies</a></div>
+    <button class="btn">I agree</button>
+</div>
+
+<script>
+  (function () {
+    function setCookie (name, value, days) {
+      let expires = '';
+      if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = '; expires=' + date.toUTCString();
+      }
+      document.cookie = name + '=' + (value || '') + expires + '; path=/';
+    }
+
+    function getCookie (name) {
+      const nameEQ = name + '=';
+      return document.cookie.split(';').find(c => {
+        while (c.charAt(0) === ' ') {
+          c = c.substring(1, c.length);
+        }
+        return c.indexOf(nameEQ) === 0;
+      });
+    }
+
+    if (getCookie('cookieConsent').trim() !== 'cookieConsent=2019-02-02') {
+      document.querySelector('#cookie-consent').style.bottom = '35px';
+      document.querySelector('#cookie-consent button').addEventListener('click', () => {
+        setCookie('cookieConsent', '2019-02-02', 666);
+        document.querySelector('#cookie-consent').removeAttribute('style');
+      });
+    }
+  })();
+</script>

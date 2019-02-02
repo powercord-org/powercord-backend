@@ -4,6 +4,7 @@
 }
 
 * {
+  text-rendering: optimizeLegibility;
   box-sizing: border-box;
   outline: none;
 }
@@ -16,17 +17,32 @@ html, body {
 }
 
 body {
-  background-color: #7289DA;
+  background-color: $primary;
   display: flex;
   flex-direction: column;
   font-family: 'Lato', sans-serif;
   color: #fff;
 }
 
-h2 {
+h1, h2, h3, h4 {
   font-family: 'Uni Sans', sans-serif;
-  font-size: 20px;
+  font-size: 32px;
+}
+
+h1 {
   margin: 0;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+h4 {
+  font-size: 16px;
 }
 
 a {

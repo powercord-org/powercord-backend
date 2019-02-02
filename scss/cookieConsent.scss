@@ -1,0 +1,36 @@
+#cookie-consent {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  bottom: -60px;
+  height: 55px;
+  padding: 0 15px;
+  display: flex;
+  transition: bottom .3s;
+  border-radius: 5px;
+  border: 1px $primaryDarkest solid;
+  background-color: $primaryDark;
+  box-shadow: 0 2px 7px $primaryDarker;
+  align-items: center;
+
+  img {
+    width: 45px;
+    height: 45px;
+    margin-right: 15px;
+  }
+
+  div {
+    flex: 1;
+
+    a {
+      color: #00b0f4;
+    }
+  }
+
+  .btn {
+    width: 80px;
+    border-radius: 3px;
+    background-color: $primary;
+  }
+}
