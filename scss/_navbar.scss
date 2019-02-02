@@ -23,6 +23,10 @@
       transform: rotate(45deg);
       margin-right: 15px;
     }
+
+    &:hover {
+      text-decoration: none;
+    }
   }
 
   .items {
