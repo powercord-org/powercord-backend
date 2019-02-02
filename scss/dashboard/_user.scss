@@ -1,9 +1,85 @@
-.dashboard .user {
+.dashboard.users {
+  .search {
+    display: flex;
+    align-items: center;
+
+    input {
+      padding: 5px 10px;
+      height: 32px;
+      flex: 1;
+      margin-right: 15px;
+    }
+  }
+
+}
+
+.user {
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  background-color: $primaryDark;
+  border: 1px $primaryDarker solid;
+
+  h3 {
+    font-size: 18px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    border-bottom: 1px #fff solid;
+  }
+
+  .username {
+    display: flex;
+    align-items: center;
+
+    img {
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      margin-right: 10px;
+    }
+
+    .id, .name span {
+      opacity: .6;
+      font-size: 12px;
+    }
+  }
+
+  .badges, .actions {
+    display: flex;
+    justify-content: space-between;
+
+    label, .action {
+      display: flex;
+      align-items: center;
+      width: 24%;
+
+      img {
+        width: 28px;
+        height: 28px;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .actions {
+    flex-direction: column;
+
+    .action {
+      width: 100%;
+
+      &.delete {
+        color: #bf0d00;
+      }
+    }
+  }
+}
+
+/*
+.user {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px $primaryDarker solid;
 
   img {
     height: 50px;
@@ -36,3 +112,4 @@
     }
   }
 }
+*/

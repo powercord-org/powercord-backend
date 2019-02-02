@@ -23,7 +23,7 @@ module.exports = (app) => {
   app.get('/contributors', contributors);
 
   // Dashboard routes - RESTful hahayes
-  app.get('/dashboard', authMiddleware.admin, (_, res) => res.redirect('/dashboard/plugins'));
+  app.get('/dashboard', authMiddleware.admin, (_, res) => res.redirect('/dashboard/announcements'));
 
   app.get('/dashboard/plugins', authMiddleware.admin, dashboard.ui.plugins);
   app.get('/dashboard/plugins/create', authMiddleware.admin, dashboard.ui.create);
@@ -32,8 +32,8 @@ module.exports = (app) => {
   app.post('/dashboard/plugins/edit/:id', authMiddleware.admin, dashboard.process.edit);
   app.get('/dashboard/plugins/delete/:id', authMiddleware.admin, dashboard.process.delete);
 
-  app.get('/dashboard/users', authMiddleware.admin, dashboard.ui.users);
-  app.post('/dashboard/users', authMiddleware.admin, dashboard.process.users);
+  app.get('/dashboard/users', authMiddleware.admin, dashboard.users.ui);
+  app.post('/dashboard/users', authMiddleware.admin, dashboard.users.process);
 
   // Oauth routes
   app.get('/oauth/discord', discord.authorize);

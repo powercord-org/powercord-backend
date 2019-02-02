@@ -42,13 +42,5 @@ module.exports = {
       item,
       ...req.session
     });
-  },
-
-  async users (req, res) {
-    res.render('dashboard/index', {
-      items: await req.db.users.find({}).toArray(),
-      current: 'users',
-      ...req.session
-    });
   }
 };

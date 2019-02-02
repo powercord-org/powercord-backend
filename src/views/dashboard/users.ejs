@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<% include ../_parts/head.ejs %>
+<body>
+<% include ../_parts/navbar.ejs %>
+<div class='container dashboard users'>
+    <%- include('_parts/tabs.ejs', { current: 'users' }) %>
+    <form method='post'>
+        <div class='search'>
+            <input type='text' placeholder='Filter users by name or id' class='flex-full' id='search' autocomplete='off'/>
+            <button type='submit' class='btn create'>Save settings</button>
+        </div>
+
+        <% for(var i = 0; i < items.length; i++) { %>
+            <%- include('_parts/user', { item: items[i] }) %>
+        <% } %>
+    </form>
+</div>
+<% include ../_parts/footer.ejs %>
+<script>
+  (function() {
+    document.querySelector('#search').addEventListener('input', e => {
+      document.querySelectorAll('.user').forEach(el => {
+        if (el.dataset.id.includes(e.target.value) || el.dataset.username.includes(e.target.value)) {
+          el.removeAttribute('style')
+        } else {
+          el.style.display = 'none'
+        }
+      })
+    })
+  })()
+</script>
+</body>
+</html>

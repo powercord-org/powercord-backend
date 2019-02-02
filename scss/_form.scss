@@ -32,6 +32,10 @@ form {
     box-shadow: 0 2px 7px $primaryDarkest;
     font-family: 'Lato', sans-serif;
     font-size: 16px;
+
+    &:not([type='checkbox']) {
+      height: 42px;
+    }
   }
 }
 
@@ -51,10 +55,10 @@ form {
   margin: 15px 0;
 
   &.create {
-    background-color: #4caf50;
+    background-color: #1abc9c;
   }
 
   &.delete {
-    background-color: #f44336;
+    background-color: #bf0d00;
   }
 }

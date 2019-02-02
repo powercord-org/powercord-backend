@@ -1,6 +1,5 @@
 const { ObjectId } = require('mongodb');
 const { post, put, patch, del } = require('../../util/http');
-const ui = require('./ui');
 
 const processReqs = {
   async create (req, res) {
@@ -160,40 +159,6 @@ const processReqs = {
 
     await req.db.plugins.deleteOne({ _id: new ObjectId(req.params.id) });
     return res.redirect('/dashboard');
-  },
-
-  async users (req, res) {
-    const users = await req.db.users.find({}).toArray();
-    await processReqs.asyncForEach(users, async user => {
-      const developer = req.body[`d-${user.id}`] === 'on';
-      const contrib = req.body[`c-${user.id}`] === 'on';
-      const tester = req.body[`t-${user.id}`] === 'on';
-      const hunter = req.body[`h-${user.id}`] === 'on';
-
-      if (
-        user.metadata.developer !== developer ||
-        user.metadata.contributor !== (!developer && contrib) ||
-        user.metadata.tester !== tester ||
-        user.metadata.hunter !== hunter
-      ) {
-        await req.db.users.updateOne({ id: user.id }, {
-          $set: {
-            'metadata.developer': developer,
-            'metadata.contributor': !developer && contrib,
-            'metadata.tester': tester,
-            'metadata.hunter': hunter
-          }
-        });
-      }
-    });
-
-    ui.users(req, res);
-  },
-
-  async asyncForEach (array, callback) {
-    for (let index = 0; index < array.length; index++) {
-      await callback(array[index], index, array); // eslint-disable-line callback-return
-    }
   }
 };
 
