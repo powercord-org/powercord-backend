@@ -1,0 +1,131 @@
+.navbar {
+  display: flex;
+  padding: 0 25px;
+  align-items: center;
+  min-height: 70px;
+  max-height: 70px;
+  margin-bottom: 25px;
+
+  .title {
+    display: flex;
+    align-items: center;
+
+    h1 {
+      font-family: 'Uni Sans', sans-serif;
+      font-size: 26px;
+      margin: 1px 0 0;
+      display: none;
+    }
+
+    img {
+      width: 50px;
+      height: 50px;
+      transform: rotate(45deg);
+      margin-right: 15px;
+    }
+  }
+
+  .items {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin: 0 20px;
+
+    a {
+      margin-right: 15px;
+    }
+  }
+
+  .account {
+    display: flex;
+
+    .avatar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-right: 15px;
+      width: 50px;
+      height: 50px;
+
+      .img {
+        border-radius: 50%;
+        width: 100%;
+      }
+
+      .nitro, .hypesquad, .admin {
+        position: absolute;
+        width: 28px;
+        height: 28px;
+      }
+
+      .nitro {
+        bottom: -9px;
+        right: -5px
+      }
+
+      .hypesquad {
+        z-index: 3;
+        width: 22px;
+        height: 22px;
+        bottom: -6px;
+        right: -5px
+      }
+
+      .nitro + .hypesquad {
+        right: initial;
+        left: -5px;
+      }
+
+      .hypesquad-bg {
+        z-index: 2;
+        width: 14px;
+        height: 14px;
+        display: block;
+        background-color: #fff;
+        transform: rotate(45deg);
+        position: absolute;
+        right: -1px;
+        bottom: -3px;
+
+        &.nr {
+          transform: initial;
+        }
+
+        &.hb {
+          bottom: 0;
+        }
+      }
+
+      .nitro + .hypesquad + .hypesquad-bg {
+        right: initial;
+        left: -1px;
+      }
+
+      .admin {
+        top: -15px;
+        left: -1px;
+        transform: rotate(-23deg);
+      }
+
+      .details {
+        display: flex;
+        flex-direction: column;
+        font-size: 14px;
+        justify-content: center;
+
+        .name {
+          font-size: 18px;
+
+          span {
+            opacity: .6;
+            font-size: 14px;
+          }
+        }
+
+        a {
+          opacity: .6;
+        }
+      }
+    }
+  }
+}

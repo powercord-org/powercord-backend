@@ -1,0 +1,51 @@
+@font-face {
+  font-family: "Uni Sans";
+  src: url("/assets/unisanscaps.otf")
+}
+
+* {
+  box-sizing: border-box;
+  outline: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-size: 16px;
+}
+
+body {
+  background-color: #7289DA;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Lato', sans-serif;
+  color: #fff;
+}
+
+h2 {
+  font-family: 'Uni Sans', sans-serif;
+  font-size: 20px;
+  margin: 0;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+
+  &:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+}
+
+.container {
+  flex: 1;
+  padding: 0 10%;
+}
+
+.pc-header {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 25px;
+}

@@ -1,0 +1,32 @@
+.container .account {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin: 20px 0;
+
+  img {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+  }
+
+  .info {
+    flex: 1;
+  }
+
+  .spotify {
+    background-color: #1DB954;
+    box-shadow: 0 2px 7px #15853c;
+  }
+
+  .github {
+    background-color: #292d32;
+    box-shadow: 0 2px 7px #101213;
+  }
+
+  .discord {
+    background-color: #576aa5;
+    box-shadow: 0 2px 7px #465686;
+  }
+}

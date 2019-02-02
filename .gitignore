@@ -7,5 +7,11 @@
 # The petabyte
 node_modules/
 
+# scss
+.sass-cache
+
 # Secret files
 config.json
+
+# my shit
+_work

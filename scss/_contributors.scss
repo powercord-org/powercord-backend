@@ -1,0 +1,38 @@
+.contributors {
+  margin: 15px 0;
+  display: flex;
+  flex-wrap: wrap;
+
+  .contributor {
+    padding: 10px 15px;
+    width: 100%;
+    margin-bottom: 1%;
+    background-color: #576aa5;
+    box-shadow: 0 2px 7px #465686;
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+
+    .info {
+      .username {
+        font-size: 20px;
+        margin-bottom: 5px;
+
+        span {
+          font-size: 14px;
+          opacity: .6;
+        }
+      }
+
+      a {
+        font-size: 14px;
+      }
+    }
+  }
+}

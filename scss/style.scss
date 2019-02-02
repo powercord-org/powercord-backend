@@ -1,0 +1,14 @@
+@import 'global';
+@import 'navbar';
+@import 'footer';
+@import 'features';
+@import 'form';
+
+// Dashboard
+@import 'dashboard/dashboard';
+@import 'dashboard/plugin';
+@import 'dashboard/user';
+
+// Responsive shit
+@import 'responsive/tablet';
+@import 'responsive/pc';

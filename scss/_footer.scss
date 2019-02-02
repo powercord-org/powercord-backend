@@ -1,0 +1,33 @@
+.footer {
+  margin-top: 20px;
+  padding: 5px 10px;
+  background-color: #576aa5;
+  min-height: 38px;
+  max-height: 56px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .inner {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+
+    > * {
+      margin: 3px 0;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .separator:after {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    transform: rotate(45deg);
+    border-radius: 2px;
+    background-color: #fff;
+    margin: 2px 5px 0;
+  }
+}
