@@ -16,6 +16,8 @@ module.exports = {
           'playlist-read-private',
           'user-library-read',
           'user-library-modify'
+          'playlist-modify-public',
+          'playlist-modify-private'
         ].join(' ')
       });
 
