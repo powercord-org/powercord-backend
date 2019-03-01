@@ -65,51 +65,8 @@
     flex-direction: column;
 
     .action {
-      width: 100%;
-
-      &.delete {
-        color: #bf0d00;
-      }
+      margin: 0 0 5px;
+      width: auto;
     }
   }
 }
-
-/*
-.user {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-
-  img {
-    height: 50px;
-    width: 50px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-
-  .name {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    span, .id {
-      opacity: .6;
-      font-size: 12px;
-    }
-  }
-
-  .rank {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex: 1;
-
-    label {
-      display: flex;
-      align-items: center;
-      margin-left: 15px;
-    }
-  }
-}
-*/

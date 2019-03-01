@@ -1,25 +1,6 @@
 const { ObjectId } = require('mongodb');
 
 module.exports = {
-  async plugins (req, res) {
-    if (!req.session.github || req.session.user.github.scope === '') {
-      return res.redirect('/oauth/github?write');
-    }
-
-    res.render('dashboard/index', {
-      items: await req.db.plugins.aggregate([ {
-        $lookup: {
-          from: 'users',
-          localField: 'developer',
-          foreignField: 'id',
-          as: 'user'
-        }
-      } ]).toArray(),
-      current: 'plugins',
-      ...req.session
-    });
-  },
-
   async create (req, res) {
     res.render('dashboard/editor', {
       create: true,

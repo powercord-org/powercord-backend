@@ -1,32 +1,80 @@
-.container .account {
+.accounts {
   display: flex;
-  align-items: center;
-  border-radius: 5px;
-  padding: 10px 20px;
-  margin: 20px 0;
+  flex-wrap: wrap;
+  justify-content: space-between;
 
-  img {
-    width: 50px;
-    height: 50px;
-    margin-right: 15px;
+  &-header {
+    margin-top: 0;
   }
 
-  .info {
-    flex: 1;
-  }
+  .account {
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 15px 0;
+    width: 100%;
 
-  &.spotify {
-    background-color: #1DB954;
-    box-shadow: 0 2px 7px #15853c;
-  }
+    + .account {
+      width: 49%;
+    }
 
-  &.github {
-    background-color: #292d32;
-    box-shadow: 0 2px 7px #101213;
-  }
+    img {
+      width: 50px;
+      height: 50px;
+      margin-right: 15px;
+    }
 
-  &.discord {
-    background-color: #576aa5;
-    box-shadow: 0 2px 7px #465686;
+    .info {
+      flex: 1;
+      display: flex;
+    }
+
+    .unlinked {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .info a {
+        margin-left: auto;
+      }
+
+      > span {
+        margin-top: 5px;
+        font-size: 14px;
+        opacity: .8;
+      }
+    }
+
+    &.spotify {
+      background-color: #1DB954;
+      box-shadow: 0 2px 7px #15853c;
+    }
+
+    &.github {
+      background-color: #292d32;
+      box-shadow: 0 2px 7px #101213;
+    }
+
+    &.discord {
+      background-color: #576aa5;
+      box-shadow: 0 2px 7px #465686;
+    }
+
+    + h2 {
+      margin-top: 50px;
+    }
+  }
+}
+
+.account-badges {
+  display: flex;
+  padding: 0;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  .input-field {
+    padding-top: 0;
+    width: 49%;
   }
 }

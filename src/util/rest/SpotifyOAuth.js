@@ -8,7 +8,7 @@ module.exports = {
   getOrRefreshToken (props) {
     return post(`${this.BASE_URL}/token`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
-      .set('Authorization', `Basic ${Buffer.from(`${config.spotifyID}:${config.spotifySecret}`).toString('base64')}`)
+      .set('Authorization', `Basic ${Buffer.from(`${config.spotify.clientID}:${config.spotify.clientSecret}`).toString('base64')}`)
       .send({
         redirect_uri: `${config.domain}/oauth/spotify`,
         ...props

@@ -22,7 +22,7 @@
             var ext = discord.avatar.startsWith('a_') ? 'gif' : 'png';
             var flags = discord.flags;
           %>
-          <img src='https://cdn.discordapp.com/avatars/<%= discord.id %>/<%= discord.avatar %>.<%= ext %>' alt='Your avatar' class='img'/>
+          <img src='https://cdn.discordapp.com/avatars/<%= discord.id %>/<%= discord.avatar %>.<%= ext %>' alt='Your avatar' class='img'  onerror='handleErroredAvatar(this, <%= discord.discriminator %>)'/>
         <% } else { %>
           <img src='https://cdn.discordapp.com/embed/avatars/<%= discord.discriminator % 5 %>.png' alt='Your avatar' class='img'/>
         <% } %>

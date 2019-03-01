@@ -8,8 +8,8 @@ module.exports = {
     return post(`${this.BASE_URL}/oauth2/token`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send({
-        client_id: config.discordID,
-        client_secret: config.discordSecret,
+        client_id: config.discord.clientID,
+        client_secret: config.discord.clientSecret,
         redirect_uri: `${config.domain}/oauth/discord`,
         ...props
       }).then(r => r.body);

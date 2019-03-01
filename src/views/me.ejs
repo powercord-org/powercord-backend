@@ -4,20 +4,51 @@
 <body>
 <% include _parts/navbar.ejs %>
 <div class='container'>
-  <h2>Your accounts</h2>
-  <%- include("_parts/account", {
-  type: "Discord",
-  account: { display_name: discord.username },
-  warning: true
-  }) %>
-  <%- include("_parts/account", {
-  type: "Spotify",
-  account: typeof spotify !== 'undefined' ? spotify : null
-  }) %>
-  <%- include("_parts/account", {
-  type: "GitHub",
-  account: typeof github !== 'undefined' ? github : null
-  }) %>
+    <h2 class='accounts-header'>Your accounts</h2>
+    <div class='accounts'>
+        <%- include("_parts/account", {
+        type: "Discord",
+        account: discord.username,
+        warning: true
+        }) %>
+        <%- include("_parts/account", {
+        type: "Spotify",
+        account: typeof user.spotify !== 'undefined' && user.spotify !== null && typeof user.spotify.name !== 'undefined' ? user.spotify.name : null,
+        desc: "Used to add extra features to the Spotify modal, like adding to library or to a playlist"
+        }) %>
+        <%- include("_parts/account", {
+        type: "GitHub",
+        account: typeof user.github !== 'undefined' && user.github !== null && typeof user.github.name !== 'undefined' ? user.github.name : null,
+        desc: "Used for plugin development and shown in contributors page, if you're a contributor"
+        }) %>
+    </div>
+
+    <% if (isDonor) { %>
+        <h2>Your badges</h2>
+        <form method='post' action='/api/users/@me/settings/badges' class='account-badges'>
+            <div class='input-field'>
+                <label for='color'>Badges color</label>
+                <input type='text' name='color' id='color'
+                       value='<%= typeof user.badges !== 'undefined' && typeof user.badges.color !== 'undefined' ? user.badges.color : '7289da' %>'/>
+            </div>
+            <div class='input-field'>
+                <label for='badge'>Custom badge URL</label>
+                <input type='text' name='badge' id='badge'
+                       value='<%= typeof user.badges !== 'undefined' && typeof user.badges.custom !== 'undefined' ? user.badges.custom : 'https://powercord.xyz/assets/badges/donator.svg' %>'/>
+            </div>
+            <div class='input-field'>
+                <label for='name'>Custom badge name</label>
+                <input type='text' name='name' id='name'
+                       value='<%= typeof user.badges !== 'undefined' && typeof user.badges.name !== 'undefined' ? user.badges.name : 'Patreon Daddy' %>'/>
+            </div>
+            <div class='input-field'>
+                <label for='white'>Custom badge URL (white alternative)</label>
+                <input type='text' name='white' id='white'
+                       value='<%= typeof user.badges !== 'undefined' && typeof user.badges.customWhite !== 'undefined' ? user.badges.customWhite : 'https://powercord.xyz/assets/badges/donator-w.svg' %>'/>
+            </div>
+            <button type='submit' class='btn create'>Save badge settings</button>
+        </form>
+    <% } %>
 </div>
 <% include _parts/footer.ejs %>
 </body>

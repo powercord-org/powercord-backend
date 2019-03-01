@@ -1,11 +1,10 @@
 {
-  "globals": {
-    "powercord": true,
-    "webpackJsonp": true
-  },
   "parserOptions": {
     "ecmaVersion": 2018,
-    "sourceType": "script"
+    "sourceType": "script",
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "env": {
     "node": true,
@@ -50,7 +49,6 @@
     "array-callback-return": [ "error", {
       "allowImplicit": true
     }],
-    "complexity": [ "error" ],
     "curly": [ "error", "all" ],
     "dot-location": [ "error", "property" ],
     "dot-notation": [ "error" ],
@@ -70,7 +68,6 @@
     "no-fallthrough": [ "error" ],
     "no-floating-decimal": [ "error" ],
     "no-global-assign": [ "error" ],
-    "no-invalid-this": [ "error" ],
     "no-lone-blocks": [ "error" ],
     "no-loop-func": [ "error" ],
     "no-multi-spaces": [ "error", {
@@ -89,10 +86,6 @@
     "no-redeclare": [ "error", {
       "builtinGlobals": true
     }],
-    "no-shadow": [ "error", {
-      "builtinGlobals": true,
-      "allow": [ "Plugin", "name" ]
-    }],
     "no-return-await": [ "error" ],
     "no-self-assign": [ "error", {
       "props": true
@@ -106,7 +99,6 @@
     "no-useless-concat": [ "error" ],
     "no-useless-escape": [ "error" ],
     "no-useless-return": [ "error" ],
-    "no-void": [ "error" ],
     "no-warning-comments": [ "error" ],
     "no-with": [ "error" ],
     "prefer-promise-reject-errors": ["error", {
@@ -141,7 +133,6 @@
     "eol-last": [ "error", "always" ],
     "func-call-spacing": [ "error", "never" ],
     "func-name-matching": [ "error", "always" ],
-    "func-names": [ "error", "as-needed" ],
     "indent": [ "error", 2, {
       "SwitchCase": 1
     }],
@@ -178,7 +169,6 @@
       }
     }],
     "padded-blocks": [ "error", "never" ],
-    "prefer-object-spread": [ "error" ],
     "quote-props": [ "error", "as-needed" ],
     "quotes": [ "error", "single" ],
     "semi": [ "error", "always" ],

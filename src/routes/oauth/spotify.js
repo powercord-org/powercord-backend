@@ -6,17 +6,10 @@ module.exports = {
     if (!req.query.code) {
       const data = encode({
         response_type: 'code',
-        client_id: req.config.spotifyID,
+        client_id: req.config.spotify.clientID,
         redirect_uri: `${req.config.domain}/oauth/spotify`,
         show_dialog: true,
-        scope: [
-          'user-read-currently-playing',
-          'user-modify-playback-state',
-          'user-read-playback-state',
-          'playlist-read-private',
-          'user-library-read',
-          'user-library-modify'
-        ].join(' ')
+        scope: req.config.spotify.scopes.join(' ')
       });
 
       return res.redirect(`https://accounts.spotify.com/authorize?${data}`);
@@ -37,7 +30,8 @@ module.exports = {
         spotify: {
           access_token: token.access_token,
           refresh_token: token.refresh_token,
-          expiryDate: Date.now() + (token.expires_in * 1000)
+          expiryDate: Date.now() + (token.expires_in * 1000),
+          name: user.display_name
         }
       }
     });

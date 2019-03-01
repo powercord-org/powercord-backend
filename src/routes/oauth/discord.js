@@ -8,7 +8,7 @@ module.exports = {
       const data = qs.encode({
         scope: 'identify',
         response_type: 'code',
-        client_id: req.config.discordID,
+        client_id: req.config.discord.clientID,
         redirect_uri: `${req.config.domain}/oauth/discord`
       });
 

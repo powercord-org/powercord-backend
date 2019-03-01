@@ -1,4 +1,4 @@
-module.exports = {
+const usersRoutes = {
   async ui (req, res) {
     res.render('dashboard/users', {
       items: await req.db.users.find({}).toArray(),
@@ -32,9 +32,8 @@ module.exports = {
       }
     }
 
-    res.render('dashboard/users', {
-      items: await req.db.users.find({}).toArray(),
-      ...req.session
-    });
+    usersRoutes.ui(req, res);
   }
 };
+
+module.exports = usersRoutes;

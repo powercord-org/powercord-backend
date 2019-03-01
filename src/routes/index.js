@@ -25,11 +25,13 @@ module.exports = (app) => {
   // Dashboard routes - RESTful hahayes
   app.get('/dashboard', authMiddleware.admin, (_, res) => res.redirect('/dashboard/announcements'));
 
-  app.get('/dashboard/plugins', authMiddleware.admin, dashboard.ui.plugins);
+  app.get('/dashboard/plugins', authMiddleware.admin, dashboard.plugins.ui.list);
   app.get('/dashboard/plugins/create', authMiddleware.admin, dashboard.ui.create);
   app.post('/dashboard/plugins/create', authMiddleware.admin, dashboard.process.create);
   app.get('/dashboard/plugins/edit/:id', authMiddleware.admin, dashboard.ui.edit);
   app.post('/dashboard/plugins/edit/:id', authMiddleware.admin, dashboard.process.edit);
+  app.get('/dashboard/plugins/edit/:id/developers', authMiddleware.admin, dashboard.ui.edit);
+  app.post('/dashboard/plugins/edit/:id/developers', authMiddleware.admin, dashboard.process.edit);
   app.get('/dashboard/plugins/delete/:id', authMiddleware.admin, dashboard.process.delete);
 
   app.get('/dashboard/users', authMiddleware.admin, dashboard.users.ui);
@@ -48,8 +50,9 @@ module.exports = (app) => {
     res.redirect('/');
   });
 
-  // Github Webhook
-  app.post('/hook/:id', authMiddleware.github, hook);
+  // Webhooks
+  app.post('/hook/github/:id', authMiddleware.github, hook.github);
+  app.post('/hook/patreon/:id', authMiddleware.github, hook.patreon);
 
   // API - RESTfuler than the dashboard
   v1.call(this, app, '/api/v1');

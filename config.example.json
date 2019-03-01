@@ -1,14 +1,22 @@
 {
   "port": 80,
-  "discordID": "",
-  "discordSecret": "",
-  "discordHook": "",
-  "spotifyID": "",
-  "spotifySecret": "",
-  "githubID": "",
-  "githubSecret": "",
-  "githubOrg": "",
+  "discord": {
+    "clientID": "",
+    "clientSecret": "",
+    "hook": "Used to automatically send invite link to plugin/theme developers"
+  },
+  "spotify": {
+    "clientID": "",
+    "clientSecret": "",
+    "scopes": []
+  },
+  "github": {
+    "clientID": "",
+    "clientSecret": "",
+    "pluginsOrg": "powercord-community",
+    "scopes": []
+  },
   "admins": ["284122164582416385"],
   "domain": "http://localhost",
-  "secret": "aethcord is the betterest name :^)"
+  "secret": "tony was a dick, and stacy was a whore"
 }

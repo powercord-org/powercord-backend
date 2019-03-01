@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<% include ../_parts/head.ejs %>
+<body>
+<% include ../_parts/navbar.ejs %>
+<div class='container dashboard'>
+    <% include _parts/tabs.ejs %>
+    <a href='/dashboard/plugins/create' class='btn create'>Create a new plugin</a>
+
+    <% for(var i = 0; i < items.length; i++) { %>
+        <%- include('_parts/plugin', { item: items[i] }) %>
+    <% } %>
+</div>
+<% include ../_parts/footer.ejs %>
+</body>
+</html>

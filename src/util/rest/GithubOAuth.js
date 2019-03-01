@@ -10,8 +10,8 @@ module.exports = {
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .set('Accept', 'application/json')
       .send({
-        client_id: config.githubID,
-        client_secret: config.githubSecret,
+        client_id: config.github.clientID,
+        client_secret: config.github.clientSecret,
         redirect_uri: `${config.domain}/oauth/github`,
         grant_type: 'authorization_code',
         code

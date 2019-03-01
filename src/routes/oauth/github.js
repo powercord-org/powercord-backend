@@ -5,7 +5,7 @@ module.exports = {
   async authorize (req, res) {
     if (!req.query.code) {
       const data = encode({
-        client_id: req.config.githubID,
+        client_id: req.config.github.clientID,
         redirect_uri: `${req.config.domain}/oauth/github`,
         show_dialog: true,
         scope: typeof req.query.write !== 'undefined' ? 'repo delete_repo' : ''
@@ -29,7 +29,8 @@ module.exports = {
         'metadata.github': user.login,
         github: {
           scope: token.scope,
-          access_token: token.access_token
+          access_token: token.access_token,
+          name: user.name
         }
       }
     });

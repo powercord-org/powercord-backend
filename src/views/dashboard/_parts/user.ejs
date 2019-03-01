@@ -1,6 +1,8 @@
-<div class='user' data-id='<%= item.id %>' data-username='<%= item.metadata.username %>#<%= item.metadata.discriminator %>'>
+<div class='user' data-id='<%= item.id %>'
+     data-username='<%= item.metadata.username %>#<%= item.metadata.discriminator %>'>
     <div class='username'>
-        <img src='<%= item.metadata.avatar %>' alt='Avatar'/>
+        <img src='<%= item.metadata.avatar %>' alt='Avatar'
+             onerror='handleErroredAvatar(this, <%= item.metadata.discriminator %>)'/>
         <div class='name'>
             <%= item.metadata.username %><span>#<%= item.metadata.discriminator %></span>
             <div class='id'><%= item.id %></div>
@@ -10,27 +12,34 @@
     <h3>Badges</h3>
     <div class='badges'>
         <label for='d-<%= item.id %>'>
-            <img src='/assets/badges/developer-w.svg' alt='Developer'/>
-            <input type='checkbox' id='d-<%= item.id %>' name='d-<%= item.id %>' <%= item.metadata.developer ? 'checked' : '' %>/>
+            <img src='/assets/badges/developer.svg' alt='Developer'/>
+            <input type='checkbox' id='d-<%= item.id %>'
+                   name='d-<%= item.id %>' <%= item.metadata.developer ? 'checked' : '' %>/>
         </label>
         <label for='c-<%= item.id %>'>
-            <img src='/assets/badges/contributor-w.svg' alt='Contributor'/>
-            <input type='checkbox' id='c-<%= item.id %>' name='c-<%= item.id %>' <%= item.metadata.contributor ? 'checked' : '' %>/>
+            <img src='/assets/badges/contributor.svg' alt='Contributor'/>
+            <input type='checkbox' id='c-<%= item.id %>'
+                   name='c-<%= item.id %>' <%= item.metadata.contributor ? 'checked' : '' %>/>
         </label>
         <label for='h-<%= item.id %>'>
-            <img src='/assets/badges/hunter-w.svg' alt='Bug Hunter'/>
-            <input type='checkbox' id='h-<%= item.id %>' name='h-<%= item.id %>' <%= item.metadata.hunter ? 'checked' : '' %>/>
+            <img src='/assets/badges/hunter.svg' alt='Bug Hunter'/>
+            <input type='checkbox' id='h-<%= item.id %>'
+                   name='h-<%= item.id %>' <%= item.metadata.hunter ? 'checked' : '' %>/>
+        </label>
+        <label for='e-<%= item.id %>'>
+            <img src='/assets/badges/early.svg' alt='Early User'/>
+            <input type='checkbox' id='e-<%= item.id %>'
+                   name='e-<%= item.id %>' <%= item.metadata.early ? 'checked' : '' %>/>
         </label>
         <label for='t-<%= item.id %>'>
-            <img src='/assets/badges/tester-w.svg' alt='Beta Tester'/>
-            <input type='checkbox' id='t-<%= item.id %>' name='t-<%= item.id %>' <%= item.metadata.tester ? 'checked' : '' %>/>
+            <img src='/assets/badges/tester.svg' alt='Beta Tester'/>
+            <input type='checkbox' id='t-<%= item.id %>'
+                   name='t-<%= item.id %>' <%= item.metadata.tester ? 'checked' : '' %>/>
         </label>
     </div>
 
     <h3>Actions</h3>
     <div class='actions'>
-        <div class='action delete'>
-            <img src='/assets/delete.svg' alt='check'/> Delete account
-        </div>
+        <div class='action btn delete'>Delete account</div>
     </div>
 </div>

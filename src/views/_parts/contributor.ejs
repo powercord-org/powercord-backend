@@ -1,5 +1,5 @@
 <div class='contributor'>
-  <img src='<%= contributor.avatar %>' alt='Avatar'/>
+  <img src='<%= contributor.avatar %>' alt='Avatar' onerror='handleErroredAvatar(this, <%= contributor.discriminator %>)'/>
   <div class='info'>
     <div class='username'><%= contributor.username %><span>#<%= contributor.discriminator %></span></div>
     <% if (contributor.github) { %>

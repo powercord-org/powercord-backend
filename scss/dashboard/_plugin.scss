@@ -6,10 +6,22 @@
 }
 
 .plugin {
-  width: 23%;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
   background-color: $primaryDark;
-  box-shadow: 0 2px 7px $primaryDarker;
-  padding: 10px 15px;
+  border: 1px $primaryDarker solid;
+
+  h2 {
+    margin-top: 0;
+  }
+
+  h3 {
+    font-size: 18px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    border-bottom: 1px #fff solid;
+  }
 
   .header {
     display: flex;
@@ -17,7 +29,7 @@
     align-items: flex-start;
 
     .name {
-      font-family: 'Uni Sans', sans-serif;
+      font-family: 'Discord', sans-serif;
       font-size: 18px;
     }
 
@@ -32,8 +44,6 @@
   }
 
   .info {
-    padding: 20px 0;
-
     .element {
       display: flex;
       align-items: center;
@@ -51,8 +61,60 @@
     }
   }
 
-  .actions .btn {
-    margin: 0 5px 0 0;
-    padding: 5px 10px;
+  .developer {
+    display: flex;
+    align-items: center;
+
+    img {
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      margin-right: 10px;
+    }
+
+    .id, .name span {
+      opacity: .6;
+      font-size: 12px;
+    }
+
+    + .developer {
+      margin-top: 10px;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+
+    .btn {
+      margin: 0 0 5px;
+      width: auto;
+    }
+  }
+
+  form {
+    padding: 0;
+
+    .input-field {
+      padding-top: 0;
+
+      + .input-field {
+        padding-bottom: 5px;
+      }
+    }
+
+    label {
+      margin-bottom: 3px;
+    }
+
+    input:not([type="checkbox"]) {
+      padding: 5px 10px;
+      height: 32px;
+      width: 100%;
+    }
+
+    .btn {
+      margin-bottom: 0;
+    }
   }
 }

@@ -12,3 +12,8 @@
     <a href='/legal/privacy'>Privacy Policy</a>
   </div>
 </footer>
+<script>
+  function handleErroredAvatar (element, discrim) {
+    element.src = `https://cdn.discordapp.com/embed/avatars/${discrim % 5}.png`
+  }
+</script>
