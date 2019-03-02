@@ -30,6 +30,11 @@ module.exports = (app) => {
     current: 'announcements'
   }));
 
+  app.get('/dashboard/changelogs', (req, res) => res.render('dashboard/changelogs', {
+    ...req.session,
+    current: 'changelogs'
+  }));
+
   app.get('/dashboard/plugins', authMiddleware.admin, dashboard.plugins.ui.list);
   app.get('/dashboard/plugins/create', authMiddleware.admin, dashboard.ui.create);
   app.post('/dashboard/plugins/create', authMiddleware.admin, dashboard.process.create);
