@@ -1,8 +1,19 @@
-.plugins {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
+.dashboard.plugins {
+  .search {
+    display: flex;
+    align-items: center;
+
+    input {
+      padding: 5px 10px;
+      height: 32px;
+      flex: 1;
+      margin-right: 15px;
+    }
+  }
+
+  .input-field {
+    padding: 0;
+  }
 }
 
 .plugin {

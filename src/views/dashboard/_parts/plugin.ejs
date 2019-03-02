@@ -1,82 +1,31 @@
 <div class='plugin'>
-    <% if (item.manifest === null) { %>
-        <h2><%= item.name %></h2>
-    <% } else { %>
-        <h2><%= item.manifest.name %></h2>
-    <% } %>
+    <h2><%= item.manifest.name %></h2>
 
     <div style='display: block'>
-        <% if (item.manifest === null) { %>
-            <div class='info no-manifest'>There is no manifest for this plugin</div>
-        <% } else { %>
-            <h3>Informations</h3>
-            <div class='info'>
-                <div class='element'>
-                    <img src='/assets/version.svg' alt='version'/>
-                    <span>v<%= item.manifest.version %></span>
-                </div>
-                <div class='element'>
-                    <img src='/assets/description.svg' alt='description'/>
-                    <span><%= item.manifest.description %></span>
-                </div>
-                <div class='element'>
-                    <img src='/assets/copyright.svg' alt='copyright'/>
-                    <span><%= item.manifest.license %></span>
-                </div>
+        <h3>Informations</h3>
+        <div class='info'>
+            <div class='element'>
+                <img src='/assets/version.svg' alt='version'/>
+                <span>v<%= item.manifest.version %></span>
             </div>
-        <% } %>
-
-        <h3>Developers</h3>
-        <div>
-            <div class="developer">
-                <img src="https://cdn.discordapp.com/avatars/94762492923748352/a_74eac507e39f421652d31dfbaf95a777.gif"
-                     alt="Avatar" onerror="handleErroredAvatar(this, 4680)">
-                <div class="name">
-                    Bowser65<span>#4680</span>
-                    <div class="id">94762492923748352</div>
-                </div>
+            <div class='element'>
+                <img src='/assets/description.svg' alt='description'/>
+                <span><%= item.manifest.description %></span>
             </div>
-            <div class="developer">
-                <img src="https://cdn.discordapp.com/avatars/94762492923748352/a_74eac507e39f421652d31dfbaf95a777.gif"
-                     alt="Avatar" onerror="handleErroredAvatar(this, 4680)">
-                <div class="name">
-                    Bowser65<span>#4680</span>
-                    <div class="id">94762492923748352</div>
-                </div>
+            <div class='element'>
+                <img src='/assets/copyright.svg' alt='copyright'/>
+                <span><%= item.manifest.license %></span>
             </div>
         </div>
 
-        <h3>Actions</h3>
-        <div class='actions'>
-            <a class='btn create' href='#'
-               onclick='this.parentElement.parentElement.style.display = "none"; this.parentElement.parentElement.nextElementSibling.style.display = "block"'>
-                Edit plugin metadata
-            </a>
-            <a class='btn create' href='/dashboard/edit/<%= item._id %>'>Edit plugin developers</a>
-            <a class='btn delete' href='/dashboard/<%= item._id %>/delete'>Delete</a>
+        <h3>Settings</h3>
+        <div class='plugin-settings'>
+            <div class='input-field'>
+                <label for='verified'>
+                    Published
+                    <input type='checkbox' id='published' name='published' <%= item.published ? 'checked' : '' %>/>
+                </label>
+            </div>
         </div>
     </div>
-    <form style='display: none' method='post' action='/dashboard/plugins/<%= item._id %>/edit'>
-        <div class='input-field'>
-            <label for='name'>Plugin name</label>
-            <input type='text' name='name' id='name' value='<%= item.name %>'/>
-        </div>
-        <div class='input-field'>
-            <label for='official'>
-                Official
-                <input type='checkbox' id='official' name='official' <%= item.official ? 'checked' : '' %>/>
-            </label>
-        </div>
-        <div class='input-field'>
-            <label for='verified'>
-                Published
-                <input type='checkbox' id='published' name='published' <%= item.published ? 'checked' : '' %>/>
-            </label>
-        </div>
-        <button type='submit' class='btn create'>Save</button>
-        <a href='#' class='btn delete'
-           onclick='this.parentElement.style.display = "none"; this.parentElement.previousElementSibling.style.display = "block"'>
-            Cancel
-        </a>
-    </form>
 </div>

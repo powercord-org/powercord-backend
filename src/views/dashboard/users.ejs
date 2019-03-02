@@ -7,18 +7,20 @@
     <%- include('_parts/tabs.ejs', { current: 'users' }) %>
     <form method='post'>
         <div class='search'>
-            <input type='text' placeholder='Filter users by name or id' class='flex-full' id='search' autocomplete='off'/>
+            <input type='text' placeholder='Filter users by name or id' class='flex-full' id='search'
+                   autocomplete='off'/>
             <button type='submit' class='btn create'>Save settings</button>
         </div>
-
-        <% for(var i = 0; i < items.length; i++) { %>
-            <%- include('_parts/user', { item: items[i] }) %>
-        <% } %>
+        <div class='list'>
+            <% for(var i = 0; i < items.length; i++) { %>
+                <%- include('_parts/user', { item: items[i] }) %>
+            <% } %>
+        </div>
     </form>
 </div>
 <% include ../_parts/footer.ejs %>
 <script>
-  (function() {
+  (function () {
     document.querySelector('#search').addEventListener('input', e => {
       document.querySelectorAll('.user').forEach(el => {
         if (el.dataset.id.includes(e.target.value) || el.dataset.username.includes(e.target.value)) {

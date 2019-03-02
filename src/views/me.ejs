@@ -19,7 +19,7 @@
         <%- include("_parts/account", {
         type: "GitHub",
         account: typeof user.github !== 'undefined' && user.github !== null && typeof user.github.name !== 'undefined' ? user.github.name : null,
-        desc: "Used for plugin development and shown in contributors page, if you're a contributor"
+        desc: "If you're a contributor it'll show a link to your GitHub account, and in the future will show in your profile"
         }) %>
     </div>
 

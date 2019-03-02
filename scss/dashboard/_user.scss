@@ -11,6 +11,11 @@
     }
   }
 
+  form .list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
 }
 
 .user {
@@ -46,12 +51,13 @@
 
   .badges, .actions {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
 
     label, .action {
       display: flex;
       align-items: center;
-      width: 24%;
+      width: 33%;
 
       img {
         width: 28px;
