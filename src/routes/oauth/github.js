@@ -7,8 +7,7 @@ module.exports = {
       const data = encode({
         client_id: req.config.github.clientID,
         redirect_uri: `${req.config.domain}/oauth/github`,
-        show_dialog: true,
-        scope: typeof req.query.write !== 'undefined' ? 'repo delete_repo' : ''
+        show_dialog: true
       });
 
       return res.redirect(`https://github.com/login/oauth/authorize?${data}`);
@@ -28,7 +27,6 @@ module.exports = {
       $set: {
         'metadata.github': user.login,
         github: {
-          scope: token.scope,
           access_token: token.access_token,
           name: user.name
         }
@@ -36,7 +34,7 @@ module.exports = {
     });
 
     req.session.github = user;
-    res.redirect(token.scope !== '' ? '/dashboard' : '/me');
+    res.redirect('/me');
   },
 
   async unlink (req, res) {
