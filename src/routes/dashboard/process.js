@@ -32,7 +32,7 @@ const processReqs = {
         }
       });
 
-    // Invite the correspondig developer
+    // Invite the corresponding developer
     await put(`https://api.github.com/repos/${req.config.githubOrg}/${req.body.name}/collaborators/${user.metadata.github}`)
       .set('Authorization', `token ${req.session.user.github.access_token}`)
       .send({ permission: 'push' });
