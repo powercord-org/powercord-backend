@@ -1,5 +1,5 @@
 const { jwt: { decode } } = require('../util');
-const { DiscordOAuth } = require('../util/rest');
+const DiscordOAuth = require('../util/oauth/discord');
 
 module.exports = async (req, res, next) => {
   try {

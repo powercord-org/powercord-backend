@@ -1,5 +1,5 @@
 const { encode } = require('querystring');
-const { GithubOAuth } = require('../../util/rest');
+const GithubOAuth = require('../../util/oauth/github');
 
 module.exports = {
   async authorize (req, res) {

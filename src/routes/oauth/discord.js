@@ -1,5 +1,5 @@
 const qs = require('querystring');
-const { DiscordOAuth } = require('../../util/rest');
+const DiscordOAuth = require('../../util/oauth/discord');
 const { encode } = require('../../util/jwt.js');
 
 module.exports = {

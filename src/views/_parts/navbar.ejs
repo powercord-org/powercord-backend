@@ -8,9 +8,6 @@
     <a href='https://github.com/powercord-org/powercord/wiki/Installation' target='_blank'>Installation</a>
     <a href='/contributors'>Contributors</a>
     <a href='https://discord.gg/5eSH46g' target='_blank'>Discord Server</a>
-    <% if (isAdmin) { %>
-      <a href='/dashboard'>Dashboard</a>
-    <% } %>
   </div>
   <% if (typeof jwt === 'undefined') { %>
     <a href='/oauth/discord' class='login'>Login with Discord</a>

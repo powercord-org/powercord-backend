@@ -3,5 +3,9 @@ require('fs')
   .filter(file => file !== 'index.js')
   .forEach(filename => {
     const moduleName = filename.split('.')[0];
-    exports[moduleName] = require(`${__dirname}/${filename}`);
+    try {
+      exports[moduleName] = require(`${__dirname}/${filename}`);
+    } catch (_) {
+      // Don't annoy me you little shit
+    }
   });
