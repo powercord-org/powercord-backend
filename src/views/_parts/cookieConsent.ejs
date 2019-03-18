@@ -27,7 +27,7 @@
       });
     }
 
-    if (getCookie('cookieConsent').trim() !== 'cookieConsent=2019-02-02') {
+    if (!getCookie('cookieConsent') || getCookie('cookieConsent').trim() !== 'cookieConsent=2019-02-02') {
       document.querySelector('#cookie-consent').style.bottom = '35px';
       document.querySelector('#cookie-consent button').addEventListener('click', () => {
         setCookie('cookieConsent', '2019-02-02', 666);
