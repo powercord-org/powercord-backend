@@ -13,7 +13,6 @@
   "github": {
     "clientID": "",
     "clientSecret": "",
-    "pluginsOrg": "powercord-community",
     "scopes": []
   },
   "admins": ["284122164582416385"],

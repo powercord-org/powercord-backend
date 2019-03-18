@@ -1,12 +1,13 @@
 const { auth } = require('../../middlewares/auth');
 const pluginsV1 = require('./v1/plugins');
 const usersV1 = require('./v1/users');
-const utilsV1 = require('./v1/utils');
+// const utilsV1 = require('./v1/utils');
 
 module.exports = {
   v1: (app, basePath) => {
     // Util API stuff
-    app.get(`${basePath}/commit/:owner/:repo/:branch`, utilsV1.grabLastCommit);
+
+    // app.get(`${basePath}/commit/:owner/:repo/:branch`, utilsV1.grabLastCommit);
 
     // Public API
     app.get(`${basePath}/users/link`, usersV1.link);
