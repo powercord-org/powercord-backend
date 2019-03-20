@@ -31,7 +31,8 @@ module.exports = {
           access_token: token.access_token,
           refresh_token: token.refresh_token,
           expiryDate: Date.now() + (token.expires_in * 1000),
-          name: user.display_name
+          name: user.display_name,
+          scopes: req.config.spotify.scopes
         }
       }
     });
