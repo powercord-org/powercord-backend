@@ -15,7 +15,7 @@ module.exports = {
       return res.json({ token: null });
     }
 
-    if (!req.session.user.spotify.scopes || !req.config.spotify.scopes.every(key => req.session.user.spotify.scopes.hasOwnProperty(key))) {
+    if (!req.session.user.spotify.scopes || !req.config.spotify.scopes.every(key => req.session.user.spotify.scopes.includes(key))) {
       await req.db.users.updateOne({ id: req.session.user.id }, { $set: { spotify: null } });
 
       return res.json({
