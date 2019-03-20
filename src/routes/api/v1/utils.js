@@ -9,5 +9,9 @@ module.exports = {
     }
 
     res.json({ commit: commitData[1] });
+  },
+
+  recolorPlug: (req, res) => {
+    res.render('plugSvg', { color: req.params.color });
   }
 };
