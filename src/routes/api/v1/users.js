@@ -4,8 +4,9 @@ module.exports = {
   getMe: (req, res) => {
     res.json({
       id: req.session.user.id,
-      spotify: req.session.user.spotify.name || null,
-      github: req.session.user.github.name || null
+      spotify: (req.session.user.spotify && req.session.user.spotify.name) ? req.session.user.spotify.name : null,
+      github: (req.session.user.github && req.session.user.github.name) ? req.session.user.github.name : null,
+      gitlab: (req.session.user.gitlab && req.session.user.gitlab.name) ? req.session.user.gitlab.name : null
     });
   },
 
