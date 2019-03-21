@@ -24,7 +24,7 @@ module.exports = {
       });
     }
 
-    if (Date.now() <= req.session.user.spotify.expiryDate) {
+    if (Date.now() >= req.session.user.spotify.expiryDate) {
       let token;
       try {
         token = await SpotifyOAuth.refreshToken(req.session.user.spotify.refresh_token);
