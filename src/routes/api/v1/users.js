@@ -142,10 +142,11 @@ module.exports = {
       hunter: !!user.metadata.hunter,
       customization: {
         // @todo: real check
-        color: (req.config.admins.includes(user.id) /* || user.donor */) && user.badges && user.badges.color ? user.badges.color : '7289da',
-        custom: req.config.admins.includes(user.id) /* || user.donor */ ? (user.badges && user.badges.custom ? user.badges.custom : 'https://powercord.dev/assets/badges/donator.svg') : null,
-        customWhite: req.config.admins.includes(user.id) /* || user.donor */ ? (user.badges && user.badges.customWhite ? user.badges.customWhite : 'https://powercord.dev/assets/badges/donator-w.svg') : null,
-        name: req.config.admins.includes(user.id) /* || user.donor */ ? (user.badges && user.badges.name ? user.badges.name : 'Patreon Daddy') : null
+        displayBadge: req.config.admins.includes(user.id) /* || user.donor */,
+        color: (req.config.admins.includes(user.id) /* || user.donor */) && user.badges && user.badges.color ? user.badges.color : null,
+        custom: req.config.admins.includes(user.id) /* || user.donor */ ? (user.badges && user.badges.custom ? user.badges.custom : null) : null,
+        customWhite: req.config.admins.includes(user.id) /* || user.donor */ ? (user.badges && user.badges.customWhite ? user.badges.customWhite : null) : null,
+        name: req.config.admins.includes(user.id) /* || user.donor */ ? (user.badges && user.badges.name ? user.badges.name : null) : null
       }
     });
   }
