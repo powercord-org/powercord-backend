@@ -60,7 +60,7 @@ module.exports = {
   },
 
   saveSettings: (req, res) => {
-    if (typeof req.body.isEncrypted === 'undefined' || (typeof req.body.powercord === 'undefined' || typeof req.body.discord === 'undefined')) {
+    if (typeof req.body.isEncrypted === 'undefined' || (typeof req.body.powercord === 'undefined' && typeof req.body.discord === 'undefined')) {
       return res.sendStatus(400);
     }
 
