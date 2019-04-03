@@ -11,7 +11,7 @@ const no = [
 
 const getNo = () => no[Math.floor(Math.random() * no.length)];
 
-module.exports = function (config) {
+module.exports = function (mongo, config) {
   const bot = new Eris(config.discord.boat.token);
 
   bot.on('ready', () => console.log('Powercord bot is ready'));
@@ -39,6 +39,22 @@ module.exports = function (config) {
           break;
 
         case 'createCmd':
+          if (!isAdmin) {
+            return bot.createMessage(msg.channel.id, getNo());
+          }
+          // @todo: Custom commands
+          bot.createMessage(msg.channel.id, 'coming soon');
+          break;
+
+        case 'editCmd':
+          if (!isAdmin) {
+            return bot.createMessage(msg.channel.id, getNo());
+          }
+          // @todo: Custom commands
+          bot.createMessage(msg.channel.id, 'coming soon');
+          break;
+
+        case 'delCmd':
           if (!isAdmin) {
             return bot.createMessage(msg.channel.id, getNo());
           }

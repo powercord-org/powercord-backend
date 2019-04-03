@@ -5,11 +5,13 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 
 const config = require('../config.json');
+const getDB = require('./db');
 const boat = require('../boat');
 const routes = require('./routes');
 
 (async () => {
-  const boatInstance = boat(config);
+  const database = await getDB();
+  const boatInstance = boat(database, config);
   const app = express();
 
   app.set('view engine', 'ejs');
@@ -34,7 +36,7 @@ const routes = require('./routes');
     resave: false
   }));
 
-  app.use(await require('./middlewares/context.js')(boatInstance));
+  app.use(await require('./middlewares/context.js')(database, boatInstance));
   app.use(require('./middlewares/session.js'));
   app.use('/assets', express.static(resolve(__dirname, '..', 'static')));
   routes.call(this, app);
