@@ -54,7 +54,6 @@
     "dot-notation": [ "error" ],
     "eqeqeq": [ "error", "always" ],
     "no-caller": [ "error" ],
-    "no-case-declarations": [ "error" ],
     "no-else-return": [ "error", {
       "allowElseIf": true
     }],

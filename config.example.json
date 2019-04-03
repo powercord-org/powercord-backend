@@ -3,7 +3,17 @@
   "discord": {
     "clientID": "",
     "clientSecret": "",
-    "hook": "Used to automatically send invite link to plugin/theme developers"
+    "boat": {
+      "prefix": "pc/",
+      "token": "Bot token",
+      "roles": {
+        "contributor": "role id",
+        "bugHunter": "role id",
+        "earlyUser": "role id",
+        "betaTester": "role id"
+      },
+      "starboard": "channel id"
+    }
   },
   "spotify": {
     "clientID": "",
