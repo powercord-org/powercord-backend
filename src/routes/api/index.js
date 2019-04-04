@@ -6,8 +6,6 @@ const utilsV1 = require('./v1/utils');
 module.exports = {
   v1: (app, basePath) => {
     // Util API stuff
-
-    // app.get(`${basePath}/commit/:owner/:repo/:branch`, utilsV1.grabLastCommit);
     app.get(`${basePath}/plug/:color([a-fA-F0-9]{6})`, utilsV1.recolorPlug);
 
     // Public API

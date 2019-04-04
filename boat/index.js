@@ -18,6 +18,16 @@ module.exports = function (mongo, config) {
 
   bot.on('messageCreate', msg => {
     const isAdmin = config.admins.includes(msg.author.id);
+
+    if (msg.content === 'pc/invite') {
+      return bot.createMessage(msg.channel.id, '<:peepoGnome:563129237398224916>');
+    }
+
+
+    if (!isAdmin) {
+      return;
+    }
+
     if (msg.content.startsWith(config.discord.boat.prefix)) {
       const args = msg.content.slice(config.discord.boat.prefix.length).split(' ');
 
