@@ -9,4 +9,8 @@
   .features .feature {
     width: 24%;
   }
+
+  .accounts .account + .account {
+    width: 49%;
+  }
 }

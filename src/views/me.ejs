@@ -22,33 +22,6 @@
         desc: "If you're a contributor it'll show a link to your GitHub account, and in the future will show in your profile"
         }) %>
     </div>
-
-    <% if (isDonor) { %>
-        <h2>Your badges</h2>
-        <form method='post' action='/api/users/@me/settings/badges' class='account-badges'>
-            <div class='input-field'>
-                <label for='color'>Badges color</label>
-                <input type='text' name='color' id='color'
-                       value='<%= typeof user.badges !== 'undefined' && typeof user.badges.color !== 'undefined' ? user.badges.color : '7289da' %>'/>
-            </div>
-            <div class='input-field'>
-                <label for='badge'>Custom badge URL</label>
-                <input type='text' name='badge' id='badge'
-                       value='<%= typeof user.badges !== 'undefined' && typeof user.badges.custom !== 'undefined' ? user.badges.custom : 'https://powercord.xyz/assets/badges/donator.svg' %>'/>
-            </div>
-            <div class='input-field'>
-                <label for='name'>Custom badge name</label>
-                <input type='text' name='name' id='name'
-                       value='<%= typeof user.badges !== 'undefined' && typeof user.badges.name !== 'undefined' ? user.badges.name : 'Patreon Daddy' %>'/>
-            </div>
-            <div class='input-field'>
-                <label for='white'>Custom badge URL (white alternative)</label>
-                <input type='text' name='white' id='white'
-                       value='<%= typeof user.badges !== 'undefined' && typeof user.badges.customWhite !== 'undefined' ? user.badges.customWhite : 'https://powercord.xyz/assets/badges/donator-w.svg' %>'/>
-            </div>
-            <button type='submit' class='btn create'>Save badge settings</button>
-        </form>
-    <% } %>
 </div>
 <% include _parts/footer.ejs %>
 </body>

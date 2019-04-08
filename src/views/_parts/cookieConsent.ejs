@@ -32,7 +32,10 @@
       document.querySelector('#cookie-consent button').addEventListener('click', () => {
         setCookie('cookieConsent', '2019-02-02', 666);
         document.querySelector('#cookie-consent').removeAttribute('style');
+        setTimeout(() => document.querySelector('#cookie-consent').remove(), 310)
       });
+    } else {
+      document.querySelector('#cookie-consent').remove();
     }
   })();
 </script>

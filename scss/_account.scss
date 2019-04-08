@@ -15,10 +15,6 @@
     margin: 15px 0;
     width: 100%;
 
-    + .account {
-      width: 49%;
-    }
-
     img {
       width: 50px;
       height: 50px;
@@ -64,17 +60,5 @@
     + h2 {
       margin-top: 50px;
     }
-  }
-}
-
-.account-badges {
-  display: flex;
-  padding: 0;
-  justify-content: space-between;
-  flex-wrap: wrap;
-
-  .input-field {
-    padding-top: 0;
-    width: 49%;
   }
 }
