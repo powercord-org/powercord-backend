@@ -22,12 +22,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aetheryx/powercord-backend.git"
+    "url": "git+https://github.com/powercord-org/powercord-backend.git"
   },
   "author": "aetheryx",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/aetheryx/powercord-backend/issues"
+    "url": "https://github.com/powercord-org/powercord-backend/issues"
   },
-  "homepage": "https://powercord.xyz"
+  "homepage": "https://powercord.dev"
 }
