@@ -1,4 +1,5 @@
 const Eris = require('eris');
+const Starboard = require('./starboard');
 
 const no = [
   'no',
@@ -22,7 +23,6 @@ module.exports = function (mongo, config) {
     if (msg.content === 'pc/invite') {
       return bot.createMessage(msg.channel.id, '<:peepoGnome:563129237398224916>');
     }
-
 
     if (!isAdmin) {
       return;
@@ -79,22 +79,10 @@ module.exports = function (mongo, config) {
     }
   });
 
-  bot.on('messageReactionAdd', (msg, emoji) => {
-    if (emoji.name === '⭐') {
-      // @todo
-    }
-  });
+  // Starboard
+  new Starboard(bot, mongo, config);
 
-  bot.on('messageReactionRemove', (msg, emoji) => {
-    if (emoji.name === '⭐') {
-      // @todo
-    }
-  });
-
-  bot.on('messageReactionRemoveAll', (msg) => {
-    // @todo
-  });
-
+  // make it connect
   bot.connect();
 
   // @todo: Integrate with web

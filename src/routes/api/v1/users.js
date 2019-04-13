@@ -108,7 +108,7 @@ module.exports = {
     }
 
     req.db.users.updateOne({ id: req.session.user.id }, { $set: { badges: update } });
-    res.redirect('/me');
+    res.sendStatus(204);
   },
 
   link: (req, res) => {

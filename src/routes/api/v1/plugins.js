@@ -2,7 +2,7 @@ const { ObjectId } = require('mongodb');
 
 module.exports = {
   getPlugins: async (req, res) => {
-    const plugins = await req.db.plugins.find({ manifest: { $not: { $eq: null } } }).skip((req.query.page || 0) * 20).limit(20).toArray();
+    const plugins = await req.db.plugins.find({ enabled: true }).skip((req.query.page || 0) * 20).limit(20).toArray();
     res.json(plugins.map(p => ({
       _id: p._id,
       id: p.name,
