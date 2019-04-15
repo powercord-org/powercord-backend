@@ -4,24 +4,24 @@
 <body>
 <% include _parts/navbar.ejs %>
 <div class='container'>
-    <h2 class='accounts-header'>Your accounts</h2>
-    <div class='accounts'>
-        <%- include("_parts/account", {
-        type: "Discord",
-        account: discord.username,
-        warning: true
-        }) %>
-        <%- include("_parts/account", {
-        type: "Spotify",
-        account: typeof user.spotify !== 'undefined' && user.spotify !== null && typeof user.spotify.name !== 'undefined' ? user.spotify.name : null,
-        desc: "Used to add extra features to the Spotify modal, like adding to library or to a playlist"
-        }) %>
-        <%- include("_parts/account", {
-        type: "GitHub",
-        account: typeof user.github !== 'undefined' && user.github !== null && typeof user.github.name !== 'undefined' ? user.github.name : null,
-        desc: "If you're a contributor it'll show a link to your GitHub account, and in the future will show in your profile"
-        }) %>
-    </div>
+  <h2 class='accounts-header'>Your accounts</h2>
+  <div class='accounts'>
+    <%- include("_parts/account", {
+      type: "Discord",
+      account: discord.username,
+      warning: true
+    }) %>
+    <%- include("_parts/account", {
+      type: "Spotify",
+      account: typeof user.spotify !== 'undefined' && user.spotify !== null && typeof user.spotify.name !== 'undefined' ? user.spotify.name : null,
+      desc: "Used to add extra features to the Spotify modal, like adding to library or to a playlist"
+    }) %>
+    <%- include("_parts/account", {
+      type: "GitHub",
+      account: typeof user.github !== 'undefined' && user.github !== null && typeof user.github.name !== 'undefined' ? user.github.name : null,
+      desc: "If you're a contributor it'll show a link to your GitHub account, and in the future will show in your profile"
+    }) %>
+  </div>
 </div>
 <% include _parts/footer.ejs %>
 </body>

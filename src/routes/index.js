@@ -17,6 +17,7 @@ module.exports = (app) => {
   // UI routes
   app.get('/', (req, res) => res.render('index', req.session));
   app.get('/me', (req, res) => res.render('me', req.session));
+  // app.get('/brand', (req, res) => res.render('brand', req.session));
   app.get('/legal/privacy', (req, res) => res.render('privacy', req.session));
   app.get('/legal/tos', (req, res) => res.render('terms', req.session));
   app.get('/contributors', contributors);

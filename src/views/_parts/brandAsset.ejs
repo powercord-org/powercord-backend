@@ -1,0 +1,9 @@
+<div class="asset">
+  <h3><%= name %></h3>
+  <img src="<%= src %>" alt="<%= name %>"/>
+  <div class="footer">
+    <% assets.map(asset => { %>
+      <a href="<%= asset.src %>" download="<%= asset.name %>" target="_blank"/>
+    <% }) %>
+  </div>
+</div>

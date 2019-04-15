@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang='en' dir='ltr'>
   <% include _parts/head.ejs %>
   <body>
     <% include _parts/navbar.ejs %>
     <div class='container'>
-      <div class='pc-header'>The best Discord client mod you'll ever need. Powerful, simple, bloatless, breakproof and more.</div>
+      <div class='pc-header'>The best Discord client mod you'll ever need. Powerful, simple, bloatless, (almost) breakproof and more.</div>
       <div class='features'>
-        <%- include("_parts/feature", {
-          name: "Spotify modal",
-          banner: "/assets/features/spotify.mp4",
-          description: "Pause, skip, forward and seek directly from Discord. You can even right click to play playlists, toggle repeat or change the volume."
+        <%- include('_parts/feature', {
+          name: 'Spotify modal',
+          banner: '/assets/features/spotify.mp4',
+          description: 'Pause, skip, forward and seek directly from Discord. You can even right click to play playlists, toggle repeat or change the volume.'
         }) %>
-        <%- include("_parts/feature", {
-          name: "Built-in translator",
-          banner: "/assets/features/translator.mp4",
-          description: "Ever wondered what these weird Dutch guys are yapping on about? Just right click their message to translate it to English to give them the \"nee jij\" they deserve!"
+        <%- include('_parts/feature', {
+          name: 'Built-in translator',
+          banner: '/assets/features/translator.mp4',
+          description: 'Ever wondered what these weird Dutch guys are yapping on about? Just right click their message to translate it to English to give them the \'nee jij\' they deserve!'
         }) %>
-        <%- include("_parts/feature", {
-          name: "Neater codeblocks",
-          banner: "/assets/features/codeblocks.mp4",
-          description: "See linecount, language and directly copy code from a codeblock!"
+        <%- include('_parts/feature', {
+          name: 'Neater codeblocks',
+          banner: '/assets/features/codeblocks.mp4',
+          description: 'See linecount, language and directly copy code from a codeblock!'
         }) %>
-        <%- include("_parts/feature", {
-          name: "Server Categories",
-          banner: "/assets/features/folders_soon.png",
-          description: "FINALLY organize and sort your servers in a powerful way. Make folders, subfolders, assign icons and much more!"
+        <%- include('_parts/feature', {
+          name: 'Server Categories',
+          banner: '/assets/features/folders_soon.png',
+          description: 'FINALLY organize and sort your servers in a powerful way. Make folders, subfolders, assign icons and much more!'
         }) %>
       </div>
     </div>
