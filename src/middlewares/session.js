@@ -40,7 +40,22 @@ module.exports = async (req, res, next) => {
          * We discovered that some records in Powercord database were invalid, and had NaN as expiracy date.
          * So for those accounts we're going ahead and refreshing the token anyway.
          */
-        const tokens = await DiscordOAuth.refreshToken(discord.refresh_token);
+
+        let tokens;
+        try {
+          tokens = await DiscordOAuth.refreshToken(discord.refresh_token);
+        } catch (e) {
+          res.cookie('token', '', { maxAge: -1 });
+          delete req.session.jwt;
+          delete req.session.discord;
+          if (req.headers.authorization) {
+            // This header can't be sent by a browser
+            return res.status(401).json({
+              error: 'DISCORD_REVOKED'
+            });
+          }
+          return res.redirect('/oauth/discord');
+        }
         discord.access_token = tokens.access_token;
         await req.db.users.updateOne({ id: userId }, {
           $set: {
