@@ -34,13 +34,18 @@ module.exports = async (req, res, next) => {
       const { discord } = req.session.user;
 
       // Discord (oauth)
-      if (Date.now() >= discord.expiryDate) {
+      if (isNaN(discord.expiryDate) || Date.now() >= discord.expiryDate) {
+        /*
+         * -- Why are we checking NaN
+         * We discovered that some records in Powercord database were invalid, and had NaN as expiracy date.
+         * So for those accounts we're going ahead and refreshing the token anyway.
+         */
         const tokens = await DiscordOAuth.refreshToken(discord.refresh_token);
         discord.access_token = tokens.access_token;
         await req.db.users.updateOne({ id: userId }, {
           $set: {
             'discord.access_token': discord.access_token,
-            'discord.expiryDate': Date.now() + (discord.expires_in * 1000)
+            'discord.expiryDate': Date.now() + (tokens.expires_in * 1000)
           }
         });
       }
