@@ -12,6 +12,7 @@
         "earlyUser": "role id",
         "betaTester": "role id"
       },
+      "strawpoll": "channel id",
       "starboard": "channel id"
     }
   },
