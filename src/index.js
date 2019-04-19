@@ -11,7 +11,7 @@ const routes = require('./routes');
 
 (async () => {
   const database = await getDB();
-  const boatInstance = boat(database.starboard, config);
+  const boatInstance = boat(database, config);
   const app = express();
 
   app.set('view engine', 'ejs');
