@@ -138,6 +138,7 @@ module.exports = {
     res.json({
       developer: !!user.metadata.developer,
       contributor: !!user.metadata.contributor,
+      early: !!user.metadata.early,
       tester: !!user.metadata.tester,
       hunter: !!user.metadata.hunter,
       customization: {

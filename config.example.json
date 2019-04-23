@@ -8,9 +8,10 @@
       "token": "Bot token",
       "roles": {
         "contributor": "role id",
-        "bugHunter": "role id",
-        "earlyUser": "role id",
-        "betaTester": "role id"
+        "early": "role id",
+        "hunter": "role id",
+        "tester": "role id",
+        "user": "role id"
       },
       "strawpoll": "channel id",
       "starboard": "channel id"
