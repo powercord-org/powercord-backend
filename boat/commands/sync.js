@@ -8,7 +8,7 @@ module.exports = {
     users.map(user => ({
       ...user,
       member: guild.members.find(member => member.id === user.id)
-    })).filter(m => m).forEach(user => {
+    })).filter(m => m.member).forEach(user => {
       if (!user.member.roles.includes(cfg.discord.boat.roles.user)) {
         guild.addMemberRole(user.id, cfg.discord.boat.roles.user);
       }
