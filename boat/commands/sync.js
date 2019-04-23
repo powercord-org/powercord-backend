@@ -4,7 +4,8 @@ module.exports = {
     const message = await bot.createMessage(msg.channel.id, 'Processing...');
 
     const guild = bot.guilds.find(g => g.id === '538759280057122817');
-    const users = await mongo.users.find();
+    const users = await mongo.users.find().toArray();
+
     users.map(user => ({
       ...user,
       member: guild.members.find(member => member.id === user.id)
