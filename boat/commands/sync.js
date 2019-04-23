@@ -11,32 +11,40 @@ module.exports = {
     })).filter(m => m.member);
 
     for (const user of filteredUsers) {
+      const originalRoles = user.member.roles;
+      let newRoles = user.member.roles;
+
       if (!user.member.roles.includes(cfg.discord.boat.roles.user)) {
-        await guild.addMemberRole(user.id, cfg.discord.boat.roles.user);
+        newRoles.push(cfg.discord.boat.roles.user);
       }
 
       if (user.metadata.tester && !user.member.roles.includes(cfg.discord.boat.roles.tester)) {
-        await guild.addMemberRole(user.id, cfg.discord.boat.roles.tester);
+        newRoles.push(user.id, cfg.discord.boat.roles.tester);
       } else if (!user.metadata.tester && user.member.roles.includes(cfg.discord.boat.roles.tester)) {
-        await guild.removeMemberRole(user.id, cfg.discord.boat.roles.tester);
+        newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles.tester);
       }
 
       if (user.metadata.hunter && !user.member.roles.includes(cfg.discord.boat.roles.hunter)) {
-        await guild.addMemberRole(user.id, cfg.discord.boat.roles.hunter);
+        newRoles.push(user.id, cfg.discord.boat.roles.hunter);
       } else if (!user.metadata.hunter && user.member.roles.includes(cfg.discord.boat.roles.hunter)) {
-        await guild.removeMemberRole(user.id, cfg.discord.boat.roles.hunter);
+        newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles.hunter);
       }
 
       if (user.metadata.early && !user.member.roles.includes(cfg.discord.boat.roles.early)) {
-        await guild.addMemberRole(user.id, cfg.discord.boat.roles.early);
+        newRoles.push(user.id, cfg.discord.boat.roles.early);
       } else if (!user.metadata.early && user.member.roles.includes(cfg.discord.boat.roles.early)) {
-        await guild.removeMemberRole(user.id, cfg.discord.boat.roles.early);
+        newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles.early);
       }
 
       if (user.metadata.contributor && !user.member.roles.includes(cfg.discord.boat.roles.contributor)) {
-        await guild.addMemberRole(user.id, cfg.discord.boat.roles.contributor);
+        newRoles.push(user.id, cfg.discord.boat.roles.contributor);
       } else if (!user.metadata.contributor && user.member.roles.includes(cfg.discord.boat.roles.contributor)) {
-        await guild.removeMemberRole(user.id, cfg.discord.boat.roles.contributor);
+        newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles.contributor);
+      }
+
+      newRoles = [ ...new Set(newRoles) ];
+      if (JSON.stringify(originalRoles.sort()) !== JSON.stringify(newRoles.sort())) {
+        await guild.editMember(user.id, { roles: newRoles });
       }
     }
 
