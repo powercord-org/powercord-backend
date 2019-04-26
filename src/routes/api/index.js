@@ -2,6 +2,7 @@ const { auth } = require('../../middlewares/auth');
 const pluginsV1 = require('./v1/plugins');
 const usersV1 = require('./v1/users');
 const utilsV1 = require('./v1/utils');
+const scienceV1 = require('./v1/science');
 
 module.exports = {
   v1: (app, basePath) => {
@@ -20,6 +21,9 @@ module.exports = {
 
     app.get(`${basePath}/plugins`, pluginsV1.getPlugins);
     app.get(`${basePath}/plugins/:id`, pluginsV1.getPlugin);
+
+    // Analyitics API
+    app.post(`${basePath}/science`, scienceV1);
 
     // Admin API
   }
