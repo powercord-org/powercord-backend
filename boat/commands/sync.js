@@ -12,7 +12,7 @@ module.exports = {
 
     for (const user of filteredUsers) {
       const originalRoles = user.member.roles;
-      let newRoles = user.member.roles;
+      let newRoles = [ ...user.member.roles ];
 
       if (!user.member.roles.includes(cfg.discord.boat.roles.user)) {
         newRoles.push(cfg.discord.boat.roles.user);

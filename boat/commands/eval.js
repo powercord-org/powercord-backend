@@ -1,9 +1,11 @@
 // stolen from https://github.com/aetheryx/spotify-connect/blob/master/src/commands/eval.js
 const { inspect } = require('util');
 
+// noinspection JSUnusedLocalSymbols
 module.exports = {
   isAdmin: true,
-  func: async (bot, msg, config) => {
+  // eslint-disable-next-line no-unused-vars
+  func: async (bot, msg, config, mongo) => {
     const script = msg.content.slice(config.discord.boat.prefix.length + 5);
     if (!script) {
       return bot.createMessage(msg.channel.id, 'undefined ¯\\_(ツ)_/¯');
