@@ -1,53 +1,41 @@
 module.exports = {
   isAdmin: true,
   func: async (bot, msg, cfg, mongo) => {
-    // never touch this code just to annoy cadence
+    // reminder that if this code is in production then bow zr is gay
     const message = await bot.createMessage(msg.channel.id, 'Processing...');
 
     const { guild } = msg.channel;
-    const users = await mongo.users.find().toArray();
-    const filteredUsers = users.map(user => ({
-      ...user,
-      member: guild.members.find(member => member.id === user.id)
-    })).filter(m => m.member);
+    const mongoUsers = await mongo.users.find().toArray();
+    const filteredMembers = [];
+    guild.members.forEach(member => {
+      let mongoUser = mongoUsers.find(user => user.id == member.id);
+      if (mongoUser) {
+        member.mongoUser = mongoUser;
+        filteredMembers.push(mongoUser);
+      }
+    });
 
-    for (const user of filteredUsers) {
-      const originalRoles = user.member.roles;
-      let newRoles = [ ...user.member.roles ];
+    await Promise.all(filteredMembers.map(member => {
+      const originalRoles = member.roles;
+      let newRoles = [ ...member.roles ];
 
-      if (!user.member.roles.includes(cfg.discord.boat.roles.user)) {
+      if (!member.roles.includes(cfg.discord.boat.roles.user)) {
         newRoles.push(cfg.discord.boat.roles.user);
       }
 
-      if (user.metadata.tester && !user.member.roles.includes(cfg.discord.boat.roles.tester)) {
-        newRoles.push(cfg.discord.boat.roles.tester);
-      } else if (!user.metadata.tester && user.member.roles.includes(cfg.discord.boat.roles.tester)) {
-        newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles.tester);
-      }
-
-      if (user.metadata.hunter && !user.member.roles.includes(cfg.discord.boat.roles.hunter)) {
-        newRoles.push(cfg.discord.boat.roles.hunter);
-      } else if (!user.metadata.hunter && user.member.roles.includes(cfg.discord.boat.roles.hunter)) {
-        newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles.hunter);
-      }
-
-      if (user.metadata.early && !user.member.roles.includes(cfg.discord.boat.roles.early)) {
-        newRoles.push(cfg.discord.boat.roles.early);
-      } else if (!user.metadata.early && user.member.roles.includes(cfg.discord.boat.roles.early)) {
-        newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles.early);
-      }
-
-      if (user.metadata.contributor && !user.member.roles.includes(cfg.discord.boat.roles.contributor)) {
-        newRoles.push(cfg.discord.boat.roles.contributor);
-      } else if (!user.metadata.contributor && user.member.roles.includes(cfg.discord.boat.roles.contributor)) {
-        newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles.contributor);
-      }
+      ["tester", "hunter", "early", "contributor"].forEach(key => {
+        if (member.mongoUser.metadata.tester && !member.roles.includes(cfg.discord.boat.roles.tester)) {
+          newRoles.push(cfg.discord.boat.roles.tester);
+        } else if (!member.mongoUser.metadata.tester && member.roles.includes(cfg.discord.boat.roles.tester)) {
+          newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles.tester);
+        }
+      });
 
       newRoles = [ ...new Set(newRoles) ];
       if (JSON.stringify(originalRoles.sort()) !== JSON.stringify(newRoles.sort())) {
-        await guild.editMember(user.id, { roles: newRoles });
+        return guild.editMember(member.id, { roles: newRoles });
       }
-    }
+    }));
 
     message.edit('Done!');
   }
