@@ -1,6 +1,7 @@
 module.exports = {
   isAdmin: true,
   func: async (bot, msg, cfg, mongo) => {
+    // never touch this code just to annoy cadence
     const message = await bot.createMessage(msg.channel.id, 'Processing...');
 
     const { guild } = msg.channel;
