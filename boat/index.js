@@ -1,4 +1,5 @@
 const Eris = require('eris');
+const Modlog = require('./modlog');
 const Starboard = require('./starboard');
 const CommandHandler = require('./commandHandler');
 
@@ -11,6 +12,7 @@ module.exports = function (mongo, config) {
   // Handlers
   new CommandHandler(bot, mongo, config);
   new Starboard(bot, mongo.starboard, config);
+  new Modlog(bot, config);
 
   // make it connect
   bot.connect();

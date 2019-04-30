@@ -6,7 +6,8 @@ const no = [
   'nice try',
   'banned',
   'ur not cute enough',
-  'this command have been blocked due to article 13. Sorry.'
+  'this command have been blocked due to article ~~13~~17. Sorry.',
+  'friendly reminder that you\'re not allowed to run that command'
 ];
 const getNo = () => no[Math.floor(Math.random() * no.length)];
 
@@ -20,6 +21,10 @@ module.exports = class CommandHandler {
   }
 
   processCommand (msg) {
+    if (msg.channel.recipient) {
+      return;
+    }
+
     const isAdmin = this.config.admins.includes(msg.author.id);
     if (!msg.content.startsWith(this.config.discord.boat.prefix)) {
       return;
@@ -32,6 +37,10 @@ module.exports = class CommandHandler {
       if (command.isAdmin && !isAdmin) {
         return this.bot.createMessage(msg.channel.id, getNo());
       }
+      if (command.permissions && !command.permissions.every(p => msg.member.permission.has(p))) {
+        return this.bot.createMessage(msg.channel.id, getNo());
+      }
+
       return command.func(this.bot, msg, this.config, this.mongo);
     }
 

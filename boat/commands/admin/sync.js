@@ -3,7 +3,7 @@ module.exports = {
   func: async (bot, msg, cfg, mongo) => {
     const message = await bot.createMessage(msg.channel.id, 'Processing...');
 
-    const guild = bot.guilds.find(g => g.id === '538759280057122817');
+    const { guild } = msg.channel;
     const users = await mongo.users.find().toArray();
     const filteredUsers = users.map(user => ({
       ...user,
