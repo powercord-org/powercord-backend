@@ -13,12 +13,17 @@ module.exports = {
     }
 
     const modId = message.content.match(/\n__Moderator(?:[^(]+)\((\d+)/)[1];
-    if (modId !== msg.author.id) {
+    if (modId !== msg.author.id && !config.admins.includes(msg.author.id)) {
       return bot.createMessage(msg.channel.id, 'You\'re not the responsible moderator');
     }
 
     const content = message.content.match(/([^]+)\n__Reason__/)[1];
-    await message.edit(`${content}\n__Reason__: ${args.join(' ')}`);
+    let newReason = args.join(' ');
+    if (modId !== msg.author.id) {
+      newReason += ` *(edited by ${msg.author.username}#${msg.author.discriminator})*`;
+    }
+
+    await message.edit(`${content}\n__Reason__: ${newReason}`);
     bot.createMessage(msg.channel.id, 'ok');
   }
 };
