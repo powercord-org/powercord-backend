@@ -143,11 +143,11 @@ module.exports = {
       hunter: !!user.metadata.hunter,
       customization: {
         // @todo: real check
-        displayBadge: req.config.admins.includes(user.id) /* || user.donor */,
+        displayBadge: user.badges && user.badges.custom, // req.config.admins.includes(user.id) /* || user.donor */,
         color: user.badges && user.badges.color ? user.badges.color : null,
-        custom: req.config.admins.includes(user.id) /* || user.donor */ ? (user.badges && user.badges.custom ? user.badges.custom : null) : null,
-        customWhite: req.config.admins.includes(user.id) /* || user.donor */ ? (user.badges && user.badges.customWhite ? user.badges.customWhite : null) : null,
-        name: req.config.admins.includes(user.id) /* || user.donor */ ? (user.badges && user.badges.name ? user.badges.name : null) : null
+        custom: user.badges && user.badges.custom ? user.badges.custom : null,
+        customWhite: user.badges && user.badges.customWhite ? user.badges.customWhite : null,
+        name: user.badges && user.badges.name ? user.badges.name : null
       }
     });
   }
