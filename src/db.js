@@ -6,8 +6,10 @@ module.exports = () =>
     .then(client => client.db('powercord'))
     .then(async db => ({
       users: await db.collection('users'),
+      badges: await db.collection('badges'),
       starboard: await db.collection('starboard'),
-      plugins: await db.collection('plugins')
+      plugins: await db.collection('plugins'),
+      themes: await db.collection('themes')
     }))
     .catch(err => {
       console.error(err);
