@@ -17,32 +17,34 @@ module.exports = class Modlog {
     bot.on('guildMemberUpdate', this.processMuteLog.bind(this));
   }
 
-  async processBanLog (banned, guild, user) {
-    const logs = await guild.getAuditLogs(5, null, banned ? 22 : 23);
-    const entry = logs.entries.find(entry => entry.targetID = user.id);
-    const [ modId, modName, reason ] = this._processAuditEntry(entry);
-    const channel = this.bot.getChannel(this.config.discord.boat.modlog);
-    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d)/)[1]) + 1;
+  processBanLog (banned, guild, user) {
+    setTimeout(async () => {
+      const logs = await guild.getAuditLogs(5, null, banned ? 22 : 23);
+      const entry = logs.entries.find(entry => entry.targetID = user.id);
+      const [ modId, modName, reason ] = this._processAuditEntry(entry);
+      const channel = this.bot.getChannel(this.config.discord.boat.modlog);
+      const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d)/)[1]) + 1;
 
-    this.bot.createMessage(this.config.discord.boat.modlog, template
-      .replace('$type', banned ? 'Ban' : 'Unban')
-      .replace('$case', caseId)
-      .replace('$user', `${user.username}#${user.discriminator}`)
-      .replace('$userid', user.id)
-      .replace('$moderator', modName)
-      .replace('$modid', modId)
-      .replace('$reason', reason)
-    );
+      this.bot.createMessage(this.config.discord.boat.modlog, template
+        .replace('$type', banned ? '<a:crabrave:590881356926418966> Ban' : 'Unban')
+        .replace('$case', caseId)
+        .replace('$user', `${user.username}#${user.discriminator}`)
+        .replace('$userid', user.id)
+        .replace('$moderator', modName)
+        .replace('$modid', modId)
+        .replace('$reason', reason)
+      );
+    }, 1000); // Ensure audit log entry is there
   }
 
   async processLeaveLog () {
-    // Fetch audit log entries to check if it's a kick
+    // @todo: Fetch audit log entries to check if it's a kick
 
     // getAuditLogs(limit, before, actionType)
   }
 
   async processMuteLog () {
-    // Check if muted have been added/removed
+    // @todo: Check if muted have been added/removed
 
     // Fetch audit logs
   }
