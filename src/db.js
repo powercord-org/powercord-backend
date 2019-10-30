@@ -9,7 +9,8 @@ module.exports = () =>
       badges: await db.collection('badges'),
       starboard: await db.collection('starboard'),
       plugins: await db.collection('plugins'),
-      themes: await db.collection('themes')
+      themes: await db.collection('themes'),
+      tags: await db.collection('tags')
     }))
     .catch(err => {
       console.error(err);

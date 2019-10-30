@@ -1,6 +1,7 @@
-const { jwt: { decode } } = require('../util');
-const DiscordOAuth = require('../util/oauth/discord');
+const { jwt: { decode } } = require('../../util');
+const DiscordOAuth = require('../../util/oauth/discord');
 
+// @todo: Split this shit up
 module.exports = async (req, res, next) => {
   try {
     req.session.isAdmin = false;

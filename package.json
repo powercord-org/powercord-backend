@@ -7,14 +7,14 @@
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.6.1",
-    "eris": "^0.9.0",
+    "eris": "^0.11.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "jsonwebtoken": "^8.4.0",
     "mongodb": "^3.1.10"
   },
   "devDependencies": {
-    "eslint": "^5.11.0"
+    "eslint": "^6.6.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -22,12 +22,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aetheryx/powercord-backend.git"
+    "url": "git+https://github.com/powercord-org/powercord-backend.git"
   },
   "author": "aetheryx",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/aetheryx/powercord-backend/issues"
+    "url": "https://github.com/powercord-org/powercord-backend/issues"
   },
-  "homepage": "https://powercord.xyz"
+  "homepage": "https://powercord.dev"
 }

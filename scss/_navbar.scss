@@ -54,61 +54,6 @@
         border-radius: 50%;
         width: 100%;
       }
-
-      .nitro, .hypesquad, .admin {
-        position: absolute;
-        width: 28px;
-        height: 28px;
-      }
-
-      .nitro {
-        bottom: -9px;
-        right: -5px
-      }
-
-      .hypesquad {
-        z-index: 3;
-        width: 22px;
-        height: 22px;
-        bottom: -6px;
-        right: -5px
-      }
-
-      .nitro + .hypesquad {
-        right: initial;
-        left: -5px;
-      }
-
-      .hypesquad-bg {
-        z-index: 2;
-        width: 14px;
-        height: 14px;
-        display: block;
-        background-color: #fff;
-        transform: rotate(45deg);
-        position: absolute;
-        right: -1px;
-        bottom: -3px;
-
-        &.nr {
-          transform: initial;
-        }
-
-        &.hb {
-          bottom: 0;
-        }
-      }
-
-      .nitro + .hypesquad + .hypesquad-bg {
-        right: initial;
-        left: -1px;
-      }
-
-      .admin {
-        top: -15px;
-        left: -1px;
-        transform: rotate(-23deg);
-      }
     }
 
     .details {

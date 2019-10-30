@@ -6,10 +6,9 @@ const no = [
   'nice try',
   'banned',
   'ur not cute enough',
-  'this command have been blocked due to article ~~13~~17. Sorry.',
+  'this command has been blocked due to article ~~13~~17. Sorry.',
   'friendly reminder that you\'re not allowed to run that command'
 ];
-const getNo = () => no[Math.floor(Math.random() * no.length)];
 
 module.exports = class CommandHandler {
   constructor (bot, mongo, config) {
@@ -18,6 +17,10 @@ module.exports = class CommandHandler {
     this.bot = bot;
 
     bot.on('messageCreate', this.processCommand.bind(this));
+  }
+
+  get no () {
+    return no[Math.floor(Math.random() * no.length)];
   }
 
   processCommand (msg) {
@@ -35,15 +38,14 @@ module.exports = class CommandHandler {
 
     if (command) {
       if (command.isAdmin && !isAdmin) {
-        return this.bot.createMessage(msg.channel.id, getNo());
+        return this.bot.createMessage(msg.channel.id, this.no);
       }
-      if (command.permissions && !command.permissions.every(p => msg.member.permission.has(p))) {
-        return this.bot.createMessage(msg.channel.id, getNo());
+      const permissions = typeof command.permissions === 'function' ? command.permissions(msg) : command.permissions;
+      if (permissions && !permissions.every(p => msg.member.permission.has(p))) {
+        return this.bot.createMessage(msg.channel.id, this.no);
       }
 
       return command.func(this.bot, msg, this.config, this.mongo);
     }
-
-    // Fetch custom commands
   }
 };

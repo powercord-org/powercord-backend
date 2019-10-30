@@ -7,17 +7,14 @@ const github = require('./oauth/github');
 
 const hook = require('./hook');
 
-const { v1 } = require('./api');
+const { v1, v2 } = require('./api');
 
-/*
- * @todo: CSRF tokens
- * @todo: Allow ppl to register their themes
- */
 module.exports = (app) => {
   // UI routes
   app.get('/', (req, res) => res.render('index', req.session));
   app.get('/me', (req, res) => res.render('me', req.session));
   // app.get('/brand', (req, res) => res.render('brand', req.session));
+
   app.get('/legal/privacy', (req, res) => res.render('privacy', req.session));
   app.get('/legal/tos', (req, res) => res.render('terms', req.session));
   app.get('/contributors', contributors);
@@ -40,5 +37,6 @@ module.exports = (app) => {
 
   // API
   v1.call(this, app, '/api/v1');
-  v1.call(this, app, '/api');
+  v2.call(this, app, '/api/v2');
+  v2.call(this, app, '/api');
 };

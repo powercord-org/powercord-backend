@@ -37,7 +37,7 @@ const routes = require('./routes');
   }));
 
   app.use(await require('./middlewares/context.js')(database, boatInstance));
-  app.use(require('./middlewares/session.js'));
+  app.use(require('./middlewares/session'));
   app.use('/assets', express.static(resolve(__dirname, '..', 'static')));
   routes.call(this, app);
 

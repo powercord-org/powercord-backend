@@ -10,7 +10,6 @@
         "contributor": "role id",
         "early": "role id",
         "hunter": "role id",
-        "tester": "role id",
         "user": "role id"
       },
       "strawpoll": "channel id",

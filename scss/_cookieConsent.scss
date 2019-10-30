@@ -1,17 +1,17 @@
 #cookie-consent {
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50%;
-  bottom: -60px;
-  height: 55px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  min-height: 55px;
   padding: 0 15px;
+  transform: translateY(35px);
   display: flex;
   transition: bottom .3s;
-  border-radius: 5px;
-  border: 1px $primaryDarkest solid;
+  border: 0 $primaryDarkest solid;
   background-color: $primaryDark;
   box-shadow: 0 2px 7px $primaryDarker;
+  border-top-width: 1px;
   align-items: center;
 
   img {
@@ -32,5 +32,16 @@
     width: 80px;
     border-radius: 3px;
     background-color: $primary;
+  }
+}
+
+@media screen and (min-width: 1140px){
+  #cookie-consent {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    bottom: -60px;
+    border-radius: 5px;
+    border-width: 1px;
   }
 }
