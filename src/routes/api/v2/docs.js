@@ -30,8 +30,11 @@ const docs = {
         name,
         contents: []
       };
-      let inBlockquote = false;
-      let blockquote = null;
+      let inBlockquote,
+        inList = false;
+      let blockquote,
+        listItem,
+        list = null;
       marked.lexer(markdown).forEach(node => {
         switch (node.type) {
           case 'heading':
@@ -63,6 +66,11 @@ const docs = {
               });
             }
             break;
+          case 'text':
+            if (inList) {
+              listItem += `${node.text}\n`;
+            }
+            break;
           case 'code':
             document.contents.push({
               type: 'CODEBLOCK',
@@ -76,6 +84,25 @@ const docs = {
           case 'blockquote_end':
             inBlockquote = false;
             document.contents.push(blockquote);
+            blockquote = null;
+            break;
+          case 'list_start':
+            list = {
+              type: 'LIST',
+              ordered: node.ordered,
+              items: []
+            };
+            break;
+          case 'list_end':
+            document.contents.push(list);
+            break;
+          case 'list_item_start':
+            inList = true;
+            listItem = '';
+            break;
+          case 'list_item_end':
+            inList = false;
+            list.items.push(listItem);
             blockquote = null;
             break;
         }
