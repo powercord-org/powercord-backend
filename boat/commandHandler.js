@@ -24,7 +24,7 @@ module.exports = class CommandHandler {
   }
 
   processCommand (msg) {
-    if (msg.channel.recipient) {
+    if (msg.channel.recipient || this.config.discord.boat.stupid.includes(msg.author.id)) {
       return;
     }
 

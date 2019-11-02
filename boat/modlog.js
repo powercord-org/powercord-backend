@@ -1,3 +1,5 @@
+/* global BigInt */
+const { Constants: { AuditLogActions } } = require('eris');
 const template = `
 **$type | Case $case**
 
@@ -19,7 +21,7 @@ module.exports = class Modlog {
 
   processBanLog (banned, guild, user) {
     setTimeout(async () => {
-      const logs = await guild.getAuditLogs(5, null, banned ? 22 : 23);
+      const logs = await guild.getAuditLogs(5, null, banned ? AuditLogActions.MEMBER_BAN_ADD : AuditLogActions.MEMBER_BAN_REMOVE);
       const entry = logs.entries.find(entry => entry.targetID = user.id);
       const [ modId, modName, reason ] = this._processAuditEntry(entry);
       const channel = this.bot.getChannel(this.config.discord.boat.modlog);
@@ -34,19 +36,37 @@ module.exports = class Modlog {
         .replace('$modid', modId)
         .replace('$reason', reason)
       );
-    }, 1000); // Ensure audit log entry is there
+    }, 1500); // Ensure audit log entry is there
   }
 
-  async processLeaveLog () {
-    // @todo: Fetch audit log entries to check if it's a kick
+  processLeaveLog (guild, user) {
+    setTimeout(async () => {
+      const logs = await guild.getAuditLogs(5, null, AuditLogActions.MEMBER_KICK);
+      const entry = logs.entries.find(entry => entry.targetID = user.id);
+      if (entry && Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) < 5000) {
+        const [ modId, modName, reason ] = this._processAuditEntry(entry);
+        const channel = this.bot.getChannel(this.config.discord.boat.modlog);
+        const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)[1]) + 1;
 
-    // getAuditLogs(limit, before, actionType)
+        this.bot.createMessage(this.config.discord.boat.modlog, template
+          .replace('$type', '<:yeet:640214692979015680> Kick')
+          .replace('$case', caseId)
+          .replace('$user', `${user.username}#${user.discriminator}`)
+          .replace('$userid', user.id)
+          .replace('$moderator', modName)
+          .replace('$modid', modId)
+          .replace('$reason', reason)
+        );
+      }
+    }, 1500); // Ensure audit log entry is there
   }
 
-  async processMuteLog () {
-    // @todo: Check if muted have been added/removed
+  processMuteLog () {
+    setTimeout(async () => {
+      // @todo: Check if muted have been added/removed
 
-    // Fetch audit logs
+      // Fetch audit logs
+    }, 1500); // Ensure audit log entry is there
   }
 
   _processAuditEntry (entry) {

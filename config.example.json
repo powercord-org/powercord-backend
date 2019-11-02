@@ -13,8 +13,11 @@
         "hunter": "role id",
         "user": "role id"
       },
+      "server": "server id",
       "strawpoll": "channel id",
-      "starboard": "channel id"
+      "starboard": "channel id",
+      "modlog": "channel id",
+      "stupid": [ "user ids" ]
     }
   },
   "spotify": {

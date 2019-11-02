@@ -1,4 +1,5 @@
 const Eris = require('eris');
+const Snipe = require('./snipe');
 const Modlog = require('./modlog');
 const Starboard = require('./starboard');
 const CommandHandler = require('./commandHandler');
@@ -13,6 +14,7 @@ module.exports = function (mongo, config) {
   new CommandHandler(bot, mongo, config);
   new Starboard(bot, mongo.starboard, config);
   new Modlog(bot, config);
+  new Snipe(bot, config);
 
   // make it connect
   bot.connect();

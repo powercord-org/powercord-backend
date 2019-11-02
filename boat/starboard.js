@@ -62,9 +62,9 @@ module.exports = class Starboard {
 
   _isProcessable (msg, stargazer) {
     return !msg.channel.nsfw &&
-    msg.author.id !== stargazer.id &&
-    msg.channel.id !== this.config.discord.boat.starboard &&
-    !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'));
+      msg.author.id !== stargazer.id &&
+      msg.channel.id !== this.config.discord.boat.starboard &&
+      !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'));
   }
 
   _buildStarMessage (stars, msg) {
