@@ -6,6 +6,9 @@ const CommandHandler = require('./commandHandler');
 
 
 module.exports = function (mongo, config) {
+  if (!config.discord.boat.enabled) {
+    return;
+  }
   const bot = new Eris(config.discord.boat.token);
 
   bot.on('ready', () => console.log('Powercord bot is ready'));

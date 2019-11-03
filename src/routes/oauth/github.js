@@ -20,7 +20,7 @@ module.exports = {
       user = await GithubOAuth.getUserByBearer(token.access_token);
     } catch (e) {
       console.log(e);
-      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
+      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href="https://discord.gg/5eSH46g">Powercord's support server</a> for assistance.`);
     }
 
     await req.db.users.updateOne({ id: req.session.discord.id }, {

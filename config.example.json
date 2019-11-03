@@ -5,6 +5,7 @@
     "clientID": "",
     "clientSecret": "",
     "boat": {
+      "enabled": true,
       "prefix": "pc/",
       "token": "Bot token",
       "roles": {

@@ -20,16 +20,16 @@ module.exports = {
     try {
       token = await DiscordOAuth.getToken(req.query.code);
       if (token.error) {
-        return res.status(500).send(`Something went wrong: <code>${token.error}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
+        return res.status(500).send(`Something went wrong: <code>${token.error}</code><br>If the issue persists, please join <a href="https://discord.gg/5eSH46g">Powercord's support server</a> for assistance.`);
       }
 
       user = await DiscordOAuth.getUserByBearer(token.access_token);
       if (!user.id) {
-        return res.status(500).send(`Something went wrong: <code>${user.message}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
+        return res.status(500).send(`Something went wrong: <code>${user.message}</code><br>If the issue persists, please join <a href="https://discord.gg/5eSH46g">Powercord's support server</a> for assistance.`);
       }
     } catch (e) {
       console.log(e);
-      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href="https://discord.gg/Yphr6WG">Powercord's support server</a> for assistance.`);
+      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href="https://discord.gg/5eSH46g">Powercord's support server</a> for assistance.`);
     }
 
     if (!await req.db.users.findOne({ id: user.id })) {
@@ -83,10 +83,6 @@ module.exports = {
 
   async unlink (req, res) {
     if (req.session.discord) {
-      if (typeof req.query.confirm === 'undefined' && (req.session.tokens.metadata.contributor || req.session.tokens.metadata.developer)) {
-        return res.send('You\'ll lose your contributor/developer role if you continue. We just wanted to make sure you\'re aware of that. <a href=\'?confirm\'>I\'m sure</a>');
-      }
-
       await req.db.users.deleteOne({ id: req.session.tokens.id });
       res.cookie('token', '', { maxAge: -1 });
       delete req.session.discord;
