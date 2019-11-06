@@ -1,8 +1,39 @@
 const { jwt: { decode } } = require('../../util');
 const DiscordOAuth = require('../../util/oauth/discord');
 
+const login = require('./login');
+const logout = require('./logout');
+const discord = require('./discord');
+const refresh = require('./refresh');
+
 // @todo: Split this shit up
 module.exports = async (req, res, next) => {
+  // noinspection PointlessBooleanExpressionJS
+  if (false) { // eslint-disable-line no-constant-condition
+    // noinspection UnreachableCodeJS (wip)
+    const user = await login(req, res);
+    if (!user) {
+      await logout(req, res);
+      return next();
+    }
+
+    const disc = await discord(req, res);
+    if (!disc) {
+      await logout(req, res);
+      return next();
+    }
+
+    const refreshed = await refresh(req, res);
+    if (!refreshed) {
+      await logout(req, res);
+      return next();
+    }
+
+    return next();
+  }
+
+  // --------- LEGACY
+  /* eslint-disable */
   try {
     req.session.isAdmin = false;
     if (req.cookies.token || req.headers.authorization) {
@@ -36,12 +67,6 @@ module.exports = async (req, res, next) => {
 
       // Discord (oauth)
       if (isNaN(discord.expiryDate) || Date.now() >= discord.expiryDate) {
-        /*
-         * -- Why are we checking NaN
-         * We discovered that some records in Powercord database were invalid, and had NaN as expiracy date.
-         * So for those accounts we're going ahead and refreshing the token anyway.
-         */
-
         let tokens;
         try {
           tokens = await DiscordOAuth.refreshToken(discord.refresh_token);
@@ -91,8 +116,6 @@ module.exports = async (req, res, next) => {
       }
     }
 
-    // @todo: real check
-    req.session.isDonor = req.session.isAdmin; // || req.session.user.donor;
     return next();
   } catch (e) {
     console.error(e);

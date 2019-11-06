@@ -28,7 +28,7 @@ module.exports = {
         'metadata.github': user.login,
         github: {
           access_token: token.access_token,
-          name: user.name
+          name: user.name || user.login
         }
       }
     });
