@@ -13,6 +13,7 @@
   box-shadow: 0 2px 7px $primaryDarker;
   border-top-width: 1px;
   align-items: center;
+  z-index: 999;
 
   img {
     width: 45px;
@@ -24,7 +25,7 @@
     flex: 1;
 
     a {
-      color: #00b0f4;
+      color: #f49898;
     }
   }
 

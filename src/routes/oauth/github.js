@@ -1,7 +1,14 @@
 const { encode } = require('querystring');
 const GithubOAuth = require('../../util/oauth/github');
 
-module.exports = {
+const auth = require('../../middlewares/auth');
+
+class GithubAuth {
+  registerRoutes (express) {
+    express.get('/oauth/github', auth(), this.authorize);
+    express.get('/oauth/github/unlink', auth(), this.unlink);
+  }
+
   async authorize (req, res) {
     if (!req.query.code) {
       const data = encode({
@@ -35,16 +42,19 @@ module.exports = {
 
     req.session.github = user;
     res.redirect('/me');
-  },
+  }
 
   async unlink (req, res) {
     delete req.session.github;
-    await req.db.users.updateOne({ id: req.session.discord.id }, {
-      $set: {
+    await req.db.users.update(
+      { id: req.session.discord.id },
+      {
         'metadata.github': null,
         github: null
       }
-    });
-    return res.redirect('/me');
+    );
+    res.redirect('/me');
   }
-};
+}
+
+module.exports = GithubAuth;

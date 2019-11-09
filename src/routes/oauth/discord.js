@@ -1,8 +1,16 @@
 const qs = require('querystring');
+const { encode } = require('../../util/jwt');
 const DiscordOAuth = require('../../util/oauth/discord');
-const { encode } = require('../../util/jwt.js');
 
-module.exports = {
+const auth = require('../../middlewares/auth');
+const logout = require('../../middlewares/session/logout');
+
+class DiscordAuth {
+  registerRoutes (express) {
+    express.get('/oauth/discord', this.authorize);
+    express.get('/oauth/discord/unlink', auth(), this.unlink);
+  }
+
   async authorize (req, res) {
     if (!req.query.code) {
       const data = qs.encode({
@@ -79,14 +87,15 @@ module.exports = {
     });
     res.redirect(req.session._redirect || '/me');
     delete req.session._redirect;
-  },
+  }
 
   async unlink (req, res) {
     if (req.session.discord) {
-      await req.db.users.deleteOne({ id: req.session.tokens.id });
-      res.cookie('token', '', { maxAge: -1 });
-      delete req.session.discord;
+      await req.db.users.delete({ id: req.session.tokens.id });
+      logout(req, res);
     }
     return res.redirect('/me');
   }
-};
+}
+
+module.exports = DiscordAuth;

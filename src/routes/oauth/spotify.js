@@ -1,7 +1,14 @@
 const { encode } = require('querystring');
 const SpotifyOAuth = require('../../util/oauth/spotify');
 
-module.exports = {
+const auth = require('../../middlewares/auth');
+
+class SpotifyAuth {
+  registerRoutes (express) {
+    express.get('/oauth/spotify', auth(), this.authorize);
+    express.get('/oauth/spotify/unlink', auth(), this.unlink);
+  }
+
   async authorize (req, res) {
     if (!req.query.code) {
       const data = encode({
@@ -39,15 +46,16 @@ module.exports = {
 
     req.session.spotify = user;
     res.redirect('/me');
-  },
+  }
 
   async unlink (req, res) {
     delete req.session.spotify;
-    await req.db.users.updateOne({ id: req.session.discord.id }, {
-      $set: {
-        spotify: null
-      }
-    });
+    await req.db.users.update(
+      { id: req.session.discord.id },
+      { spotify: null }
+    );
     return res.redirect('/me');
   }
-};
+}
+
+module.exports = SpotifyAuth;

@@ -1,23 +1,28 @@
-const userRoutes = {
-  getSelfUser: async (req, res) => {
+const auth = require('../../../../middlewares/auth');
+
+class Users {
+  registerRoutes (express) {
+    express.get('/api/v2/users/@me', auth(), this.getSelf);
+    express.get('/api/v2/users/:id', this.getOther);
+  }
+
+  async getSelf (req, res) {
     res.json({
       id: req.session.user.id,
       connections: {
         spotify: (req.session.user.spotify && req.session.user.spotify.name) ? req.session.user.spotify.name : null,
         github: (req.session.user.github && req.session.user.github.name) ? req.session.user.github.name : null
       },
-      communityStatus: await userRoutes._getCommunityStatus(req.session.user, req.db)
+      banned: await req.db.users.findBanned(req.session.user.id)
     });
-  },
+  }
 
-  getUser: async (req, res) => {
-    const user = await req.db.users.findOne({ id: req.params.id });
+  async getOther (req, res) {
+    const user = await req.db.users.findWithBanned(req.params.id);
+    console.log(user);
 
     if (!user) {
-      return res.status(404).json({
-        status: 404,
-        error: 'Not found'
-      });
+      return res.sendStatus(404);
     }
 
     // I use !! just to make sure value is present in payload, even if we define it by default. Never too safe #RS256
@@ -29,7 +34,7 @@ const userRoutes = {
         tester: !!user.metadata.tester,
         hunter: !!user.metadata.hunter
       },
-      communityStatus: await userRoutes._getCommunityStatus(user, req.db),
+      banned: user.banned,
       badge: {
         // @todo: real check
         displayBadge: user.badges && user.badges.custom, // req.config.admins.includes(user.id) /* || user.donor */,
@@ -39,18 +44,7 @@ const userRoutes = {
         name: user.badges && user.badges.name ? user.badges.name : null
       }
     });
-  },
-
-  async _getCommunityStatus (user, mongo) {
-    const banned = await mongo.banned.findOne({ _id: user.id }) || {};
-    return {
-      publish: !banned.publish, // Publishing plugin and themes
-      hosting: !banned.hosting, // Requesting hosting on Powercord's server
-      pledging: !banned.pledging, // Getting paid perks
-      reporting: !banned.reporting, // Reporting plugin and themes
-      reviewing: !banned.reviewing // Posting plugin/themes reviews
-    };
   }
-};
+}
 
-module.exports = userRoutes;
+module.exports = Users;

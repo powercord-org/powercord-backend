@@ -1,15 +1,15 @@
 {
   "parserOptions": {
     "ecmaVersion": 2018,
-    "sourceType": "script",
-    "ecmaFeatures": {
-      "jsx": true
-    }
+    "sourceType": "script"
   },
   "env": {
     "node": true,
     "es6": true,
     "browser": true
+  },
+  "globals": {
+    "BigInt": true
   },
   "rules": {
     "for-direction": [ "error" ],

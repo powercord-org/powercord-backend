@@ -1,5 +1,7 @@
-module.exports = {
-  patreon: (req, res) => { // eslint-disable-line
-    // @todo: donor checking
+class Hooks {
+  registerRoutes (express) {
+    express.get('/webhonk/patreon', (req, res) => res.sendStatus(501));
   }
-};
+}
+
+module.exports = Hooks;

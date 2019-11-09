@@ -1,42 +1,25 @@
-const authMiddleware = require('../middlewares/auth');
+const { readdirSync } = require('fs');
+const { join } = require('path');
 
-const contributors = require('./contributors');
-const discord = require('./oauth/discord');
-const spotify = require('./oauth/spotify');
-const github = require('./oauth/github');
+const registerRoutes = (express, path) => {
+  readdirSync(path)
+    .filter(file => file !== 'index.js')
+    .forEach(filename => {
+      const filepath = join(path, filename);
+      if (filename.endsWith('.js')) {
+        const Module = require(filepath);
+        if (Module.prototype && Module.prototype.registerRoutes) {
+          const mdl = new Module();
+          mdl.registerRoutes(express);
+        }
+      } else {
+        registerRoutes(express, filepath);
+      }
+    });
+};
 
-const hook = require('./hook');
-
-const { v1, v2 } = require('./api');
-
-module.exports = (app) => {
-  // UI routes
-  app.get('/', (req, res) => res.render('index', req.session));
-  app.get('/me', (req, res) => res.render('me', req.session));
-  // app.get('/brand', (req, res) => res.render('brand', req.session));
-
-  app.get('/legal/privacy', (req, res) => res.render('privacy', req.session));
-  app.get('/legal/tos', (req, res) => res.render('terms', req.session));
-  app.get('/contributors', contributors);
-
-  // Oauth routes
-  app.get('/oauth/discord', discord.authorize);
-  app.get('/oauth/spotify', authMiddleware.auth, spotify.authorize);
-  app.get('/oauth/github', authMiddleware.auth, github.authorize);
-  app.get('/oauth/discord/unlink', authMiddleware.auth, discord.unlink);
-  app.get('/oauth/spotify/unlink', authMiddleware.auth, spotify.unlink);
-  app.get('/oauth/github/unlink', authMiddleware.auth, github.unlink);
-  app.get('/logout', authMiddleware.auth, (req, res) => {
-    res.cookie('token', '', { maxAge: -1 });
-    delete req.session.jwt;
-    res.redirect('/');
-  });
-
-  // Webhooks
-  app.post('/gibmoneytodaddy', hook.patreon);
-
-  // API
-  v1.call(this, app, '/api/v1');
-  v2.call(this, app, '/api/v2');
-  v2.call(this, app, '/api');
+module.exports = (express) => {
+  const initial = express._router.stack.length;
+  registerRoutes(express, __dirname);
+  console.log(`${express._router.stack.length - initial} routes loaded.`);
 };

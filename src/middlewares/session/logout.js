@@ -1,4 +1,4 @@
 /* eslint-disable */
-module.exports = async (req, res) => {
+module.exports = (req, res) => {
   return true;
 };

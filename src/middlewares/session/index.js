@@ -6,26 +6,26 @@ const logout = require('./logout');
 const discord = require('./discord');
 const refresh = require('./refresh');
 
-// @todo: Split this shit up
+// @todo: Finish splitting this shit up
 module.exports = async (req, res, next) => {
   // noinspection PointlessBooleanExpressionJS
   if (false) { // eslint-disable-line no-constant-condition
     // noinspection UnreachableCodeJS (wip)
     const user = await login(req, res);
     if (!user) {
-      await logout(req, res);
+      logout(req, res);
       return next();
     }
 
     const disc = await discord(req, res);
     if (!disc) {
-      await logout(req, res);
+      logout(req, res);
       return next();
     }
 
     const refreshed = await refresh(req, res);
     if (!refreshed) {
-      await logout(req, res);
+      logout(req, res);
       return next();
     }
 
@@ -83,7 +83,7 @@ module.exports = async (req, res, next) => {
           return res.redirect('/oauth/discord');
         }
         discord.access_token = tokens.access_token;
-        await req.db.users.updateOne({ id: userId }, {
+        await req.db.users.collection.updateOne({ id: userId }, {
           $set: {
             'discord.access_token': discord.access_token,
             'discord.expiryDate': Date.now() + (tokens.expires_in * 1000)
@@ -102,7 +102,7 @@ module.exports = async (req, res, next) => {
         }
 
         // Save username/avatars
-        await req.db.users.updateOne({ id: user.id }, {
+        await req.db.users.collection.updateOne({ id: user.id }, {
           $set: {
             'metadata.username': user.username,
             'metadata.discriminator': user.discriminator,

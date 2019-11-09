@@ -1,29 +1,27 @@
 const marked = require('marked');
 const documents = require('../../../documentation');
 
-const docs = {
-  // HTTP
-  categories (req, res) {
-    res.json(docs._listCategories());
-  },
+class Documentation {
+  registerRoutes (express) {
+    express.get('/api/v2/docs/categories', this.listCategories);
+    express.get('/api/v2/docs/:category/:doc', this.getDocument);
+  }
 
-  document (req, res) {
-    res.json(docs._getDocument(req.params.category, req.params.doc));
-  },
-
-  // Methods
-  _listCategories () {
-    return Object.keys(documents).map(doc => ({
-      id: doc,
-      metadata: documents[doc].metadata,
-      docs: Object.keys(documents[doc].files).map(file => ({
-        id: file,
-        name: documents[doc].files[file].name
+  listCategories (req, res) {
+    res.json(
+      Object.keys(documents).map(doc => ({
+        id: doc,
+        metadata: documents[doc].metadata,
+        docs: Object.keys(documents[doc].files).map(file => ({
+          id: file,
+          name: documents[doc].files[file].name
+        }))
       }))
-    }));
-  },
+    );
+  }
 
-  _getDocument (category, doc) {
+  getDocument (req, res) {
+    const { category, doc } = req.params;
     if (documents[category] && documents[category].files[doc]) {
       const { name, markdown } = documents[category].files[doc];
       const document = {
@@ -107,10 +105,11 @@ const docs = {
             break;
         }
       });
-      return document;
+      return res.json(document);
     }
-    return null;
-  }
-};
 
-module.exports = docs;
+    res.sendStatus(404);
+  }
+}
+
+module.exports = Documentation;
