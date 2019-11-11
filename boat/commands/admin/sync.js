@@ -18,8 +18,9 @@ module.exports = {
         newRoles.push(cfg.discord.boat.roles.user);
       }
 
+
       [ 'hunter', 'early', 'contributor' ].forEach(type => {
-        if (user.metadata[type] && !user.member.roles.includes(cfg.discord.boat.roles[type])) {
+        if (cfg.discord.boat.roles[type] && user.metadata[type] && !user.member.roles.includes(cfg.discord.boat.roles[type])) {
           newRoles.push(cfg.discord.boat.roles[type]);
         } else if (!user.metadata[type] && user.member.roles.includes(cfg.discord.boat.roles[type])) {
           newRoles = newRoles.filter(r => r !== cfg.discord.boat.roles[type]);

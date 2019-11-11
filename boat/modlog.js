@@ -1,4 +1,3 @@
-/* global BigInt */
 const { Constants: { AuditLogActions } } = require('eris');
 const template = `
 **$type | Case $case**
@@ -61,12 +60,34 @@ module.exports = class Modlog {
     }, 1500); // Ensure audit log entry is there
   }
 
-  processMuteLog () {
+  processMuteLog (guild, user) {
     setTimeout(async () => {
-      // @todo: Check if muted have been added/removed
-
-      // Fetch audit logs
+      const logs = await guild.getAuditLogs(5, null, AuditLogActions.MEMBER_ROLE_UPDATE);
+      const entry = logs.entries.find(entry => entry.targetID = user.id);
+      if (entry && Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) < 5000) {
+        if (entry.after.$add && entry.after.$add.find(r => r.id === this.config.discord.boat.roles.mute)) {
+          this._logMute(entry, user, true);
+        } else if (entry.after.$remove && entry.after.$remove.find(r => r.id === this.config.discord.boat.roles.mute)) {
+          this._logMute(entry, user, false);
+        }
+      }
     }, 1500); // Ensure audit log entry is there
+  }
+
+  async _logMute (entry, user, muted) {
+    const [ modId, modName, reason ] = this._processAuditEntry(entry);
+    const channel = this.bot.getChannel(this.config.discord.boat.modlog);
+    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)[1]) + 1;
+
+    this.bot.createMessage(this.config.discord.boat.modlog, template
+      .replace('$type', muted ? '🤫 Mute' : 'Unmute')
+      .replace('$case', caseId)
+      .replace('$user', `${user.username}#${user.discriminator}`)
+      .replace('$userid', user.id)
+      .replace('$moderator', modName)
+      .replace('$modid', modId)
+      .replace('$reason', reason)
+    );
   }
 
   _processAuditEntry (entry) {
@@ -74,7 +95,6 @@ module.exports = class Modlog {
       modName,
       reason;
     if (entry.user.id === this.bot.user.id) {
-      console.log(entry);
       const splittedReason = entry.reason.split(' ');
       modName = splittedReason.shift().replace('[', '').replace(']', '');
       reason = splittedReason.join(' ');
@@ -83,7 +103,7 @@ module.exports = class Modlog {
     } else {
       modId = entry.user.id;
       modName = `${entry.user.username}#${entry.user.discriminator}`;
-      reason = entry.reason || '*No reason specified. Moderator, run pc/edit [case id] [reason]*';
+      reason = entry.reason || 'No reason specified.';
     }
     return [ modId, modName, reason ];
   }
