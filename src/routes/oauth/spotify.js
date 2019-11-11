@@ -29,31 +29,24 @@ class SpotifyAuth {
       user = await SpotifyOAuth.getUserByBearer(token.access_token);
     } catch (e) {
       console.log(e);
-      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href="https://discord.gg/5eSH46g">Powercord's support server</a> for assistance.`);
+      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href='https://discord.gg/5eSH46g'>Powercord's support server</a> for assistance.`);
     }
 
-    await req.db.users.updateOne({ id: req.session.discord.id }, {
-      $set: {
-        spotify: {
-          access_token: token.access_token,
-          refresh_token: token.refresh_token,
-          expiryDate: Date.now() + (token.expires_in * 1000),
-          name: user.display_name,
-          scopes: req.config.spotify.scopes
-        }
+    await req.db.users.update(req.session.user._id, {
+      'accounts.spotify': {
+        access_token: token.access_token,
+        refresh_token: token.refresh_token,
+        expiryDate: Date.now() + (token.expires_in * 1000),
+        name: user.display_name,
+        scopes: req.config.spotify.scopes
       }
     });
 
-    req.session.spotify = user;
     res.redirect('/me');
   }
 
   async unlink (req, res) {
-    delete req.session.spotify;
-    await req.db.users.update(
-      { id: req.session.discord.id },
-      { spotify: null }
-    );
+    await req.db.users.update(req.session.user._id, { 'accounts.spotify': null });
     return res.redirect('/me');
   }
 }

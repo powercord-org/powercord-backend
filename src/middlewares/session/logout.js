@@ -1,4 +1,6 @@
-/* eslint-disable */
 module.exports = (req, res) => {
-  return true;
+  res.cookie('token', '', { maxAge: -1 });
+  delete req.session.jwt;
+  delete req.session.discord;
+  delete req.session.isAdmin;
 };

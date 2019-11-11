@@ -40,45 +40,35 @@ class DiscordAuth {
       return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href='https://discord.gg/5eSH46g'>Powercord's support server</a> for assistance.`);
     }
 
-    if (!await req.db.users.find({ id: user.id })) {
-      await req.db.users.insertOne({
-        id: user.id,
-        metadata: {
-          username: user.username,
-          discriminator: user.discriminator,
-          avatar: user.avatar
-            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}`
-            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
-          contributor: false,
-          developer: false,
-          tester: false,
-          hunter: false,
-          github: null
-        },
-        discord: {
-          access_token: token.access_token,
-          refresh_token: token.refresh_token,
-          expiryDate: Date.now() + (token.expires_in * 1000)
-        },
-        spotify: false,
-        github: false
-      });
-    } else {
-      await req.db.users.update(
-        { id: user.id },
-        {
-          'metadata.username': user.username,
-          'metadata.discriminator': user.discriminator,
-          'metadata.avatar': user.avatar
-            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}`
-            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
+    if (!await req.db.users.find(user.id)) {
+      await req.db.users.create({
+        _id: user.id,
+        username: user.username,
+        discriminator: user.discriminator,
+        avatar: user.avatar
+          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}`
+          : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
+        accounts: {
           discord: {
             access_token: token.access_token,
             refresh_token: token.refresh_token,
             expiryDate: Date.now() + (token.expires_in * 1000)
           }
         }
-      );
+      });
+    } else {
+      await req.db.users.update(user.id, {
+        username: user.username,
+        discriminator: user.discriminator,
+        avatar: user.avatar
+          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}`
+          : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
+        'accounts.discord': {
+          access_token: token.access_token,
+          refresh_token: token.refresh_token,
+          expiryDate: Date.now() + (token.expires_in * 1000)
+        }
+      });
     }
 
     req.session.discord = user;
@@ -92,7 +82,7 @@ class DiscordAuth {
 
   async unlink (req, res) {
     if (req.session.discord) {
-      await req.db.users.delete({ id: req.session.tokens.id });
+      await req.db.users.delete(req.session.tokens._id);
       logout(req, res);
     }
     return res.redirect('/me');

@@ -41,6 +41,21 @@ class Users extends Model {
     return this._formatBanned(await this.banned.findOne({ _id: id }) || {});
   }
 
+  create (partialDocument) {
+    return super.create({
+      createdAt: new Date(),
+      patreon: 0,
+      badges: {
+        developer: true,
+        contributor: false,
+        hunter: true,
+        early: true,
+        custom: null
+      },
+      ...partialDocument
+    });
+  }
+
   _formatBanned (data) {
     return {
       account: !!data.account, // Having a Powercord account

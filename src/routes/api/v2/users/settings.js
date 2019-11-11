@@ -26,7 +26,7 @@ class Settings {
       discord: req.body.discord
     };
 
-    req.db.users.update({ id: req.session.user.id }, { settings: update });
+    req.db.users.update(req.session.user._id, { settings: update });
     res.sendStatus(204);
   }
 }

@@ -67,7 +67,7 @@ class Model {
     if (typeof query === 'string') {
       query = { _id: query };
     }
-    this.collection.updateOne(query, document);
+    this.collection.update(query, document);
   }
 
   /**

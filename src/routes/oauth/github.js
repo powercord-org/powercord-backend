@@ -27,32 +27,22 @@ class GithubAuth {
       user = await GithubOAuth.getUserByBearer(token.access_token);
     } catch (e) {
       console.log(e);
-      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href="https://discord.gg/5eSH46g">Powercord's support server</a> for assistance.`);
+      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href='https://discord.gg/5eSH46g'>Powercord's support server</a> for assistance.`);
     }
 
-    await req.db.users.updateOne({ id: req.session.discord.id }, {
-      $set: {
-        'metadata.github': user.login,
-        github: {
-          access_token: token.access_token,
-          name: user.name || user.login
-        }
+    await req.db.users.update(req.session.user._id, {
+      'accounts.github': {
+        access_token: token.access_token,
+        display: user.name || user.login,
+        login: user.login
       }
     });
 
-    req.session.github = user;
     res.redirect('/me');
   }
 
   async unlink (req, res) {
-    delete req.session.github;
-    await req.db.users.update(
-      { id: req.session.discord.id },
-      {
-        'metadata.github': null,
-        github: null
-      }
-    );
+    await req.db.users.update(req.session.user._id, { 'accounts.github': null });
     res.redirect('/me');
   }
 }

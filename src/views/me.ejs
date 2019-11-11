@@ -13,12 +13,12 @@
     }) %>
     <%- include("_parts/account", {
       type: "Spotify",
-      account: typeof user.spotify !== 'undefined' && user.spotify !== null && typeof user.spotify.name !== 'undefined' ? user.spotify.name : null,
+      account: typeof user.accounts.spotify !== 'undefined' && user.accounts.spotify !== null && typeof user.accounts.spotify.name !== 'undefined' ? user.accounts.spotify.name : null,
       desc: "Used to add extra features to the Spotify modal, like adding to library or to a playlist"
     }) %>
     <%- include("_parts/account", {
       type: "GitHub",
-      account: typeof user.github !== 'undefined' && user.github !== null && typeof user.github.name !== 'undefined' ? user.github.name : null,
+      account: typeof user.accounts.github !== 'undefined' && user.accounts.github !== null && typeof user.accounts.github.display !== 'undefined' ? user.accounts.github.display : null,
       desc: "If you're a contributor it'll show a link to your GitHub account"
     }) %>
   </div>

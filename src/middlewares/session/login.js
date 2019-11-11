@@ -1,7 +1,6 @@
-/* eslint-disable */
 const { jwt: { decode } } = require('../../util');
 
-module.exports = async (req, res) => {
+module.exports = async (req) => {
   if (!req.cookies.token && !req.headers.authorization) {
     return null;
   }
@@ -22,5 +21,12 @@ module.exports = async (req, res) => {
     }
   }
 
-  return req.db.users.findOne({ id: userId });
+  const user = await req.db.users.find(userId);
+  if (user) {
+    req.session.user = user;
+    req.session.jwt = req.cookies.token || req.headers.authorization;
+    req.session.isAdmin = req.config.admins.includes(user._id);
+    return true;
+  }
+  return false;
 };
