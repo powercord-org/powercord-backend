@@ -55,7 +55,7 @@ module.exports = async (req, res, next) => {
         }
       }
 
-      req.session.user = await req.db.users.findOne({ id: userId });
+      req.session.user = await req.db.users.find({ id: userId });
       if (!req.session.user) {
         res.cookie('token', '', { maxAge: -1 });
         return next();

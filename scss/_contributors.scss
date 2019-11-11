@@ -36,3 +36,16 @@
     }
   }
 }
+
+@media (min-width: 750px) {
+  .contributors .contributor {
+    width: 49%;
+    margin-right: 1%;
+  }
+}
+
+@media (min-width: 1500px) {
+  .contributors .contributor {
+    width: 24%;
+  }
+}

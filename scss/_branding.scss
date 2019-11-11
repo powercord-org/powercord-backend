@@ -1,0 +1,64 @@
+.branding {
+  .assets, .small, .big {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .asset {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    background-color: $primaryDark;
+    box-shadow: 0 2px 7px $primaryDarker;
+    display: flex;
+    flex-direction: column;
+
+    h3 {
+      flex-shrink: 0;
+      padding: 10px;
+      margin: 0;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      background-size: 20px 20px;
+      background-position: 0 0, 30px 30px;
+      background-color: #fff;
+      background-image: linear-gradient(45deg, #f6f6f6 25%, transparent 0, transparent 75%, #f6f6f6 0, #f6f6f6), linear-gradient(45deg, #f6f6f6 25%, transparent 0, transparent 75%, #f6f6f6 0, #f6f6f6);
+    }
+
+    .footer {
+      flex-shrink: 0;
+      padding: 5px;
+      margin: 0;
+      display: flex;
+      justify-content: flex-end;
+
+      a {
+        margin: 0 5px;
+      }
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .branding .big {
+    width: 66%;
+  }
+
+  .branding .small {
+    width: 33%;
+  }
+}
+
+@media (min-width: 750px) {
+  .branding .asset {
+    width: 49%;
+  }
+}

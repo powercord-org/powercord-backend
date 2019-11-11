@@ -1,3 +1,38 @@
+.feature {
+  display: flex;
+  width: 100%;
+  margin-bottom: 30px;
+  padding: 25px;
+  background-color: $primaryDark;
+  box-shadow: 0 2px 7px $primaryDarker;
+
+  .icon {
+    flex-shrink: 0;
+    width: 68px;
+    height: 68px;
+    margin-right: 35px;
+  }
+
+  .content {
+    flex: 1;
+  }
+
+  .name {
+    font-family: 'Discord', sans-serif;
+    font-size: 22px;
+    margin-bottom: 15px;
+
+    &::after {
+      content: '';
+      display: block;
+      width: 64px;
+      height: 6px;
+      background-color: #fff;
+    }
+  }
+}
+
+/*
 .features {
   display: flex;
   flex-wrap: wrap;
@@ -7,14 +42,10 @@
     width: 100%;
     margin-bottom: 25px;
     padding: 10px;
-    background-color: $primaryDark;
-    box-shadow: 0 2px 7px $primaryDarker;
     border-radius: 5px;
 
     .name {
       text-align: center;
-      font-family: 'Discord', sans-serif;
-      font-size: 22px;
     }
 
     .banner {
@@ -49,3 +80,4 @@
     }
   }
 }
+*/

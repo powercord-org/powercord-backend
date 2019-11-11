@@ -62,3 +62,9 @@
     }
   }
 }
+
+@media (min-width: 1300px) {
+  .accounts .account + .account {
+    width: 49%;
+  }
+}

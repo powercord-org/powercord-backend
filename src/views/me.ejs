@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<% include _parts/head.ejs %>
+<%- include('_parts/head.ejs', { title: 'Your Account' }) %>
 <body>
 <% include _parts/navbar.ejs %>
 <div class='container'>
-  <h2 class='accounts-header'>Your accounts</h2>
+  <h2 class='accounts-header'>Your linked accounts</h2>
   <div class='accounts'>
     <%- include("_parts/account", {
       type: "Discord",

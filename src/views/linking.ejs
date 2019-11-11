@@ -1,22 +1,21 @@
 <!DOCTYPE html>
-<html lang='en'>
-<head>
-  <title>Powercord account linking</title>
-  <style>
-    @font-face {
-      font-family: "Uni Sans";
-      src: url("/assets/unisanscaps.otf")
-    }
-
-    html, body { height: 100%; display: flex; align-items: center; justify-content: center; margin: 0; color: #fff; background-color: #7289DA; }
-    p {
-      font-size: 24px;
-      font-family: 'Uni Sans', sans-serif;
-    }
-  </style>
-</head>
-<body>
-<p>You can close this window</p>
-<img src='http://localhost:6462/wallpaper.png?jsonweebtoken=<%= jwt %>' style='display: none;'/>
+<html lang="en" dir="ltr">
+<%- include('_parts/head.ejs', { title: 'Linking' }) %>
+<body class='linking'>
+  <div class='linking-logos'>
+    <img src='/assets/brand/plug.svg' alt='Powercord'/>
+    <span>+</span>
+    <img src='https://discordapp.com/assets/1c8a54f25d101bdc607cec7228247a9a.svg' alt='Discord'/>
+  </div>
+  <div class='linking-text'>
+    Linking to your Discord account...
+  </div>
+  <img
+      onload='document.querySelector(".linking-text").innerText = "Link successful! You can now close this page."'
+      onerror='document.querySelector(".linking-text").innerText = "Uh oh, something failed. Your accounts are not linked."'
+      src='http://localhost:6462/wallpaper.png?jsonweebtoken=<%= jwt %>'
+      style='display: none;'
+      alt='loading'
+  />
 </body>
 </html>

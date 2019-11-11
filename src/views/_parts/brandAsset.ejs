@@ -1,9 +1,11 @@
 <div class="asset">
   <h3><%= name %></h3>
-  <img src="<%= src %>" alt="<%= name %>"/>
+  <div class='content'>
+    <img src="<%= assets[0] %>" alt="<%= name %>"/>
+  </div>
   <div class="footer">
     <% assets.map(asset => { %>
-      <a href="<%= asset.src %>" download="<%= asset.name %>" target="_blank"/>
+      <a href="<%= asset %>" download target="_blank">.<%= asset.split('.').pop() %></a>
     <% }) %>
   </div>
 </div>

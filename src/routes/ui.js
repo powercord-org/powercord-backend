@@ -3,10 +3,11 @@ const auth = require('../middlewares/auth');
 class UserInterface {
   registerRoutes (express) {
     express.get('/', this.render.bind(this, 'index'));
-    express.get('/tos', this.render.bind(this, 'tos'));
-    express.get('/privacy', this.render.bind(this, 'privacy'));
-    express.get('/contributors', this.contributors);
     express.get('/me', auth(), this.render.bind(this, 'me'));
+    express.get('/legal/tos', this.render.bind(this, 'terms'));
+    express.get('/legal/privacy', this.render.bind(this, 'privacy'));
+    express.get('/branding', this.render.bind(this, 'branding'));
+    express.get('/contributors', this.contributors);
   }
 
   render (template, req, res) {

@@ -28,19 +28,19 @@ class DiscordAuth {
     try {
       token = await DiscordOAuth.getToken(req.query.code);
       if (token.error) {
-        return res.status(500).send(`Something went wrong: <code>${token.error}</code><br>If the issue persists, please join <a href="https://discord.gg/5eSH46g">Powercord's support server</a> for assistance.`);
+        return res.status(500).send(`Something went wrong: <code>${token.error}</code><br>If the issue persists, please join <a href='https://discord.gg/5eSH46g'>Powercord's support server</a> for assistance.`);
       }
 
       user = await DiscordOAuth.getUserByBearer(token.access_token);
       if (!user.id) {
-        return res.status(500).send(`Something went wrong: <code>${user.message}</code><br>If the issue persists, please join <a href="https://discord.gg/5eSH46g">Powercord's support server</a> for assistance.`);
+        return res.status(500).send(`Something went wrong: <code>${user.message}</code><br>If the issue persists, please join <a href='https://discord.gg/5eSH46g'>Powercord's support server</a> for assistance.`);
       }
     } catch (e) {
       console.log(e);
-      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href="https://discord.gg/5eSH46g">Powercord's support server</a> for assistance.`);
+      return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href='https://discord.gg/5eSH46g'>Powercord's support server</a> for assistance.`);
     }
 
-    if (!await req.db.users.findOne({ id: user.id })) {
+    if (!await req.db.users.find({ id: user.id })) {
       await req.db.users.insertOne({
         id: user.id,
         metadata: {
@@ -64,8 +64,9 @@ class DiscordAuth {
         github: false
       });
     } else {
-      await req.db.users.updateOne({ id: user.id }, {
-        $set: {
+      await req.db.users.update(
+        { id: user.id },
+        {
           'metadata.username': user.username,
           'metadata.discriminator': user.discriminator,
           'metadata.avatar': user.avatar
@@ -77,7 +78,7 @@ class DiscordAuth {
             expiryDate: Date.now() + (token.expires_in * 1000)
           }
         }
-      });
+      );
     }
 
     req.session.discord = user;

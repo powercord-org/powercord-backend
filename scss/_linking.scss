@@ -1,0 +1,26 @@
+.linking {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.linking-logos {
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 175px;
+    height: 175px;
+  }
+
+  span {
+    font-size: 82px;
+    margin: 0 55px;
+  }
+}
+
+.linking-text {
+  margin-top: 85px;
+  font-size: 28px;
+}

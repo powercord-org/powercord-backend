@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<%- include('_parts/head.ejs', { title: 'Branding' }) %>
+<body>
+<% include _parts/navbar.ejs %>
+<div class="container branding">
+  <h1>Branding</h1>
+  <p>Please keep the assets in their original shape, proportions, orientation and colors. Thanks to
+    theGordHoard#9607 for making the plug and outlet. Wrench, fork and clock inspired from Twemoji.</p>
+  <div class='assets'>
+    <div class='big'>
+    <%- include('_parts/brandAsset.ejs', {
+    name: 'Plug',
+    assets: [ '/assets/brand/plug.svg', '/assets/brand/plug.png' ]
+    }) %>
+    <%- include('_parts/brandAsset.ejs', {
+    name: 'Outlet',
+    assets: [ '/assets/brand/outlet.svg', '/assets/brand/outlet.png' ]
+    }) %>
+    </div>
+    <div class='small'>
+      <%- include('_parts/brandAsset.ejs', {
+      name: 'Developer',
+      assets: [ '/assets/brand/developer.svg', '/assets/brand/developer.png' ]
+      }) %>
+      <%- include('_parts/brandAsset.ejs', {
+      name: 'Contributor',
+      assets: [ '/assets/brand/contributor.svg', '/assets/brand/contributor.png' ]
+      }) %>
+      <%- include('_parts/brandAsset.ejs', {
+      name: 'Bug Hunter',
+      assets: [ '/assets/brand/hunter.svg', '/assets/brand/hunter.png' ]
+      }) %>
+      <%- include('_parts/brandAsset.ejs', {
+      name: 'Early User',
+      assets: [ '/assets/brand/early.svg', '/assets/brand/early.png' ]
+      }) %>
+    </div>
+  </div>
+</div>
+<% include _parts/footer.ejs %>
+</body>
+</html>

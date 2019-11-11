@@ -1,28 +1,38 @@
 <!DOCTYPE html>
 <html lang='en' dir='ltr'>
-  <% include _parts/head.ejs %>
-  <body>
-    <% include _parts/navbar.ejs %>
-    <div class='container'>
-      <div class='pc-header'>Lightweight, powerful and simple Discord client mod.</div>
-      <div class='features'>
-        <%- include('_parts/feature', {
-          name: 'Spotify modal',
-          banner: '/assets/features/spotify.mp4',
-          description: 'Pause, skip, forward and seek directly from Discord. You can even right click to play playlists, toggle repeat or change the volume.'
-        }) %>
-        <%- include('_parts/feature', {
-          name: 'Built-in translator',
-          banner: '/assets/features/translator.mp4',
-          description: 'Ever wondered what these weird Dutch guys are yapping on about? Just right click their message to translate it to English to give them the \'nee jij\' they deserve!'
-        }) %>
-        <%- include('_parts/feature', {
-          name: 'Neater codeblocks',
-          banner: '/assets/features/codeblocks.mp4',
-          description: 'See linecount, language and directly copy code from a codeblock!'
-        }) %>
-      </div>
-    </div>
-    <% include _parts/footer.ejs %>
-  </body>
+<% include _parts/head.ejs %>
+<body>
+<% include _parts/navbar.ejs %>
+<div class='container'>
+  <div class='pc-header'>Lightweight, powerful and simple Discord client mod.</div>
+  <div class='features'>
+    <%- include('_parts/feature', {
+    icon: 'installer',
+    name: 'Plugin and Themes installer',
+    description: 'Install and manage plugins without effort through the integrated UI. You can also review plugins, and publish some if you\'re into that kind of things.'
+    }) %>
+    <%- include('_parts/feature', {
+    icon: 'updater',
+    name: 'Automatic Updates',
+    description: 'Powercord can thanks to its fancy updater keep your plugins, themes and installation up to date, automatically.'
+    }) %>
+    <%- include('_parts/feature', {
+    icon: 'telemetry',
+    name: 'Telemetry blocking',
+    description: 'Powercord blocks Discord\'s trackers to enhance privacy™️ and avoid dropping to Discord data about your Powercord installation.'
+    }) %>
+    <%- include('_parts/feature', {
+    icon: 'plugin',
+    name: 'Powerful Plugin API',
+    description: 'Powercord gives plugins what they need to do anything your imagination can think of. Plugins inject deeply into Discord to ensure an experience as smooth as possible, as if it was from vanilla Discord.'
+    }) %>
+    <%- include('_parts/feature', {
+    icon: 'theme',
+    name: 'Empower your themes',
+    description: 'Powercord can load your themes, even if they\'re written in SCSS, Less or Stylus. They can hot-reload and have a settings panel for customizability, all without any piece of JS required.'
+    }) %>
+  </div>
+</div>
+<% include _parts/footer.ejs %>
+</body>
 </html>
