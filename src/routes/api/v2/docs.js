@@ -3,8 +3,8 @@ const documents = require('../../../documentation');
 
 class Documentation {
   registerRoutes (express) {
-    express.get('/api/v2/docs/categories', this.listCategories);
-    express.get('/api/v2/docs/:category/:doc', this.getDocument);
+    express.get('/api/v2/docs/categories', this.listCategories.bind(this));
+    express.get('/api/v2/docs/:category/:doc', this.getDocument.bind(this));
   }
 
   listCategories (req, res) {

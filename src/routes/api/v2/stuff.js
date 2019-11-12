@@ -1,8 +1,8 @@
 class Stuff {
   registerRoutes (express) {
-    express.get('/api/v2/plug/:color([a-fA-F0-9]{6})', this.plug);
-    express.get('/api/v2/cute/:id(\\d+)', this.cute);
-    express.get('/api/v2/april', this.april);
+    express.get('/api/v2/plug/:color([a-fA-F0-9]{6})', this.plug.bind(this));
+    express.get('/api/v2/cute/:id(\\d+)', this.cute.bind(this));
+    express.get('/api/v2/april', this.april.bind(this));
   }
 
   plug (req, res) {
@@ -27,7 +27,6 @@ class Stuff {
       default:
         res.json({
           cute: true,
-          // eslint-disable-next-line new-cap
           percent: 100 + Number((BigInt('94762492923748352') * BigInt(100)) / BigInt(req.params.id))
         });
         break;

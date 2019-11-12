@@ -2,8 +2,8 @@ const auth = require('../../../../middlewares/auth');
 
 class Settings {
   registerRoutes (express) {
-    express.get('/api/v2/users/@me/settings', auth(), this.getSettings);
-    express.put('/api/v2/users/@me/settings', auth(), this.setSettings);
+    express.get('/api/v2/users/@me/settings', auth(), this.getSettings.bind(this));
+    express.put('/api/v2/users/@me/settings', auth(), this.setSettings.bind(this));
   }
 
   getSettings (req, res) {

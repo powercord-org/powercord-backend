@@ -1,6 +1,6 @@
 class Linking {
   registerRoutes (express) {
-    express.get('/api/v2/users/@me/link', this.linkAccount);
+    express.get('/api/v2/users/@me/link', this.linkAccount.bind(this));
   }
 
   linkAccount (req, res) {

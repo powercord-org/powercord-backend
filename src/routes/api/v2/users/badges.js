@@ -2,7 +2,7 @@ const auth = require('../../../../middlewares/auth');
 
 class Badges {
   registerRoutes (express) {
-    express.post('/api/v2/users/@me/badges', auth(), this.updateBadges);
+    express.post('/api/v2/users/@me/badges', auth(), this.updateBadges.bind(this));
   }
 
   updateBadges (req, res) {

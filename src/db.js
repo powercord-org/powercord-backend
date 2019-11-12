@@ -2,6 +2,7 @@ const { MongoClient } = require('mongodb');
 
 const Users = require('./models/Users');
 const Badges = require('./models/Badges');
+const Forms = require('./models/Forms');
 
 module.exports = () =>
   MongoClient
@@ -13,12 +14,12 @@ module.exports = () =>
     .then(async db => ({
       users: new Users(db),
       badges: new Badges(db),
-      starboard: await db.collection('starboard'),
+      forms: new Forms(db),
       plugins: await db.collection('plugins'),
       themes: await db.collection('themes'),
       reviews: await db.collection('reviews'),
-      reports: await db.collection('reports'),
-      forms: await db.collection('forms'),
+      // Bot
+      starboard: await db.collection('starboard'),
       tags: await db.collection('tags')
     }))
     .catch(err => {

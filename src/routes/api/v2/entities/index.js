@@ -16,10 +16,6 @@ module.exports = {
       app.get(`${basePath}/${entity}/:id/reviews`, (_, res) => res.sendStatus(501));
       app.post(`${basePath}/${entity}/:id/reviews`, (_, res) => res.sendStatus(501));
       app.delete(`${basePath}/${entity}/:id/reviews/:r_id`, (_, res) => res.sendStatus(501));
-
-      // Reporting
-      app.post(`${basePath}/${entity}/report`, (_, res) => res.sendStatus(501));
-      app.post(`${basePath}/${entity}/report/reviews/:r_id`, (_, res) => res.sendStatus(501));
     });
   }
 };

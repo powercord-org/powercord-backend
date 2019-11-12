@@ -34,7 +34,7 @@ const routes = require('./routes');
   app.use('/assets', express.static(resolve(__dirname, '..', 'static')));
   routes.call(this, app);
 
-  // Express does not recognizes properly error handlers with 3 parameters
+  // Express requires the method to take 4 args in order to be an error handler
   app.use((err, req, res, _) => { // eslint-disable-line no-unused-vars
     console.error(err);
     res.status(500).send(`fucky wucky ${err.message}`);

@@ -7,20 +7,20 @@ class Users extends Model {
   }
 
   findContributors () {
-    return this.findAll({ 'metadata.contributor': true });
+    return this.findAll({ 'badges.contributor': true });
   }
 
   findDevelopers () {
-    return this.findAll({ 'metadata.developer': true });
+    return this.findAll({ 'badges.developer': true });
   }
 
   async findWithBanned (id) {
     const user = await this.collection.aggregate([
-      { $match: { id } },
+      { $match: { _id: id } },
       {
         $lookup: {
           from: 'banned',
-          localField: 'id',
+          localField: '_id',
           foreignField: '_id',
           as: 'banned'
         }

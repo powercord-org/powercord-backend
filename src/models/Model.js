@@ -33,6 +33,15 @@ class Model {
   }
 
   /**
+   * Counts how many documents matches a given query.
+   * @param query {object} The query.
+   * @returns {Promise<int>} Document count.
+   */
+  count (query = {}) {
+    return this.collection.countDocuments(query);
+  }
+
+  /**
    * Creates a document.
    * @param document {object} Document to insert.
    * @returns {Promise<object>} An object with document id and other stuff.

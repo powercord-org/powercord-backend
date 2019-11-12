@@ -40,6 +40,11 @@ class DiscordAuth {
       return res.status(500).send(`Something went wrong: <code>${e.statusCode}: ${JSON.stringify(e.body)}</code><br>If the issue persists, please join <a href='https://discord.gg/5eSH46g'>Powercord's support server</a> for assistance.`);
     }
 
+    const banned = req.db.users.findBanned(user.id);
+    if (banned.account) {
+      return res.status(403).send('Sorry not sorry, you\'ve been banned. <a href="/">Go home</a>');
+    }
+
     if (!await req.db.users.find(user.id)) {
       await req.db.users.create({
         _id: user.id,

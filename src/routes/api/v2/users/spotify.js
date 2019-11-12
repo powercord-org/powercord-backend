@@ -3,7 +3,7 @@ const SpotifyOAuth = require('../../../../util/oauth/spotify');
 
 class Spotify {
   registerRoutes (express) {
-    express.get('/api/v2/users/@me/spotify', auth(), this.getToken);
+    express.get('/api/v2/users/@me/spotify', auth(), this.getToken.bind(this));
   }
 
   async getToken (req, res) {
