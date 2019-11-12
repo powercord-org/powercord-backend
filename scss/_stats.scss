@@ -1,0 +1,39 @@
+.statistics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+
+.statistic {
+  display: flex;
+  width: 100%;
+  padding: 25px;
+  margin-bottom: 30px;
+  background-color: $primaryDark;
+  box-shadow: 0 2px 7px $primaryDarker;
+
+  .icon {
+    flex-shrink: 0;
+    width: 68px;
+    height: 68px;
+    margin-right: 35px;
+  }
+
+  .count {
+    font-family: monospace, sans-serif;
+    font-size: 32px;
+    font-weight: bold;
+  }
+
+  .name {
+    font-family: 'Discord', sans-serif;
+    font-size: 20px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .statistic {
+    width: 49%;
+  }
+}

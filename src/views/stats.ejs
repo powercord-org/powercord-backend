@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang='en' dir='ltr'>
+<%- include('_parts/head.ejs', { title: 'Statistics' }) %>
+<body>
+<% include _parts/navbar.ejs %>
+<div class='container'>
+  <div class='statistics'>
+    <%- include('_parts/stat', {
+    icon: 'happy',
+    count: users,
+    name: 'Registered users'
+    }) %>
+    <%- include('_parts/stat', {
+    icon: 'people',
+    count: helpers,
+    name: 'People who helped (Contributors & Bug Hunters)'
+    }) %>
+    <%- include('_parts/stat', {
+    icon: 'plugin',
+    count: plugins,
+    name: 'Available plugins for Powercord'
+    }) %>
+    <%- include('_parts/stat', {
+    icon: 'theme',
+    count: themes,
+    name: 'Available themes through Powercord\'s install UI'
+    }) %>
+  </div>
+</div>
+<% include _parts/footer.ejs %>
+</body>
+</html>
