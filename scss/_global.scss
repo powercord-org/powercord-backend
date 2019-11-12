@@ -55,6 +55,11 @@ a {
   }
 }
 
+code {
+  background: $primaryDark;
+  padding: 3px 5px;
+}
+
 .container {
   flex: 1;
   padding: 0 10%;

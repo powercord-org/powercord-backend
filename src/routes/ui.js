@@ -1,3 +1,5 @@
+const marked = require('marked');
+const { get } = require('../util/http');
 const auth = require('../middlewares/auth');
 
 class UserInterface {
@@ -7,8 +9,10 @@ class UserInterface {
     express.get('/legal/tos', this.render.bind(this, 'terms'));
     express.get('/legal/privacy', this.render.bind(this, 'privacy'));
     express.get('/branding', this.render.bind(this, 'branding'));
-    express.get('/contributors', this.contributors);
-    express.get('/stats', this.stats);
+    express.get('/contributors', this.contributors.bind(this));
+    express.get('/stats', this.stats.bind(this));
+    express.get('/installation', this.installation.bind(this));
+    express.get('/guidelines', this.guidelines.bind(this));
   }
 
   render (template, req, res) {
@@ -30,6 +34,28 @@ class UserInterface {
       plugins: 0,
       themes: 0,
       ...req.session
+    });
+  }
+
+  installation (req, res) {
+    this._markdown(req, res, 'https://raw.githubusercontent.com/wiki/powercord-org/powercord/Installation.md', 'Installation');
+  }
+
+  guidelines (req, res) {
+    this._markdown(req, res, 'https://raw.githubusercontent.com/powercord-community/guidelines/new-guidelines/README.md', 'Powercord Community Guidelines');
+  }
+
+  async _markdown (req, res, file, title) {
+    let markdown = await get(file).then(r => r.body);
+    if (markdown.startsWith(`# ${title}`)) {
+      markdown = markdown.split('\n').slice(2).join('\n');
+    } else {
+      markdown = markdown.replace(/^#/gm, '##');
+    }
+
+    res.render('markdown', {
+      title,
+      markdown: marked.parse(markdown)
     });
   }
 }

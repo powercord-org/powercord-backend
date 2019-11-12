@@ -3,9 +3,9 @@ const auth = require('../../../middlewares/auth');
 class Forms {
   constructor () {
     this.reportReasons = {
-      shared: [ 'SPAM', 'THREAT', 'NSFW', 'INAPPROPRIATE' ],
-      entities: [ 'OUTDATED' ],
-      reviews: [ 'IRRELEVANT' ]
+      shared: [ 'THREAT', 'NSFW', 'INAPPROPRIATE' ],
+      entities: [ 'OUTDATED', 'DUPLICATE' ],
+      reviews: [ 'IRRELEVANT', 'SPAM' ]
     };
   }
 

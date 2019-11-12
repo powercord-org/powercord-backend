@@ -4,6 +4,7 @@
 <body>
 <% include _parts/navbar.ejs %>
 <div class='container'>
+  <h1>Statistics</h1>
   <div class='statistics'>
     <%- include('_parts/stat', {
     icon: 'happy',
@@ -13,7 +14,7 @@
     <%- include('_parts/stat', {
     icon: 'people',
     count: helpers,
-    name: 'People who helped (Contributors & Bug Hunters)'
+    name: 'People who helped making Powercord so far'
     }) %>
     <%- include('_parts/stat', {
     icon: 'plugin',
