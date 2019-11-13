@@ -18,6 +18,7 @@
       "strawpoll": "channel id",
       "starboard": "channel id",
       "modlog": "channel id",
+      "rules": [ "channel id", "message id" ],
       "stupid": [ "user ids" ]
     }
   },

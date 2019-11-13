@@ -42,7 +42,7 @@ class UserInterface {
   }
 
   guidelines (req, res) {
-    this._markdown(req, res, 'https://raw.githubusercontent.com/powercord-community/guidelines/new-guidelines/README.md', 'Powercord Community Guidelines');
+    this._markdown(req, res, 'https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md', 'Powercord Community Guidelines');
   }
 
   async _markdown (req, res, file, title) {

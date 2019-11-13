@@ -1,4 +1,5 @@
 module.exports = {
+  desc: 'Edits a mod log case.',
   permissions: [ 'manageMessages' ], // in fact permission checking is not really required, but shrug
   func: async (bot, msg, config) => {
     const args = msg.content.split(' ');

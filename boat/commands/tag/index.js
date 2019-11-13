@@ -4,7 +4,8 @@ const deleteTag = require('./delete');
 const exec = require('./exec');
 
 module.exports = {
-  permissions: (msg) => msg.content.match(/tag (add|edit|delete)/) ? [ 'manageMessages' ] : [],
+  desc: 'Execute or manage tags.',
+  permissions: (msg, r) => r || msg.content.match(/tag (add|edit|delete)/) ? [ 'manageMessages' ] : [],
   func: (bot, msg, _, mongo) => {
     const args = msg.content.split(' ').slice(1);
     if (args.length === 0) {

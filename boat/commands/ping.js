@@ -1,4 +1,5 @@
 module.exports = {
+  desc: 'Pong.',
   func: (bot, msg) => {
     const startTime = Date.now();
     bot.createMessage(msg.channel.id, '🏓 Pong!').then(m => {

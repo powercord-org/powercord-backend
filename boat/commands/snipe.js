@@ -1,6 +1,7 @@
 const Snipe = require('../snipe');
 
 module.exports = {
+  desc: 'Snipe those sneaky fuks.',
   func: (bot, msg) => {
     if (Snipe.last.length === 0) {
       return bot.createMessage(msg.channel.id, 'There is nothing to snipe');
