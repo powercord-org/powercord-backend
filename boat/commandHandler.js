@@ -5,9 +5,10 @@ const no = [
   'NO',
   'nice try',
   'banned',
-  'ur not cute enough',
+  'ur too cute for those weapons',
   'this command has been blocked due to article ~~13~~17. Sorry.',
-  'friendly reminder that you\'re not allowed to run that command'
+  'friendly reminder that you\'re not allowed to run that command',
+  'go plant trees instead <https://teamtrees.org>'
 ];
 
 module.exports = class CommandHandler {
