@@ -1,4 +1,7 @@
 {
   "pos": 1,
-  "name": "Basics"
+  "name": "Basics",
+  "docs": [
+    "fetching_modules", "injecting", "settings"
+  ]
 }

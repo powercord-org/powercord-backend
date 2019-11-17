@@ -8,8 +8,10 @@ const config = require('../config.json');
 const getDB = require('./db');
 const boat = require('../boat');
 const routes = require('./routes');
+const Redis = require('./util/redis');
 
 (async () => {
+  const redisInst = new Redis();
   const database = await getDB();
   const boatInstance = boat(database, config);
   const app = express();
@@ -29,7 +31,7 @@ const routes = require('./routes');
     resave: false
   }));
 
-  app.use(await require('./middlewares/context')(database, boatInstance));
+  app.use(await require('./middlewares/context')(database, boatInstance, redisInst));
   app.use(require('./middlewares/headers'));
   app.use(require('./middlewares/session'));
   app.use('/assets', express.static(resolve(__dirname, '..', 'static')));

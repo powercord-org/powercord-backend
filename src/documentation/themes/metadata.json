@@ -1,0 +1,7 @@
+{
+  "pos": 3,
+  "name": "Themes",
+  "docs": [
+    "manifest", "preprocessors", "variables"
+  ]
+}

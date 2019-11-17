@@ -1,4 +1,7 @@
 {
   "pos": 2,
-  "name": "Advanced"
+  "name": "Advanced",
+  "docs": [
+    "flux", "http"
+  ]
 }

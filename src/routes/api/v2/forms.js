@@ -2,11 +2,7 @@ const auth = require('../../../middlewares/auth');
 
 class Forms {
   constructor () {
-    this.reportReasons = {
-      shared: [ 'THREAT', 'NSFW', 'INAPPROPRIATE' ],
-      entities: [ 'OUTDATED', 'DUPLICATE' ],
-      reviews: [ 'IRRELEVANT', 'SPAM' ]
-    };
+    this.reportReasons = [ 'THREAT', 'NSFW', 'INAPPROPRIATE', 'BREAKING', 'OUTDATED', 'DUPLICATE' ];
   }
 
   registerRoutes (express) {
@@ -14,10 +10,9 @@ class Forms {
     express.post('/api/v2/forms/hosting', auth(), this.hosting.bind(this));
     express.post('/api/v2/forms/verification', auth(), this.verification.bind(this));
 
-    express.post('/api/v2/reports/reasons', auth(), this.reasons.bind(this));
+    express.get('/api/v2/reports/reasons', auth(), this.reasons.bind(this));
     express.post('/api/v2/reports/plugins/:id', auth(), this.report.bind(this, 'plugins'));
     express.post('/api/v2/reports/themes/:id', auth(), this.report.bind(this, 'themes'));
-    express.post('/api/v2/reports/reviews/:id', auth(), this.report.bind(this, 'reviews'));
   }
 
   publish (req, res) {
@@ -37,13 +32,6 @@ class Forms {
   }
 
   async report (type, req, res) {
-    const reasons = this.reportReasons.shared;
-    if (type === 'plugins' || type === 'themes') {
-      reasons.push(...this.reportReasons.entities);
-    } else {
-      reasons.push(...this.reportReasons.reviews);
-    }
-
     // Does the reported entity exists?
     const entity = await req.db[type].find(req.params.id);
     if (!entity) {
@@ -55,7 +43,7 @@ class Forms {
       return res.sendStatus(429);
     }
 
-    if (typeof req.body.reason !== 'string' || !reasons.includes(req.body.reasons) || typeof req.body.content !== 'string') {
+    if (typeof req.body.reason !== 'string' || !this.reportReasons.includes(req.body.reasons) || typeof req.body.content !== 'string') {
       return res.sendStatus(400);
     }
 
@@ -64,6 +52,7 @@ class Forms {
       category: 'reports',
       reason: req.body.reason,
       content: req.body.content,
+      entity: req.params.id,
       type
     });
     res.sendStatus(204);
