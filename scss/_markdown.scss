@@ -1,0 +1,29 @@
+.markdown {
+  p, li {
+    line-height: 1.125em;
+  }
+
+  li {
+    margin-top: 5px;
+  }
+
+  blockquote {
+    margin-left: 0;
+    display: flex;
+    border-radius: 3px;
+    background-color: $primaryDark;
+
+    p {
+      margin: 10px 0;
+    }
+
+    &:before {
+      content: '';
+      display: block;
+      margin-right: 10px;
+      width: 5px;
+      border-radius: 3px;
+      background-color: $primaryDarkest;
+    }
+  }
+}

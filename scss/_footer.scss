@@ -6,6 +6,10 @@
   flex-wrap: wrap;
   justify-content: space-between;
 
+  a, a:hover {
+    color: #fff;
+  }
+
   .inner {
     font-size: 14px;
     display: flex;

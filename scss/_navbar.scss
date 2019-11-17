@@ -6,6 +6,10 @@
   flex-shrink: 0;
   margin-bottom: 25px;
 
+  a, a:hover {
+    color: #fff;
+  }
+
   .title {
     display: flex;
     align-items: center;

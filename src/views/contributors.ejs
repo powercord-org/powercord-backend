@@ -7,13 +7,13 @@
       <h2>Developers</h2>
       <div class='contributors'>
         <% developers.forEach(c => { %>
-          <%- include('_parts/contributor.ejs', { contributor: c.metadata }) %>
+          <%- include('_parts/contributor.ejs', { contributor: c }) %>
         <% }) %>
       </div>
       <h2>Contributors</h2>
       <div class='contributors'>
         <% contributors.forEach(c => { %>
-          <%- include('_parts/contributor.ejs', { contributor: c.metadata }) %>
+          <%- include('_parts/contributor.ejs', { contributor: c }) %>
         <% }) %>
       </div>
     </div>
