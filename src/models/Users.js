@@ -61,9 +61,9 @@ class Users extends Model {
       account: !!data.account, // Having a Powercord account
       publish: !!data.publish, // Publishing plugin and themes
       hosting: !!data.hosting, // Requesting hosting on Powercord's server
-      pledging: !!data.pledging, // Getting paid perks
+      verification: !!data.verification, // Applying for validation
       reporting: !!data.reporting, // Reporting plugin and themes
-      reviewing: !!data.reviewing // Posting plugin/themes reviews
+      pledging: !!data.pledging // Getting paid perks
     };
   }
 }

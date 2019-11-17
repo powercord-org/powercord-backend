@@ -23,7 +23,9 @@ module.exports = async (req) => {
 
   const user = await req.db.users.find(userId);
   if (user) {
+    const banned = await req.db.users.findBanned(userId);
     req.session.user = user;
+    req.session.banned = banned;
     req.session.jwt = req.cookies.token || req.headers.authorization;
     req.session.isAdmin = req.config.admins.includes(user._id);
     return true;

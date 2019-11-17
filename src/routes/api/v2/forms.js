@@ -32,6 +32,12 @@ class Forms {
   }
 
   async report (type, req, res) {
+    // Banned fuks
+    if (req.session.banned.reporting) {
+      res.statusMessage = 'Banned';
+      return res.sendStatus(403);
+    }
+
     // Does the reported entity exists?
     const entity = await req.db[type].find(req.params.id);
     if (!entity) {
@@ -59,6 +65,12 @@ class Forms {
   }
 
   async _handleForm (req, res, type, fields) {
+    // Banned fuks
+    if (req.session.banned[type]) {
+      res.statusMessage = 'Banned';
+      return res.sendStatus(403);
+    }
+
     // Maximum 5 forms opened, to prevent spam
     if (await req.db.forms.count({ userId: req.session.user._id }) >= 5) {
       return res.sendStatus(429);

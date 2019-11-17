@@ -12,23 +12,16 @@ class Users {
       connections: {
         spotify: (req.session.user.accounts.spotify && req.session.user.accounts.spotify.name) ? req.session.user.accounts.spotify.name : null,
         github: (req.session.user.accounts.github && req.session.user.accounts.github.display) ? req.session.user.accounts.github.display : null
-      },
-      banned: await req.db.users.findBanned(req.session.user.id)
+      }
     });
   }
 
   async getOther (req, res) {
-    const user = await req.db.users.findWithBanned(req.params.id);
-    console.log(user);
-
+    const user = await req.db.users.find(req.params.id);
     if (!user) {
       return res.sendStatus(404);
     }
-
-    res.json({
-      badges: user.badges,
-      banned: user.banned
-    });
+    res.json({ badges: user.badges });
   }
 }
 
