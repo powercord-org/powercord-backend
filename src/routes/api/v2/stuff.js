@@ -2,7 +2,6 @@ class Stuff {
   registerRoutes (express) {
     express.get('/api/v2/plug/:color([a-fA-F0-9]{6})', this.plug.bind(this));
     express.get('/api/v2/cute/:id(\\d+)', this.cute.bind(this));
-    express.get('/api/v2/april', this.april.bind(this));
   }
 
   plug (req, res) {
@@ -31,14 +30,6 @@ class Stuff {
         });
         break;
     }
-  }
-
-  april (req, res) {
-    const date = new Date();
-    if (date.getUTCMonth() === 4 && date.getUTCDay() === 1) {
-      return res.json({ not: 'yet' });
-    }
-    res.json({ whats_this: req.config.aprilFools });
   }
 
   _makePlug (color) {

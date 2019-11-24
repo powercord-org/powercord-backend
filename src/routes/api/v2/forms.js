@@ -38,9 +38,9 @@ class Forms {
       return res.sendStatus(403);
     }
 
-    // Does the reported entity exists?
-    const entity = await req.db[type].find(req.params.id);
-    if (!entity) {
+    // Does the reported product exists?
+    const product = await req.db[type].find(req.params.id);
+    if (!product) {
       return res.sendStatus(404);
     }
 
@@ -58,7 +58,7 @@ class Forms {
       category: 'reports',
       reason: req.body.reason,
       content: req.body.content,
-      entity: req.params.id,
+      product: req.params.id,
       type
     });
     res.sendStatus(204);

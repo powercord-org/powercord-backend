@@ -35,14 +35,14 @@ class PowercordRPC {
   }
 
   /**
-   * Opens Powercord's store page for a given entity.
-   * @param type {String} Type of entity.
+   * Opens Powercord's store page for a given product.
+   * @param type {String} Type of product.
    * @param id {String} Plugin ID.
    * @returns {Promise<object>}
    */
-  installEntity (type, id) {
+  installProduct (type, id) {
     if (![ 'plugin', 'theme' ].includes(type)) {
-      throw new Error('Invalid entity type');
+      throw new Error('Invalid product type');
     }
     return this.sendRaw('POWERCORD_OPEN_STORE', {
       type,
@@ -51,14 +51,14 @@ class PowercordRPC {
   }
 
   /**
-   * Open settings for a given entity.
-   * @param type {String} Type of entity.
+   * Open settings for a given product.
+   * @param type {String} Type of product.
    * @param id {String} Plugin ID.
    * @returns {Promise<object>}
    */
-  openEntitySettings (type, id) {
+  openProductSettings (type, id) {
     if (![ 'plugin', 'theme' ].includes(type)) {
-      throw new Error('Invalid entity type');
+      throw new Error('Invalid product type');
     }
     return this.sendRaw('POWERCORD_OPEN_SETTINGS', {
       type,
