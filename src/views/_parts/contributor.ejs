@@ -2,8 +2,8 @@
   <img src='<%= contributor.avatar %>' alt='Avatar' onerror='handleErroredAvatar(this, <%= contributor.discriminator %>)'/>
   <div class='info'>
     <div class='username'><%= contributor.username %><span>#<%= contributor.discriminator %></span></div>
-    <% if (contributor.github) { %>
-      <a href='https://github.com/<%= contributor.github %>'>GitHub</a>
+    <% if (contributor.accounts.github) { %>
+      <a href='https://github.com/<%= contributor.accounts.github.login %>'>GitHub</a>
     <% } %>
   </div>
 </div>

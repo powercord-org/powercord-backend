@@ -10,7 +10,7 @@ const config = require('./config');
       .set('Authorization', `Bot ${config.discord.boat.token}`)
       .then(r => r.body);
 
-    await collection.updateOne({ _id: user.id }, {
+    await collection.updateOne({ _id: discordUser.id }, {
       $set: {
         username: discordUser.username,
         discriminator: discordUser.discriminator,
