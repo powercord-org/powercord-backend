@@ -11,13 +11,15 @@ const { MongoClient, ObjectID } = require('mongodb');
     discriminator: user.metadata.discriminator,
     avatar: user.metadata.avatar,
     accounts: {
-      discord: user.discord,
-      spotify: user.spotify,
-      github: {
-        access_token: user.github.access_token,
-        display: user.github.name,
-        login: user.metadata.github
-      }
+      discord: user.discord || null,
+      spotify: user.spotify || null,
+      github: user.github
+        ? {
+          access_token: user.github.access_token,
+          display: user.github.name,
+          login: user.metadata.github
+        }
+        : null
     },
     settings: user.settings,
     badges: {
@@ -25,12 +27,14 @@ const { MongoClient, ObjectID } = require('mongodb');
       contributor: user.metadata.contributor,
       hunter: user.metadata.hunter,
       early: user.metadata.early,
-      custom: {
-        color: user.badges.color,
-        icon: user.badges.custom,
-        white: user.badges.customWhite,
-        name: user.badges.name
-      }
+      custom: user.badges
+        ? {
+          color: user.badges.color,
+          icon: user.badges.custom,
+          white: user.badges.customWhite,
+          name: user.badges.name
+        }
+        : null
     }
   }));
   await collection.deleteMany({});
