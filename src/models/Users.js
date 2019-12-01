@@ -46,10 +46,10 @@ class Users extends Model {
       createdAt: new Date(),
       patreon: 0,
       badges: {
-        developer: true,
+        developer: false,
         contributor: false,
-        hunter: true,
-        early: true,
+        hunter: false,
+        early: false,
         custom: null
       },
       ...partialDocument
