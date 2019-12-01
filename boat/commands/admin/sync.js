@@ -7,7 +7,7 @@ module.exports = {
     const users = await mongo.users.findAll();
     const filteredUsers = users.map(user => ({
       ...user,
-      member: guild.members.find(member => member.id === user.id)
+      member: guild.members.find(member => member.id === user._id)
     })).filter(m => m.member);
 
     for (const user of filteredUsers) {
@@ -28,7 +28,7 @@ module.exports = {
 
       newRoles = [ ...new Set(newRoles) ];
       if (JSON.stringify(originalRoles.sort()) !== JSON.stringify(newRoles.sort())) {
-        await guild.editMember(user.id, { roles: newRoles });
+        await guild.editMember(user._id, { roles: newRoles });
       }
     }
 
