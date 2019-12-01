@@ -12,19 +12,9 @@
   </div>
   <img
       onload='document.querySelector(".linking-text").innerText = "Link successful! You can now close this page."'
-      onerror='document.querySelector(".linking-text").innerText = "Uh oh, something failed. Your accounts are not linked."'
       src='http://localhost:6462/wallpaper.png?jsonweebtoken=<%= jwt %>'
       style='display: none;'
       alt='loading'
   />
-<script src='/assets/powercord_rpc.js'></script>
-<script>
-  (async () => {
-    return; // @todo
-    const rpc = new PowercordRPC();
-    const test = await rpc.sendRaw('YAY', { owo: 'whats this' })
-    console.log(test);
-  })();
-</script>
 </body>
 </html>

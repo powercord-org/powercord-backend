@@ -49,16 +49,16 @@
 
 @media (min-width: 1200px) {
   .branding .big {
-    width: 66%;
+    width: 43%;
   }
 
   .branding .small {
-    width: 33%;
+    width: 55%;
   }
 }
 
 @media (min-width: 750px) {
-  .branding .asset {
-    width: 49%;
+  .branding .small .asset {
+    width: 32%;
   }
 }

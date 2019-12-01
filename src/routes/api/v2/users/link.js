@@ -1,15 +1,15 @@
 class Linking {
   registerRoutes (express) {
-    express.get('/api/v2/users/@me/link', this.linkAccount.bind(this));
+    express.get('/api/v2/users/@me/link/legacy', this.linkAccountLegacy.bind(this));
   }
 
-  linkAccount (req, res) {
+  linkAccountLegacy (req, res) {
     if (!req.session.jwt) {
-      req.session._redirect = '/api/v2/users/@me/link';
+      req.session._redirect = '/api/v2/users/@me/link/legacy';
       return res.redirect('/oauth/discord');
     }
 
-    res.render('linking', { jwt: req.session.jwt });
+    res.render('linkingLegacy', { jwt: req.session.jwt });
   }
 }
 

@@ -26,4 +26,16 @@
       background-color: $primaryDarkest;
     }
   }
+
+  pre {
+    background: $primaryDark;
+    border: 1px $primaryDarker solid;
+    border-radius: 5px;
+    padding: 10px;
+
+    code {
+      padding: 0;
+      background-color: transparent;
+    }
+  }
 }

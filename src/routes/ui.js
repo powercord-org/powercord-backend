@@ -13,6 +13,7 @@ class UserInterface {
     express.get('/stats', this.stats.bind(this));
     express.get('/installation', this.installation.bind(this));
     express.get('/guidelines', this.guidelines.bind(this));
+    express.get('/listing-agreement', this.listingAgreement.bind(this));
   }
 
   render (template, req, res) {
@@ -41,6 +42,10 @@ class UserInterface {
     this._markdown(req, res, 'https://raw.githubusercontent.com/wiki/powercord-org/powercord/Installation.md', 'Installation');
   }
 
+  listingAgreement (req, res) {
+    this._markdown(req, res, 'https://raw.githubusercontent.com/wiki/powercord-org/powercord/Listing-Websites-Agreement.md', 'Listing Websites Agreement');
+  }
+
   guidelines (req, res) {
     this._markdown(req, res, 'https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md', 'Powercord Community Guidelines');
   }
@@ -55,7 +60,8 @@ class UserInterface {
 
     res.render('markdown', {
       title,
-      markdown: marked.parse(markdown)
+      markdown: marked.parse(markdown),
+      ...req.session
     });
   }
 }
