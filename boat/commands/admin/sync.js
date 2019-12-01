@@ -4,7 +4,7 @@ module.exports = {
     const message = await bot.createMessage(msg.channel.id, 'Processing...');
 
     const { guild } = msg.channel;
-    const users = await mongo.users.find().toArray();
+    const users = await mongo.users.findAll();
     const filteredUsers = users.map(user => ({
       ...user,
       member: guild.members.find(member => member.id === user.id)
