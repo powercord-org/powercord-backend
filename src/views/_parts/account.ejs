@@ -1,22 +1,23 @@
 <div class='account <%= type.toLowerCase() %>'>
-    <img src='/assets/<%= type.toLowerCase() %>.png' alt='<%= type %> logo'/>
-    <% if (account === null) { %>
-        <div class='unlinked'>
-            <div class='info'>
-                <span>You haven't linked your <%= type %> account</span>
-                <a href='/oauth/<%= type.toLowerCase() %>'>Link it now!</a>
-            </div>
-            <% if (typeof desc !== 'undefined') { %><span class='desc'><%= desc %></span><% } %>
-        </div>
+  <img src='/assets/<%= type.toLowerCase() %>.png' alt='<%= type %> logo'/>
+  <% if (account === null) { %>
+    <div class='unlinked'>
+      <div class='info'>
+        <span>You haven't linked your <%= type %> account</span>
+        <a href='/oauth/<%= type.toLowerCase() %>'>Link it now!</a>
+      </div>
+      <% if (typeof desc !== 'undefined') { %><span class='desc'><%= desc %></span><% } %>
+    </div>
+  <% } else { %>
+    <div class='info'>
+      <span><%= account %></span>
+    </div>
+    <% if (typeof warning === 'undefined') { %>
+      <a href='/oauth/<%= type.toLowerCase() %>/unlink'>Unlink</a>
     <% } else { %>
-        <div class='info'>
-            <span><%= account %></span>
-        </div>
-        <% if (typeof warning === 'undefined') { %>
-            <a href='/oauth/<%= type.toLowerCase() %>/unlink'>Unlink</a>
-        <% } else { %>
-            <a href='#'
-               onclick='if(confirm("Are you sure? This will DELETE your account from our database.")) window.location = "/oauth/<%= type.toLowerCase() %>/unlink"'>Unlink</a>
-        <% } %>
+      <a href='#' onclick='if(confirm("Are you sure? This action is irreversible.")) window.location = "/oauth/<%= type.toLowerCase() %>/unlink"'>
+        Delete Account
+      </a>
     <% } %>
+  <% } %>
 </div>
