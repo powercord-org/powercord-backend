@@ -1,3 +1,4 @@
+const list = require('./list');
 const add = require('./add');
 const edit = require('./edit');
 const deleteTag = require('./delete');
@@ -9,13 +10,16 @@ module.exports = {
   func: (bot, msg, _, mongo) => {
     const args = msg.content.split(' ').slice(1);
     if (args.length === 0) {
-      return bot.createMessage(msg.channel.id, 'Syntax: `pc/tag [tag]` or `pc/tag [add|edit|delete] [tag name] [contents]`');
+      return bot.createMessage(msg.channel.id, 'Syntax: `pc/tag [tag]` or `pc/tag list` or `pc/tag [add|edit|delete] [tag name] [contents]`');
     }
 
     const arg0 = args.shift();
     const arg1 = args.shift();
     const arg2 = args.join(' ');
     switch (arg0) {
+      case 'list':
+        list(bot, msg, mongo);
+        break;
       case 'add':
         add(bot, msg, arg1, arg2, mongo);
         break;
