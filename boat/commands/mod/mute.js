@@ -1,5 +1,5 @@
 module.exports = {
-  desc: 'Mutes an user',
+  desc: 'Yeets the right to speak from a user',
   permissions: [ 'manageMessages' ],
   func: (bot, msg, config) => {
     const { guild } = msg.channel;

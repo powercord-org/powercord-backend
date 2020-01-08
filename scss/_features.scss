@@ -5,6 +5,8 @@
   padding: 25px;
   background-color: $primaryDark;
   box-shadow: 0 2px 7px $primaryDarker;
+  overflow: hidden;
+  position: relative;
 
   .icon {
     flex-shrink: 0;
@@ -29,5 +31,16 @@
       height: 6px;
       background-color: #fff;
     }
+  }
+
+  &.soon:before {
+    content: 'COMING SOON';
+    position: absolute;
+    transform: rotate(-45deg);
+    background-color: #e74c3c;
+    padding: 7px 50px;
+    left: -55px;
+    top: 27px;
+    font-size: 14px;
   }
 }

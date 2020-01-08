@@ -6,6 +6,7 @@ const emotes = {
 
 module.exports = {
   isAdmin: true,
+  desc: 'Creates a strawpoll in the proper channel.',
   func: async (bot, msg, config) => {
     const poll = msg.content.split(' ').slice(1).join(' ');
 

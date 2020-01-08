@@ -87,10 +87,10 @@ class DiscordAuth {
 
   async unlink (req, res) {
     if (req.session.discord) {
-      await req.db.users.delete(req.session.tokens._id);
+      await req.db.users.delete(req.session.user._id);
       logout(req, res);
     }
-    return res.redirect('/me');
+    return res.redirect('/');
   }
 }
 

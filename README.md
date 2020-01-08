@@ -4,6 +4,9 @@ The backend for [powercord-org/powercord](https://github.com/powercord-org/power
 ## how 2 selfhost
 u dont
 
+More seriously, we don't support selfhosting your own backend for Powercord, and won't
+provide support for doing so.
+
 ----
 ### dev notes
 build scss to css (requires scss to be installed)<br>

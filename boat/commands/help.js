@@ -3,7 +3,7 @@ module.exports = {
   func: async (bot, msg, config) => {
     const commands = require('.');
     let help = '```asciidoc\n';
-    Object.keys(commands).filter(cmd => !commands[cmd].isAdmin).forEach(cmd => {
+    Object.keys(commands).forEach(cmd => {
       help += `${config.discord.boat.prefix}${cmd.padEnd(10)} :: ${commands[cmd].desc || 'No description.'}`;
       if (commands[cmd].permissions) {
         let perms = commands[cmd].permissions;
@@ -11,6 +11,9 @@ module.exports = {
           perms = perms(null, true);
         }
         help += ` - Requires ${perms.join(', ')} permissions.`;
+      }
+      if (commands[cmd].isAdmin) {
+        help += ' (Administrator only)';
       }
       help += '\n';
     });

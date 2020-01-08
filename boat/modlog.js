@@ -24,7 +24,7 @@ module.exports = class Modlog {
       const entry = logs.entries.find(entry => entry.targetID = user.id);
       const [ modId, modName, reason ] = this._processAuditEntry(entry);
       const channel = this.bot.getChannel(this.config.discord.boat.modlog);
-      const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d)/)[1]) + 1;
+      const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)[1]) + 1;
 
       this.bot.createMessage(this.config.discord.boat.modlog, template
         .replace('$type', banned ? '<a:crabrave:590881356926418966> Ban' : 'Unban')

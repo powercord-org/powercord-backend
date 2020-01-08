@@ -1,5 +1,6 @@
 module.exports = {
   isAdmin: true,
+  desc: 'Synchronizes roles.',
   func: async (bot, msg, cfg, mongo) => {
     const message = await bot.createMessage(msg.channel.id, 'Processing...');
 

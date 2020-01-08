@@ -4,7 +4,7 @@ module.exports = {
   desc: 'Imagine reading guidelines...',
   func: async (bot, msg) => {
     const id = parseInt(msg.content.split(' ')[1]) || 0;
-    const guidelines = await get('https://raw.githubusercontent.com/powercord-community/guidelines/new-guidelines/README.md').then(r => r.body);
+    const guidelines = await get('https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md').then(r => r.body);
     const match = guidelines.match(new RegExp(`# (${id}[^#]*)`));
     if (!match) {
       return bot.createMessage(msg.channel.id, 'Guideline not found.');

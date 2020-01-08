@@ -1,5 +1,5 @@
 module.exports = {
-  desc: 'Unbans an user.',
+  desc: 'Unbans a user.',
   permissions: [ 'banMembers' ],
   func: (bot, msg) => {
     const { guild } = msg.channel;
