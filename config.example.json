@@ -15,9 +15,11 @@
       "token": "Bot token",
       "roles": {
         "contributor": "role id",
-        "early": "role id",
+        "translator": "role id",
         "hunter": "role id",
-        "user": "role id"
+        "user": "role id",
+        "mute": "role id",
+        "nsfw": "role id"
       },
       "server": "server id",
       "strawpoll": "channel id",

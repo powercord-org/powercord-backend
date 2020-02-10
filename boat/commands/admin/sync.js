@@ -2,7 +2,7 @@ module.exports = {
   isAdmin: true,
   desc: 'Synchronizes roles.',
   func: async (bot, msg, cfg, mongo) => {
-    const message = await bot.createMessage(msg.channel.id, 'Processing...');
+    const message = await bot.createMessage(msg.channel.id, '<a:loading:660094837437104138> Processing...');
 
     const { guild } = msg.channel;
     const users = await mongo.users.findAll();
@@ -19,7 +19,7 @@ module.exports = {
         newRoles.push(cfg.discord.boat.roles.user);
       }
 
-      [ 'hunter', 'early', 'contributor' ].forEach(type => {
+      [ 'hunter', 'contributor', 'translator' ].forEach(type => {
         if (cfg.discord.boat.roles[type] && user.badges[type] && !user.member.roles.includes(cfg.discord.boat.roles[type])) {
           newRoles.push(cfg.discord.boat.roles[type]);
         } else if (!user.badges[type] && user.member.roles.includes(cfg.discord.boat.roles[type])) {
