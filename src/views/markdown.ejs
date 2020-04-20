@@ -2,13 +2,13 @@
 <html lang='en' dir='ltr'>
 <%- include('_parts/head.ejs', { title: title }) %>
 <body>
-<% include _parts/navbar.ejs %>
+<%- include('_parts/navbar.ejs') %>
 <div class='container'>
   <% if (typeof title !== 'undefined') %> <h1><%= title %></h1>
   <div class='markdown'>
     <%- markdown %>
   </div>
 </div>
-<% include _parts/footer.ejs %>
+<%- include('_parts/footer.ejs') %>
 </body>
 </html>

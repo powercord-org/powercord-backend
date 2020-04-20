@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <%- include('_parts/head.ejs', { title: 'Terms of Service' }) %>
 <body>
-<% include _parts/navbar.ejs %>
+<%- include('_parts/navbar.ejs') %>
 <div class='container'>
   <h1>Terms of Service ("Terms")</h1>
 
@@ -48,6 +48,6 @@
   <h2>Contact Us</h2>
   <p>If you have any questions about these Terms, please contact us.</p>
 </div>
-<% include _parts/footer.ejs %>
+<%- include('_parts/footer.ejs') %>
 </body>
 </html>

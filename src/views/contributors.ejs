@@ -2,7 +2,7 @@
 <html lang='en' dir='ltr'>
   <%- include('_parts/head.ejs', { title: 'Contributors' }) %>
   <body>
-    <% include _parts/navbar.ejs %>
+    <%- include('_parts/navbar.ejs') %>
     <div class='container'>
       <h2>Developers</h2>
       <div class='contributors'>
@@ -17,6 +17,6 @@
         <% }) %>
       </div>
     </div>
-    <% include _parts/footer.ejs %>
+    <%- include('_parts/footer.ejs') %>
   </body>
 </html>

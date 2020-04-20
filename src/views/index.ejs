@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang='en' dir='ltr'>
-<% include _parts/head.ejs %>
+<%- include('_parts/head.ejs') %>
 <body>
-<% include _parts/navbar.ejs %>
+<%- include('_parts/navbar.ejs') %>
 <div class='container'>
   <div class='pc-header'>Lightweight, powerful and simple Discord client mod.</div>
   <div class='features'>
@@ -34,6 +34,6 @@
     }) %>
   </div>
 </div>
-<% include _parts/footer.ejs %>
+<%- include('_parts/footer.ejs') %>
 </body>
 </html>

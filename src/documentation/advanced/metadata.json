@@ -2,6 +2,6 @@
   "pos": 2,
   "name": "Advanced",
   "docs": [
-    "flux", "http"
+    "flux", "http", "i18n"
   ]
 }

@@ -2,6 +2,6 @@
   "pos": 0,
   "name": "Getting Started",
   "docs": [
-    "introduction", "plugin_structure", "manifest", "entry_file"
+    "introduction", "betterdiscord", "plugin_structure", "manifest", "entry_file"
   ]
 }

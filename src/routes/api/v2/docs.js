@@ -103,6 +103,13 @@ class Documentation {
             list.items.push(listItem);
             blockquote = null;
             break;
+          case 'table':
+            document.contents.push({
+              type: 'TABLE',
+              thead: node.header,
+              tbody: node.cells,
+              center: node.align.map(a => a === 'center')
+            });
         }
       });
       return res.json(document);
