@@ -27,6 +27,7 @@ define settings, but don't worry it should be pretty simple once you got it.
 | license | string | License SPDX the theme is licensed under |
 | theme | string | Relative path to your theme. Entry file can be css or any [supported preprocessor](#themes/preprocessors) |
 | preview | url[] | Optional. Previews that'll be shown in the Powercord Store |
+| discord | string | Optional. Invite code (**without discord.gg part**) to a support server. Will be shown in Powercord Store and in settings. |
 
 ###### Example manifest
 ```json
@@ -37,7 +38,8 @@ define settings, but don't worry it should be pretty simple once you got it.
     "author": "Bowoser",
     "license": "BSD-3-Clause",
     "theme": "theme.scss",
-    "preview": [ "https://cdn.discordapp.com/attachments/606636904355725320/701582378946002996/iu.png" ]
+    "preview": [ "https://cdn.discordapp.com/attachments/606636904355725320/701582378946002996/iu.png" ],
+    "discord": "5eSH46g"
 }
 ```
 
