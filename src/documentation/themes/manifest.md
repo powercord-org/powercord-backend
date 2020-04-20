@@ -8,9 +8,9 @@ You need to put the manifest at your theme's root, in a file named `powercord_ma
 
 For example, the most basic file structure for a theme would be:
 ```
-`
-|- powercord_manifest.json
-|- style.css
+.
+├── powercord_manifest.json
+└── style.css
 ```
 
 ## Basic manifest structure
