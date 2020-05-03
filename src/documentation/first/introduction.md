@@ -1,10 +1,8 @@
 # Introduction
-
 Henlo there! Those documentations will help you to your journey of making a Powercord plugin, from the very basics
 to advanced.
 
 ## Prerequisites
-
 Before you start making your first plugin, there are a few things you should be able to do first. We'll assume in
 the docs that you know all of that:
  - **JavaScript**: Everything in Powercord is made with JS. If you're not familiar with it, you still
@@ -16,7 +14,6 @@ the docs that you know all of that:
  `require('../module_that_makes_discord_good.js')`.
 
 ## Bonus Points
-
 Knowing those things isn't required and we'll explain the basics in the docs.
  - **React**: Discord is built with React, so is Powercord's UIs. You'll also have to deal with React elements
  when injecting into already existing UIs.
@@ -24,7 +21,6 @@ Knowing those things isn't required and we'll explain the basics in the docs.
  connected to those stores and use this data.
 
 ## Lastly
-
 Make sure to read the [Powercord Plugin Guidelines](https://github.com/powercord-community/guidelines) before
 starting writing your plugin. We want plugins to improve Discord, not to make it less cool. We decided to be strict
 and impose a quality standard to plugins to make the ecosystem as good as we can and have every plugin working

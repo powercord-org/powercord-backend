@@ -8,7 +8,6 @@ You need to put the manifest at your theme's root, in a file named `powercord_ma
 
 For example, the most basic file structure for a theme would be:
 ```
-.
 ├── powercord_manifest.json
 └── style.css
 ```
@@ -124,8 +123,11 @@ Settings are defined through the `settings` manifest keys. It consists of two ke
 | Key | Type | Description |
 |---|---|---|
 | name | string | Option name |
-| description | string | Option description |
+| variable | string | Name of the variable that'll receive the setting* |
+| description | string | Optional. Option description |
 | type | string | Type of the option. See "Supported types" section below |
+
+*Notes: For CSS variables you don't need to include the `--` prefix. Cannot being with an underscore.
 
 #### Settings format
 Powercord supports different ways of applying settings. Which one to choose depends on your implementation and how
@@ -140,11 +142,22 @@ your theme is structured.
 
 #### Supported types
 
- - `string`: A basic string. You can define a minimum and a maximum using the `limit` key*
- - `number`: A basic number. You can define a minimum and a maximum using the `limit` key*
+ - `string`: A basic string.
+   - You can specify a minimum and maximum length using the `limit` key*
+   - For string validation you can use the `regex` key to specify a regex the value must match
+ - `select`: One of the predefined values in `options`.
+   - `options` is an array of items that are structured this way:
+     - `name`: What will be displayed in the UI
+     - `value`: The actual value of the option
+ - `number`: A basic number.
+   - You **must** specify a minimum and maximum value using the `limit` key*
+   - You can specify markers using the `markers` key (Array of numbers)
+   - You can set `sticky` to true if you want the user to only be able values that are markers
  - `color`: A solid color with no transparency
  - `color_alpha`: A color with optional transparency (rgba)
  - `url`: An HTTP or file url
+ - `background`: Either a color (with optional transparency) or an URL. Consider it a mix of `color_alpha` and `url`
+ - `font`: A font name. The user will be able to select any available font detected
 
 *the `limit` key is an array of two numbers (minimum and maximum)
 

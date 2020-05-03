@@ -1,8 +1,10 @@
+const CUTEBOARD_EMOTE = '🌺';
 const STARBOARD_EMOTE = '⭐';
 const GENERIC_STAR_OBJ = {
   messageId: null,
   stars: 0
 };
+const CUTE = [ 69, CUTEBOARD_EMOTE, 0xf49898 ];
 const EMOTES = [
   [ 0, '⭐', 0xffffff ],
   [ 5, '🌟', 0xffffaa ],
@@ -32,25 +34,34 @@ module.exports = class Starboard {
       const reactions = await this.bot.getMessageReaction(msg.channel.id, msg.id, STARBOARD_EMOTE);
       this.updateStarCount(msg, reactions.filter(u => u.id !== msg.author.id).length);
     }
+
+    if (emoji.name === CUTEBOARD_EMOTE && this._isProcessable(msg, user, true)) {
+      const reactions = await this.bot.getMessageReaction(msg.channel.id, msg.id, CUTEBOARD_EMOTE);
+      this.updateStarCount(msg, reactions.filter(u => u.id !== msg.author.id).length, true);
+    }
   }
 
-  async updateStarCount (msg, count) {
-    const entry = await this.mongo.findOne({ _id: msg.id }) || { ...GENERIC_STAR_OBJ };
+  async updateStarCount (msg, count, cute) {
+    const channel = cute ? this.config.discord.boat.cuteboard : this.config.discord.boat.starboard;
+    const entry = await this.mongo.findOne({ _id: msg.id }) || {
+      ...GENERIC_STAR_OBJ,
+      cute
+    };
     entry.stars = count;
 
     if (entry.stars < 1) {
       if (entry.messageId) {
         this.mongo.deleteOne({ _id: msg.id });
-        this.bot.deleteMessage(this.config.discord.boat.starboard, entry.messageId);
+        this.bot.deleteMessage(channel, entry.messageId);
       }
       return;
     }
 
     if (!entry.messageId) {
-      const starMsg = await this.bot.createMessage(this.config.discord.boat.starboard, this._buildStarMessage(entry.stars, msg));
+      const starMsg = await this.bot.createMessage(channel, this._buildStarMessage(entry.stars, msg, cute));
       entry.messageId = starMsg.id;
     } else {
-      this.bot.editMessage(this.config.discord.boat.starboard, entry.messageId, this._buildStarMessage(entry.stars, msg));
+      this.bot.editMessage(channel, entry.messageId, this._buildStarMessage(entry.stars, msg, cute));
     }
 
     this.mongo.updateOne(
@@ -60,15 +71,16 @@ module.exports = class Starboard {
     );
   }
 
-  _isProcessable (msg, stargazer) {
+  _isProcessable (msg, stargazer, cute) {
+    const channel = cute ? this.config.discord.boat.cuteboard : this.config.discord.boat.starboard;
     return !msg.channel.nsfw &&
       msg.author.id !== stargazer.id &&
-      msg.channel.id !== this.config.discord.boat.starboard &&
+      msg.channel.id !== channel &&
       !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'));
   }
 
-  _buildStarMessage (stars, msg) {
-    const [ , star, color ] = EMOTES.filter(e => e[0] < stars).pop();
+  _buildStarMessage (stars, msg, cute) {
+    const [ , star, color ] = cute ? CUTE : EMOTES.filter(e => e[0] < stars).pop();
     return {
       content: `${star} **${stars}** - <#${msg.channel.id}>`,
       embed: {
