@@ -33,6 +33,7 @@ class Documentation {
       let blockquote,
         listItem,
         list = null;
+      const listItems = [];
       marked.lexer(markdown).forEach(node => {
         switch (node.type) {
           case 'heading':
@@ -85,23 +86,39 @@ class Documentation {
             blockquote = null;
             break;
           case 'list_start':
-            list = {
-              type: 'LIST',
-              ordered: node.ordered,
-              items: []
-            };
+            if (listItems.length === 0) {
+              list = {
+                type: 'LIST',
+                ordered: node.ordered,
+                items: []
+              };
+            }
+            if (inList) {
+              inList = false;
+              listItems[listItems.length - 1].push(listItem);
+              blockquote = null;
+            }
+            listItems.push([]);
             break;
           case 'list_end':
-            document.contents.push(list);
+            if (listItems.length === 1) {
+              list.items = listItems.pop();
+              document.contents.push(list);
+            } else {
+              const items = listItems.pop();
+              listItems[listItems.length - 1].push(items);
+            }
             break;
           case 'list_item_start':
             inList = true;
             listItem = '';
             break;
           case 'list_item_end':
-            inList = false;
-            list.items.push(listItem);
-            blockquote = null;
+            if (inList) {
+              inList = false;
+              listItems[listItems.length - 1].push(listItem);
+              blockquote = null;
+            }
             break;
           case 'table':
             document.contents.push({
