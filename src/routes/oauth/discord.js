@@ -20,7 +20,7 @@ class DiscordAuth {
         redirect_uri: `${req.config.domain}/oauth/discord`
       });
 
-      return res.redirect(`https://discordapp.com/oauth2/authorize?${data}`);
+      return res.redirect(`https://discord.com/oauth2/authorize?${data}`);
     }
 
     let token;

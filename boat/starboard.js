@@ -94,7 +94,7 @@ module.exports = class Starboard {
         fields: [
           {
             name: 'Jump to message',
-            value: `[Click here](https://discordapp.com/channels/${msg.channel.guild.id}/${msg.channel.id}/${msg.id})`
+            value: `[Click here](https://discord.com/channels/${msg.channel.guild.id}/${msg.channel.id}/${msg.id})`
           }
         ]
       }

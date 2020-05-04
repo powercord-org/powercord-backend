@@ -2,9 +2,9 @@ const { get, post } = require('../http');
 const config = require('../../../config.json');
 
 module.exports = {
-  BASE_URL: 'https://discordapp.com/api/v7',
+  BASE_URL: 'https://discord.com/api/v7',
 
-  getOrRefreshToken (props) {
+  getOrRefreshToken(props) {
     return post(`${this.BASE_URL}/oauth2/token`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send({
@@ -15,21 +15,21 @@ module.exports = {
       }).then(r => r.body);
   },
 
-  getToken (code) {
+  getToken(code) {
     return this.getOrRefreshToken({
       grant_type: 'authorization_code',
       code
     });
   },
 
-  refreshToken (refresh_token) {
+  refreshToken(refresh_token) {
     return this.getOrRefreshToken({
       grant_type: 'refresh_token',
       refresh_token
     });
   },
 
-  getUserByBearer (bearer) {
+  getUserByBearer(bearer) {
     return get(`${this.BASE_URL}/users/@me`)
       .set('Authorization', `Bearer ${bearer}`)
       .then(r => r.body);

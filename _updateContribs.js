@@ -6,7 +6,7 @@ const config = require('./config');
   const collection = (await MongoClient.connect('mongodb://localhost:27017')).db('powercord').collection('users');
   const users = await collection.find({ $or: [ { 'badges.contributor': true }, { 'badges.developer': true } ] }).toArray();
   for (const user of users) {
-    const discordUser = await get(`https://discordapp.com/api/v6/users/${user._id}`)
+    const discordUser = await get(`https://discord.com/api/v6/users/${user._id}`)
       .set('Authorization', `Bot ${config.discord.boat.token}`)
       .then(r => r.body);
 
