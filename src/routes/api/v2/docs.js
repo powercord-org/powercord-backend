@@ -7,7 +7,7 @@ class Documentation {
     express.get('/api/v2/docs/:category/:doc', this.getDocument.bind(this));
   }
 
-  listCategories (req, res) {
+  listCategories (_, res) {
     res.json(
       Object.keys(documents).map(doc => ({
         id: doc,
@@ -28,12 +28,6 @@ class Documentation {
         name,
         contents: []
       };
-      let inBlockquote,
-        inList = false;
-      let blockquote,
-        listItem,
-        list = null;
-      const listItems = [];
       marked.lexer(markdown).forEach(node => {
         switch (node.type) {
           case 'heading':
@@ -46,29 +40,10 @@ class Documentation {
             }
             break;
           case 'paragraph':
-            if (inBlockquote) {
-              if (blockquote) {
-                blockquote.content += `\n\n${node.text}`;
-              } else {
-                const contents = node.text.split('\n');
-                const color = contents.shift();
-                blockquote = {
-                  type: 'NOTE',
-                  color: color.toUpperCase(),
-                  content: contents.join('\n')
-                };
-              }
-            } else {
-              document.contents.push({
-                type: 'TEXT',
-                content: node.text
-              });
-            }
-            break;
-          case 'text':
-            if (inList) {
-              listItem += `${node.text}\n`;
-            }
+            document.contents.push({
+              type: 'TEXT',
+              content: node.text
+            });
             break;
           case 'code':
             document.contents.push({
@@ -77,48 +52,21 @@ class Documentation {
               code: node.text
             });
             break;
-          case 'blockquote_start':
-            inBlockquote = true;
+          case 'blockquote': {
+            const blockquote = node.text.split('\n');
+            document.contents.push({
+              type: 'NOTE',
+              color: blockquote.shift(),
+              content: blockquote.join(' ')
+            });
             break;
-          case 'blockquote_end':
-            inBlockquote = false;
-            document.contents.push(blockquote);
-            blockquote = null;
-            break;
-          case 'list_start':
-            if (listItems.length === 0) {
-              list = {
-                type: 'LIST',
-                ordered: node.ordered,
-                items: []
-              };
-            }
-            if (inList) {
-              inList = false;
-              listItems[listItems.length - 1].push(listItem);
-              blockquote = null;
-            }
-            listItems.push([]);
-            break;
-          case 'list_end':
-            if (listItems.length === 1) {
-              list.items = listItems.pop();
-              document.contents.push(list);
-            } else {
-              const items = listItems.pop();
-              listItems[listItems.length - 1].push(items);
-            }
-            break;
-          case 'list_item_start':
-            inList = true;
-            listItem = '';
-            break;
-          case 'list_item_end':
-            if (inList) {
-              inList = false;
-              listItems[listItems.length - 1].push(listItem);
-              blockquote = null;
-            }
+          }
+          case 'list':
+            document.contents.push({
+              type: 'LIST',
+              ordered: node.ordered,
+              items: this._processListNode(node)
+            });
             break;
           case 'table':
             document.contents.push({
@@ -133,6 +81,29 @@ class Documentation {
     }
 
     res.sendStatus(404);
+  }
+
+  _processListNode (node) {
+    const list = [];
+    node.items.forEach(item => {
+      let str = '';
+      item.tokens.forEach(tok => {
+        switch (tok.type) {
+          case 'text':
+            str += `${tok.text}\n`;
+            break;
+          case 'list':
+            list.push(str);
+            str = '';
+            list.push(this._processListNode(tok));
+            break;
+        }
+      });
+      if (str) {
+        list.push(str);
+      }
+    });
+    return list;
   }
 }
 

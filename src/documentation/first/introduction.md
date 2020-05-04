@@ -21,9 +21,9 @@ Knowing those things isn't required and we'll explain the basics in the docs.
  connected to those stores and use this data.
 
 ## Lastly
-Make sure to read the [Powercord Plugin Guidelines](https://github.com/powercord-community/guidelines) before
-starting writing your plugin. We want plugins to improve Discord, not to make it less cool. We decided to be strict
-and impose a quality standard to plugins to make the ecosystem as good as we can and have every plugin working
-as smoothly as possible. We also did set in place rules to keep plugins ethical and respectful of users and
-of the Discord infrastructure (API and Gateway). We do NOT want to cause trouble to Discord operations, and that'd
-be a great way of getting users banned.
+Make sure to read the [Powercord Plugin Guidelines](https://powercord.dev/guidelines) before starting writing your
+plugin. We want plugins to improve Discord, not to make it less cool. We decided to be strict and impose a quality
+standard to plugins to make the ecosystem as good as we can and have every plugin working as smoothly as possible.
+We also did set in place rules to keep plugins ethical and respectful of users and of the Discord infrastructure
+(API and Gateway). We do NOT want to cause trouble to Discord operations, and that'd be a great way of getting
+users banned.
