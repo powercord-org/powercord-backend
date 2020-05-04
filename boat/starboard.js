@@ -35,7 +35,7 @@ module.exports = class Starboard {
       this.updateStarCount(msg, reactions.filter(u => u.id !== msg.author.id).length);
     }
 
-    if (emoji.name === CUTEBOARD_EMOTE && this._isProcessable(msg, user, true)) {
+    if (emoji.name === CUTEBOARD_EMOTE && this._isProcessable(msg, user)) {
       const reactions = await this.bot.getMessageReaction(msg.channel.id, msg.id, CUTEBOARD_EMOTE);
       this.updateStarCount(msg, reactions.filter(u => u.id !== msg.author.id).length, true);
     }
@@ -71,11 +71,11 @@ module.exports = class Starboard {
     );
   }
 
-  _isProcessable (msg, stargazer, cute) {
-    const channel = cute ? this.config.discord.boat.cuteboard : this.config.discord.boat.starboard;
+  _isProcessable (msg, stargazer) {
     return !msg.channel.nsfw &&
       msg.author.id !== stargazer.id &&
-      msg.channel.id !== channel &&
+      msg.channel.id !== this.config.discord.boat.cuteboard &&
+      msg.channel.id !== this.config.discord.boat.starboard &&
       !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'));
   }
 
