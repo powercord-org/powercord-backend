@@ -14,7 +14,8 @@ the docs that you know all of that:
  `require('../module_that_makes_discord_good.js')`.
 
 ## Bonus Points
-Knowing those things isn't required and we'll explain the basics in the docs.
+Knowing those things isn't required and we'll explain the basics in the docs but they are used alot during plugin development depending on what you are creating.
+
  - **React**: Discord is built with React, so is Powercord's UIs. You'll also have to deal with React elements
  when injecting into already existing UIs.
  - **Flux**: Discord uses Flux to store all of the data it handles. You can make use of them to have components

@@ -2,6 +2,6 @@
   "pos": 2,
   "name": "Advanced",
   "docs": [
-    "flux", "http", "i18n"
+    "flux", "http", "i18n", "permissions_dependencies", "appMode"
   ]
 }
