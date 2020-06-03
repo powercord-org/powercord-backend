@@ -1,7 +1,0 @@
-{
-  "pos": 4,
-  "name": "API Reference",
-  "docs": [
-    "plugin", "webpack", "injector", "util", "http", "components"
-  ]
-}

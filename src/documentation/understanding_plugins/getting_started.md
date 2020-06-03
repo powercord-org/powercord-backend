@@ -1,7 +1,4 @@
-# Introduction
-Henlo there! Those documentations will help you to your journey of making a Powercord plugin, from the very basics
-to advanced.
-
+# Getting Started
 ## Prerequisites
 Before you start making your first plugin, there are a few things you should be able to do first. We'll assume in
 the docs that you know all of that:

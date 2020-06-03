@@ -1,4 +1,4 @@
-# HTTP requests
+# HTTP Requests
 
 ## Why a module? Can't I use `fetch`?
 It's tempting to just use integrated fetch and perform requests. However, it comes with multiple downsides:
@@ -14,4 +14,4 @@ inject custom logic in node modules but it'd make no sense for them to do so.
 > **BE CAREFUL**. We **strongly** discourage doing raw requests to Discord. **Only do this in desperate cases**.
 > In most cases, it is better to rely on local modules that are responsible of fetching and caching this data as they
 > most of the time save you from doing requests, because they have the data you want already cached. However, some
-> cases require you to do this.
+> sad cases require you to do this.

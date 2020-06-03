@@ -1,1 +1,0 @@
-# powercord/components

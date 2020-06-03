@@ -14,7 +14,8 @@ class Documentation {
         metadata: documents[doc].metadata,
         docs: Object.keys(documents[doc].files).map(file => ({
           id: file,
-          name: documents[doc].files[file].name
+          name: documents[doc].files[file].name,
+          parts: documents[doc].files[file].parts
         }))
       }))
     );
@@ -56,7 +57,7 @@ class Documentation {
             const blockquote = node.text.split('\n');
             document.contents.push({
               type: 'NOTE',
-              color: blockquote.shift(),
+              color: blockquote.shift().toUpperCase(),
               content: blockquote.join(' ')
             });
             break;

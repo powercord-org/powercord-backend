@@ -1,7 +1,0 @@
-{
-  "pos": 0,
-  "name": "Getting Started",
-  "docs": [
-    "introduction", "useful_resources", "plugin_structure", "manifest", "entry_file"
-  ]
-}

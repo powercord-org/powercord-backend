@@ -115,19 +115,7 @@ possible, to let theme developers be as creative as they can and come up with hi
 
 Settings are defined through the `settings` manifest keys. It consists of two keys:
  - `format`: Defines how Powercord will apply those settings. More on that in the "Settings format" section below;
- - `options`: Options the user will be able to tweak;
-
-`options` is an array of object structured like this:
-
-###### Option structure
-| Key | Type | Description |
-|---|---|---|
-| name | string | Option name |
-| variable | string | Name of the variable that'll receive the setting* |
-| description | string | Optional. Option description |
-| type | string | Type of the option. See "Supported types" section below |
-
-*Notes: For CSS variables you don't need to include the `--` prefix. Cannot being with an underscore.
+ - `options`: Options the user will be able to tweak. More on that in the "Options format" section below;
 
 #### Settings format
 Powercord supports different ways of applying settings. Which one to choose depends on your implementation and how
@@ -135,13 +123,24 @@ your theme is structured.
 
  - `css`: Settings defined as CSS variables. They'll be defined **after** your theme in `:root`.
  - `scss`: Settings defined using SCSS variables. They'll be defined **before** your first lines of scss.
+ - `less`: Settings defined using Less variables. They'll be defined **before** your first lines of Less.
+ - `stylus`: Settings defined using Stylus variables. They'll be defined **before** your first lines of Stylus.
 
 >info
 > **Protip**: In SCSS you can define "default values" using the `!default` flag.
 > [Learn More](https://sass-lang.com/documentation/variables#default-values)
 
-#### Supported types
+#### Options format
+| Key | Type | Description |
+|---|---|---|
+| name | string | Option name |
+| variable | string | Name of the variable that'll receive the setting* |
+| description | string | Optional. Option description |
+| type | string | Type of the option. See "Supported types" section below |
 
+*Notes: For CSS variables you don't need to include the `--` prefix. Variable names cannot begin with an underscore.
+
+#### Supported types
  - `string`: A basic string.
    - You can specify a minimum and maximum length using the `limit` key*
    - For string validation you can use the `regex` key to specify a regex the value must match
@@ -150,14 +149,21 @@ your theme is structured.
      - `name`: What will be displayed in the UI
      - `value`: The actual value of the option
  - `number`: A basic number.
-   - You **must** specify a minimum and maximum value using the `limit` key*
-   - You can specify markers using the `markers` key (Array of numbers)
-   - You can set `sticky` to true if you want the user to only be able values that are markers
+   - If you need your number to have a unit (e.g. px) you can define this through the `unit` key
+     - The `unit` key can either be:
+       - A string defining the unit
+       - An array defining the units the user can choose
+         - This array can contain the magic values `$scale` (for px, em, %, ...) or `$time` (for ms, s, ...)
+   - You can specify a minimum and maximum value using the `limit` key. This will then turn the input into a slider
+   - You can specify markers using the `markers` key
+     - You can set `sticky` to true if you want the user to only be able values that are markers
  - `color`: A solid color with no transparency
  - `color_alpha`: A color with optional transparency (rgba)
  - `url`: An HTTP or file url
  - `background`: Either a color (with optional transparency) or an URL. Consider it a mix of `color_alpha` and `url`
  - `font`: A font name. The user will be able to select any available font detected
+
+<!-- @todo: Write example for all of those -->
 
 *the `limit` key is an array of two numbers (minimum and maximum)
 
@@ -165,9 +171,27 @@ your theme is structured.
 If one of your CSS Plugins has settings, you can add a `settings` key to your plugin manifest object, and then treat
 it like described above.
 
+### Splash screen theming
+Powercord lets your theme specify a theme to inject in the splash screen so even this part is pixel-perfect. In our
+testings, theme loading was instantaneous so it should give a pretty neat experience to your theme users.
+
+You simply need to pass a theme to inject into the splash screen through the `splashTheme` key. We recommend using a
+different css file than your main theme, to make sure your theme loads faster than the Blue Falcon.
+
+###### Example manifest (partial)
+```json
+{
+    "theme": "theme.css",
+    "splashTheme": "overlay.css"
+}
+```
+
+Powercord's SDK provides a quick and easy way to fire up a fake splash screen and manipulate its state to catch
+all of the screen states. Learn more about it [here](#using_powercord/sdk##splash-screen).
+
 ### Overlay theming
 >warning
-> Overlay theming is **experimental** and is hard to test because some Powercord developers use Linux, where the
+> Overlay theming is **experimental** and is hard to test because most Powercord developers use Linux, where the
 > in-game overlay isn't available. You might experience huge performance drops for heavy css. Use it at your own
 > risk.
 
@@ -181,13 +205,13 @@ discourage using the same theme as for the client if your theme does affect the 
 should instead use a separate theme file with only what's required to theme the overlay. Any extra code is code that
 can make the overlay lag and that's most likely the last thing you want.
 
-###### Example manifest
+###### Example manifest (partial)
 ```json
 {
-    "theme": "theme.scss",
-    "overlayTheme": "overlay.scss"
+    "theme": "theme.css",
+    "overlayTheme": "overlay.css"
 }
 ```
 
-To theme the overlay, you can enable the **Overlay DevTools** option to make a devtools appear as soon as an overlay
-starts up in a game.
+Powercord's SDK provides an option to open Chromium DevTools as soon as an overlay is detected. Learn more about it
+[here](#using_powercord/sdk##overlay-devtools).
