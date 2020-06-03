@@ -10,7 +10,7 @@ module.exports = function (mongo, config) {
     return;
   }
   const bot = new Eris(config.discord.boat.token, {
-    guildSubscriptions: false
+    intents: [ 'guildBans', 'guildMembers', 'guildMessages', 'guildMessageReactions' ]
   });
 
   bot.on('ready', () => console.log('Powercord bot is ready'));
