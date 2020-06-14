@@ -1,0 +1,22 @@
+{
+  "name": "powercord-backend",
+  "version": "2.0.0",
+  "description": "The backend for Powercord",
+  "main": "src/index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/powercord-org/powercord-backend.git"
+  },
+  "author": "aetheryx",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/powercord-org/powercord-backend/issues"
+  },
+  "homepage": "https://powercord.dev"
+}

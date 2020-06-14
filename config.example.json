@@ -1,0 +1,45 @@
+{
+  "port": 80,
+  "redis": {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "password": "",
+    "db": 0
+  },
+  "discord": {
+    "clientID": "",
+    "clientSecret": "",
+    "boat": {
+      "enabled": true,
+      "prefix": "pc/",
+      "token": "Bot token",
+      "roles": {
+        "contributor": "role id",
+        "translator": "role id",
+        "hunter": "role id",
+        "user": "role id",
+        "mute": "role id",
+        "nsfw": "role id"
+      },
+      "server": "server id",
+      "strawpoll": "channel id",
+      "starboard": "channel id",
+      "modlog": "channel id",
+      "rules": [ "channel id", "message id" ],
+      "stupid": [ "user ids" ]
+    }
+  },
+  "spotify": {
+    "clientID": "",
+    "clientSecret": "",
+    "scopes": []
+  },
+  "github": {
+    "clientID": "",
+    "clientSecret": "",
+    "scopes": []
+  },
+  "admins": ["284122164582416385"],
+  "domain": "http://localhost",
+  "secret": "tony was a dick, and stacy was a whore"
+}

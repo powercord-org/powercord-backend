@@ -1,0 +1,12 @@
+# Editors
+.idea
+.vscode
+
+# Le petabyte
+node_modules
+
+# random shit
+config.json
+*.log
+_work
+*.nogit.*
