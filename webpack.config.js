@@ -220,7 +220,8 @@ if (isDev) {
     },
     plugins: [
       ...baseConfig.plugins.slice(1),
-      new LimitChunkCountPlugin({ maxChunks: 1 })
+      new LimitChunkCountPlugin({ maxChunks: 1 }),
+      new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('server') })
     ],
     optimization: {
       ...baseConfig.optimization,

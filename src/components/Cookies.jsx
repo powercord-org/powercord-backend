@@ -29,7 +29,7 @@ const AGREE_DATE = '2020-06-15'
 
 const Cookies = () => {
   if (process.env.BUILD_SIDE === 'server') {
-    return void 0
+    return null
   }
 
   const [ hasAgreed, setHasAgreed ] = React.useState(localStorage.getItem('cookie-consent') === AGREE_DATE)

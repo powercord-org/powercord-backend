@@ -25,22 +25,38 @@ import { Link } from 'react-router-dom'
 
 import style from '@styles/header.scss'
 
-const Header = () => (
-  <header className={style.container}>
-    <Link to='/'>
-      <img src={require('@assets/powercord.svg').default} alt='Powercord Logo'/>
-      <h1>Powercord</h1>
-    </Link>
-    <nav>
-      <Link to='/installation'>Installation</Link>
-      <Link to='/contributors'>Contributors</Link>
-      <a href='https://discord.gg/5eSH46g' target='_blank' rel='noreferrer'>Discord Server</a>
-    </nav>
-    <div className={style.account}>
-      <a href='/api/login' className={style.button}>Login with Discord</a>
-    </div>
-  </header>
-)
+const Header = () => {
+  const [ opened, setOpened ] = React.useState(false)
+  const toggle = React.useCallback(() => setOpened(!opened), [ opened ])
+  React.useEffect(() => {
+    if (opened) {
+      window.addEventListener('click', toggle)
+      return () => window.removeEventListener('click', toggle)
+    }
+  }, [ opened ])
+
+  return (
+    <header className={[ style.container, opened && style.opened ].filter(Boolean).join(' ')}>
+      <Link to='/'>
+        <img src={require('@assets/powercord.svg').default} alt='Powercord Logo'/>
+        <h1>Powercord</h1>
+      </Link>
+      <nav>
+        <Link to='/installation'>Installation</Link>
+        <Link to='/contributors'>Contributors</Link>
+        <a href='https://discord.gg/5eSH46g' target='_blank' rel='noreferrer'>Discord Server</a>
+      </nav>
+      <div className={style.account}>
+        <a href='/api/login' className={style.button}>Login with Discord</a>
+      </div>
+      <div className={style.burgerking} onClick={toggle}>
+        <span/>
+        <span/>
+        <span/>
+      </div>
+    </header>
+  )
+}
 
 Header.displayName = 'Header'
 export default React.memo(Header)
