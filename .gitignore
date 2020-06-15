@@ -5,6 +5,10 @@
 # Le petabyte
 node_modules
 
+# yes
+http/dist
+dist
+
 # random shit
 config.json
 *.log
