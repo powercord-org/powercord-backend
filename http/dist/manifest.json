@@ -1,0 +1,9 @@
+{
+  "app.js": "/dist/app.chk.js",
+  "main.js": "/dist/main.js",
+  "styles.css": "/dist/styles.css",
+  "styles.js": "/dist/styles.chk.js",
+  "vendors~app.js": "/dist/vendors~app.chk.js",
+  "powercord.svg": "/dist/0c6744dac479b5509821.svg",
+  "powercord.png": "/dist/21ac9663994f92b52fd5.png"
+}

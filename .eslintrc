@@ -1,0 +1,74 @@
+{
+  "parser": "babel-eslint",
+  "extends": "standard",
+  "env": {
+    "browser": true
+  },
+  "plugins": [
+    "react"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "globals": {
+    "WEBPACK": false
+  },
+  "rules": {
+    "no-void": "off",
+    "no-undefined": "error",
+    "prefer-const": "error",
+    "prefer-destructuring": [
+      "error",
+      {
+        "VariableDeclarator": {
+          "array": false,
+          "object": true
+        },
+        "AssignmentExpression": {
+          "array": true,
+          "object": true
+        }
+      }
+    ],
+    "prefer-template": "error",
+    "array-bracket-newline": [
+      "error",
+      "consistent"
+    ],
+    "array-bracket-spacing": [
+      "error",
+      "always"
+    ],
+    "multiline-ternary": [
+      "error",
+      "always-multiline"
+    ],
+    "object-property-newline": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/no-this-in-sfc": "error",
+    "react/prefer-stateless-function": "error",
+    "react/react-in-jsx-scope": "error",
+    "react/style-prop-object": "error",
+    "react/void-dom-elements-no-children": "error",
+    "react/jsx-fragments": "error",
+    "react/jsx-pascal-case": "error",
+    "react/jsx-props-no-multi-spaces": "error",
+    "react/no-children-prop": "error",
+    "react/no-deprecated": "error",
+    "react/no-direct-mutation-state": "error",
+    "react/display-name": [
+      "error",
+      {
+        "ignoreTranspilerName": true
+      }
+    ]
+  }
+}
