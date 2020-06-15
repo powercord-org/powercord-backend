@@ -38,7 +38,7 @@ const renderHtml = (helmet, html) => `
       ${helmet ? helmet.link.toString() : ''}
       ${manifest['styles.css'] ? `<link rel='stylesheet' href='${manifest['styles.css']}'/>` : ''}
     </head>
-    <body>
+    <body ${helmet ? helmet.bodyAttributes.toString() : ''}>
       <div id='react-root'>${html || ''}</div>
       <div id='tooltip-container'></div>
       <script>window.GLOBAL_ENV = { PRODUCTION: ${process.argv.includes('-p')} }</script>

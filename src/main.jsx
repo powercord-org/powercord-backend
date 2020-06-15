@@ -27,13 +27,11 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import('./components/App' /* webpackChunkName: "app" */).then(mdl => {
   const App = mdl.default
   if (process.env.NODE_ENV === 'production') {
-    const rendered = (
+    ReactDOM.hydrate(
       <Router>
         <App/>
-      </Router>
+      </Router>, document.querySelector('#react-root')
     )
-
-    ReactDOM.hydrate(rendered, document.querySelector('#react-root'))
   } else {
     ReactDOM.render(
       <Router>

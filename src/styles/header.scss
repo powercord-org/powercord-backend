@@ -25,6 +25,7 @@
   padding: 8px 32px;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 
   img {
     height: 100%;
@@ -34,9 +35,26 @@
   h1 {
     margin: 0;
     padding: 0;
-    margin-top: 5px;
+    margin-top: 4px;
     font-size: 26px;
     font-family: 'Discord', sans-serif;
+    margin-right: 8px;
+  }
+
+  > a {
+    display: flex;
+    align-items: center;
+    color: inherit;
+    height: 100%;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  nav a {
+    margin-left: 24px;
+    color: inherit;
   }
 }
 
@@ -49,16 +67,16 @@
   background-color: #7289da;
   height: 36px;
   min-width: 60px;
-  min-height: 36px;
-  transition: background-color .17s ease,color .17s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
   font-weight: 600;
-  line-height: 16px;
   padding: 2px 16px;
-  user-select: none;
-  text-decoration: none;
   border-radius: 3px;
+  transition: background-color .17s ease;
+  font-size: 14px;
+
+  &:hover {
+    background-color: #677bc4
+  }
 }

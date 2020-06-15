@@ -27,6 +27,7 @@ import { useLocation } from 'react-router'
 import Header from './Header'
 import Router from './Router'
 import Footer from './Footer'
+import Cookies from './Cookies'
 
 import '@styles/main.scss'
 
@@ -57,13 +58,13 @@ const App = () => {
 
         <meta name='theme-color' content='#7289da'/>
         <meta name='revisit-after' content='2 days'/>
-        <link rel='canonical' href={`https://powercord.dev/${pathname}`}/>
+        <link rel='canonical' href={`https://powercord.dev${pathname}`}/>
         <meta name='description' content='A lightweight Discord client mod focused on simplicity and performance'/>
 
         <meta property='og:locale' content='en_US'/>
         <meta property='og:title' content='Powercord'/>
         <meta property='og:site_name' content='Powercord'/>
-        <meta property='og:url' content={`https://powercord.dev/${pathname}`}/>
+        <meta property='og:url' content={`https://powercord.dev${pathname}`}/>
         <meta property='og:image' content={require('@assets/powercord.png').default}/>
         <meta property='og:description' content='A lightweight Discord client mod focused on simplicity and performance'/>
 
@@ -79,6 +80,7 @@ const App = () => {
       <Header/>
       <Router/>
       <Footer/>
+      <Cookies/>
     </>
   )
 }

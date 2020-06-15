@@ -35,7 +35,7 @@ const Footer = () => (
       <span><Link to='/stats'>Stats</Link></span>
       <span><Link to='/branding'>Branding</Link></span>
       <span><a href='https://github.com/powercord-org' target='_blank' rel='noreferrer'>GitHub</a></span>
-      <span><Link to='/legal/tos'>Terms of Service</Link></span>
+      <span><Link to='/legal/tos'>Terms</Link></span>
       <span><Link to='/legal/privacy'>Privacy</Link></span>
     </div>
   </footer>

@@ -31,9 +31,11 @@ html, body, :global(#react-root) {
   background-color: #303030;
   margin: 0;
   padding: 0;
-  text-rendering: optimizeLegibility;
   color: #efefef;
   font-family: 'Open Sans', sans-serif;
+  text-rendering: optimizeLegibility;
+  width: 100%;
+  height: 100%;
 }
 
 button {
@@ -45,4 +47,34 @@ button {
   outline: none;
   margin: 0;
   padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: #7289da;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+:global(#react-root) {
+  display: flex;
+  flex-direction: column;
+
+  main {
+    flex: 1;
+  }
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 1300px;
+  padding: 2em;
+  width: 100%;
+}
+
+.serious :global(#react-root) {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
 }

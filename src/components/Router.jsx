@@ -24,11 +24,29 @@ import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import Home from './Home'
+import Terms from './legal/Terms'
+import Privacy from './legal/Privacy'
+import MarkdownDocument from './MarkdownDocument'
 
 const Router = () => (
   <Switch>
     <Route path='/' exact>
       <Home/>
+    </Route>
+    <Route path='/legal/tos' exact>
+      <Terms/>
+    </Route>
+    <Route path='/legal/privacy' exact>
+      <Privacy/>
+    </Route>
+    <Route path='/installation' exact>
+      <MarkdownDocument document=''/>
+    </Route>
+    <Route path='/guidelines' exact>
+      <MarkdownDocument document=''/>
+    </Route>
+    <Route path='/listing-agreement' exact>
+      <MarkdownDocument document=''/>
     </Route>
   </Switch>
 )

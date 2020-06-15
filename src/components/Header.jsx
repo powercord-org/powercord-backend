@@ -21,13 +21,21 @@
  */
 
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import style from '@styles/header.scss'
 
 const Header = () => (
   <header className={style.container}>
-    <img src={require('@assets/powercord.svg').default} alt='Powercord Logo'/>
-    <h1>Powercord</h1>
+    <Link to='/'>
+      <img src={require('@assets/powercord.svg').default} alt='Powercord Logo'/>
+      <h1>Powercord</h1>
+    </Link>
+    <nav>
+      <Link to='/installation'>Installation</Link>
+      <Link to='/contributors'>Contributors</Link>
+      <a href='https://discord.gg/5eSH46g' target='_blank' rel='noreferrer'>Discord Server</a>
+    </nav>
     <div className={style.account}>
       <a href='/api/login' className={style.button}>Login with Discord</a>
     </div>

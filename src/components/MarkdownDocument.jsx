@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2018-2020 aetheryx & Bowser65
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,59 +20,18 @@
  * SOFTWARE.
  */
 
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  height: 32px;
-  flex-shrink: 0;
-  background-color: #252525;
-  font-size: .85em;
+import React from 'react'
 
-  div {
-    display: flex;
-  }
+import Container from './Container'
+import Spinner from './Spinner'
 
-  span {
-    display: flex;
-    align-items: center;
-
-    + span::before {
-      content: '';
-      margin: 8px;
-      width: 8px;
-      height: 8px;
-      background-color: #efefef;
-      border-radius: 2px;
-      transform: rotate(45deg);
-    }
-
-    a {
-      color: #fff;
-    }
-  }
+const MarkdownDocument = ({ document }) => {
+  return (
+    <Container>
+      <Spinner/>
+    </Container>
+  )
 }
 
-.account {
-  margin-left: auto;
-}
-
-.button {
-  color: #fff;
-  background-color: #7289da;
-  height: 36px;
-  min-width: 60px;
-  min-height: 36px;
-  transition: background-color .17s ease,color .17s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  padding: 2px 16px;
-  user-select: none;
-  text-decoration: none;
-  border-radius: 3px;
-}
+MarkdownDocument.displayName = 'MarkdownDocument'
+export default React.memo(MarkdownDocument)

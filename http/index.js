@@ -21,9 +21,13 @@
  */
 
 const fastify = require('fastify')({ logger: true })
+const { createReadStream } = require('fs')
+const { join } = require('path')
+
 const config = require('../config.json')
 
-// Assets & React
+// REP & React
+fastify.get('/robots.txt', (_, reply) => reply.type('text/plain') | reply.send(createReadStream(join(__dirname, 'robots.txt'))))
 fastify.get('*', require('./react'))
 
 fastify.listen(config.port, function (err, address) {

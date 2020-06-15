@@ -22,8 +22,11 @@
 
 import React from 'react'
 
+import Container from '../Container'
 const Home = () => (
-  'a'
+  <Container>
+    a
+  </Container>
 )
 
 Home.displayName = 'Home'
