@@ -21,10 +21,24 @@
  */
 
 export const Endpoints = Object.freeze({
+  LOGIN: '/api/v2/login',
+  LOGOUT: '/api/v2/logout',
   DOCS_CATEGORIES: '/api/v2/docs/categories',
   DOCS_DOCUMENT: (doc) => `/api/v2/docs/${doc}`
 })
 
 export const Routes = Object.freeze({
-  // todo
+  HOME: '/',
+  CONTRIBUTORS: '/contributors',
+  STATS: '/stats',
+  BRANDING: '/branding',
+  FAQ: '/faq',
+  GUIDELINES: '/guidelines',
+  INSTALLATION: '/installation',
+  LISTING_AGREEMENT: '/listing-agreement',
+  TERMS: '/legal/tos',
+  PRIVACY: '/legal/privacy',
+  DICKSWORD: 'https://discord.gg/5eSH46g',
+  PATREON: 'https://patreon.com/aetheryx',
+  GITHUB: 'https://github.com/powercord-org'
 })

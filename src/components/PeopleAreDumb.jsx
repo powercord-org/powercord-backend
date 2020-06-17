@@ -23,6 +23,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { Routes } from '../constants'
 import Container from './Container'
 
 const PeopleAreDumb = () => (
@@ -48,7 +49,7 @@ const PeopleAreDumb = () => (
     <p>
       In the future, Powercord will have a built-in store in which you'll be able to find and install plugins and
       themes with a simple button. However we're not here yet so you'll have to refer to the instructions on
-      our <a href='https://discord.gg/5eSH46g' target='_blank' rel='noreferrer'>Discord server</a>, pinned in #plugins
+      our <a href={Routes.DICKSWORD} target='_blank' rel='noreferrer'>Discord server</a>, pinned in #plugins
       and #themes channels.
     </p>
 
@@ -84,7 +85,7 @@ const PeopleAreDumb = () => (
     <h2 id='install-rtfm'>Powercord failed to inject, what did I do wrong?</h2>
     <p>
       In almost all cases, installation failures comes from missing a step or not taking into account everything
-      listed on the <Link to='/installation'>installation guide</Link>. Most common mistakes are:
+      listed on the <Link to={Routes.INSTALLATION}>installation guide</Link>. Most common mistakes are:
     </p>
     <ol>
       <li>Opening the terminal as administrator (Don't do that!)</li>

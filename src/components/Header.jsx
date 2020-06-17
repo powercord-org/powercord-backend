@@ -23,6 +23,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { Routes } from '../constants'
+
 import style from '@styles/header.scss'
 
 const Header = () => {
@@ -42,10 +44,10 @@ const Header = () => {
         <h1>Powercord</h1>
       </Link>
       <nav>
-        <Link to='/installation'>Installation</Link>
-        <Link to='/faq'>FAQ</Link>
-        <Link to='/contributors'>Contributors</Link>
-        <a href='https://discord.gg/5eSH46g' target='_blank' rel='noreferrer'>Discord Server</a>
+        <Link to={Routes.INSTALLATION}>Installation</Link>
+        <Link to={Routes.FAQ}>FAQ</Link>
+        <Link to={Routes.CONTRIBUTORS}>Contributors</Link>
+        <a href={Routes.DICKSWORD} target='_blank' rel='noreferrer'>Discord Server</a>
       </nav>
       <div className={style.account}>
         <a href='/api/login' className={style.button}>Login with Discord</a>

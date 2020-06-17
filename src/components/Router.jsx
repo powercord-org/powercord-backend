@@ -23,34 +23,50 @@
 import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 
+import { Routes } from '../constants'
 import Home from './Home'
 import PeopleAreDumb from './PeopleAreDumb'
+import MarkdownDocument from './MarkdownDocument'
 import Terms from './legal/Terms'
 import Privacy from './legal/Privacy'
-import MarkdownDocument from './MarkdownDocument'
 
 const Router = () => (
   <Switch>
-    <Route path='/' exact>
+    <Route path={Routes.HOME} exact>
       <Home/>
     </Route>
-    <Route path='/faq' exact>
+    <Route path={Routes.CONTRIBUTORS} exact>
+      <main>todo</main>
+    </Route>
+    <Route path={Routes.STATS} exact>
+      <main>todo</main>
+    </Route>
+    <Route path={Routes.BRANDING} exact>
+      <main>todo</main>
+    </Route>
+    {/* Documents */}
+    <Route path={Routes.FAQ} exact>
       <PeopleAreDumb/>
     </Route>
-    <Route path='/legal/tos' exact>
-      <Terms/>
-    </Route>
-    <Route path='/legal/privacy' exact>
-      <Privacy/>
-    </Route>
-    <Route path='/installation' exact>
+    <Route path={Routes.INSTALLATION} exact>
       <MarkdownDocument document='installation'/>
     </Route>
-    <Route path='/guidelines' exact>
+    <Route path={Routes.GUIDELINES} exact>
       <MarkdownDocument document='guidelines'/>
     </Route>
-    <Route path='/listing-agreement' exact>
+    <Route path={Routes.LISTING_AGREEMENT} exact>
       <MarkdownDocument document='listing-agreement'/>
+    </Route>
+    {/* Legal */}
+    <Route path={Routes.TERMS} exact>
+      <Terms/>
+    </Route>
+    <Route path={Routes.PRIVACY} exact>
+      <Privacy/>
+    </Route>
+    {/* Fallback */}
+    <Route>
+      <main>404</main>
     </Route>
   </Switch>
 )

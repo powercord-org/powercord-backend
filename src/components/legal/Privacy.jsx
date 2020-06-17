@@ -23,6 +23,7 @@
 import React from 'react'
 import Helmet from 'react-helmet'
 
+import { Routes } from '../../constants'
 import Container from '../Container'
 
 import mainStyles from '@styles/main.scss'
@@ -118,7 +119,7 @@ const Privacy = () => (
     <h2>Contact Us</h2>
     <p>If you have any questions about this Privacy Policy, please contact us:</p>
     <ul>
-      <li>By visiting our Discord server: <a href="https://discord.gg/5eSH46g" target="_blank">https://discord.gg/5eSH46g</a></li>
+      <li>By visiting our Discord server: <a href={Routes.DICKSWORD} target='_blank' rel='noreferrer'>{Routes.DICKSWORD}</a></li>
     </ul>
   </Container>
 )

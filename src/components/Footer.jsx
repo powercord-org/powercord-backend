@@ -23,6 +23,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { Routes } from '../constants'
+
 import style from '@styles/footer.scss'
 
 const Footer = () => (
@@ -32,11 +34,11 @@ const Footer = () => (
       <span>Powercord is not affiliated or endorsed by Discord. Discord is a trademark of Discord Inc.</span>
     </div>
     <div className={style.section}>
-      <span><Link to='/stats'>Stats</Link></span>
-      <span><Link to='/branding'>Branding</Link></span>
-      <span><a href='https://github.com/powercord-org' target='_blank' rel='noreferrer'>GitHub</a></span>
-      <span><Link to='/legal/tos'>Terms</Link></span>
-      <span><Link to='/legal/privacy'>Privacy</Link></span>
+      <span><Link to={Routes.STATS}>Stats</Link></span>
+      <span><Link to={Routes.BRANDING}>Branding</Link></span>
+      <span><a href={Routes.GITHUB} target='_blank' rel='noreferrer'>GitHub</a></span>
+      <span><Link to={Routes.TERMS}>Terms</Link></span>
+      <span><Link to={Routes.PRIVACY}>Privacy</Link></span>
     </div>
   </footer>
 )

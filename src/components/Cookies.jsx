@@ -23,6 +23,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { Routes } from '../constants'
+
 import style from '@styles/cookies.scss'
 
 const AGREE_DATE = '2020-06-15'
@@ -41,7 +43,7 @@ const Cookies = () => {
   return !hasAgreed && (
     <div className={style.container}>
       <img src='https://cdn.discordapp.com/emojis/396521772855590916.png' alt='cookie'/>
-      <p>Cookies help us deliver our Service. By using the website or clicking I agree, you agree to our <Link to='/privacy'>use of cookies</Link></p>
+      <p>Cookies help us deliver our Service. By using the website or clicking I agree, you agree to our <Link to={Routes.PRIVACY}>use of cookies</Link></p>
       <button onClick={onAgree}>Yea I agree</button>
     </div>
   )
