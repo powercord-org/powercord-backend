@@ -66,6 +66,39 @@ h1, h2, h3, h4, h5, h6, p {
   font-weight: inherit;
 }
 
+h1 {
+  font-size: 32px;
+  margin-bottom: 32px;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 28px;
+  margin-top: 32px;
+  margin-bottom: 24px;
+  font-weight: 800;
+}
+
+h3 {
+  font-size: 26px;
+  margin-top: 32px;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 22px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+h5 {
+  font-size: 18px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
 :global(#react-root), body {
   display: flex;
   flex-direction: column;

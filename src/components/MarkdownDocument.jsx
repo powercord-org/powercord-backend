@@ -23,10 +23,13 @@
 /* eslint-disable react/display-name */
 
 import React from 'react'
+import { Link } from 'react-router-dom'
 
+import { Endpoints } from '../constants'
 import Container from './Container'
 import Spinner from './Spinner'
-import { Endpoints } from '../constants'
+
+import style from '@styles/markdown.scss'
 
 const rules = [
   [ /(\*\*|__)([^*_]+)\1/g, ([ ,, text ]) => (<b>{text}</b>) ],
@@ -43,8 +46,7 @@ function renderLink (link, display) {
     display = display || link
     const url = new URL(link)
     if (url.host === 'powercord.dev') {
-      console.log(link, url)
-      return 'yes'
+      return <Link to={url.pathname + url.search + url.hash}>{display}</Link>
     }
     return (
       <a href={link} target='_blank' rel='noreferrer'>{display}</a>
@@ -83,7 +85,7 @@ function renderListItem (ordered, item) {
   if (typeof item === 'string') {
     return React.createElement('li', null, renderInline(item))
   } else if (Array.isArray(item)) {
-    return React.createElement(ordered ? 'ol' : 'ul', null, item.forEach(i => renderListItem(ordered, i)))
+    return React.createElement(ordered ? 'ol' : 'ul', null, item.map(i => renderListItem(ordered, i)))
   }
   return null
 }
@@ -99,10 +101,17 @@ const Markdown = React.memo(
             element.content
           )
         case 'TEXT':
-          return React.createElement('p', null, renderInline(element.content))
+          return (
+            <p>{renderInline(element.content)}</p>
+          )
         case 'LIST':
           return React.createElement(element.ordered ? 'ol' : 'ul', null, element.items.map(i => renderListItem(element.ordered, i)))
         case 'NOTE':
+          if (element.quote) {
+            return (
+              <blockquote>{renderInline(element.content)}</blockquote>
+            )
+          }
           console.log(element)
           return null
         case 'CODEBLOCK':
@@ -130,11 +139,12 @@ const Markdown = React.memo(
 const MarkdownDocument = ({ document }) => {
   const [ doc, setDoc ] = React.useState(null)
   React.useEffect(() => {
+    if (doc) setDoc(null)
     fetch(Endpoints.DOCS_DOCUMENT(document))
       .then(r => r.json())
       .then(d => setDoc(d))
       .catch(() => setDoc(false))
-  }, [])
+  }, [ document ])
 
   if (doc === false) {
     return '404' // todo
@@ -144,10 +154,10 @@ const MarkdownDocument = ({ document }) => {
       {!doc
         ? <Spinner/>
         : (
-          <>
+          <div className={style.markdown}>
             <h1>{doc.title}</h1>
             <Markdown contents={doc.contents}/>
-          </>
+          </div>
         )}
     </Container>
   )

@@ -21,5 +21,39 @@
  */
 
 .markdown {
-  // todo
+  h6 {
+    // todo - table headers
+  }
+
+  code {
+    padding: .2em;
+    margin: -.2em 0;
+    border-radius: 3px;
+    background-color: #252525;
+    font-family: 'JetBrains Mono', sans-serif;
+    font-size: 85%;
+  }
+
+  img {
+    margin: 16px 0;
+  }
+
+  blockquote {
+    white-space: pre-wrap;
+    margin-right: 0;
+    margin-left: 16px;
+    position: relative;
+    
+    &::before {
+      content: '';
+      width: 4px;
+      height: 100%;
+      border-radius: 2px;
+      position: absolute;
+      top: 0;
+      left: -16px;
+      right: 0;
+      background-color: #252525;
+    }
+  }
 }

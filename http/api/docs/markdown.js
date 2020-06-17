@@ -81,8 +81,9 @@ module.exports = function (markdown) {
         const blockquote = node.text.split('\n')
         contents.push({
           type: 'NOTE',
-          color: blockquote.shift().toUpperCase(),
-          content: blockquote.join(' ')
+          quote: node.raw.startsWith('> '),
+          color: !node.raw.startsWith('> ') && blockquote.shift().toUpperCase(),
+          content: blockquote.join(' ').replace(/[ \n]*<br\/?>[ \n]*/ig, '\n')
         })
         break
       }

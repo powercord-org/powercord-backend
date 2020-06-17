@@ -76,6 +76,7 @@ const App = () => {
 
         <link rel='shortcut icon' href={require('@assets/powercord.png').default}/>
         <link href='https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap' rel='stylesheet'/>
+        <link href='https://cdn.jsdelivr.net/npm/typeface-jetbrains-mono@1.0.5/dist/index.min.css' rel='stylesheet'></link>
       </Helmet>
       <Header/>
       <Router/>
