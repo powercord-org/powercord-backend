@@ -1,7 +1,0 @@
-{
-  "pos": 1,
-  "name": "Themes",
-  "docs": [
-    "manifest", "preprocessors", "variables", "publishing", "verification"
-  ]
-}

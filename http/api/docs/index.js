@@ -28,8 +28,8 @@ const markdown = require('./markdown')
 const docsStore = []
 const remoteCache = {}
 
-function listCategories (request, reply) {
-  reply.send(docsStore.map(c => ({ ...c, documents: c.documents.map(d => ({ ...d, contents: void 0 })) })))
+function listCategories (_, reply) {
+  reply.send(docsStore.map(c => ({ ...c, docs: c.docs.map(d => ({ ...d, contents: void 0 })) })))
 }
 
 function getDocument (request, reply) {
@@ -52,16 +52,19 @@ async function getRemoteDocument (url) {
 
 async function initializeFastify (fastify) {
   const docsPath = path.join(__dirname, '../../../docs')
-  for (const category of await fsp.readdir(docsPath)) {
-    const documents = []
-    const metadata = require(`${docsPath}/${category}/metadata.json`)
-    for (const document of metadata.docs) {
-      if (document === 'manifest.json') continue
-      const md = await fsp.readFile(`${docsPath}/${category}/${document}.md`, 'utf8')
-      documents.push({ id: document.split('.'), ...markdown(md) })
+  for (const cat of await fsp.readdir(docsPath)) {
+    const catId = cat.split('-')[1]
+    const docs = []
+    for (const document of await fsp.readdir(`${docsPath}/${cat}`)) {
+      const md = await fsp.readFile(`${docsPath}/${cat}/${document}`, 'utf8')
+      docs.push({ id: document.split('.')[0], ...markdown(md) })
     }
 
-    docsStore.push({ id: category, metadata, documents })
+    docsStore.push({
+      id: catId,
+      name: catId.split('_').map(s => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
+      docs
+    })
   }
 
   fastify.get('/installation', () => getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Installation.md'))
