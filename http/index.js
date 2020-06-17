@@ -26,14 +26,16 @@ const { join } = require('path')
 
 const config = require('../config.json')
 
+fastify.register(require('fastify-mongodb'), { url: 'mongodb://localhost:27017' })
+
+// API
+fastify.register(require('./api/v2'), { prefix: '/api/v2' })
+
 // REP & React
 fastify.get('/robots.txt', (_, reply) => reply.type('text/plain') | reply.send(createReadStream(join(__dirname, 'robots.txt'))))
 fastify.get('*', require('./react'))
 
-fastify.listen(config.port, function (err, address) {
-  if (err) {
-    fastify.log.error(err)
-    process.exit(1)
-  }
-  fastify.log.info(`server listening on ${address}`)
-})
+fastify.ready()
+  .then(() => fastify.listen(config.port))
+  .then(addr => fastify.log.info(`server listening on ${addr}`))
+  .catch(e => fastify.log.error(e) | process.exit(1))

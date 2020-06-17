@@ -20,15 +20,6 @@
  * SOFTWARE.
  */
 
-import React from 'react'
-
-import style from '@styles/main.scss'
-
-const Container = ({ children, className }) => (
-  <main className={[ style.container, className ].filter(Boolean).join(' ')}>
-    {children}
-  </main>
-)
-
-Container.displayName = 'Container'
-export default React.memo(Container)
+module.exports = async function (fastify) {
+  fastify.register(require('./docs'), { prefix: '/docs' })
+}

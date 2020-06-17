@@ -43,6 +43,7 @@ const Header = () => {
       </Link>
       <nav>
         <Link to='/installation'>Installation</Link>
+        <Link to='/faq'>FAQ</Link>
         <Link to='/contributors'>Contributors</Link>
         <a href='https://discord.gg/5eSH46g' target='_blank' rel='noreferrer'>Discord Server</a>
       </nav>

@@ -21,11 +21,23 @@
  */
 
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import Container from '../Container'
 const Home = () => (
   <Container>
-    a
+    <section>
+      <h2>The smoothest client mod ever made</h2>
+      <p>
+        Powercord is all about simplicity and performance, and does its best to keep Discord as responsive as without
+        a mod. Powercord also reuses a lot of Discord internal elements which makes it fade in the UI for a fluid
+        user experience.
+      </p>
+    </section>
+    <section>
+      <h2>What are you waiting for???</h2>
+      <p>Make your Discord spicier. <Link to='/installation'>Install Powercord</Link>!</p>
+    </section>
   </Container>
 )
 

@@ -32,13 +32,15 @@ const renderHtml = (helmet, html) => `
   <!DOCTYPE html>
   <html lang="en">
     <head>
-      <meta charset='utf8'/>
       ${helmet ? helmet.title.toString() : ''}
       ${helmet ? helmet.meta.toString() : ''}
       ${helmet ? helmet.link.toString() : ''}
       ${manifest['styles.css'] ? `<link rel='stylesheet' href='${manifest['styles.css']}'/>` : ''}
     </head>
     <body ${helmet ? helmet.bodyAttributes.toString() : ''}>
+      <noscript>
+        <div class='no-js'>JavaScript is required for this website to work as intended. Please enable it in your browser settings.</div>
+      </noscript>
       <div id='react-root'>${html || ''}</div>
       <div id='tooltip-container'></div>
       <script>window.GLOBAL_ENV = { PRODUCTION: ${process.argv.includes('-p')} }</script>

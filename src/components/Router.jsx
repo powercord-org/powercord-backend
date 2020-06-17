@@ -40,13 +40,13 @@ const Router = () => (
       <Privacy/>
     </Route>
     <Route path='/installation' exact>
-      <MarkdownDocument document=''/>
+      <MarkdownDocument document='installation'/>
     </Route>
     <Route path='/guidelines' exact>
-      <MarkdownDocument document=''/>
+      <MarkdownDocument document='guidelines'/>
     </Route>
     <Route path='/listing-agreement' exact>
-      <MarkdownDocument document=''/>
+      <MarkdownDocument document='listing-agreement'/>
     </Route>
   </Switch>
 )

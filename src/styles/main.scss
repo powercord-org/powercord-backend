@@ -59,13 +59,29 @@ a {
   }
 }
 
-:global(#react-root) {
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+:global(#react-root), body {
   display: flex;
   flex-direction: column;
+}
 
-  main {
-    flex: 1;
-  }
+main, :global(#react-root) {
+  flex: 1;
+}
+
+:global(.no-js) {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f04747;
+  color: #151515;
 }
 
 .container {
@@ -75,6 +91,6 @@ a {
   width: 100%;
 }
 
-.serious :global(#react-root) {
+.serious {
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
 }

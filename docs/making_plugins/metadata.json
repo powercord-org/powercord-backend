@@ -1,0 +1,7 @@
+{
+  "pos": 4,
+  "name": "Making Plugins",
+  "docs": [
+    "fetching_modules", "injecting", "settings", "http", "publishing", "verification"
+  ]
+}

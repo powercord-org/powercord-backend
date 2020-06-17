@@ -25,16 +25,16 @@ import Helmet from 'react-helmet'
 
 import Container from '../Container'
 
-import styles from '@styles/main.scss'
+import mainStyles from '@styles/main.scss'
+import styles from '@styles/markdown.scss'
 
 const Terms = () => (
-  <Container>
+  <Container className={`${mainStyles.serious} ${styles.markdown}`}>
     <Helmet>
       <title>Terms of Service</title>
-      <body className={styles.serious}/>
     </Helmet>
-    <h1>Terms of Service ("Terms")</h1>
 
+    <h1>Terms of Service ("Terms")</h1>
     <p>Last updated: April 15, 2019</p>
     <p>Effective date: April 15, 2019</p>
 

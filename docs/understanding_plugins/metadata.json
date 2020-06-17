@@ -1,0 +1,7 @@
+{
+  "pos": 3,
+  "name": "Understanding Plugins",
+  "docs": [
+    "getting_started", "plugin_structure", "manifest", "entry_file"
+  ]
+}

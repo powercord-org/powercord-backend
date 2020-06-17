@@ -20,15 +20,11 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+export const Endpoints = Object.freeze({
+  DOCS_CATEGORIES: '/api/v2/docs/categories',
+  DOCS_DOCUMENT: (doc) => `/api/v2/docs/${doc}`
+})
 
-import style from '@styles/main.scss'
-
-const Container = ({ children, className }) => (
-  <main className={[ style.container, className ].filter(Boolean).join(' ')}>
-    {children}
-  </main>
-)
-
-Container.displayName = 'Container'
-export default React.memo(Container)
+export const Routes = Object.freeze({
+  // todo
+})

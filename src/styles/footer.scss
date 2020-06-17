@@ -39,7 +39,7 @@
 
     + div {
       margin-top: 8px;
-      padding-top: 8px;
+      padding-top: 4px;
       border-top: 1px solid #000;
       width: 100%;
       flex-wrap: wrap;
@@ -60,7 +60,7 @@
   }
 }
 
-@media screen and (min-width: 840px) {
+@media screen and (min-width: 1180px) {
   .container {
     flex-direction: row;
     justify-content: space-between;

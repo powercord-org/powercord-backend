@@ -14,6 +14,9 @@
   },
   "dependencies": {
     "fastify": "^2.14.1",
+    "fastify-mongodb": "^2.0.0",
+    "marked": "^1.1.0",
+    "node-fetch": "^2.6.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.1.0",
