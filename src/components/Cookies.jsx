@@ -25,7 +25,7 @@ import { Link } from 'react-router-dom'
 
 import style from '@styles/cookies.scss'
 
-const AGREE_DATE = '2020-06-15'
+const AGREE_DATE = '2020-06-15f'
 
 const Cookies = () => {
   if (process.env.BUILD_SIDE === 'server') {

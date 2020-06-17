@@ -22,15 +22,13 @@
 
 .container {
   position: fixed;
-  bottom: 35px;
-  left: 50%;
-  width: 50%;
-  bottom: 35px;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background-color: #202020;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  padding: 0 16px;
+  padding: 8px 16px;
 
   img {
     width: 45px;
@@ -39,9 +37,30 @@
     flex-shrink: 0;
   }
 
+  p {
+    margin-right: 24px;
+  }
+
   button {
     flex-shrink: 0;
     background-color: #252525;
     padding: 10px 15px;
+    margin-left: auto;
+  }
+}
+
+@media screen and (min-width: 910px) {
+  .container {
+    bottom: 40px;
+    left: 50%;
+    width: 75%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
+
+@media screen and (min-width: 1180px) {
+  .container {
+    width: 50%;
   }
 }
