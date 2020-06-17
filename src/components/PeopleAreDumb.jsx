@@ -31,7 +31,9 @@ const PeopleAreDumb = () => (
     <h1>Frequently Asked Questions</h1>
 
     <h2 id='discord-tos'>Is Powercord against Discord's Terms of Service?</h2>
-    <p>Long story short... <b>yes</b>. Powercord is against the Discord Terms of Service — but, you should keep reading:</p>
+    <p>
+      Long story short... <b>yes</b>. Powercord is against the Discord Terms of Service — but, you should keep reading:
+    </p>
     <p>
       As of right now, <b>Discord is not going out of their way to detect client mods or ban client mod users</b>. On
       top of that, Powercord does not make any manual HTTP requests unlike certain client mods / plugins, so your
@@ -52,6 +54,18 @@ const PeopleAreDumb = () => (
       our <a href={Routes.DICKSWORD} target='_blank' rel='noreferrer'>Discord server</a>, pinned in #plugins
       and #themes channels.
     </p>
+
+    <h2 id='bd-and-pc'>Can I install Powercord if I already have BetterDiscord?</h2>
+    <p>
+      No. You'll first need to uninstall BetterDiscord from your Discord installation, and then install Powercord.
+    </p>
+
+    <h2 id='bd-compat'>Can I use BetterDiscord plugins and themes on this?</h2>
+    <p>
+      Not directly. Powercord plugin and themes format differs a lot and they cannot be used as-is. Powercord
+      community members crafted a variety of tools aimed to make your transition from BD to Powercord as smooth as
+      possible. Those tools are listed <a href='https://github.com/powercord-org/powercord-backend/blob/my-awesome-branch/docs/0-using_powercord/useful_resources.md' target='_blank' rel='noreferrer'>here.</a>
+    </p> {/* todo: /docs/ stuff */}
 
     <h2 id='unplugged'>Powercord randomly disappeared, is it normal?</h2>
     <p>
