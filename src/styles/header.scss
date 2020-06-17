@@ -34,12 +34,6 @@
   }
 
   h1 {
-    margin: 0;
-    padding: 0;
-    margin-top: 4px;
-    font-size: 26px;
-    font-family: 'Discord', sans-serif;
-    margin-right: 8px;
     display: none;
   }
 
@@ -121,6 +115,13 @@
 @media screen and (min-width: 560px) {
   .container h1 {
     display: block;
+    margin: 0;
+    padding: 0;
+    margin-top: 4px;
+    font-size: 26px;
+    font-family: 'Discord', sans-serif;
+    margin-right: 8px;
+    font-weight: inherit;
   }
 }
 

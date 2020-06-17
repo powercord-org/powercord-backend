@@ -26,6 +26,7 @@ const fetch = require('node-fetch')
 const markdown = require('./markdown')
 
 const docsStore = []
+const remoteCache = {}
 
 function listCategories (request, reply) {
   reply.send(docsStore.map(c => ({ ...c, documents: c.documents.map(d => ({ ...d, contents: void 0 })) })))
@@ -41,8 +42,12 @@ function getDocument (request, reply) {
 }
 
 async function getRemoteDocument (url) {
-  const md = await fetch(url).then(r => r.text())
-  return markdown(md)
+  if (!remoteCache[url]) {
+    const md = await fetch(url).then(r => r.text())
+    remoteCache[url] = markdown(md)
+    setTimeout(() => delete remoteCache[url], 300e3)
+  }
+  return remoteCache[url]
 }
 
 async function initializeFastify (fastify) {

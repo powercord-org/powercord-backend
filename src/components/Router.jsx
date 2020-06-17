@@ -24,6 +24,7 @@ import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import Home from './Home'
+import PeopleAreDumb from './PeopleAreDumb'
 import Terms from './legal/Terms'
 import Privacy from './legal/Privacy'
 import MarkdownDocument from './MarkdownDocument'
@@ -32,6 +33,9 @@ const Router = () => (
   <Switch>
     <Route path='/' exact>
       <Home/>
+    </Route>
+    <Route path='/faq' exact>
+      <PeopleAreDumb/>
     </Route>
     <Route path='/legal/tos' exact>
       <Terms/>
