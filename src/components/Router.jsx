@@ -25,6 +25,7 @@ import { Switch, Route } from 'react-router-dom'
 
 import { Routes } from '../constants'
 import Home from './Home'
+import Contributors from './Contributors'
 import PeopleAreDumb from './PeopleAreDumb'
 import MarkdownDocument from './MarkdownDocument'
 import Terms from './legal/Terms'
@@ -36,7 +37,7 @@ const Router = () => (
       <Home/>
     </Route>
     <Route path={Routes.CONTRIBUTORS} exact>
-      <main>todo</main>
+      <Contributors/>
     </Route>
     <Route path={Routes.STATS} exact>
       <main>todo</main>

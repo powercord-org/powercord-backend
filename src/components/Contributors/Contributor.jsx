@@ -20,28 +20,22 @@
  * SOFTWARE.
  */
 
-export const Endpoints = Object.freeze({
-  LOGIN: '/api/v2/login',
-  LOGOUT: '/api/v2/logout',
-  CONTRIBUTORS: '/api/v2/stats/contributors',
-  STATS: '/api/v2/stats/numbers',
-  DOCS_CATEGORIES: '/api/v2/docs/categories',
-  DOCS_DOCUMENT: (doc) => `/api/v2/docs/${doc}`,
-  USER_AVATAR: (id) => `/api/v2/avatar/${id}.png`
-})
+import React from 'react'
 
-export const Routes = Object.freeze({
-  HOME: '/',
-  CONTRIBUTORS: '/contributors',
-  STATS: '/stats',
-  BRANDING: '/branding',
-  FAQ: '/faq',
-  GUIDELINES: '/guidelines',
-  INSTALLATION: '/installation',
-  LISTING_AGREEMENT: '/listing-agreement',
-  TERMS: '/legal/tos',
-  PRIVACY: '/legal/privacy',
-  DICKSWORD: 'https://discord.gg/5eSH46g',
-  PATREON: 'https://patreon.com/aetheryx',
-  GITHUB: 'https://github.com/powercord-org'
-})
+import style from '@styles/contributors.scss'
+import { Endpoints } from '../../constants'
+
+const Contributor = (user) => (
+  <div className={style.container}>
+    <img src={Endpoints.USER_AVATAR(user._id)} alt={`${user.username}'s avatar`}/>
+    <div>
+      <h3>{user.username}<span>#{user.discriminator}</span></h3>
+      {user.accounts.github && <span>
+        <a href={`https://github.com/${user.accounts.github.login}`}>GitHub</a>
+      </span>}
+    </div>
+  </div>
+)
+
+Contributor.displayName = 'Contributor'
+export default React.memo(Contributor)
