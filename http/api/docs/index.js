@@ -35,9 +35,9 @@ function listCategories (_, reply) {
 function getDocument (request, reply) {
   const { category, document } = request.params
   const cat = docsStore.find(c => c.id === category)
-  if (!cat) return reply.code(404).type('text/plain').send('Not Found')
+  if (!cat) return reply.code(404).send('Not Found')
   const doc = cat.find(d => d.id === document)
-  if (!doc) return reply.code(404).type('text/plain').send('Not Found')
+  if (!doc) return reply.code(404).send('Not Found')
   reply.send(document)
 }
 

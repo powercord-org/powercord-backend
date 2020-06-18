@@ -107,7 +107,7 @@ const Privacy = () => (
     <p>Our Service may contain links to other sites that are not operated by us. If you click on a third party link, you will be directed to that third party"s site. We strongly advise you to review the Privacy Policy of every site you visit.</p>
     <p>We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.</p>
 
-    <h2>Children"s Privacy</h2>
+    <h2>Children's Privacy</h2>
     <p>Our Service does not address anyone under the age of 13 ("Children").</p>
     <p>We do not knowingly collect personally identifiable information from anyone under the age of 13. If you are a parent or guardian and you are aware that your Children has provided us with Personal Data, please contact us. If we become aware that we have collected Personal Data from children without verification of parental consent, we take steps to remove that information from our servers.</p>
 

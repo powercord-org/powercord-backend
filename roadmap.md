@@ -14,7 +14,7 @@
 ## Powercord Store
  - [ ] Public APIs
  - [ ] Backoffice
- - [-] Integrate in Powercord
+ - [ ] Integrate in Powercord
  - [ ] Browser-accessible store (powercord.dev/store)
        - Will make use of RPC to open up Powercord
        - Fallback for /l/store stuff

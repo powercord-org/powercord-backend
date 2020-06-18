@@ -122,6 +122,10 @@ code {
   font-size: 85%;
 }
 
+li {
+  margin: 4px 0;
+}
+
 :global(.no-js) {
   height: 48px;
   display: flex;
@@ -134,7 +138,7 @@ code {
 .container {
   margin: 0 auto;
   max-width: 1300px;
-  padding: 2em;
+  padding: 1em 2em;
   width: 100%;
 }
 

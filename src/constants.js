@@ -24,7 +24,8 @@ export const Endpoints = Object.freeze({
   LOGIN: '/api/v2/login',
   LOGOUT: '/api/v2/logout',
   DOCS_CATEGORIES: '/api/v2/docs/categories',
-  DOCS_DOCUMENT: (doc) => `/api/v2/docs/${doc}`
+  DOCS_DOCUMENT: (doc) => `/api/v2/docs/${doc}`,
+  USER_AVATAR: (id) => `/api/v2/avatar/${id}.png`
 })
 
 export const Routes = Object.freeze({

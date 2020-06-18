@@ -23,7 +23,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { Routes } from '../constants'
+import { Routes, Endpoints } from '../constants'
 
 import style from '@styles/header.scss'
 
@@ -50,7 +50,7 @@ const Header = () => {
         <a href={Routes.DICKSWORD} target='_blank' rel='noreferrer'>Discord Server</a>
       </nav>
       <div className={style.account}>
-        <a href='/api/login' className={style.button}>Login with Discord</a>
+        <a href={Endpoints.LOGIN} className={style.button}>Login with Discord</a>
       </div>
       <div className={style.burgerking} onClick={toggle}>
         <span/>

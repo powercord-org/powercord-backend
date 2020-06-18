@@ -20,22 +20,41 @@
  * SOFTWARE.
  */
 
-const fastify = require('fastify')({ logger: true })
-const { createReadStream } = require('fs')
-const { join } = require('path')
+async function contributors () {
+  const findUsers = (filters) =>
+    this.mongo.db.collection('users').find(filters, {
+      projection: {
+        _id: true,
+        username: true,
+        discriminator: true,
+        'accounts.github.login': true,
+        'accounts.github.display': true
+      }
+    }).toArray()
 
-const config = require('../config.json')
+  return {
+    developers: await findUsers({ 'badges.developer': true }),
+    staff: await findUsers({ 'badges.staff': true, 'badges.developer': false }),
+    contributors: await findUsers({ 'badges.contributor': true })
+  }
+}
 
-fastify.register(require('fastify-mongodb'), { url: 'mongodb://localhost:27017/powercord' })
+async function numbers () {
+  return {
+    users: await this.mongo.db.collection('users').count(),
+    helpers: await this.mongo.db.collection('users').count({
+      $or: [
+        { 'badges.contributor': true },
+        { 'badges.hunter': true },
+        { 'badges.translator': true }
+      ]
+    }),
+    plugins: 0,
+    themes: 0
+  }
+}
 
-// API
-fastify.register(require('./api/v2'), { prefix: '/api/v2' })
-
-// REP & React
-fastify.get('/robots.txt', (_, reply) => reply.type('text/plain').send(createReadStream(join(__dirname, 'robots.txt'))))
-fastify.get('*', require('./react'))
-
-fastify.ready()
-  .then(() => fastify.listen(config.port))
-  .then(addr => fastify.log.info(`server listening on ${addr}`))
-  .catch(e => fastify.log.error(e) | process.exit(1))
+module.exports = async function (fastify) {
+  fastify.get('/contributors', contributors)
+  fastify.get('/numbers', numbers)
+}

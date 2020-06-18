@@ -20,22 +20,18 @@
  * SOFTWARE.
  */
 
-const fastify = require('fastify')({ logger: true })
-const { createReadStream } = require('fs')
-const { join } = require('path')
+async function badges () {
+  this.mongo.db.collection('badges').find({}).then(b =>
+    b.reduce((acc, badge) => {
+      acc[badge._id] = {
+        name: badge.name,
+        icon: badge.icon
+      }
+      return acc
+    }, {})
+  )
+}
 
-const config = require('../config.json')
-
-fastify.register(require('fastify-mongodb'), { url: 'mongodb://localhost:27017/powercord' })
-
-// API
-fastify.register(require('./api/v2'), { prefix: '/api/v2' })
-
-// REP & React
-fastify.get('/robots.txt', (_, reply) => reply.type('text/plain').send(createReadStream(join(__dirname, 'robots.txt'))))
-fastify.get('*', require('./react'))
-
-fastify.ready()
-  .then(() => fastify.listen(config.port))
-  .then(addr => fastify.log.info(`server listening on ${addr}`))
-  .catch(e => fastify.log.error(e) | process.exit(1))
+module.exports = async function (fastify) {
+  fastify.get('/badges', badges)
+}
