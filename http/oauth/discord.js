@@ -20,29 +20,22 @@
  * SOFTWARE.
  */
 
-const fetch = require('node-fetch')
+const OAuth = require('./oauth')
 const config = require('../../config.json')
 
-function fetchUser (userId) {
-  return fetch(`https://discord.com/api/v6/users/${userId}`, { headers: { authorization: `Bot ${config.discord.boat.token}` } })
-    .then(r => r.json())
+class Discord extends OAuth {
+  constructor () {
+    super(
+      config.discord.clientID,
+      config.discord.clientSecret,
+      'https://discord.com/oauth2/authorize',
+      'https://discord.com/api/v6/oauth2/token'
+    )
+  }
+
+  get scopes () {
+    return [ 'identify' ]
+  }
 }
 
-function fetchSelfUser (token) {
-  return fetch('https://discord.com/api/v6/users/@me', { headers: { authorization: `Bearer ${token}` } })
-    .then(r => r.json())
-}
-
-function dispatchHonk (honk, payload) {
-  return fetch(`https://discord.com/api/v6/webhooks/${honk}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-}
-
-module.exports = {
-  fetchUser,
-  fetchSelfUser,
-  dispatchHonk
-}
+module.exports = new Discord()

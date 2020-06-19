@@ -42,7 +42,6 @@ const renderHtml = (helmet, html) => `
         <div class='no-js'>JavaScript is required for this website to work as intended. Please enable it in your browser settings.</div>
       </noscript>
       <div id='react-root'>${html || ''}</div>
-      <script>window.GLOBAL_ENV = { PRODUCTION: ${process.argv.includes('-p')} }</script>
       <script src='${manifest['main.js']}'></script>
       ${manifest['styles.js'] ? `<script src='${manifest['styles.js']}'></script>` : ''}
     </body>
@@ -71,7 +70,6 @@ module.exports = (request, reply) => {
   } else {
     // Send
     const html = ReactDOMServer.renderToString(rendered)
-    reply.type('text/html')
-    reply.send(renderHtml(Helmet.renderStatic(), html))
+    reply.type('text/html').send(renderHtml(Helmet.renderStatic(), html))
   }
 }

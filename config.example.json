@@ -16,11 +16,9 @@
         "translator": "role id",
         "hunter": "role id",
         "user": "role id",
-        "mute": "role id",
-        "nsfw": "role id"
+        "mute": "role id"
       },
       "server": "server id",
-      "strawpoll": "channel id",
       "starboard": "channel id",
       "modlog": "channel id",
       "rules": [ "channel id", "message id" ],

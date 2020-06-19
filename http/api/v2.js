@@ -25,5 +25,6 @@ module.exports = async function (fastify) {
   fastify.register(require('./stats'), { prefix: '/stats' })
   fastify.register(require('./docs'), { prefix: '/docs' })
   fastify.register(require('./honks'), { prefix: '/honks' })
+  fastify.register(require('./oauth'), { prefix: '/oauth' })
   fastify.register(require('./misc'))
 }

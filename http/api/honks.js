@@ -21,6 +21,7 @@
  */
 
 const crypto = require('crypto')
+const boat = require('../../boat')
 const discord = require('../utils/discord')
 const config = require('../../config.json')
 
@@ -60,31 +61,34 @@ async function patreon (request, reply) {
     if (banStatus && banStatus.pledging) {
       banned = true
     } else {
+      if (tier === 0) boat.revokePatreon()
       this.mongo.db.collection('users').updateOne({ _id: discordId }, { $set: { patreonTier: tier } })
     }
   }
 
   discord.dispatchHook(config.honks.staff, {
-    title: `Pledge ${request.headers['x-patreon-event'].split(':').pop()}d`,
-    color: 0x7289da,
-    timestamp: new Date(),
-    fields: [
-      {
-        name: 'Tier',
-        value: `$${TIERS[tier]} ${TIER_EMOJIS[tier]} ($${pledged.toFixed(2)})`
-      },
-      {
-        name: 'Discord User',
-        value: discordUser
-          ? `${discordUser.username}#${discordUser.discriminator} (<@${discordUser.id}>)`
-          : 'Unknown (Account not linked on Patreon)'
-      },
-      banned && {
-        name: 'Pledge Banned',
-        value: 'This user has been previously banned from receiving perks and did not receive them.'
-      }
-    ].filter(Boolean)
-  }, true)
+    embeds: [ {
+      title: `Pledge ${request.headers['x-patreon-event'].split(':').pop()}d`,
+      color: 0x7289da,
+      timestamp: new Date(),
+      fields: [
+        {
+          name: 'Tier',
+          value: `$${TIERS[tier]} ${TIER_EMOJIS[tier]} ($${pledged.toFixed(2)})`
+        },
+        {
+          name: 'Discord User',
+          value: discordUser
+            ? `${discordUser.username}#${discordUser.discriminator} (<@${discordUser.id}>)`
+            : 'Unknown (Account not linked on Patreon)'
+        },
+        banned && {
+          name: 'Pledge Banned',
+          value: 'This user has been previously banned from receiving perks and did not receive them.'
+        }
+      ].filter(Boolean)
+    } ]
+  })
   reply.send()
 }
 
