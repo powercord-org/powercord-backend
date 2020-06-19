@@ -22,5 +22,6 @@
 
 // todo yes
 module.exports = {
+  revokePatreon: () => void 0,
   startup: () => void 0
 }

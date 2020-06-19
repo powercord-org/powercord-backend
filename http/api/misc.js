@@ -23,8 +23,7 @@
 const fs = require('fs')
 const path = require('path')
 const fetch = require('node-fetch')
-
-const config = require('../../config.json')
+const discord = require('../utils/discord')
 
 const plugXml = fs.readFileSync(path.join(__dirname, '../../src/assets/powercord.svg'))
 
@@ -39,8 +38,7 @@ async function getDiscordAvatar (user, update) {
 
   const res = await fetch(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`)
   if (res.status !== 200) {
-    const discordUser = await fetch(`https://discord.com/api/v6/users/${user._id}`, { headers: { authorization: `Bot ${config.discord.boat.token}` } })
-      .then(r => r.json())
+    const discordUser = await discord.fetchUser(user._id)
     update(discordUser.avatar)
     user.avatar = discordUser.avatar
     return getDiscordAvatar(user, update)

@@ -20,9 +20,27 @@
  * SOFTWARE.
  */
 
-const config = require('./config.json')
-require('./http')
+const fetch = require('node-fetch')
+const config = require('../../config.json')
 
-if (config) {
-  require('./boat').startup()
+function fetchUser (userId) {
+  return fetch(`https://discord.com/api/v6/users/${userId}`, { headers: { authorization: `Bot ${config.discord.boat.token}` } })
+    .then(r => r.json())
+}
+
+function dispatchHonk (honk, payload, onlyEmbed) {
+  if (onlyEmbed) {
+    payload = { embeds: [ payload ] }
+  }
+
+  return fetch(`https://discord.com/api/v6/webhooks/${honk}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+}
+
+module.exports = {
+  fetchUser,
+  dispatchHonk
 }
