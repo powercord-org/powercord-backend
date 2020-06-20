@@ -25,7 +25,7 @@ const path = require('path')
 const fetch = require('node-fetch')
 const discord = require('../utils/discord')
 
-const plugXml = fs.readFileSync(path.join(__dirname, '../../src/assets/powercord.svg'))
+const plugXml = fs.readFileSync(path.join(__dirname, '../../src/assets/powercord.svg'), 'utf8')
 
 function plug (request, reply) {
   reply.type('image/svg+xml').send(plugXml.replace('7289DA', request.params.color))

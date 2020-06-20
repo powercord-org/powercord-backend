@@ -1,7 +1,7 @@
 # Roadmap
 ## General
  - [ ] Port already existing UIs
- - [ ] Port already existing APIs
+ - [x] Port already existing APIs
  - [ ] Port Powercord bot
  - [ ] Publish new website
  - [ ] Translator languages in API payload

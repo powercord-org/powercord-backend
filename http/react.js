@@ -24,11 +24,12 @@ const React = require('react')
 const ReactDOMServer = require('react-dom/server')
 const { Helmet } = require('react-helmet')
 const { StaticRouter } = require('react-router')
+const { formatUser } = require('./utils/users')
 // noinspection JSFileReferences
 const manifest = require('./dist/manifest.json')
 
 // noinspection HtmlRequiredLangAttribute,HtmlRequiredTitleElement
-const renderHtml = (helmet, html) => `
+const renderHtml = (helmet, html, user = null) => `
   <!DOCTYPE html>
   <html lang="en">
     <head>
@@ -42,6 +43,7 @@ const renderHtml = (helmet, html) => `
         <div class='no-js'>JavaScript is required for this website to work as intended. Please enable it in your browser settings.</div>
       </noscript>
       <div id='react-root'>${html || ''}</div>
+      <script>window.USER = ${JSON.stringify(user).replace('<', '&lt;').replace('>', '&gt;')}</script>
       <script src='${manifest['main.js']}'></script>
       ${manifest['styles.js'] ? `<script src='${manifest['styles.js']}'></script>` : ''}
     </body>
@@ -49,10 +51,12 @@ const renderHtml = (helmet, html) => `
 `
 
 module.exports = (request, reply) => {
+  console.log(request.user)
+  const user = request.user ? formatUser(request.user, true) : null
   // Just return empty html while developing
   if (process.argv.includes('-d')) {
-    reply.type('text/html')
-    reply.send(renderHtml())
+    console.log(user)
+    reply.type('text/html').send(renderHtml(null, null, user))
     return
   }
 
@@ -60,9 +64,7 @@ module.exports = (request, reply) => {
   const context = {}
   // noinspection JSFileReferences
   const App = require('./dist/App').default
-  const rendered = React.createElement(
-    StaticRouter, { location: request.req.url, context }, React.createElement(App, { server: true })
-  )
+  const rendered = React.createElement(StaticRouter, { location: request.raw.url, context }, React.createElement(App))
 
   if (context.url) {
     // Redirect
@@ -70,6 +72,6 @@ module.exports = (request, reply) => {
   } else {
     // Send
     const html = ReactDOMServer.renderToString(rendered)
-    reply.type('text/html').send(renderHtml(Helmet.renderStatic(), html))
+    reply.type('text/html').send(renderHtml(Helmet.renderStatic(), html, user))
   }
 }

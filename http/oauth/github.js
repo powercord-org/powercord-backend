@@ -21,28 +21,27 @@
  */
 
 const fetch = require('node-fetch')
+const OAuth = require('./oauth')
 const config = require('../../config.json')
 
-function fetchUser (userId) {
-  return fetch(`https://discord.com/api/v6/users/${userId}`, { headers: { authorization: `Bot ${config.discord.boat.token}` } })
-    .then(r => r.json())
+class GitHub extends OAuth {
+  constructor () {
+    super(
+      config.github.clientID,
+      config.github.clientSecret,
+      'https://github.com/login/oauth/authorize',
+      'https://github.com/login/oauth/access_token'
+    )
+  }
+
+  get scopes () {
+    return []
+  }
+
+  getCurrentUser (token) {
+    return fetch('https://api.github.com/user', { headers: { authorization: `token ${token}` } })
+      .then(r => r.json())
+  }
 }
 
-function fetchCurrentUser (token) {
-  return fetch('https://discord.com/api/v6/users/@me', { headers: { authorization: `Bearer ${token}` } })
-    .then(r => r.json())
-}
-
-function dispatchHonk (honk, payload) {
-  return fetch(`https://discord.com/api/v6/webhooks/${honk}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-}
-
-module.exports = {
-  fetchUser,
-  fetchCurrentUser,
-  dispatchHonk
-}
+module.exports = new GitHub()

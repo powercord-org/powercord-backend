@@ -21,6 +21,7 @@
  */
 
 const OAuth = require('./oauth')
+const discordApi = require('../utils/discord')
 const config = require('../../config.json')
 
 class Discord extends OAuth {
@@ -35,6 +36,10 @@ class Discord extends OAuth {
 
   get scopes () {
     return [ 'identify' ]
+  }
+
+  getCurrentUser (token) {
+    return discordApi.fetchCurrentUser(token)
   }
 }
 

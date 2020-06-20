@@ -21,7 +21,8 @@
  */
 
 const discordAuth = require('../oauth/discord')
-const discordApi = require('../utils/discord')
+const spotifyAuth = require('../oauth/spotify')
+const githubAuth = require('../oauth/github')
 
 async function discord (request, reply) {
   if (request.query.error) {
@@ -29,7 +30,7 @@ async function discord (request, reply) {
   }
   if (request.query.code) {
     const codes = await discordAuth.getToken(request.query.code)
-    const user = await discordApi.fetchSelfUser(codes.access_token)
+    const user = await discordAuth.getCurrentUser(codes.access_token)
     const collection = this.mongo.db.collection('users')
     if (collection.count({ _id: user.id }) === 0) {
       collection.insertOne({
@@ -46,7 +47,7 @@ async function discord (request, reply) {
         },
         badges: {},
         createdAt: new Date(),
-        patreonTier: 0
+        patronTier: 0
       })
     } else {
       collection.updateOne({ _id: user.id }, {
@@ -62,20 +63,103 @@ async function discord (request, reply) {
         }
       })
     }
-    // todo: make a proper token
-    return reply.redirect(`/me?t=${'i use arch'}`)
+    const token = this.tokenize.generate(user.id)
+    reply.setCookie('token', token, {
+      signed: true,
+      sameSite: true,
+      path: '/',
+      secure: !process.argv.includes('-d'),
+      maxAge: 24 * 3600
+    })
+
+    if (request.cookies.redirect) {
+      return reply.setCookie('redirect', null, { maxAge: 0 })
+        .redirect(reply.unsignCookie(request.cookies.redirect))
+    }
+    return reply.redirect('/me')
   }
 
+  if (request.query.redirect) {
+    reply.setCookie('redirect', request.query.redirect, {
+      signed: true,
+      httpOnly: true,
+      sameSite: true,
+      secure: !process.argv.includes('-d'),
+      maxAge: 3600
+    })
+  }
   return reply.redirect(discordAuth.getRedirectUrl())
 }
 
-function unlinkDiscord (_, reply) {
-  // todo: handle authentication and keep track of the user id
-  this.mongo.db.collection('users').deleteOne({ _id: null })
-  return reply.redirect('/')
+async function spotify (request, reply) {
+  if (request.query.error) {
+    console.log(request.query.error)
+    return reply.redirect('/')
+  }
+
+  if (request.query.code) {
+    const codes = await spotifyAuth.getToken(request.query.code)
+    const user = await spotifyAuth.getCurrentUser(codes.access_token)
+    this.mongo.db.collection('users').updateOne({ _id: request.user._id }, {
+      $set: {
+        'accounts.spotify': {
+          accessToken: codes.access_token,
+          refreshToken: codes.refresh_token,
+          expiryDate: Date.now() + (codes.expires_in * 1000),
+          name: user.display_name,
+          scopes: spotifyAuth.scopes
+        }
+      }
+    })
+    return reply.redirect('/me')
+  }
+
+  return reply.redirect(spotifyAuth.getRedirectUrl())
+}
+
+async function github (request, reply) {
+  if (request.query.error) {
+    return reply.redirect('/')
+  }
+
+  if (request.query.code) {
+    const codes = await githubAuth.getToken(request.query.code)
+    const user = await githubAuth.getCurrentUser(codes.access_token)
+    this.mongo.db.collection('users').updateOne({ _id: request.user._id }, {
+      $set: {
+        'accounts.github': {
+          accessToken: codes.access_token,
+          display: user.name || user.login,
+          login: user.login
+        }
+      }
+    })
+    return reply.redirect('/me')
+  }
+
+  return reply.redirect(githubAuth.getRedirectUrl())
+}
+
+function unlinkDiscord (request, reply) {
+  this.mongo.db.collection('users').deleteOne({ _id: request.user._id })
+  reply.setCookie('token', null, { maxAge: 0 }).redirect('/')
+}
+
+function unlinkSpotify (request, reply) {
+  this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.spotify': null } })
+  reply.code(204).send()
+}
+
+function unlinkGithub (request, reply) {
+  this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.github': null } })
+  reply.code(204).send()
 }
 
 module.exports = async function (fastify) {
   fastify.get('/discord', discord)
-  fastify.get('/discord/unlink', unlinkDiscord)
+  fastify.get('/github', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, github)
+  fastify.get('/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, spotify)
+  fastify.get('/discord/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkDiscord)
+  fastify.get('/spotify/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkSpotify)
+  fastify.get('/github/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkGithub)
 }

@@ -36,10 +36,6 @@ class OAuth {
     throw new Error('not implemented')
   }
 
-  get customHeaders () {
-    return {}
-  }
-
   getToken (token) {
     return this._requestToken(token, 'authorization_code')
   }
@@ -62,16 +58,13 @@ class OAuth {
   _requestToken (token, type) {
     return fetch(this.tokenUrl, {
       method: 'POST',
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded',
-        ...this._customHeaders
-      },
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body: qs.encode({
         client_id: this.clientId,
         client_secret: this.clientSecret,
         redirect_uri: `${config.domain}/api/v2/oauth/${this.constructor.name.toLowerCase()}`,
         grant_type: type,
-        [type === 'authorization_code' ? 'code' : 'token']: token
+        [type === 'authorization_code' ? 'code' : 'refresh_token']: token
       })
     }).then(r => r.json())
   }

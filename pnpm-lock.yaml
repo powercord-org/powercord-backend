@@ -1,6 +1,9 @@
 dependencies:
   fastify: 2.14.1
+  fastify-auth: 0.7.2
+  fastify-cookie: 3.6.1
   fastify-mongodb: 2.0.0
+  fastify-tokenize: 1.1.0
   marked: 1.1.0
   node-fetch: 2.6.0
   react: 16.13.1
@@ -1948,6 +1951,12 @@ packages:
     dev: true
     resolution:
       integrity: sha1-4wOogrNCzD7oylE6eZmXNNqzriw=
+  /cookie-signature/1.1.0:
+    dev: false
+    engines:
+      node: '>=6.6.0'
+    resolution:
+      integrity: sha512-Alvs19Vgq07eunykd3Xy2jF0/qSNv2u7KDbAek9H5liV1UMijbqFs5cycZvv5dVsvseT/U4H8/7/w8Koh35C4A==
   /cookie/0.4.0:
     dev: true
     engines:
@@ -3330,6 +3339,21 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Utm6CdzT+6xsDk2m8S6uL8VHxNwI6Jub+e9NYTcAms28T84pTa25GJQV9j0CY0N1rM8hK4x6grpF2BQf+2qwVA==
+  /fastify-auth/0.7.2:
+    dependencies:
+      fastify-plugin: 1.6.1
+      reusify: 1.0.4
+    dev: false
+    resolution:
+      integrity: sha512-IlgD874ZuPAKMP/0jaFTIHO1vz2KK+rRyXyVJw0KrgoaAAcFnqt9KB197ScqRQNf6tGBYJfSWnowngLvpMHPeQ==
+  /fastify-cookie/3.6.1:
+    dependencies:
+      cookie: 0.4.1
+      cookie-signature: 1.1.0
+      fastify-plugin: 1.6.1
+    dev: false
+    resolution:
+      integrity: sha512-kADZepeHYlq9IsiqaVrhVJ5qsESaotOEzfRcauChhkCWnSnA20WRHzkeofu7ByqNOeodEDWwz7N5sDJ55DOIGw==
   /fastify-mongodb/2.0.0:
     dependencies:
       fastify-plugin: 1.6.1
@@ -3343,6 +3367,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-APBcb27s+MjaBIerFirYmBLatoPCgmHZM6XP0K+nDL9k0yX8NJPWDY1RAC3bh6z+AB5ULS2j31BUfLMT3uaZ4A==
+  /fastify-tokenize/1.1.0:
+    dependencies:
+      fastify-plugin: 1.6.1
+      node-tokenize: 1.0.1
+    dev: false
+    resolution:
+      integrity: sha512-BPLUNoAv9Tbc15TAAKtokfvtF5EXxk7t0oLRMjskA8hprWLlvA7etAXwIsxm6ivkPFVYtNK9RtBYfdfc+hFbVw==
   /fastify/2.14.1:
     dependencies:
       abstract-logging: 2.0.0
@@ -6081,6 +6112,10 @@ packages:
     requiresBuild: true
     resolution:
       integrity: sha512-sjCuOlvGyCJS40R8BscF5vhVlQjNN069NtQ1gSxyK1u9iqvn6tf7O1R4GNowVZfiZUCRt5MmMs1xd+4V/7Yr0g==
+  /node-tokenize/1.0.1:
+    dev: false
+    resolution:
+      integrity: sha512-a3xR3dC7g7nm3pgIc8goGBp5t97lWDeHO2I2UJwQVEE3RiCgQyeYwmLzWUKypf8XHbmKk7D4IzgjYz2Lvh1tzg==
   /nodemon/2.0.4:
     dependencies:
       chokidar: 3.4.0
@@ -9847,7 +9882,10 @@ specifiers:
   eslint-plugin-react: ^7.20.0
   eslint-plugin-standard: ^4.0.1
   fastify: ^2.14.1
+  fastify-auth: ^0.7.2
+  fastify-cookie: ^3.6.1
   fastify-mongodb: ^2.0.0
+  fastify-tokenize: ^1.1.0
   file-loader: ^6.0.0
   friendly-errors-webpack-plugin: ^1.7.0
   image-webpack-loader: ^6.0.0

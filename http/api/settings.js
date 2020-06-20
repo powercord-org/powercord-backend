@@ -20,29 +20,7 @@
  * SOFTWARE.
  */
 
-const fetch = require('node-fetch')
-const config = require('../../config.json')
+// Encrypted & gzipped protobuf
+module.exports = async function (fastify) {
 
-function fetchUser (userId) {
-  return fetch(`https://discord.com/api/v6/users/${userId}`, { headers: { authorization: `Bot ${config.discord.boat.token}` } })
-    .then(r => r.json())
-}
-
-function fetchCurrentUser (token) {
-  return fetch('https://discord.com/api/v6/users/@me', { headers: { authorization: `Bearer ${token}` } })
-    .then(r => r.json())
-}
-
-function dispatchHonk (honk, payload) {
-  return fetch(`https://discord.com/api/v6/webhooks/${honk}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-}
-
-module.exports = {
-  fetchUser,
-  fetchCurrentUser,
-  dispatchHonk
 }

@@ -21,28 +21,27 @@
  */
 
 const fetch = require('node-fetch')
+const OAuth = require('./oauth')
 const config = require('../../config.json')
 
-function fetchUser (userId) {
-  return fetch(`https://discord.com/api/v6/users/${userId}`, { headers: { authorization: `Bot ${config.discord.boat.token}` } })
-    .then(r => r.json())
+class Spotify extends OAuth {
+  constructor () {
+    super(
+      config.spotify.clientID,
+      config.spotify.clientSecret,
+      'https://accounts.spotify.com/authorize',
+      'https://accounts.spotify.com/api/token'
+    )
+  }
+
+  get scopes () {
+    return config.spotify.scopes
+  }
+
+  getCurrentUser (token) {
+    return fetch('https://api.spotify.com/v1/me', { headers: { authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+  }
 }
 
-function fetchCurrentUser (token) {
-  return fetch('https://discord.com/api/v6/users/@me', { headers: { authorization: `Bearer ${token}` } })
-    .then(r => r.json())
-}
-
-function dispatchHonk (honk, payload) {
-  return fetch(`https://discord.com/api/v6/webhooks/${honk}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-}
-
-module.exports = {
-  fetchUser,
-  fetchCurrentUser,
-  dispatchHonk
-}
+module.exports = new Spotify()

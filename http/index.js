@@ -26,16 +26,29 @@ const { join } = require('path')
 
 const config = require('../config.json')
 
+fastify.register(require('fastify-auth'))
+fastify.register(require('fastify-cookie'))
 fastify.register(require('fastify-mongodb'), { url: 'mongodb://localhost:27017/powercord' })
+fastify.register(require('fastify-tokenize'), {
+  secret: config.secret,
+  fastifyAuth: true,
+  cookieSigned: true,
+  fetchAccount: async (id) => {
+    const user = await fastify.mongo.db.collection('users').findOne({ _id: id })
+    if (user) user.tokensValidSince = 0
+    return user
+  }
+})
 
 // API
 fastify.register(require('./api/v2'), { prefix: '/api/v2' })
 
 // REP & React
-fastify.get('/robots.txt', (_, reply) => reply.type('text/plain').send(createReadStream(join(__dirname, 'robots.txt'))))
-fastify.get('*', require('./react'))
+fastify.register(async function (fastify) {
+  fastify.get('/robots.txt', (_, reply) => reply.type('text/plain').send(createReadStream(join(__dirname, 'robots.txt'))))
+  fastify.get('*', { preHandler: fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]) }, require('./react'))
+})
 
 fastify.ready()
   .then(() => fastify.listen(config.port))
-  .then(addr => fastify.log.info(`server listening on ${addr}`))
   .catch(e => fastify.log.error(e) | process.exit(1))

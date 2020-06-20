@@ -21,8 +21,7 @@
       "server": "server id",
       "starboard": "channel id",
       "modlog": "channel id",
-      "rules": [ "channel id", "message id" ],
-      "stupid": [ "user ids" ]
+      "rules": [ "channel id", "message id" ]
     }
   },
   "spotify": {
@@ -32,8 +31,7 @@
   },
   "github": {
     "clientID": "",
-    "clientSecret": "",
-    "scopes": []
+    "clientSecret": ""
   },
   "admins": ["284122164582416385"],
   "domain": "http://localhost",
