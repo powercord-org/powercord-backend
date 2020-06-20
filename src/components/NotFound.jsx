@@ -21,19 +21,18 @@
  */
 
 import React from 'react'
+import { Link } from 'react-router-dom'
 
-import style from '@styles/contributors.scss'
-import { Endpoints } from '../../constants'
+import { Routes } from '../constants'
+import Container from './Container'
 
-const Contributor = (user) => (
-  <div className={style.container}>
-    <img src={Endpoints.USER_AVATAR(user._id)} alt={`${user.username}'s avatar`}/>
-    <div>
-      <h3>{user.username}<span>#{user.discriminator}</span></h3>
-      {user.accounts.github && <a href={`https://github.com/${user.accounts.github.login}`}>GitHub</a>}
-    </div>
-  </div>
+const NotFound = () => (
+  <Container>
+    <h1>Seems like you're lost...</h1>
+    <p>There's nothing to see around here</p>
+    <Link to={Routes.HOME}>Go back home</Link>
+  </Container>
 )
 
-Contributor.displayName = 'Contributor'
-export default React.memo(Contributor)
+NotFound.displayName = 'NotFound'
+export default React.memo(NotFound)

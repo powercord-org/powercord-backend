@@ -32,6 +32,7 @@ export const Endpoints = Object.freeze({
 
 export const Routes = Object.freeze({
   HOME: '/',
+  ME: '/me',
   CONTRIBUTORS: '/contributors',
   STATS: '/stats',
   BRANDING: '/branding',

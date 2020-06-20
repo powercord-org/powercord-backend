@@ -23,7 +23,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { Routes, Endpoints } from '../constants'
+import { Routes } from '../constants'
+import UserContext from './UserContext'
+import LoginButton from './LoginButton'
 
 import style from '@styles/header.scss'
 
@@ -50,7 +52,9 @@ const Header = () => {
         <a href={Routes.DICKSWORD} target='_blank' rel='noreferrer'>Discord Server</a>
       </nav>
       <div className={style.account}>
-        <a href={Endpoints.LOGIN} className={style.button}>Login with Discord</a>
+        <UserContext.Consumer>
+          {user => <LoginButton user={user}/>}
+        </UserContext.Consumer>
       </div>
       <div className={style.burgerking} onClick={toggle}>
         <span/>

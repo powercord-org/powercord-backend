@@ -28,6 +28,7 @@ import { Link } from 'react-router-dom'
 import { Endpoints } from '../constants'
 import Container from './Container'
 import Spinner from './Spinner'
+import NotFound from './NotFound'
 
 import style from '@styles/markdown.scss'
 
@@ -147,7 +148,7 @@ const MarkdownDocument = ({ document }) => {
   }, [ document ])
 
   if (doc === false) {
-    return '404' // todo
+    return <NotFound/>
   }
   return (
     <Container>

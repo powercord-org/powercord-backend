@@ -22,21 +22,28 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
+import UserContext from '@components/UserContext'
 import { BrowserRouter as Router } from 'react-router-dom'
 
-import('./components/App' /* webpackChunkName: "app" */).then(mdl => {
+import('@components/App' /* webpackChunkName: "app" */).then(mdl => {
   const App = mdl.default
   if (process.env.NODE_ENV === 'production') {
     ReactDOM.hydrate(
       <Router>
-        <App/>
+        <UserContext.Provider value={window.USER}>
+          <App/>
+        </UserContext.Provider>
       </Router>, document.querySelector('#react-root')
     )
   } else {
     ReactDOM.render(
       <Router>
-        <App/>
+        <UserContext.Provider value={window.USER}>
+          <App/>
+        </UserContext.Provider>
       </Router>, document.querySelector('#react-root')
     )
   }
+  document.getElementById('init').remove()
+  delete window.USER
 })

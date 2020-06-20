@@ -94,6 +94,53 @@
   margin-left: auto;
 }
 
+.profile {
+  display: flex;
+  align-items: center;
+
+  img {
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    margin-right: 16px;
+  }
+
+  a {
+    font-size: 90%;
+
+    + a {
+      margin-left: 8px;
+    }
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  line-height: 18px;
+  max-width: 160px;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+
+  div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  span {
+    font-size: 80%;
+    opacity: .6;
+  }
+
+  svg {
+    margin-left: 4px;
+    flex-shrink: 0;
+  }
+}
+
 .button {
   color: #fff;
   background-color: #7289da;
@@ -126,7 +173,7 @@
   }
 }
 
-@media screen and (min-width: 910px) {
+@media screen and (min-width: 1010px) {
   .container nav {
     background-color: transparent;
     position: initial;

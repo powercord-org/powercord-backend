@@ -20,7 +20,13 @@
  * SOFTWARE.
  */
 
+function logout (_, reply) {
+  return reply.setCookie('token', null, { maxAge: 0, path: '/' }).redirect('/')
+}
+
 module.exports = async function (fastify) {
+  fastify.get('/login', (_, reply) => reply.redirect('/api/v2/oauth/discord'))
+  fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
   fastify.register(require('./users'), { prefix: '/users' })
   fastify.register(require('./guilds'), { prefix: '/guilds' })
   fastify.register(require('./stats'), { prefix: '/stats' })

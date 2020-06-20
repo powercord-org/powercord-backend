@@ -30,11 +30,18 @@ import PeopleAreDumb from './PeopleAreDumb'
 import MarkdownDocument from './MarkdownDocument'
 import Terms from './legal/Terms'
 import Privacy from './legal/Privacy'
+import NotFound from './NotFound'
+import AuthBoundary from './AuthBoundary'
 
 const Router = () => (
   <Switch>
     <Route path={Routes.HOME} exact>
       <Home/>
+    </Route>
+    <Route path={Routes.ME} exact>
+      <AuthBoundary>
+        <main>todo</main>
+      </AuthBoundary>
     </Route>
     <Route path={Routes.CONTRIBUTORS} exact>
       <Contributors/>
@@ -67,7 +74,7 @@ const Router = () => (
     </Route>
     {/* Fallback */}
     <Route>
-      <main>404</main>
+      <NotFound/>
     </Route>
   </Switch>
 )

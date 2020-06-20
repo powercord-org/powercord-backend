@@ -22,18 +22,20 @@
 
 import React from 'react'
 
-import style from '@styles/contributors.scss'
-import { Endpoints } from '../../constants'
+import { Endpoints } from '../constants'
+import Container from './Container'
+import UserContext from './UserContext'
 
-const Contributor = (user) => (
-  <div className={style.container}>
-    <img src={Endpoints.USER_AVATAR(user._id)} alt={`${user.username}'s avatar`}/>
-    <div>
-      <h3>{user.username}<span>#{user.discriminator}</span></h3>
-      {user.accounts.github && <a href={`https://github.com/${user.accounts.github.login}`}>GitHub</a>}
-    </div>
-  </div>
+const AuthBoundary = (props) => (
+  <UserContext.Consumer>
+    {user => user // todo: staff-locked routes
+      ? props.children
+      : <Container>
+        <h1>You must be authenticated to see this</h1>
+        <a href={Endpoints.LOGIN}>Login</a>
+      </Container>}
+  </UserContext.Consumer>
 )
 
-Contributor.displayName = 'Contributor'
-export default React.memo(Contributor)
+AuthBoundary.displayName = 'AuthBoundary'
+export default React.memo(AuthBoundary)

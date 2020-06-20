@@ -27,31 +27,41 @@ const { StaticRouter } = require('react-router')
 const { formatUser } = require('./utils/users')
 // noinspection JSFileReferences
 const manifest = require('./dist/manifest.json')
+const UserContext = require('../src/components/UserContext')
 
 // noinspection HtmlRequiredLangAttribute,HtmlRequiredTitleElement
-const renderHtml = (helmet, html, user = null) => `
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      ${helmet ? helmet.title.toString() : ''}
-      ${helmet ? helmet.meta.toString() : ''}
-      ${helmet ? helmet.link.toString() : ''}
-      ${manifest['styles.css'] ? `<link rel='stylesheet' href='${manifest['styles.css']}'/>` : ''}
-    </head>
-    <body ${helmet ? helmet.bodyAttributes.toString() : ''}>
-      <noscript>
-        <div class='no-js'>JavaScript is required for this website to work as intended. Please enable it in your browser settings.</div>
-      </noscript>
-      <div id='react-root'>${html || ''}</div>
-      <script>window.USER = ${JSON.stringify(user).replace('<', '&lt;').replace('>', '&gt;')}</script>
-      <script src='${manifest['main.js']}'></script>
-      ${manifest['styles.js'] ? `<script src='${manifest['styles.js']}'></script>` : ''}
-    </body>
-  </html>
-`
+function renderHtml (helmet, html, user = null) {
+  return `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        ${helmet ? helmet.title.toString() : ''}
+        ${helmet ? helmet.meta.toString() : ''}
+        ${helmet ? helmet.link.toString() : ''}
+        ${manifest['styles.css'] ? `<link rel='stylesheet' href='${manifest['styles.css']}'/>` : ''}
+      </head>
+      <body ${helmet ? helmet.bodyAttributes.toString() : ''}>
+        <noscript>
+          <div class='no-js'>JavaScript is required for this website to work as intended. Please enable it in your browser settings.</div>
+        </noscript>
+        <div id='react-root'>${html || ''}</div>
+        <script id='init'>window.USER = ${JSON.stringify(user).replace('<', '&lt;').replace('>', '&gt;')}</script>
+        <script src='${manifest['main.js']}'></script>
+        ${manifest['styles.js'] ? `<script src='${manifest['styles.js']}'></script>` : ''}
+      </body>
+    </html>
+  `.split('\n').map(l => l.trim()).join('')
+}
+
+function renderReact (location, context) {
+  const e = React.createElement
+  // noinspection JSFileReferences
+  const App = require('./dist/App').default
+  return e(StaticRouter, { location, context },
+    e(UserContext.Provider, null, e(App))
+  )
+}
 
 module.exports = (request, reply) => {
-  console.log(request.user)
   const user = request.user ? formatUser(request.user, true) : null
   // Just return empty html while developing
   if (process.argv.includes('-d')) {
@@ -62,16 +72,10 @@ module.exports = (request, reply) => {
 
   // SSR
   const context = {}
-  // noinspection JSFileReferences
-  const App = require('./dist/App').default
-  const rendered = React.createElement(StaticRouter, { location: request.raw.url, context }, React.createElement(App))
-
+  const rendered = renderReact(request.raw.url, context)
   if (context.url) {
-    // Redirect
-    reply.redirect(context.url)
-  } else {
-    // Send
-    const html = ReactDOMServer.renderToString(rendered)
-    reply.type('text/html').send(renderHtml(Helmet.renderStatic(), html, user))
+    return reply.redirect(context.url)
   }
+  const html = ReactDOMServer.renderToString(rendered)
+  reply.type('text/html').send(renderHtml(Helmet.renderStatic(), html, user))
 }

@@ -66,7 +66,7 @@ async function discord (request, reply) {
     const token = this.tokenize.generate(user.id)
     reply.setCookie('token', token, {
       signed: true,
-      sameSite: true,
+      sameSite: 'lax',
       path: '/',
       secure: !process.argv.includes('-d'),
       maxAge: 24 * 3600
@@ -83,7 +83,7 @@ async function discord (request, reply) {
     reply.setCookie('redirect', request.query.redirect, {
       signed: true,
       httpOnly: true,
-      sameSite: true,
+      sameSite: 'lax',
       secure: !process.argv.includes('-d'),
       maxAge: 3600
     })

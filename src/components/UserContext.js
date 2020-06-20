@@ -20,20 +20,7 @@
  * SOFTWARE.
  */
 
-import React from 'react'
-
-import style from '@styles/contributors.scss'
-import { Endpoints } from '../../constants'
-
-const Contributor = (user) => (
-  <div className={style.container}>
-    <img src={Endpoints.USER_AVATAR(user._id)} alt={`${user.username}'s avatar`}/>
-    <div>
-      <h3>{user.username}<span>#{user.discriminator}</span></h3>
-      {user.accounts.github && <a href={`https://github.com/${user.accounts.github.login}`}>GitHub</a>}
-    </div>
-  </div>
-)
-
-Contributor.displayName = 'Contributor'
-export default React.memo(Contributor)
+const React = require('react')
+const UserContext = React.createContext(null)
+UserContext.displayName = 'UserContext'
+module.exports = UserContext

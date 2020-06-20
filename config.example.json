@@ -33,7 +33,6 @@
     "clientID": "",
     "clientSecret": ""
   },
-  "admins": ["284122164582416385"],
   "domain": "http://localhost",
   "secret": "tony was a dick, and stacy was a whore"
 }
