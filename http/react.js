@@ -65,7 +65,6 @@ module.exports = (request, reply) => {
   const user = request.user ? formatUser(request.user, true) : null
   // Just return empty html while developing
   if (process.argv.includes('-d')) {
-    console.log(user)
     reply.type('text/html').send(renderHtml(null, null, user))
     return
   }
