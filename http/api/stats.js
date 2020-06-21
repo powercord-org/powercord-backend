@@ -41,8 +41,8 @@ async function contributors () {
 
 async function numbers () {
   return {
-    users: await this.mongo.db.collection('users').count(),
-    helpers: await this.mongo.db.collection('users').count({
+    users: await this.mongo.db.collection('users').countDocuments(),
+    helpers: await this.mongo.db.collection('users').countDocuments({
       $or: [
         { 'badges.contributor': true },
         { 'badges.hunter': true },

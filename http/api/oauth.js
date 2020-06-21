@@ -32,7 +32,7 @@ async function discord (request, reply) {
     const codes = await discordAuth.getToken(request.query.code)
     const user = await discordAuth.getCurrentUser(codes.access_token)
     const collection = this.mongo.db.collection('users')
-    if (collection.count({ _id: user.id }) === 0) {
+    if (await collection.countDocuments({ _id: user.id }) === 0) {
       await collection.insertOne({
         _id: user.id,
         username: user.username,
