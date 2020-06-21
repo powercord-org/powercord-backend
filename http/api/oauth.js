@@ -33,7 +33,7 @@ async function discord (request, reply) {
     const user = await discordAuth.getCurrentUser(codes.access_token)
     const collection = this.mongo.db.collection('users')
     if (collection.count({ _id: user.id }) === 0) {
-      collection.insertOne({
+      await collection.insertOne({
         _id: user.id,
         username: user.username,
         discriminator: user.discriminator,
@@ -50,7 +50,7 @@ async function discord (request, reply) {
         patronTier: 0
       })
     } else {
-      collection.updateOne({ _id: user.id }, {
+      await collection.updateOne({ _id: user.id }, {
         $set: {
           username: user.username,
           discriminator: user.discriminator,
@@ -100,7 +100,7 @@ async function spotify (request, reply) {
   if (request.query.code) {
     const codes = await spotifyAuth.getToken(request.query.code)
     const user = await spotifyAuth.getCurrentUser(codes.access_token)
-    this.mongo.db.collection('users').updateOne({ _id: request.user._id }, {
+    await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, {
       $set: {
         'accounts.spotify': {
           accessToken: codes.access_token,
@@ -125,7 +125,7 @@ async function github (request, reply) {
   if (request.query.code) {
     const codes = await githubAuth.getToken(request.query.code)
     const user = await githubAuth.getCurrentUser(codes.access_token)
-    this.mongo.db.collection('users').updateOne({ _id: request.user._id }, {
+    await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, {
       $set: {
         'accounts.github': {
           accessToken: codes.access_token,
@@ -140,18 +140,18 @@ async function github (request, reply) {
   return reply.redirect(githubAuth.getRedirectUrl())
 }
 
-function unlinkDiscord (request, reply) {
-  this.mongo.db.collection('users').deleteOne({ _id: request.user._id })
+async function unlinkDiscord (request, reply) {
+  await this.mongo.db.collection('users').deleteOne({ _id: request.user._id })
   reply.setCookie('token', null, { maxAge: 0 }).redirect('/')
 }
 
-function unlinkSpotify (request, reply) {
-  this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.spotify': null } })
+async function unlinkSpotify (request, reply) {
+  await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.spotify': null } })
   reply.code(204).send()
 }
 
-function unlinkGithub (request, reply) {
-  this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.github': null } })
+async function unlinkGithub (request, reply) {
+  await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.github': null } })
   reply.code(204).send()
 }
 
