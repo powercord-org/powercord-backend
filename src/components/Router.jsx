@@ -29,6 +29,7 @@ import AuthBoundary from './AuthBoundary'
 import Home from './Home'
 import Contributors from './Contributors'
 import Stats from './Stats'
+import Branding from './Branding'
 import PeopleAreDumb from './PeopleAreDumb'
 import MarkdownDocument from './MarkdownDocument'
 import PorkordLicense from './legal/PorkordLicense'
@@ -53,7 +54,7 @@ const Router = () => (
       <Stats/>
     </Route>
     <Route path={Routes.BRANDING} exact>
-      <main>todo</main>
+      <Branding/>
     </Route>
     <Route path={Routes.STORE} exact>
       <main>todo</main>

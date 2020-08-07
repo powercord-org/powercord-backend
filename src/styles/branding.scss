@@ -20,89 +20,50 @@
  * SOFTWARE.
  */
 
-.container {
-  h1 {
-    margin-bottom: 8px;
-  }
+.assets {
+  display: flex;
+  flex-wrap: wrap;
 }
 
-.graph {
+.asset {
+  width: 100%;
+  margin: 0 .66% .66%;
   background-color: #252525;
-
-  header {
-    height: 65px;
-    display: flex;
-    flex-direction: column;
-    padding: 8px 16px;
-
-    div:first-child {
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
-    .btns {
-      display: flex;
-      align-items: center;
-      flex: 1;
-    }
-  }
-
-  button {
-    height: 24px;
-    background-color: #454545;
-    margin-left: 8px;
-    border-radius: 4px;
-    padding: 0 8px;
-
-    &.selected {
-      background-color: #252525;
-      cursor: initial;
-    }
-  }
-
-  svg {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    width: 100%; 
-  }
-}
-
-.side {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  font-size: 14px;
-  opacity: 0.6;
-}
 
-.group {
-  h3 {
-    font-size: 18px;
-    margin-bottom: 0;
+  h3, footer {
+    padding: 8px 16px;
+    margin: 0;
   }
 
-  span {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 22px;
+  img {
+    width: 100%;
+    padding: 8px;
+    background-color: #fff;
+    flex: 1;
+    object-fit: contain;
+  }
+
+  .copyright {
+    font-size: 14px;
+    opacity: 0.6;
+  }
+
+  .links a {
+    margin-right: 8px;
   }
 }
+
+@media screen and (min-width: 580px) {
+  .asset {
+    width: 48%;
+  }
+}
+
 
 @media screen and (min-width: 1180px) {
-  .graph header {
-    height: 40px;
-    align-items: center;
-    flex-direction: row;
-
-    .btns {
-      justify-content: flex-end;
-    }
-  }
-
-  .group {
-    display: flex;
-
-    div {
-      width: 33%;
-    }
+  .asset {
+    width: 32%;
   }
 }

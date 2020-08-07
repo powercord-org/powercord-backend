@@ -21,30 +21,27 @@
  */
 
 import React from 'react'
-import { Link } from 'react-router-dom'
 
-import { Routes } from '../constants'
+import style from '@styles/branding.scss'
 
-import style from '@styles/footer.scss'
+const BrandAsset = ({ name, copyrightYear, copyrightHolder, links }) => {
+  return (
+    <section className={style.asset}>
+      <h3>{name}</h3>
+      <img src={links[links.length - 1].url} alt={name}/>
+      <footer>
+        <div className={style.copyright}>
+          Copyright &copy; {copyrightYear} {copyrightHolder}, All Rights Reserved.
+        </div>
+        <div className={style.links}>
+          {links.map(l => (
+            <a key={l.url} download={l.name} href={l.url}>.{l.name.split('.').pop()}</a>
+          ))}
+        </div>
+      </footer>
+    </section>
+  )
+}
 
-const Footer = () => (
-  <footer className={style.container}>
-    <div className={style.section}>
-      <span>Copyright &copy; 2018-{new Date().getFullYear()} Powercord</span>
-      <span>Powercord is not affiliated or endorsed by Discord. Discord is a trademark of Discord Inc.</span>
-    </div>
-    <div className={style.section}>
-      <span><a href={Routes.PATREON} target='_blank' rel='noreferrer'>Patreon</a></span>
-      <span><Link to={Routes.STATS}>Stats</Link></span>
-      <span><Link to={Routes.BRANDING}>Branding</Link></span>
-      <span><a href={Routes.GITHUB} target='_blank' rel='noreferrer'>GitHub</a></span>
-      <span><Link to={Routes.GUIDELINES}>Guidelines</Link></span>
-      <span><Link to={Routes.LISTING_AGREEMENT}>Listing Agreement</Link></span>
-      <span><Link to={Routes.TERMS}>Terms</Link></span>
-      <span><Link to={Routes.PRIVACY}>Privacy</Link></span>
-    </div>
-  </footer>
-)
-
-Footer.displayName = 'Footer'
-export default React.memo(Footer)
+BrandAsset.displayName = 'BrandAsset'
+export default React.memo(BrandAsset)
