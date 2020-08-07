@@ -24,7 +24,7 @@ const fetch = require('node-fetch')
 const config = require('../../config.json')
 
 function fetchUser (userId) {
-  return fetch(`https://discord.com/api/v6/users/${userId}`, { headers: { authorization: `Bot ${config.discord.boat.token}` } })
+  return fetch(`https://discord.com/api/v6/users/${userId}`, { headers: { authorization: `Bot ${config.discord.botToken}` } })
     .then(r => r.json())
 }
 
@@ -48,7 +48,7 @@ async function fetchAllMembers () {
   while (!halt) {
     const res = await fetch(
       `https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members?limit=1000&after=${after}`,
-      { headers: { authorization: `Bot ${config.discord.boat.token}` } }
+      { headers: { authorization: `Bot ${config.discord.botToken}` } }
     ).then(r => r.json())
 
     users.concat(res)
@@ -62,14 +62,14 @@ async function fetchAllMembers () {
 
 function fetchMember (memberId) {
   return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}`, {
-    headers: { authorization: `Bot ${config.discord.boat.token}` }
+    headers: { authorization: `Bot ${config.discord.botToken}` }
   }).then(r => r.json())
 }
 
 function setRoles (memberId, roleIds) {
   return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}`, {
     method: 'PATCH',
-    headers: { authorization: `Bot ${config.discord.boat.token}`, 'content-type': 'application/json' },
+    headers: { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' },
     body: JSON.stringify({ roles: roleIds })
   })
 }
@@ -77,14 +77,14 @@ function setRoles (memberId, roleIds) {
 function addRole (memberId, roleId) {
   return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
     method: 'PUT',
-    headers: { authorization: `Bot ${config.discord.boat.token}`, 'content-type': 'application/json' }
+    headers: { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
   })
 }
 
 function removeRole (memberId, roleId) {
   return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
     method: 'DELETE',
-    headers: { authorization: `Bot ${config.discord.boat.token}`, 'content-type': 'application/json' }
+    headers: { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
   })
 }
 
