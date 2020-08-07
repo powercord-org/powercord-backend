@@ -10,7 +10,8 @@
     "watch": "cross-env NODE_ENV=development webpack-dev-server -w --hot --silent --port 8080",
     "build": "cross-env NODE_ENV=production webpack",
     "dev": "nodemon http/index.js -- -d",
-    "start": "node http/index.js -p"
+    "start": "node http/index.js -p",
+    "bot": "node boat/index.js"
   },
   "dependencies": {
     "eris": "^0.13.3",

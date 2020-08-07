@@ -7,21 +7,22 @@
   "discord": {
     "clientID": "",
     "clientSecret": "",
-    "boat": {
-      "enabled": true,
-      "prefix": "pc/",
-      "token": "Bot token",
-      "roles": {
-        "contributor": "role id",
-        "translator": "role id",
-        "hunter": "role id",
-        "user": "role id",
-        "mute": "role id"
-      },
-      "server": "server id",
-      "starboard": "channel id",
-      "modlog": "channel id",
-      "rules": [ "channel id", "message id" ]
+    "botToken": "",
+    "prefix": "pc/",
+    "ids": {
+      "serverId": "",
+      "rolePatreonDaddy": "",
+      "rolePatreonMommy": "",
+      "roleContributor": "",
+      "roleTranslator": "",
+      "roleHunter": "",
+      "roleUser": "",
+      "roleMuted": "",
+      "channelStarboard": "",
+      "channelCuteboard": "",
+      "channelModLogs": "",
+      "channelMessageLogs": "",
+      "messageRules": [ "", "" ]
     }
   },
   "spotify": {

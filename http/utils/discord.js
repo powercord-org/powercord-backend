@@ -41,8 +41,60 @@ function dispatchHonk (honk, payload) {
   })
 }
 
+async function fetchAllMembers () {
+  const users = []
+  let halt = false
+  let after = '0'
+  while (!halt) {
+    const res = await fetch(
+      `https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members?limit=1000&after=${after}`,
+      { headers: { authorization: `Bot ${config.discord.boat.token}` } }
+    ).then(r => r.json())
+
+    users.concat(res)
+    halt = res.length !== 1000
+    if (!halt) {
+      after = res[res.length - 1].id
+    }
+  }
+  return users
+}
+
+function fetchMember (memberId) {
+  return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}`, {
+    headers: { authorization: `Bot ${config.discord.boat.token}` }
+  }).then(r => r.json())
+}
+
+function setRoles (memberId, roleIds) {
+  return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}`, {
+    method: 'PATCH',
+    headers: { authorization: `Bot ${config.discord.boat.token}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ roles: roleIds })
+  })
+}
+
+function addRole (memberId, roleId) {
+  return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
+    method: 'PUT',
+    headers: { authorization: `Bot ${config.discord.boat.token}`, 'content-type': 'application/json' }
+  })
+}
+
+function removeRole (memberId, roleId) {
+  return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
+    method: 'DELETE',
+    headers: { authorization: `Bot ${config.discord.boat.token}`, 'content-type': 'application/json' }
+  })
+}
+
 module.exports = {
   fetchUser,
   fetchCurrentUser,
-  dispatchHonk
+  dispatchHonk,
+  fetchAllMembers,
+  fetchMember,
+  setRoles,
+  addRole,
+  removeRole
 }

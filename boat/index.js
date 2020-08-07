@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-// todo yes
-module.exports = {
-  revokePatreon: () => void 0,
-  startup: () => void 0
-}
+// todo: ssh into powercord's server and grab out the supposedly open source software that is not released yes i love
+// versioning and when its not generating conflicts, i love it as much as when people saying pineapple pizza isn't
+// a mistake don't get truck by a lightning in the next 420 milliseconds
+
+// note: the bot is now standalone and doesn't run along with the http server

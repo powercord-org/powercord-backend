@@ -20,8 +20,10 @@
  * SOFTWARE.
  */
 
+const discordApi = require('../utils/discord')
 const discordAuth = require('../oauth/discord')
 const spotifyAuth = require('../oauth/spotify')
+const config = require('../../config.json')
 
 async function discord (request, reply) {
   if (request.query.error) {
@@ -32,6 +34,11 @@ async function discord (request, reply) {
     const user = await discordAuth.getCurrentUser(codes.access_token)
     const collection = this.mongo.db.collection('users')
     if (await collection.countDocuments({ _id: user.id }) === 0) {
+      try {
+        await discordApi.addRole(user.id, config.discord.ids.roleUser)
+      } catch (e) {
+        // Let it fail silently
+      }
       await collection.insertOne({
         _id: user.id,
         username: user.username,
@@ -117,6 +124,20 @@ async function spotify (request, reply) {
 }
 
 async function unlinkDiscord (request, reply) {
+  try {
+    const toRevoke = [
+      config.discord.ids.roleUser,
+      config.discord.ids.roleHunter,
+      config.discord.ids.roleTranslator,
+      config.discord.ids.roleContributor
+    ]
+
+    const member = await discordAuth.fetchMember(request.user._id)
+    const newRoles = member.roles.filter(r => !toRevoke.includes(r))
+    await discordApi.setRoles(request.user._id, newRoles)
+  } catch (e) {
+    // Let it fail silently
+  }
   await this.mongo.db.collection('users').deleteOne({ _id: request.user._id })
   reply.setCookie('token', null, { maxAge: 0 }).redirect('/')
 }

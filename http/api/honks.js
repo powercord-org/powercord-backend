@@ -21,12 +21,12 @@
  */
 
 const crypto = require('crypto')
-const boat = require('../../boat')
 const discord = require('../utils/discord')
 const config = require('../../config.json')
 
-const TIERS = Object.freeze([ 1, 5, 10 ])
+const TIERS = Object.freeze([ 0, 1, 5, 10 ])
 const TIER_EMOJIS = Object.freeze([
+  '',
   '<:blobkiss:723562862840119412>',
   '<:blobsmilehearts:723562904950931584>',
   '<:blobhug:723562944964591706>'
@@ -42,7 +42,7 @@ async function patreon (request, reply) {
     return reply.send()
   }
 
-  const signature = crypto.createHmac('md5', 'TODO').update(request.rawBody).digest('hex')
+  const signature = crypto.createHmac('md5', config.honks.patreonSecret).update(request.rawBody).digest('hex')
   if (signature !== request.headers['x-patreon-signature']) {
     return reply.code(401).send()
   }
@@ -56,12 +56,20 @@ async function patreon (request, reply) {
 
   if (discordId) {
     discordUser = await discord.fetchUser(discordId)
-    const banStatus = this.mongo.db.collection('banned').findOne({ _id: discordId })
+    const banStatus = await this.mongo.db.collection('banned').findOne({ _id: discordId })
     if (banStatus && banStatus.pledging) {
       banned = true
     } else {
-      if (tier === 0) boat.revokePatreon()
-      this.mongo.db.collection('users').updateOne({ _id: discordId }, { $set: { patreonTier: tier } })
+      await this.mongo.db.collection('users').updateOne({ _id: discordId }, { $set: { patreonTier: tier } })
+      if (tier === 0) {
+        try {
+          await discord.removeRole(discordId, config.discord.ids.rolePatreonDaddy)
+          await discord.removeRole(discordId, config.discord.ids.rolePatreonMommy)
+        } catch (e) {
+          // Let the request silently fail; Probably unknown member
+          // todo: analyze the error? schedule retrying?
+        }
+      }
     }
   }
 
