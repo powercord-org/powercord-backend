@@ -42,16 +42,15 @@ async function patreon (request, reply) {
     return reply.send()
   }
 
-  const signature = crypto.createHmac('md5', 'TODO').update(request.body).digest('hex')
+  const signature = crypto.createHmac('md5', 'TODO').update(request.rawBody).digest('hex')
   if (signature !== request.headers['x-patreon-signature']) {
     return reply.code(401).send()
   }
 
   let discordUser
   let banned = false
-  const payload = JSON.parse(request.body)
-  const pledged = payload.data.attributes.currently_entitled_amount_cents / 100
-  const user = payload.included.find(resource => resource.type === 'user').attributes
+  const pledged = request.body.data.attributes.currently_entitled_amount_cents / 100
+  const user = request.body.included.find(resource => resource.type === 'user').attributes
   const discordId = user.social_connections.discord && user.social_connections.discord.user_id
   const tier = TIERS.reverse().findIndex(t => t < pledged)
 
@@ -93,6 +92,5 @@ async function patreon (request, reply) {
 }
 
 module.exports = async function (fastify) {
-  fastify.addContentTypeParser('application/json', { parseAs: 'string' }, (_, body, done) => done(null, body))
-  fastify.post('/patreon', patreon)
+  fastify.post('/patreon', { config: { rawBody: true } }, patreon)
 }

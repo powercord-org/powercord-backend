@@ -20,8 +20,6 @@
  * SOFTWARE.
  */
 
-// todo: responsive
-
 .container {
   h1 {
     margin-bottom: 8px;
@@ -29,18 +27,23 @@
 }
 
 .graph {
-  height: 320px;
   background-color: #252525;
 
   header {
-    height: 40px;
+    height: 65px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     padding: 8px 16px;
 
-    div {
+    div:first-child {
       font-weight: 600;
-      margin-right: auto;
+      flex-shrink: 0;
+    }
+
+    .btns {
+      display: flex;
+      align-items: center;
+      flex: 1;
     }
   }
 
@@ -56,15 +59,11 @@
       cursor: initial;
     }
   }
-}
-
-.inner {
-  height: calc(100% - 40px);
-  display: flex;
 
   svg {
+    padding-top: 16px;
+    padding-bottom: 16px;
     width: 100%; 
-    height: 100%;
   }
 }
 
@@ -77,12 +76,6 @@
 }
 
 .group {
-  display: flex;
-
-  div {
-    width: 33%;
-  }
-
   h3 {
     font-size: 18px;
     margin-bottom: 0;
@@ -91,5 +84,25 @@
   span {
     font-family: 'JetBrains Mono', monospace;
     font-size: 22px;
+  }
+}
+
+@media screen and (min-width: 740px) {
+  .graph header {
+    height: 40px;
+    align-items: center;
+    flex-direction: row;
+
+    .btns {
+      justify-content: flex-end;
+    }
+  }
+
+  .group {
+    display: flex;
+
+    div {
+      width: 33%;
+    }
   }
 }

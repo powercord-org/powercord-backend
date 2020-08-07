@@ -7,7 +7,8 @@
  - [ ] Translator languages in API payload
     - Maybe let users define it themselves if they have the translator badge?
  - [ ] Patreon API integration
-       - Will most likely also need a manual sync impl since Patron is very reliable (no)
+       - [x] Webhooks (**needs testing**)
+       - [ ] Manual sync
  - [ ] Deeplinks
        - See [this](https://github.com/powercord-org/powercord/blob/v2-dev/src/Powercord/plugins/pc-moduleManager/deeplinks.js)
 

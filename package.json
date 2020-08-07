@@ -18,6 +18,7 @@
     "fastify-auth": "^1.0.1",
     "fastify-cookie": "^4.0.2",
     "fastify-mongodb": "^2.0.1",
+    "fastify-raw-body": "^3.0.0",
     "fastify-tokenize": "^1.1.3",
     "marked": "^1.1.1",
     "node-fetch": "^2.6.0",

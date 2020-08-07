@@ -67,6 +67,7 @@ async function computeGraphData (mongo) {
       count--
     })
 
+    cursor.close()
     graphCache.data.allTime.unshift(0)
     graphCache.date = current
   }
