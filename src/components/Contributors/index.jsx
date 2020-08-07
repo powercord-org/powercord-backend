@@ -52,7 +52,7 @@ const Contributors = () => {
       <div className={style.wrapper}>
         {contributors.developers.map(u => <Contributor key={u._id} {...u}/>)}
       </div>
-      <h2>Powercord Staff</h2>
+      <h2>Powercord Staff & Support</h2>
       <div className={style.wrapper}>
         {contributors.staff.map(u => <Contributor key={u._id} {...u}/>)}
       </div>

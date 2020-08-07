@@ -83,9 +83,13 @@ h1 {
 
 h2 {
   font-size: 28px;
-  margin-top: 32px;
   margin-bottom: 24px;
   font-weight: 800;
+  margin-top: 32px;
+}
+
+main > h2:first-child {
+  margin-top: 0;
 }
 
 h3 {

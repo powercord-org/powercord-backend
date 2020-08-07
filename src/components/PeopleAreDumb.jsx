@@ -93,7 +93,9 @@ const PeopleAreDumb = () => (
     </p>
     <p>
       If this still did not fix it, make sure you're not in a private session as we've received a few reports saying
-      this causes your Premium subscription status to not be properly sent to us.
+      this causes your Premium subscription status to not be properly sent to us. Also make sure you do have your
+      Spotify account linked to your Discord account (You can tell Discord to not show it on your profile and not show
+      the song you're listening to in your status, if you don't want to)
     </p>
 
     <h2 id='install-rtfm'>Powercord failed to inject, what did I do wrong?</h2>

@@ -52,12 +52,12 @@ function renderHtml (helmet, html, user = null) {
   `.split('\n').map(l => l.trim()).join('')
 }
 
-function renderReact (location, context) {
+function renderReact (request, context) {
   const e = React.createElement
   // noinspection JSFileReferences
   const App = require('./dist/App').default
-  return e(StaticRouter, { location, context },
-    e(UserContext.Provider, null, e(App))
+  return e(StaticRouter, { location: request.raw.url, context },
+    e(UserContext.Provider, request.user, e(App))
   )
 }
 
@@ -65,13 +65,12 @@ module.exports = (request, reply) => {
   const user = request.user ? formatUser(request.user, true) : null
   // Just return empty html while developing
   if (process.argv.includes('-d')) {
-    reply.type('text/html').send(renderHtml(null, null, user))
-    return
+    return reply.type('text/html').send(renderHtml(null, null, user))
   }
 
   // SSR
   const context = {}
-  const rendered = renderReact(request.raw.url, context)
+  const rendered = renderReact(request, context)
   if (context.url) {
     return reply.redirect(context.url)
   }

@@ -46,6 +46,7 @@ const LoginButton = ({ user }) => (
             <Link to={Routes.ME}>Account</Link>
             <a href={Endpoints.LOGOUT}>Logout</a>
           </div>
+          {user.badges.staff && <Link to={Routes.BACKOFFICE}>Admin panel</Link>}
         </div>
       </div>
     </>

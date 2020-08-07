@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-// Encrypted & gzipped protobuf
 module.exports = async function (fastify) {
 
 }

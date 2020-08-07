@@ -38,6 +38,7 @@ function formatUser (user, bypassVisibility) {
     badges: {
       developer: !!user.badges.developer,
       staff: !!user.badges.staff,
+      support: !!user.badges.support,
       contributor: !!user.badges.contributor,
       translator: user.badges.translator || false, // Array of langs or false
       hunter: !!user.badges.hunter,

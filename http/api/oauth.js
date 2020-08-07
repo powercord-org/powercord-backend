@@ -22,7 +22,6 @@
 
 const discordAuth = require('../oauth/discord')
 const spotifyAuth = require('../oauth/spotify')
-const githubAuth = require('../oauth/github')
 
 async function discord (request, reply) {
   if (request.query.error) {
@@ -117,29 +116,6 @@ async function spotify (request, reply) {
   return reply.redirect(spotifyAuth.getRedirectUrl())
 }
 
-async function github (request, reply) {
-  if (request.query.error) {
-    return reply.redirect('/')
-  }
-
-  if (request.query.code) {
-    const codes = await githubAuth.getToken(request.query.code)
-    const user = await githubAuth.getCurrentUser(codes.access_token)
-    await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, {
-      $set: {
-        'accounts.github': {
-          accessToken: codes.access_token,
-          display: user.name || user.login,
-          login: user.login
-        }
-      }
-    })
-    return reply.redirect('/me')
-  }
-
-  return reply.redirect(githubAuth.getRedirectUrl())
-}
-
 async function unlinkDiscord (request, reply) {
   await this.mongo.db.collection('users').deleteOne({ _id: request.user._id })
   reply.setCookie('token', null, { maxAge: 0 }).redirect('/')
@@ -150,16 +126,9 @@ async function unlinkSpotify (request, reply) {
   reply.code(204).send()
 }
 
-async function unlinkGithub (request, reply) {
-  await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.github': null } })
-  reply.code(204).send()
-}
-
 module.exports = async function (fastify) {
   fastify.get('/discord', discord)
-  fastify.get('/github', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, github)
   fastify.get('/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, spotify)
   fastify.get('/discord/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkDiscord)
   fastify.get('/spotify/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkSpotify)
-  fastify.get('/github/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkGithub)
 }

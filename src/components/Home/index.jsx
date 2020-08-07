@@ -21,7 +21,6 @@
  */
 
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import { Routes } from '../../constants'
 import Container from '../Container'
@@ -38,7 +37,7 @@ const Home = () => (
     </section>
     <section>
       <h2>What are you waiting for???</h2>
-      <p>Make your Discord spicier. <Link to={Routes.DICKSWORD}>Install Powercord</Link>!</p>
+      <p>Make your Discord spicier. <a href={Routes.INSTALLATION}>Install Powercord</a>!</p>
     </section>
   </Container>
 )

@@ -34,4 +34,5 @@ module.exports = async function (fastify) {
   fastify.register(require('./honks'), { prefix: '/honks' })
   fastify.register(require('./oauth'), { prefix: '/oauth' })
   fastify.register(require('./misc'))
+  fastify.get('*', (_, reply) => reply.send({ error: 404, message: 'Not Found' }))
 }

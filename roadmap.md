@@ -20,5 +20,6 @@
        - Fallback for /l/store stuff
 
 ## And then
+ - [x] Cool graphs because joakim likes graphs
  - [ ] Browser-accessible documentation (powercord.dev/docs)
  - [ ] Internationalize the website (why not?)

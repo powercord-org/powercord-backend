@@ -30,7 +30,6 @@ const Contributor = (user) => (
     <img src={Endpoints.USER_AVATAR(user._id)} alt={`${user.username}'s avatar`}/>
     <div>
       <h3>{user.username}<span>#{user.discriminator}</span></h3>
-      {user.accounts.github && <a href={`https://github.com/${user.accounts.github.login}`}>GitHub</a>}
     </div>
   </div>
 )

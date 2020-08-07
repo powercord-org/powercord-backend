@@ -24,14 +24,17 @@ import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import { Routes } from '../constants'
+
+import AuthBoundary from './AuthBoundary'
 import Home from './Home'
 import Contributors from './Contributors'
+import Stats from './Stats'
 import PeopleAreDumb from './PeopleAreDumb'
 import MarkdownDocument from './MarkdownDocument'
+import PorkordLicense from './legal/PorkordLicense'
 import Terms from './legal/Terms'
 import Privacy from './legal/Privacy'
 import NotFound from './NotFound'
-import AuthBoundary from './AuthBoundary'
 
 const Router = () => (
   <Switch>
@@ -47,12 +50,21 @@ const Router = () => (
       <Contributors/>
     </Route>
     <Route path={Routes.STATS} exact>
-      <main>todo</main>
+      <Stats/>
     </Route>
     <Route path={Routes.BRANDING} exact>
       <main>todo</main>
     </Route>
+    <Route path={Routes.STORE} exact>
+      <main>todo</main>
+    </Route>
+    <Route path={Routes.BACKOFFICE} exact>
+      <main>todo</main>
+    </Route>
     {/* Documents */}
+    <Route path={Routes.DOCS} exact>
+      <main>todo</main>
+    </Route>
     <Route path={Routes.FAQ} exact>
       <PeopleAreDumb/>
     </Route>
@@ -66,6 +78,9 @@ const Router = () => (
       <MarkdownDocument document='listing-agreement'/>
     </Route>
     {/* Legal */}
+    <Route path={Routes.PORKORD_LICENSE} exact>
+      <PorkordLicense/>
+    </Route>
     <Route path={Routes.TERMS} exact>
       <Terms/>
     </Route>
