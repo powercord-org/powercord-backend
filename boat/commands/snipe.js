@@ -20,11 +20,32 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  SNIPE_LIFETIME: 30,
-  lastMessages: [],
+const sniper = require('../sniper')
 
-  register () {
-    console.log('soon yes')
+const ANIMALS = [
+  '🦅', '🐦', '🦄', '🐙', '🐢', '🐌', '🐬', '🐠', '🦈', '🦏',
+  '🐖', '🦒', '🦘', '🐘', '🐳', '🐕', '🐑', '🐓', '🦜', '🦥',
+  '🐿️', '🦔', '🦩', '🦢'
+]
+
+module.exports = function (msg) {
+  if (sniper.lastMessages.length === 0) {
+    const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)]
+    return msg.channel.createMessage(`${animal} There is nothing to snipe.`)
   }
+
+  msg.channel.createMessage({
+    embed: {
+      description: `Edits and deletes for the last ${sniper.SNIPE_LIFETIME} seconds`,
+      fields: sniper.lastMessages.map(snipe => ({
+        name: `${snipe.author} (${snipe.type})`,
+        value: snipe.msg
+      })),
+      footer: {
+        text: `🕵️ Sniped by ${msg.author.username}#${msg.author.discriminator}`
+      }
+    }
+  })
+
+  sniper.lastMessages = []
 }

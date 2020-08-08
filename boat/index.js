@@ -32,6 +32,13 @@ const bot = new CommandClient(config.discord.botToken, {
 
 // Commands
 bot.registerCommand('ping', require('./commands/ping'))
+bot.registerCommand('rule', require('./commands/rule'))
+bot.registerCommand('guideline', require('./commands/guideline'))
+bot.registerCommand('snipe', require('./commands/snipe'))
+bot.registerCommand('tag', require('./commands/tag'))
+
+bot.registerCommand('eval', require('./commands/admin/eval'))
+bot.registerCommand('ssh', require('./commands/admin/ssh'))
 
 // Other stuff
 sniper.register(bot)
@@ -44,6 +51,6 @@ MongoClient.connect(config.mango, { useUnifiedTopology: true })
   .then(c => c.db('powercord'))
   .then(mongo => {
     bot.mongo = mongo
-    console.log('Connecting to Discord App Gateway WebSocket powered by Elixir and Web Scale Technology')
+    console.log('Connecting to the Discord App Gateway WebSocket powered by Elixir and Web Scale Technology')
     bot.connect()
   })

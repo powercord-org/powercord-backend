@@ -20,11 +20,27 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  SNIPE_LIFETIME: 30,
-  lastMessages: [],
+const config = require('../../config.json')
 
-  register () {
-    console.log('soon yes')
+const INFO_STR = `You can read all of the server rules in <#${config.discord.ids.messageRules[0]}>.`
+const USAGE_STR = `Usage: ${config.discord.prefix}rule <rule id>`
+
+module.exports = async function (msg, args) {
+  if (args.length === 0) {
+    return msg.channel.createMessage(`${USAGE_STR}\n\n${INFO_STR}`)
   }
+
+  const id = parseInt(args[0])
+  const rules = await msg.channel.guild.channels.get(config.discord.ids.messageRules[0]).getMessage(config.discord.ids.messageRules[1])
+  const match = rules.content.match(new RegExp(`\\[0?${id}] ([^\\d]*)`))
+  if (!match) {
+    return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
+  }
+
+  const rule = match[1].split('\n').map(s => s.trim()).join(' ')
+    .replace(/\[#[^a-z0-9-_]?([a-z0-9-_]+)\]/ig, (og, name) => {
+      const channel = msg.channel.guild.channels.find(c => c.name === name)
+      return channel ? `<#${channel.id}>` : og
+    })
+  msg.channel.createMessage(`**Rule #${id}**: ${rule.slice(0, rule.length - 2)}\n\n${INFO_STR}`)
 }

@@ -24,3 +24,4 @@
  - [x] Cool graphs because joakim likes graphs
  - [ ] Browser-accessible documentation (powercord.dev/docs)
  - [ ] Internationalize the website (why not?)
+ - [ ] Mod commands + temporary sanctions through the bot (tempmute, tempban)
