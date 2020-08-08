@@ -20,8 +20,30 @@
  * SOFTWARE.
  */
 
-// todo: ssh into powercord's server and grab out the supposedly open source software that is not released yes i love
-// versioning and when its not generating conflicts, i love it as much as when people saying pineapple pizza isn't
-// a mistake don't get truck by a lightning in the next 420 milliseconds
+const { CommandClient } = require('eris')
+const { MongoClient } = require('mongodb')
+const sniper = require('./sniper')
+const config = require('../config.json')
 
-// note: the bot is now standalone and doesn't run along with the http server
+const bot = new CommandClient(config.discord.botToken, {
+  // todo: do we need guild members? dont think so but that needs some testing (esp. for mod log(?))
+  intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildMessages', 'guildMessageReactions' ]
+}, { defaultHelpCommand: false, prefix: config.discord.prefix })
+
+// Commands
+bot.registerCommand('ping', require('./commands/ping'))
+
+// Other stuff
+sniper.register(bot)
+
+// Events
+bot.on('ready', () => console.log('Ready.'))
+
+console.log('Connecting to Mongo')
+MongoClient.connect(config.mango, { useUnifiedTopology: true })
+  .then(c => c.db('powercord'))
+  .then(mongo => {
+    bot.mongo = mongo
+    console.log('Connecting to Discord App Gateway WebSocket powered by Elixir and Web Scale Technology')
+    bot.connect()
+  })

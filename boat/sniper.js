@@ -20,30 +20,10 @@
  * SOFTWARE.
  */
 
-import React from 'react'
-import { Link } from 'react-router-dom'
+module.exports = {
+  lastMessages: [],
 
-import { Routes } from '../../constants'
-import Container from '../Container'
-
-import style from '@styles/home.scss'
-
-const Home = () => (
-  <Container>
-    <section className={style.headline}>
-      <h2>The most PogChamp client mod out there</h2>
-      <p>
-        Powercord is all about simplicity and performance, and does its best to keep Discord as responsive as without
-        a mod. Powercord also reuses a lot of Discord internal elements which makes it fade in the UI for a fluid
-        user experience.
-      </p>
-    </section>
-    <section>
-      <h2>What are you waiting for???</h2>
-      <p>Make your Discord spicier. <Link to={Routes.INSTALLATION}>Install Powercord</Link>!</p>
-    </section>
-  </Container>
-)
-
-Home.displayName = 'Home'
-export default React.memo(Home)
+  register () {
+    console.log('soon yes')
+  }
+}

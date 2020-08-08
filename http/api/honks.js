@@ -26,7 +26,7 @@ const config = require('../../config.json')
 
 const TIERS = Object.freeze([ 0, 1, 5, 10 ])
 const TIER_EMOJIS = Object.freeze([
-  '',
+  '<a:crii:530146779396833290>',
   '<:blobkiss:723562862840119412>',
   '<:blobsmilehearts:723562904950931584>',
   '<:blobhug:723562944964591706>'

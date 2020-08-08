@@ -29,7 +29,7 @@ const config = require('../config.json')
 fastify.register(require('fastify-auth'))
 fastify.register(require('fastify-cookie'))
 fastify.register(require('fastify-raw-body'), { global: false })
-fastify.register(require('fastify-mongodb'), { url: 'mongodb://localhost:6666/powercord' })
+fastify.register(require('fastify-mongodb'), { url: config.mango })
 fastify.register(require('fastify-tokenize'), {
   secret: config.secret,
   fastifyAuth: true,
