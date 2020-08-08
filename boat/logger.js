@@ -22,37 +22,30 @@
 
 const config = require('../config.json')
 
-module.exports = {
-  SNIPE_LIFETIME: 30,
-  lastMessages: [],
+const zws = '\u200B'
+const template = `
+Message deleted in <#$channelId>
+Author: $username#$discrim ($userId; <@$userId>)
+Message contents: \`\`\`
+$message
+\`\`\`
+`.trim()
 
+module.exports = {
   register (bot) {
     bot.on('messageDelete', (msg) => {
       if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
-        return // Let's ignore
+        return // Message not cached; let's just ignore
       }
 
-      this.catch(msg, 'delete')
+      const cleanMessage = msg.cleanContent.replace(/`/g, `\`${zws}`)
+      bot.createMessage(config.discord.ids.channelMessageLogs, template
+        .replace('$channelId', msg.channel.id)
+        .replace('$username', msg.author.username)
+        .replace('$discrim', msg.author.discriminator)
+        .replace(/\$userId/g, msg.author.id)
+        .replace('$message', cleanMessage)
+      )
     })
-
-    bot.on('messageUpdate', (msg, old) => {
-      if (!old || !msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
-        return // Let's ignore
-      }
-
-      this.catch({ ...msg, content: old.content }, 'edit')
-    })
-  },
-
-  handle (msg, type) {
-    const id = Math.random()
-    this.lastMessages.push({
-      _id: id,
-      author: `${msg.author.username}#${msg.author.discriminator}`,
-      msg: msg.content,
-      type
-    })
-
-    setTimeout(() => (this.lastMessages = this.lastMessages.filter(m => m._id !== id)), this.SNIPE_LIFETIME * 1e3)
   }
 }

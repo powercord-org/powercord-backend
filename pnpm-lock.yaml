@@ -8,6 +8,7 @@ dependencies:
   fastify-tokenize: 1.1.3
   marked: 1.1.1
   mongodb: 3.6.0
+  node-cron: 2.0.3
   node-fetch: 2.6.0
   react: 16.13.1
   react-dom: 16.13.1_react@16.13.1
@@ -6097,6 +6098,16 @@ packages:
     dev: true
     resolution:
       integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
+  /node-cron/2.0.3:
+    dependencies:
+      opencollective-postinstall: 2.0.3
+      tz-offset: 0.0.1
+    dev: false
+    engines:
+      node: '>=6.0.0'
+    requiresBuild: true
+    resolution:
+      integrity: sha512-eJI+QitXlwcgiZwNNSRbqsjeZMp5shyajMR81RZCqeW0ZDEj4zU9tpd4nTh/1JsBiKbF8d08FCewiipDmVIYjg==
   /node-fetch/2.6.0:
     dev: false
     engines:
@@ -6460,6 +6471,11 @@ packages:
     dev: true
     resolution:
       integrity: sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
+  /opencollective-postinstall/2.0.3:
+    dev: false
+    hasBin: true
+    resolution:
+      integrity: sha512-8AV/sCtuzUeTo8gQK5qDZzARrulB3egtLzFgteqB2tcT4Mw7B8Kt7JcDHmltjz6FOAHsvTevk70gZEbhM4ZS9Q==
   /opn/5.5.0:
     dependencies:
       is-wsl: 1.1.0
@@ -9297,6 +9313,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
+  /tz-offset/0.0.1:
+    dev: false
+    resolution:
+      integrity: sha512-kMBmblijHJXyOpKzgDhKx9INYU4u4E1RPMB0HqmKSgWG8vEcf3exEfLh4FFfzd3xdQOw9EuIy/cP0akY6rHopQ==
   /unbzip2-stream/1.4.3:
     dependencies:
       buffer: 5.6.0
@@ -9924,6 +9944,7 @@ specifiers:
   marked: ^1.1.1
   mini-css-extract-plugin: ^0.9.0
   mongodb: ^3.6.0
+  node-cron: ^2.0.3
   node-fetch: ^2.6.0
   node-sass: ^4.14.1
   nodemon: ^2.0.4

@@ -22,7 +22,12 @@
 
 const { CommandClient } = require('eris')
 const { MongoClient } = require('mongodb')
+const modlog = require('./modlog')
 const sniper = require('./sniper')
+const logger = require('./logger')
+const roles = require('./roles')
+const canary = require('./canary')
+const starboard = require('./starboard')
 const config = require('../config.json')
 
 const bot = new CommandClient(config.discord.botToken, {
@@ -31,17 +36,23 @@ const bot = new CommandClient(config.discord.botToken, {
 }, { defaultHelpCommand: false, prefix: config.discord.prefix })
 
 // Commands
-bot.registerCommand('ping', require('./commands/ping'))
-bot.registerCommand('rule', require('./commands/rule'))
-bot.registerCommand('guideline', require('./commands/guideline'))
-bot.registerCommand('snipe', require('./commands/snipe'))
-bot.registerCommand('tag', require('./commands/tag'))
+bot.registerCommand('ping', require('./commands/ping'), { description: 'Pong' })
+bot.registerCommand('rule', require('./commands/rule'), { description: 'Helps people unable to read #rules' })
+bot.registerCommand('guideline', require('./commands/guideline'), { description: 'Points out guidelines from https://powercord.dev/guidelines' })
+bot.registerCommand('snipe', require('./commands/snipe'), { description: 'Sends a copy of messages deleted or edited in the last 30 seconds.' })
+bot.registerCommand('tag', require('./commands/tag'), { description: 'Custom commands' })
+bot.registerCommand('help', require('./commands/help'), { description: 'Shows this very help message' })
 
 bot.registerCommand('eval', require('./commands/admin/eval'))
 bot.registerCommand('ssh', require('./commands/admin/ssh'))
 
 // Other stuff
+modlog.register(bot)
 sniper.register(bot)
+logger.register(bot)
+roles.register(bot)
+canary.register(bot)
+starboard.register(bot)
 
 // Events
 bot.on('ready', () => console.log('Ready.'))

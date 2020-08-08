@@ -20,39 +20,17 @@
  * SOFTWARE.
  */
 
-const config = require('../config.json')
+const config = require('../../config.json')
 
-module.exports = {
-  SNIPE_LIFETIME: 30,
-  lastMessages: [],
+module.exports = async function (msg) {
+  let help = '```asciidoc\n'
+  Object.keys(msg._client.commands).forEach(cmdName => {
+    const cmd = msg._client.commands[cmdName]
+    if (cmd.description !== 'No description') {
+      help += `${config.discord.prefix}${cmdName.padEnd(10)} :: ${cmd.description}\n`
+    }
+  })
+  help += '```'
 
-  register (bot) {
-    bot.on('messageDelete', (msg) => {
-      if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
-        return // Let's ignore
-      }
-
-      this.catch(msg, 'delete')
-    })
-
-    bot.on('messageUpdate', (msg, old) => {
-      if (!old || !msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
-        return // Let's ignore
-      }
-
-      this.catch({ ...msg, content: old.content }, 'edit')
-    })
-  },
-
-  handle (msg, type) {
-    const id = Math.random()
-    this.lastMessages.push({
-      _id: id,
-      author: `${msg.author.username}#${msg.author.discriminator}`,
-      msg: msg.content,
-      type
-    })
-
-    setTimeout(() => (this.lastMessages = this.lastMessages.filter(m => m._id !== id)), this.SNIPE_LIFETIME * 1e3)
-  }
+  msg.channel.createMessage(help)
 }

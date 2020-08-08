@@ -85,7 +85,7 @@ module.exports = function (msg, args) {
     return msg.channel.createMessage(parts.join('\n'))
   }
 
-  switch (args[0]) {
+  switch (args[0]) { // I could make use of Eris' subcommands but eh
     case 'list':
       return listTags(msg, args)
     case 'add':

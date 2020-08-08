@@ -6,6 +6,7 @@
 node_modules
 
 # yes
+boat/.canary.cache.json
 http/dist
 dist
 
@@ -14,3 +15,7 @@ config.json
 *.log
 _work
 *.nogit.*
+
+# todo: remove
+# temporary
+boat/ssh

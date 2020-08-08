@@ -18,7 +18,8 @@
     }
   },
   "globals": {
-    "WEBPACK": false
+    "WEBPACK": false,
+    "BigInt": true
   },
   "rules": {
     "no-void": "off",
