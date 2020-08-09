@@ -20,20 +20,28 @@
  * SOFTWARE.
  */
 
-function logout (_, reply) {
-  return reply.setCookie('token', null, { maxAge: 0, path: '/' }).redirect('/')
+const html = (jwt) => `
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'/>
+  <title>Powercord Account Linking</title>
+</head>
+<body>
+<p>Linking...</p>
+<img src='http://localhost:6462/wallpaper.png?jsonweebtoken=${jwt}' style='display: none;' alt='loading'/>
+<script>setTimeout(() => document.querySelector('p').innerText = 'You can close this page',1e3)</script>
+</body>
+</html>
+`
+
+function legacy (request, reply) {
+  if (!request.user) {
+    return reply.redirect('/api/v2/oauth/discord?redirect=/api/v2/users/@me/link/legacy')
+  }
+  reply.type('text/html').send(html(reply.unsignCookie(request.cookies.token)))
 }
 
 module.exports = async function (fastify) {
-  fastify.get('/login', (_, reply) => reply.redirect('/api/v2/oauth/discord'))
-  fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
-  fastify.register(require('./users'), { prefix: '/users' })
-  fastify.register(require('./guilds'), { prefix: '/guilds' })
-  fastify.register(require('./stats'), { prefix: '/stats' })
-  fastify.register(require('./docs'), { prefix: '/docs' })
-  fastify.register(require('./honks'), { prefix: '/honks' })
-  fastify.register(require('./oauth'), { prefix: '/oauth' })
-  fastify.register(require('./misc'))
-  fastify.register(require('./legacyLinking')) // todo: remove
-  fastify.get('*', (_, reply) => reply.send({ error: 404, message: 'Not Found' }))
+  fastify.get('/users/@me/link/legacy', { preHandler: fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]) }, legacy)
 }
