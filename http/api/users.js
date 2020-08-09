@@ -30,7 +30,7 @@ async function getSelf (request) {
 
 async function getUser (request, reply) {
   const user = await this.mongo.db.collection('users').findOne({ _id: request.params.id })
-  if (!user) return reply.code(404)
+  if (!user) return reply.code(404).send()
   return formatUser(user)
 }
 
