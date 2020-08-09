@@ -33,6 +33,12 @@ async function discord (request, reply) {
     const codes = await discordAuth.getToken(request.query.code)
     const user = await discordAuth.getCurrentUser(codes.access_token)
     const collection = this.mongo.db.collection('users')
+    const banStatus = await this.mongo.db.collection('banned').findOne({ _id: user.id })
+    if (banStatus && banStatus.account) {
+      // todo: Notify the user why the auth failed instead of silently failing
+      return reply.redirect('/')
+    }
+
     if (await collection.countDocuments({ _id: user.id }) === 0) {
       try {
         await discordApi.addRole(user.id, config.discord.ids.roleUser)
