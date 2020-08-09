@@ -21,7 +21,7 @@
  */
 
 async function badges () {
-  this.mongo.db.collection('badges').find({}).then(b =>
+  this.mongo.db.collection('badges').find({}).toArray().then(b =>
     b.reduce((acc, badge) => {
       acc[badge._id] = {
         name: badge.name,
