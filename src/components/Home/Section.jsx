@@ -22,8 +22,16 @@
 
 import React from 'react'
 
-const Section = () => (
-  <section></section>
+import style from '@styles/home.scss'
+
+const Section = ({ icon, title, desc, isSoon }) => (
+  <section className={[ isSoon && style.soon, style.section ].filter(Boolean).join(' ')}>
+    {React.createElement(icon)}
+    <div>
+      <h3>{title}</h3>
+      <p>{desc}</p>
+    </div>
+  </section>
 )
 
 Section.displayName = 'Section'

@@ -20,6 +20,74 @@
  * SOFTWARE.
  */
 
-.container {
-  
+.headline {
+  font-size: 38px;
+  text-align: center;
+  width: 100%;
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.section {
+  display: flex;
+  background-color: #252525;
+  padding: 16px 24px;
+  margin: 0 .66% 2%;
+  width: 100%;
+  position: relative;
+
+  &.soon::before {
+    content: 'soon™️';
+    position: absolute;
+    background-color: #606060;
+    font-size: 14px;
+    padding: 2px 8px;
+    right: 0;
+    top: 0;
+  }
+
+  svg {
+    width: 32px;
+    height: 32px;
+    margin: 5px 16px 5px 0;
+    flex-shrink: 0;
+  }
+
+  h3, p {
+    margin: 0;
+    margin-bottom: 5px;
+  }
+}
+
+.install {
+  display: flex;
+  font-size: 22px;
+  font-weight: 600;
+  flex-direction: column;
+  align-items: center;
+
+  h2 {
+    font-size: 34px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+@media screen and (min-width: 580px) {
+  .section {
+    width: 48%;
+  }
+}
+
+
+@media screen and (min-width: 1180px) {
+  .section {
+    width: 32%;
+  }
 }

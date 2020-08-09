@@ -40,7 +40,7 @@ const Cutie = ({ tier }) => (
         <span>Includes: {includes[tier - 1]}.</span>
       </div>
     </div>
-    <p>You can customize your perks directly within the Discord client, if you have Powercord injected.</p>
+    {/* Soon! <p>You can customize your perks directly within the Discord client, if you have Powercord injected.</p> */}
   </>
 )
 
