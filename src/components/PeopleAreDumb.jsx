@@ -21,6 +21,7 @@
  */
 
 import React from 'react'
+import Helmet from 'react-helmet'
 import { Link } from 'react-router-dom'
 
 import { Routes } from '../constants'
@@ -28,6 +29,9 @@ import Container from './Container'
 
 const PeopleAreDumb = () => (
   <Container>
+    <Helmet>
+      <title>Frequently Asked Questions</title>
+    </Helmet>
     <h1>Frequently Asked Questions</h1>
 
     <h2 id='discord-tos'>Is Powercord against Discord's Terms of Service?</h2>

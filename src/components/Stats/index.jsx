@@ -21,6 +21,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
+import Helmet from 'react-helmet'
 
 import { Endpoints } from '../../constants'
 import Container from '../Container'
@@ -37,6 +38,9 @@ const Stats = () => {
 
   return (
     <Container className={style.container}>
+      <Helmet>
+        <title>Statistics</title>
+      </Helmet>
       <h1>Statistics</h1>
       <p>We love stats. So have stats. It's free. I think.</p>
       <UsersGraph {...(data ? data.users : {})}/>

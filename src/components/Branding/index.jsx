@@ -21,6 +21,7 @@
  */
 
 import React from 'react'
+import Helmet from 'react-helmet'
 
 import Container from '../Container'
 import Asset from './Asset'
@@ -30,6 +31,9 @@ import style from '@styles/branding.scss'
 const Branding = () => {
   return (
     <Container>
+      <Helmet>
+        <title>Branding</title>
+      </Helmet>
       <h1>Branding</h1>
       <p>Please keep all assets in their original shape, proportion, orientation and colors. You are not allowed to
         re-use any asset and/or the Powercord name as a logo and/or name for your own project, or use it to imply our

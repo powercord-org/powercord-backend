@@ -21,6 +21,7 @@
  */
 
 import React from 'react'
+import Helmet from 'react-helmet'
 
 import { Endpoints } from '../../constants'
 import Container from '@components/Container'
@@ -48,6 +49,9 @@ const Contributors = () => {
 
   return (
     <Container>
+      <Helmet>
+        <title>Contributors</title>
+      </Helmet>
       <h2>Developers</h2>
       <div className={style.wrapper}>
         {contributors.developers.map(u => <Contributor key={u._id} {...u}/>)}

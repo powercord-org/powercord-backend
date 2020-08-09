@@ -21,6 +21,7 @@
  */
 
 import React, { useContext, useCallback } from 'react'
+import Helmet from 'react-helmet'
 
 import { Endpoints } from '../../constants'
 import UserContext from '../UserContext'
@@ -39,6 +40,9 @@ const Account = () => {
 
   return (
     <Container>
+      <Helmet>
+        <title>My Account</title>
+      </Helmet>
       <h1>Welcome back, {user.username}#{user.discriminator}</h1>
       {user.patronTier && <Cutie tier={user.patronTier}/>}
       <h3>Linked Spotify account</h3>

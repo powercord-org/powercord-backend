@@ -21,6 +21,7 @@
  */
 
 import React from 'react'
+import Helmet from 'react-helmet'
 import { Switch, Route } from 'react-router-dom'
 
 import { Routes } from '../constants'
@@ -71,12 +72,21 @@ const Router = () => (
       <PeopleAreDumb/>
     </Route>
     <Route path={Routes.INSTALLATION} exact>
+      <Helmet>
+        <title>Installation</title>
+      </Helmet>
       <MarkdownDocument document='installation'/>
     </Route>
     <Route path={Routes.GUIDELINES} exact>
+      <Helmet>
+        <title>Guidelines</title>
+      </Helmet>
       <MarkdownDocument document='guidelines'/>
     </Route>
     <Route path={Routes.LISTING_AGREEMENT} exact>
+      <Helmet>
+        <title>Listing Agreement</title>
+      </Helmet>
       <MarkdownDocument document='listing-agreement'/>
     </Route>
     {/* Legal */}
