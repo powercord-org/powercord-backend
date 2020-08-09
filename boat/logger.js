@@ -39,9 +39,10 @@ module.exports = {
       }
 
       const cleanMessage = msg.cleanContent.replace(/`/g, `\`${zws}`)
+      const cleanUsername = msg.author.username.replace(/@/g, `@${zws}`).replace(/`/g, `\`${zws}`)
       bot.createMessage(config.discord.ids.channelMessageLogs, template
         .replace('$channelId', msg.channel.id)
-        .replace('$username', msg.author.username)
+        .replace('$username', cleanUsername)
         .replace('$discrim', msg.author.discriminator)
         .replace(/\$userId/g, msg.author.id)
         .replace('$message', cleanMessage)

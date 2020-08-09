@@ -27,6 +27,7 @@ import { Routes } from '../constants'
 
 import AuthBoundary from './AuthBoundary'
 import Home from './Home'
+import Account from './Account'
 import Contributors from './Contributors'
 import Stats from './Stats'
 import Branding from './Branding'
@@ -44,7 +45,7 @@ const Router = () => (
     </Route>
     <Route path={Routes.ME} exact>
       <AuthBoundary>
-        <main>todo</main>
+        <Account/>
       </AuthBoundary>
     </Route>
     <Route path={Routes.CONTRIBUTORS} exact>

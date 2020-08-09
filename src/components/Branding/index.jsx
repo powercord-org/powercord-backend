@@ -41,8 +41,8 @@ const Branding = () => {
           copyrightYear={2018}
           copyrightHolder='Katlyn Lorimer'
           links={[
-            { name: 'plug.png', url: require('@assets/branding/plug.png').default },
-            { name: 'plug.svg', url: require('@assets/branding/plug.svg').default }
+            { name: 'plug.png', url: require('@assets/powercord.png').default },
+            { name: 'plug.svg', url: require('@assets/powercord.svg').default }
           ]}
         />
         <Asset

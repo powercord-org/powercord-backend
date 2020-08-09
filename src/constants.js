@@ -23,6 +23,9 @@
 export const Endpoints = Object.freeze({
   LOGIN: '/api/v2/login',
   LOGOUT: '/api/v2/logout',
+  LINK_SPOTIFY: '/api/v2/oauth/spotify',
+  UNLINK_SPOTIFY: '/api/v2/oauth/spotify/unlink',
+  YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
   CONTRIBUTORS: '/api/v2/stats/contributors',
   STATS: '/api/v2/stats/numbers',
   DOCS_CATEGORIES: '/api/v2/docs/categories',

@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2018-2020 aetheryx & Bowser65
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,53 +20,29 @@
  * SOFTWARE.
  */
 
-.assets {
-  display: flex;
-  flex-wrap: wrap;
-}
+import React from 'react'
 
-.asset {
-  width: 100%;
-  margin: 0 .66% .66%;
-  background-color: #252525;
-  display: flex;
-  flex-direction: column;
+import style from '@styles/account.scss'
 
-  h3, footer {
-    padding: 8px 16px;
-    margin: 0;
-  }
+// todo: i18n
+const includes = [
+  'A custom role in our server, custom badge color',
+  'A custom role in our server, custom badge color, custom profile badge',
+  'A custom role in our server, custom badge color, custom profile badge, custom server badge'
+]
 
-  img {
-    width: 100%;
-    padding: 8px;
-    flex: 1;
-    object-fit: contain;
+const Cutie = ({ tier }) => (
+  <>
+    <div className={style.cutie}>
+      <img src={require('@assets/cutie.svg').default} alt='Powercord Cutie'/>
+      <div>
+        <span>Thank you for supporting Powercord! You are a tier {tier} patron.</span>
+        <span>Includes: {includes[tier - 1]}.</span>
+      </div>
+    </div>
+    <p>You can customize your perks directly within the Discord client, if you have Powercord injected.</p>
+  </>
+)
 
-    &:not(.transparent) {
-      background-color: #fff;
-    }
-  }
-
-  .copyright {
-    font-size: 14px;
-    opacity: 0.6;
-  }
-
-  .links a {
-    margin-right: 8px;
-  }
-}
-
-@media screen and (min-width: 580px) {
-  .asset {
-    width: 48%;
-  }
-}
-
-
-@media screen and (min-width: 1180px) {
-  .asset {
-    width: 32%;
-  }
-}
+Cutie.displayName = 'Cutie'
+export default React.memo(Cutie)

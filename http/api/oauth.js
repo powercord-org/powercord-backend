@@ -144,7 +144,7 @@ async function unlinkDiscord (request, reply) {
 
 async function unlinkSpotify (request, reply) {
   await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.spotify': null } })
-  reply.code(204).send()
+  reply.redirect('/me')
 }
 
 module.exports = async function (fastify) {

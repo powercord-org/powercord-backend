@@ -20,53 +20,36 @@
  * SOFTWARE.
  */
 
-.assets {
+.cutie {
   display: flex;
-  flex-wrap: wrap;
-}
-
-.asset {
-  width: 100%;
-  margin: 0 .66% .66%;
-  background-color: #252525;
-  display: flex;
-  flex-direction: column;
-
-  h3, footer {
-    padding: 8px 16px;
-    margin: 0;
-  }
+  height: 96px;
+  border-radius: 8px;
+  align-items: center;
+  background: linear-gradient(90deg, #b473f5, #e292aa);
+  padding: 16px 32px;
 
   img {
-    width: 100%;
-    padding: 8px;
-    flex: 1;
-    object-fit: contain;
+    height: 80%;
+    margin-right: 32px;
+  }
 
-    &:not(.transparent) {
-      background-color: #fff;
+  div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    span:first-child {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    span:last-child {
+      font-size: 18px;
+      font-weight: 500;
     }
   }
-
-  .copyright {
-    font-size: 14px;
-    opacity: 0.6;
-  }
-
-  .links a {
-    margin-right: 8px;
-  }
 }
 
-@media screen and (min-width: 580px) {
-  .asset {
-    width: 48%;
-  }
-}
-
-
-@media screen and (min-width: 1180px) {
-  .asset {
-    width: 32%;
-  }
+.danger {
+  color: #f04747;
 }

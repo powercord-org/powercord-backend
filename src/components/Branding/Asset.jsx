@@ -24,11 +24,11 @@ import React from 'react'
 
 import style from '@styles/branding.scss'
 
-const BrandAsset = ({ name, copyrightYear, copyrightHolder, links }) => {
+const BrandAsset = ({ transparent, name, copyrightYear, copyrightHolder, links }) => {
   return (
     <section className={style.asset}>
       <h3>{name}</h3>
-      <img src={links[links.length - 1].url} alt={name}/>
+      <img src={links[links.length - 1].url} alt={name} className={transparent ? style.transparent : null}/>
       <footer>
         <div className={style.copyright}>
           Copyright &copy; {copyrightYear} {copyrightHolder}, All Rights Reserved.

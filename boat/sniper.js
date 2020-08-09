@@ -44,7 +44,7 @@ module.exports = {
     })
   },
 
-  handle (msg, type) {
+  catch (msg, type) {
     const id = Math.random()
     this.lastMessages.push({
       _id: id,
