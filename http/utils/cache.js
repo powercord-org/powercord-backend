@@ -44,7 +44,6 @@ async function remoteFile (url) {
     }
   }
 
-  console.log('fetching')
   const res = await fetch(url)
   if (res.status !== 200) return { success: false }
   const buffer = await res.buffer()
@@ -62,7 +61,6 @@ async function getOrCompute (key, compute) {
     return require(cacheFile)
   }
 
-  console.log('computing')
   const data = await compute()
   await writeFile(cacheFile, JSON.stringify(data), 'utf-8')
   return data
