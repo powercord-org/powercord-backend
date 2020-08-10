@@ -64,7 +64,7 @@ function computeSvg (points) {
 
 const UsersGraph = ({ allTime, month, week }) => { // todo: render dates at the bottom
   const [ mode, setMode ] = useState(ViewMode.ALL_TIME)
-  const [ isSmaller, setIsSmaller ] = useState(window.innerWidth < 1180)
+  const [ isSmaller, setIsSmaller ] = useState(typeof window === 'undefined' ? false : window.innerWidth < 1180)
   const cb = useCallback(() => {
     if ((window.innerWidth < 1180) !== isSmaller) {
       setIsSmaller(window.innerWidth < 1180)
