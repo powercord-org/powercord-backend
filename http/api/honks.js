@@ -63,8 +63,8 @@ async function patreon (request, reply) {
       await this.mongo.db.collection('users').updateOne({ _id: discordId }, { $set: { patreonTier: tier } })
       if (tier === 0) {
         try {
-          await discord.removeRole(discordId, config.discord.ids.rolePatreonDaddy)
-          await discord.removeRole(discordId, config.discord.ids.rolePatreonMommy)
+          await discord.removeRole(discordId, config.discord.ids.rolePatreonDaddy, 'No longer pledging on Patreon')
+          await discord.removeRole(discordId, config.discord.ids.rolePatreonMommy, 'No longer pledging on Patreon')
         } catch (e) {
           // Let the request silently fail; Probably unknown member
           // todo: analyze the error? schedule retrying?

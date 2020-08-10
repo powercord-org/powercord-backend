@@ -66,25 +66,37 @@ function fetchMember (memberId) {
   }).then(r => r.json())
 }
 
-function setRoles (memberId, roleIds) {
+function setRoles (memberId, roleIds, auditLogReason) {
+  const headers = { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
+  if (auditLogReason) {
+    headers['X-Audit-Log-Reason'] = auditLogReason
+  }
   return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}`, {
+    headers,
     method: 'PATCH',
-    headers: { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' },
     body: JSON.stringify({ roles: roleIds })
   })
 }
 
-function addRole (memberId, roleId) {
+function addRole (memberId, roleId, auditLogReason) {
+  const headers = { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
+  if (auditLogReason) {
+    headers['X-Audit-Log-Reason'] = auditLogReason
+  }
   return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
-    method: 'PUT',
-    headers: { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
+    headers,
+    method: 'PUT'
   })
 }
 
-function removeRole (memberId, roleId) {
+function removeRole (memberId, roleId, auditLogReason) {
+  const headers = { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
+  if (auditLogReason) {
+    headers['X-Audit-Log-Reason'] = auditLogReason
+  }
   return fetch(`https://discord.com/api/v6/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
-    method: 'DELETE',
-    headers: { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
+    headers,
+    method: 'DELETE'
   })
 }
 

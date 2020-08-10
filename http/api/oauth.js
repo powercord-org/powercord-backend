@@ -41,7 +41,7 @@ async function discord (request, reply) {
 
     if (await collection.countDocuments({ _id: user.id }) === 0) {
       try {
-        await discordApi.addRole(user.id, config.discord.ids.roleUser)
+        await discordApi.addRole(user.id, config.discord.ids.roleUser, 'User created their powercord.dev account')
       } catch (e) {
         // Let it fail silently
       }
@@ -140,7 +140,7 @@ async function unlinkDiscord (request, reply) {
 
     const member = await discordAuth.fetchMember(request.user._id)
     const newRoles = member.roles.filter(r => !toRevoke.includes(r))
-    await discordApi.setRoles(request.user._id, newRoles)
+    await discordApi.setRoles(request.user._id, newRoles, 'User deleted their powercord.dev account')
   } catch (e) {
     // Let it fail silently
   }

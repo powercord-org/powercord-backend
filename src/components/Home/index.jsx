@@ -32,7 +32,7 @@ import style from '@styles/home.scss'
 
 const Home = () => (
   <Container>
-    <h2 className={style.headline}>Powerful and simple client mod</h2>
+    <h2 className={style.headline}>Powerful and simple Discord client mod</h2>
     <section className={style.features}>
       <Section
         icon={Icons.Feather}
