@@ -21,6 +21,7 @@
  */
 
 function paywallify (customBadges, tier) {
+  tier = 69 // todo: we don't keep track of patreon tier yet
   return {
     color: tier < 1 ? null : customBadges.color || null,
     icon: tier < 2 ? null : customBadges.icon || null,

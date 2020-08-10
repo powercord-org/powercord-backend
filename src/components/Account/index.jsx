@@ -44,7 +44,7 @@ const Account = () => {
         <title>My Account</title>
       </Helmet>
       <h1>Welcome back, {user.username}#{user.discriminator}</h1>
-      {user.patronTier && <Cutie tier={user.patronTier}/>}
+      {!!user.patronTier && <Cutie tier={user.patronTier}/>}
       <h3>Linked Spotify account</h3>
       {user.connections && user.connections.spotify
         ? <p>{user.connections.spotify.name} - <a href={Endpoints.UNLINK_SPOTIFY}>Unlink</a></p>

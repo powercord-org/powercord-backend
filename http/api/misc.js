@@ -24,6 +24,7 @@ const fs = require('fs')
 const path = require('path')
 const fetch = require('node-fetch')
 const discord = require('../utils/discord')
+const cache = require('../utils/cache')
 
 const plugXml = fs.readFileSync(path.join(__dirname, '../../src/assets/powercord.svg'), 'utf8')
 
@@ -36,14 +37,14 @@ async function getDiscordAvatar (user, update) {
     return fetch(`https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`).then(r => r.buffer())
   }
 
-  const res = await fetch(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`)
-  if (res.status !== 200) {
+  const file = await cache.remoteFile(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`)
+  if (!file.success) {
     const discordUser = await discord.fetchUser(user._id)
     update(discordUser.avatar)
     user.avatar = discordUser.avatar
     return getDiscordAvatar(user, update)
   }
-  return res.buffer()
+  return file.data
 }
 
 async function avatar (request, reply) {

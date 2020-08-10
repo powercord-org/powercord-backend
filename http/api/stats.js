@@ -20,59 +20,52 @@
  * SOFTWARE.
  */
 
-const graphCache = {
-  date: null,
-  data: {}
-}
+const cache = require('../utils/cache')
 
 const WEEKLY_DELTA = 3.36 * 3600e3
 const MONTHLY_DELTA = 14.4 * 3600e3
 const YEARLY_DELTA = () => (Date.now() - 1546732800000) / 50
 
 async function computeGraphData (mongo) {
-  const current = new Date().toDateString()
-  graphCache.data.count = await mongo.db.collection('users').countDocuments()
-  if (graphCache.date !== current) {
-    let { count } = graphCache.data
-    graphCache.data.allTime = [ count ]
-    graphCache.data.month = [ count ]
-    graphCache.data.week = [ count ]
+  const graphData = {}
+  let count = await mongo.db.collection('users').countDocuments()
+  graphData.count = count
+  graphData.allTime = [ count ]
+  graphData.month = [ count ]
+  graphData.week = [ count ]
 
-    const yd = YEARLY_DELTA()
-    const cursor = mongo.db.collection('users').find({}, { projection: { createdAt: true } }).sort({ createdAt: -1 })
+  const yd = YEARLY_DELTA()
+  const cursor = mongo.db.collection('users').find({}, { projection: { createdAt: true } }).sort({ createdAt: -1 })
 
-    let prevWeekDate, prevMonthDate, prevAllDate
-    await cursor.forEach(doc => {
-      if (graphCache.data.week.length < 50) {
-        if (!prevWeekDate) prevWeekDate = doc.createdAt.getTime()
-        if (prevWeekDate - doc.createdAt.getTime() > WEEKLY_DELTA) {
-          prevWeekDate = doc.createdAt.getTime()
-          graphCache.data.week.unshift(count)
-        }
+  let prevWeekDate, prevMonthDate, prevAllDate
+  await cursor.forEach(doc => {
+    if (graphData.week.length < 50) {
+      if (!prevWeekDate) prevWeekDate = doc.createdAt.getTime()
+      if (prevWeekDate - doc.createdAt.getTime() > WEEKLY_DELTA) {
+        prevWeekDate = doc.createdAt.getTime()
+        graphData.week.unshift(count)
       }
-      if (graphCache.data.month.length < 50) {
-        if (!prevMonthDate) prevMonthDate = doc.createdAt.getTime()
-        if (prevMonthDate - doc.createdAt.getTime() > MONTHLY_DELTA) {
-          prevMonthDate = doc.createdAt.getTime()
-          graphCache.data.month.unshift(count)
-        }
+    }
+    if (graphData.month.length < 50) {
+      if (!prevMonthDate) prevMonthDate = doc.createdAt.getTime()
+      if (prevMonthDate - doc.createdAt.getTime() > MONTHLY_DELTA) {
+        prevMonthDate = doc.createdAt.getTime()
+        graphData.month.unshift(count)
       }
-      if (graphCache.data.allTime.length < 49) {
-        if (!prevAllDate) prevAllDate = doc.createdAt.getTime()
-        if (prevAllDate - doc.createdAt.getTime() > yd) {
-          prevAllDate = doc.createdAt.getTime()
-          graphCache.data.allTime.unshift(count)
-        }
+    }
+    if (graphData.allTime.length < 49) {
+      if (!prevAllDate) prevAllDate = doc.createdAt.getTime()
+      if (prevAllDate - doc.createdAt.getTime() > yd) {
+        prevAllDate = doc.createdAt.getTime()
+        graphData.allTime.unshift(count)
       }
-      count--
-    })
+    }
+    count--
+  })
 
-    cursor.close()
-    graphCache.data.allTime.unshift(0)
-    graphCache.date = current
-  }
-
-  return graphCache.data
+  cursor.close()
+  graphData.allTime.unshift(0)
+  return graphData
 }
 
 async function contributors () {
@@ -96,7 +89,7 @@ async function contributors () {
 
 async function numbers () {
   return {
-    users: await computeGraphData(this.mongo),
+    users: await cache.getOrCompute('account_stats', () => computeGraphData(this.mongo)),
     helpers: await this.mongo.db.collection('users').countDocuments({
       $or: [
         { 'badges.contributor': true },

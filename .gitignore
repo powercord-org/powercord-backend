@@ -6,6 +6,7 @@
 node_modules
 
 # yes
+.cache
 boat/.canary.cache.json
 http/dist
 dist

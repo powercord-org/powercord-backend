@@ -2,8 +2,8 @@
 ## General
  - [x] Port already existing UIs
  - [x] Port already existing APIs
- - [ ] Port Powercord bot
- - [ ] Publish new website
+ - [x] Port Powercord bot
+ - [x] Publish new website
  - [ ] Translator languages in API payload
     - Maybe let users define it themselves if they have the translator badge?
  - [ ] Patreon API integration
