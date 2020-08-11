@@ -38,8 +38,8 @@ const EMOTES = [
 
 module.exports = {
   register (bot) {
-    bot.on('messageReactionAdd', async (msg, emoji, user) => this.process(msg, emoji, user))
-    bot.on('messageReactionRemove', async (msg, emoji, user) => this.process(msg, emoji, user))
+    bot.on('messageReactionAdd', (msg, emoji, user) => this.process(msg, emoji, user))
+    bot.on('messageReactionRemove', (msg, emoji, user) => this.process(msg, emoji, user))
     bot.on('messageReactionRemoveAll', (msg) => this.updateStarCount(msg, 0))
     bot.on('messageDelete', (msg) => this.updateStarCount(msg, 0))
   },
@@ -62,7 +62,7 @@ module.exports = {
 
   async updateStarCount (msg, count, cute) {
     const channel = cute ? config.discord.ids.channelCuteboard : config.discord.ids.channelStarboard
-    const entry = await msg._client.mongo.findOne({ _id: msg.id }) || {
+    const entry = await msg._client.mongo.collection('starboard').findOne({ _id: msg.id }) || {
       ...GENERIC_STAR_OBJ,
       cute
     }
@@ -70,7 +70,7 @@ module.exports = {
 
     if (entry.stars < 1) {
       if (entry.messageId) {
-        msg._client.mongo.deleteOne({ _id: msg.id })
+        msg._client.mongo.collection('starboard').deleteOne({ _id: msg.id })
         msg._client.deleteMessage(channel, entry.messageId)
       }
       return
@@ -83,7 +83,7 @@ module.exports = {
       msg._client.editMessage(channel, entry.messageId, this._buildStarMessage(entry.stars, msg, cute))
     }
 
-    msg._client.mongo.updateOne(
+    msg._client.mongo.collection('starboard').updateOne(
       { _id: msg.id },
       { $set: { ...entry } },
       { upsert: true }
