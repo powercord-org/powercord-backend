@@ -43,6 +43,8 @@ bot.registerCommand('snipe', require('./commands/snipe'), { description: 'Sends 
 bot.registerCommand('tag', require('./commands/tag'), { description: 'Custom commands' })
 bot.registerCommand('help', require('./commands/help'), { description: 'Shows this very help message' })
 
+bot.registerCommand('eval', require('./commands/mod/edit'))
+
 bot.registerCommand('eval', require('./commands/admin/eval'))
 bot.registerCommand('ssh', require('./commands/admin/ssh'))
 
