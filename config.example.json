@@ -33,5 +33,6 @@
   },
   "mango": "mongodb://localhost:27017/powercord",
   "domain": "http://localhost",
-  "secret": "tony was a dick, and stacy was a whore"
+  "secret": "tony was a dick, and stacy was a whore",
+  "ghToken": ""
 }

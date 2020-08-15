@@ -42,7 +42,7 @@ fastify.register(require('fastify-tokenize'), {
 })
 
 // API
-fastify.register(require('./api/v2'), { prefix: '/api/v2' })
+fastify.register(require('./api'), { prefix: '/api' })
 
 // REP & React
 fastify.register(async function (fastify) {

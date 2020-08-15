@@ -31,7 +31,11 @@ if (!existsSync(CACHE_PATH)) {
 }
 
 // todo: Schedule cache cleanup
-// just check if the file prefixes aren't new Date().toDateString().toLowerCase().replace(/ /g, '_')
+
+function generateKey (hourly) {
+  const today = new Date()
+  return `${hourly ? 'h-' : 'd-'}${hourly ? today.getUTCHours() : ''}${today.getUTCDate()}${today.getUTCMonth()}${today.getUTCFullYear()}`
+}
 
 async function remoteFile (url) {
   const current = new Date().toDateString().toLowerCase().replace(/ /g, '_')
@@ -54,9 +58,9 @@ async function remoteFile (url) {
   }
 }
 
-async function getOrCompute (key, compute) {
-  const current = new Date().toDateString().toLowerCase().replace(/ /g, '_')
-  const cacheFile = join(CACHE_PATH, `${current}_${key}.json`)
+async function getOrCompute (key, compute, hourly) {
+  const dateKey = generateKey(hourly)
+  const cacheFile = join(CACHE_PATH, `${dateKey}_${key}.json`)
   if (existsSync(cacheFile)) {
     return require(cacheFile)
   }

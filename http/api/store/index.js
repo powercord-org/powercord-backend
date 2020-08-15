@@ -20,21 +20,8 @@
  * SOFTWARE.
  */
 
-function logout (_, reply) {
-  return reply.setCookie('token', null, { maxAge: 0, path: '/' }).redirect('/')
-}
+const { fetchSuggestions } = require('./suggestions')
 
 module.exports = async function (fastify) {
-  fastify.get('/login', (_, reply) => reply.redirect('/api/v2/oauth/discord'))
-  fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
-  fastify.register(require('./store'), { prefix: '/store' })
-  fastify.register(require('./users'), { prefix: '/users' })
-  fastify.register(require('./guilds'), { prefix: '/guilds' })
-  fastify.register(require('./stats'), { prefix: '/stats' })
-  fastify.register(require('./docs'), { prefix: '/docs' })
-  fastify.register(require('./honks'), { prefix: '/honks' })
-  fastify.register(require('./oauth'), { prefix: '/oauth' })
-  fastify.register(require('./misc'))
-  fastify.register(require('./legacyLinking')) // todo: remove
-  fastify.get('*', (_, reply) => reply.send({ error: 404, message: 'Not Found' }))
+  fastify.get('/suggestions', () => fetchSuggestions())
 }
