@@ -25,23 +25,33 @@ const config = require('../../config.json')
 
 const GUIDELINES_DOCUMENT = 'https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md'
 const INFO_STR = 'You can read all of the guidelines at <https://powercord.dev/guidelines>.'
-const USAGE_STR = `Usage: ${config.discord.prefix}guideline <guideline id>`
+const USAGE_STR = `Usage: \`${config.discord.prefix}guideline <guideline id>\` or \`${config.discord.prefix}guideline defs\` `
 
 module.exports = async function (msg, args) {
   if (args.length === 0) {
     return msg.channel.createMessage(`${USAGE_STR}\n\n${INFO_STR}`)
   }
 
-  const id = parseInt(args[0])
-  const guidelines = await fetch(GUIDELINES_DOCUMENT).then(r => r.text())
-  const match = guidelines.match(new RegExp(`# (${id}[^#]*)`))
-  if (!match) {
-    return msg.channel.createMessage(`This guideline doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
-  }
+  try {
+    const guidelines = await fetch(GUIDELINES_DOCUMENT).then(r => r.text())
 
-  const guideline = match[0].slice(2).split('\n\n')
-  guideline[0] = `**Guideline #${guideline[0]}**`
-  const parts = guideline.map(g => g.replace(/\n/g, ' '))
-  parts[parts.length - 1] = INFO_STR
-  msg.channel.createMessage(parts.join('\n\n'))
+    if (args[0] === 'defs') {
+      const defs = guidelines.split('## Definitions')[1].split('\n\n')[0].trim()
+      return msg.channel.createMessage(defs)
+    }
+
+    const id = parseInt(args[0])
+    const match = guidelines.match(new RegExp(`# (${id}[^#]*)`))
+    if (!match) {
+      return msg.channel.createMessage(`This guideline doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
+    }
+
+    const guideline = match[0].slice(2).split('\n\n')
+    guideline[0] = `**Guideline #${guideline[0]}**`
+    const parts = guideline.map(g => g.replace(/\n/g, ' ').replace(/<br>/g, '\n'))
+    parts[parts.length - 1] = INFO_STR
+    msg.channel.createMessage(parts.join('\n\n'))
+  } catch (e) {
+    msg.channel.createMessage('An unexpected error occurred. Maybe GitHub is having troubles?')
+  }
 }
