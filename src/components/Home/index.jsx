@@ -47,7 +47,7 @@ const Home = () => (
       <Section
         icon={Icons.Update}
         title='Built-in Updater'
-        desc={'Install your plugin and themes, and we\'ll take care of keeping them up to date'}
+        desc={'Install your plugins and themes with just a single click. It\'s never been simpler!'}
       />
       <Section
         icon={Icons.API}
@@ -57,7 +57,7 @@ const Home = () => (
       <Section
         icon={Icons.Download}
         title='Plugin/Themes Installer'
-        desc={'Install your plugin and themes, and we\'ll take care of keeping them up to date'}
+        desc={'Powercord will make sure your plugins and themes stay up-to-date. You\'ll barely notice it!'}
         isSoon
       />
       <Section
