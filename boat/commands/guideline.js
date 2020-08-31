@@ -37,7 +37,7 @@ module.exports = async function (msg, args) {
 
     if (args[0] === 'defs') {
       const defs = guidelines.split('## Definitions')[1].split('\n\n')[0].trim()
-      return msg.channel.createMessage(defs)
+      return msg.channel.createMessage(`**Definitions:**\n ${defs}\n\n${INFO_STR}`)
     }
 
     const id = parseInt(args[0])
@@ -46,11 +46,10 @@ module.exports = async function (msg, args) {
       return msg.channel.createMessage(`This guideline doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
     }
 
-    const guideline = match[0].slice(2).split('\n\n')
-    guideline[0] = `**Guideline #${guideline[0]}**`
-    const parts = guideline.map(g => g.replace(/\n/g, ' ').replace(/<br>/g, '\n'))
-    parts[parts.length - 1] = INFO_STR
-    msg.channel.createMessage(parts.join('\n\n'))
+    const guideline = match[0].slice(2).replace(/\n\n/g, '<br><br>').split('\n')
+    guideline[0] = `**Guideline #${guideline[0]}**\n`
+    const parts = guideline.map(g => g.replace(/<br>/g, '\n'))
+    msg.channel.createMessage(`${parts.join('').trim()}\n\n${INFO_STR}`)
   } catch (e) {
     msg.channel.createMessage('An unexpected error occurred. Maybe GitHub is having troubles?')
   }
