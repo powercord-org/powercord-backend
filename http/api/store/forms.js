@@ -20,9 +20,16 @@
  * SOFTWARE.
  */
 
-const { fetchSuggestions } = require('./suggestions')
+async function getEligibility (mongo, user) {
+  const banStatus = await mongo.db.collection('banned').findOne({ _id: user._id })
+  return {
+    publish: !banStatus.publish,
+    verification: !banStatus.verification,
+    hosting: !banStatus.hosting,
+    reporting: !banStatus.reporting
+  }
+}
 
 module.exports = async function (fastify) {
-  fastify.get('/suggestions', () => fetchSuggestions())
-  fastify.register(require('./forms'), { prefix: '/forms', preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) })
+  fastify.get('/eligibility', (request) => getEligibility(fastify.mongo, request.user))
 }

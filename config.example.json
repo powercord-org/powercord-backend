@@ -12,8 +12,9 @@
     "prefix": "pc/",
     "ids": {
       "serverId": "",
-      "rolePatreonDaddy": "",
       "rolePatreonMommy": "",
+      "rolePatreonParent": "",
+      "rolePatreonDaddy": "",
       "roleContributor": "",
       "roleTranslator": "",
       "roleHunter": "",

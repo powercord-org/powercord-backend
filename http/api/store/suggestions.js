@@ -53,7 +53,7 @@ async function fetchAll () {
 }
 
 function fetchSuggestions () {
-  return getOrCompute('gh_suggestions--', async function () {
+  return getOrCompute('gh_suggestions', async function () {
     const all = await fetchAll()
     return all.sort((a, b) => a.reactions.totalCount > b.reactions.totalCount ? -1 : a.reactions.totalCount < b.reactions.totalCount ? 1 : 0)
       .filter(i => i.body.includes('###') && i.body.includes('----'))

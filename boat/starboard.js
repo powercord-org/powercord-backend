@@ -22,6 +22,7 @@
 
 const config = require('../config.json')
 
+const BOARD_MINIMUM = 3
 const CUTEBOARD_EMOTE = '🌺'
 const STARBOARD_EMOTE = '⭐'
 const GENERIC_STAR_OBJ = {
@@ -68,7 +69,7 @@ module.exports = {
     }
     entry.stars = count
 
-    if (entry.stars < 1) {
+    if (entry.stars < BOARD_MINIMUM) {
       if (entry.messageId) {
         msg._client.mongo.collection('starboard').deleteOne({ _id: msg.id })
         msg._client.deleteMessage(channel, entry.messageId)

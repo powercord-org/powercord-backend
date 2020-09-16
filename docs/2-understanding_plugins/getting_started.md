@@ -17,7 +17,7 @@ Knowing those things isn't required and we'll explain the basics in the docs.
  - **Flux**: Discord uses Flux to store all of the data it handles. You can make use of them to have components
  connected to those stores and use this data.
 
-## Principles
+## Best Practices
 <!-- reuse internals as much as possible -->
 <!-- compat with others (no bricking injection) -->
 <!-- look as close as possible to Discord -->

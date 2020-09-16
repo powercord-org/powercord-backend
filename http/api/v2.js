@@ -36,5 +36,5 @@ module.exports = async function (fastify) {
   fastify.register(require('./oauth'), { prefix: '/oauth' })
   fastify.register(require('./misc'))
   fastify.register(require('./legacyLinking')) // todo: remove
-  fastify.get('*', (_, reply) => reply.send({ error: 404, message: 'Not Found' }))
+  fastify.get('*', (_, reply) => reply.code(404).send({ error: 404, message: 'Not Found' }))
 }
