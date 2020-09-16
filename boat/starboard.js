@@ -51,12 +51,12 @@ module.exports = {
     }
 
     if (emoji.name === STARBOARD_EMOTE && this._isProcessable(msg, user)) {
-      const reactions = await msg.channel.getMessageReaction(msg.id, STARBOARD_EMOTE)
+      const reactions = await this._getAllReactions(msg, STARBOARD_EMOTE)
       this.updateStarCount(msg, reactions.filter(u => u.id !== msg.author.id).length)
     }
 
     if (emoji.name === CUTEBOARD_EMOTE && this._isProcessable(msg, user)) {
-      const reactions = await msg.channel.getMessageReaction(msg.id, CUTEBOARD_EMOTE)
+      const reactions = await this._getAllReactions(msg, CUTEBOARD_EMOTE)
       this.updateStarCount(msg, reactions.filter(u => u.id !== msg.author.id).length, true)
     }
   },
@@ -89,6 +89,21 @@ module.exports = {
       { $set: { ...entry } },
       { upsert: true }
     )
+  },
+
+  async _getAllReactions (msg, reaction) {
+    let after = null
+    let stop = false
+    const reactions = []
+    while (!stop) {
+      const fetched = await msg.getReaction(reaction, 100, null, after)
+      reactions.push(...fetched)
+
+      after = fetched.pop().id
+      stop = reactions.length !== 100
+    }
+
+    return reactions
   },
 
   _isProcessable (msg, stargazer) {
