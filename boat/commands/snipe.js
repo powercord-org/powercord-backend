@@ -34,18 +34,41 @@ module.exports = function (msg) {
     return msg.channel.createMessage(`${animal} There is nothing to snipe.`)
   }
 
-  msg.channel.createMessage({
-    embed: {
-      description: `Edits and deletes for the last ${sniper.SNIPE_LIFETIME} seconds`,
-      fields: sniper.lastMessages.map(snipe => ({
-        name: `${snipe.author} (${snipe.type})`,
-        value: snipe.msg
-      })),
-      footer: {
-        text: `🕵️ Sniped by ${msg.author.username}#${msg.author.discriminator}`
-      }
+  const fields = [ [] ]
+  let cursor = 0
+  let length = 0
+  for (const snipe of sniper.lastMessages) {
+    const name = `${snipe.author} (${snipe.type})`
+    if (length + name.length + Math.floor(snipe.msg.length / 1024) * 3 + snipe.msg.length >= 5900) {
+      fields.push([])
+      length = 0
+      cursor++
     }
-  })
+
+    length += name.length + snipe.msg.length
+    fields[cursor].push({
+      name: `${snipe.author} (${snipe.type})`,
+      value: snipe.msg.slice(0, 1024)
+    })
+
+    if (snipe.msg.length > 1024) {
+      fields[cursor].push({
+        name: '...',
+        value: snipe.msg.slice(1024)
+      })
+    }
+  }
 
   sniper.lastMessages = []
+  fields.forEach((f, i) => {
+    const embed = { fields: f }
+    if (i === 0) {
+      embed.description = `Edits and deletes for the last ${sniper.SNIPE_LIFETIME} seconds`
+    }
+    if (i === fields.length - 1) {
+      embed.footer = { text: `Sniped by ${msg.author.username}#${msg.author.discriminator}` }
+    }
+
+    msg.channel.createMessage({ embed })
+  })
 }
