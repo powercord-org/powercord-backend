@@ -39,7 +39,7 @@ module.exports = function (msg) {
   let length = 0
   for (const snipe of sniper.lastMessages) {
     const name = `${snipe.author} (${snipe.type})`
-    if (length + name.length + Math.floor(snipe.msg.length / 1024) * 3 + snipe.msg.length >= 5900) {
+    if (fields[cursor].length === 25 || length + name.length + Math.floor(snipe.msg.length / 1024) * 3 + snipe.msg.length >= 5900) {
       fields.push([])
       length = 0
       cursor++
