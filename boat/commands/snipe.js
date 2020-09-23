@@ -22,6 +22,7 @@
 
 const sniper = require('../sniper')
 
+const zws = '\u200B'
 const ANIMALS = [
   '🦅', '🐦', '🦄', '🐙', '🐢', '🐌', '🐬', '🐠', '🦈', '🦏',
   '🐖', '🦒', '🦘', '🐘', '🐳', '🐕', '🐑', '🐓', '🦜', '🦥',
@@ -48,13 +49,13 @@ module.exports = function (msg) {
     length += name.length + snipe.msg.length
     fields[cursor].push({
       name: `${snipe.author} (${snipe.type})`,
-      value: snipe.msg.slice(0, 1024)
+      value: snipe.msg.replace(/\(/g, `${zws}(`).slice(0, 1024)
     })
 
     if (snipe.msg.length > 1024) {
       fields[cursor].push({
         name: '...',
-        value: snipe.msg.slice(1024)
+        value: snipe.msg.replace(/\(/g, `${zws}(`).slice(1024)
       })
     }
   }
