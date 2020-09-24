@@ -21,6 +21,7 @@
  */
 
 const config = require('../config.json')
+const zws = '\u200B'
 
 module.exports = {
   SNIPE_LIFETIME: 30,
@@ -49,7 +50,7 @@ module.exports = {
     this.lastMessages.push({
       _id: id,
       author: `${msg.author.username}#${msg.author.discriminator}`,
-      msg: msg.content,
+      msg: msg.content.replace(/\(/g, `${zws}(`),
       type
     })
 
