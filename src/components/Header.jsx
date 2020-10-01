@@ -29,7 +29,11 @@ import LoginButton from './LoginButton'
 
 import style from '@styles/header.scss'
 
+import powercordPlug from '@assets/powercord.svg'
+import spookycordPlug from '@assets/spookycord.svg'
+
 const Header = () => {
+  const isOctober = React.useMemo(() => (new Date().getUTCMonth()) === 9, [])
   const [ opened, setOpened ] = React.useState(false)
   const toggle = React.useCallback(() => setOpened(!opened), [ opened ])
   React.useEffect(() => {
@@ -42,7 +46,7 @@ const Header = () => {
   return (
     <header className={[ style.container, opened && style.opened ].filter(Boolean).join(' ')}>
       <Link to='/'>
-        <img src={require('@assets/powercord.svg').default} alt='Powercord Logo'/>
+        <img src={isOctober ? spookycordPlug : powercordPlug} alt='Powercord Logo'/>
         <h1>Powercord</h1>
       </Link>
       <nav>
