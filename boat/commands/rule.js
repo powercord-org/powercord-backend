@@ -31,8 +31,10 @@ module.exports = async function (msg, args) {
   }
 
   const id = parseInt(args[0])
-  const rules = await msg.channel.guild.channels.get(config.discord.ids.messageRules[0]).getMessage(config.discord.ids.messageRules[1])
-  const match = rules.content.match(new RegExp(`\\[0?${id}] ([^\\d]*)`))
+  let rules
+  (await msg.channel.guild.channels.get(config.discord.ids.messageRules[0]).getMessages(2)).reverse().forEach(msg => rules += msg.content)
+  
+  const match = rules.match(new RegExp(`\\[0?${id}] (([^\\[]*)([^\\d]*)([^\\]]*))`))
   if (!match) {
     return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
   }
@@ -42,5 +44,6 @@ module.exports = async function (msg, args) {
       const channel = msg.channel.guild.channels.find(c => c.name === name)
       return channel ? `<#${channel.id}>` : og
     })
-  msg.channel.createMessage(`**Rule #${id}**: ${rule.slice(0, rule.length - 2)}\n\n${INFO_STR}`)
+    .replace(/Actions: /, '\nActions: ');
+  msg.channel.createMessage(`**Rule #${id}**: ${rule.slice(0, rule.length - 4)}\n\n${INFO_STR}`)
 }
