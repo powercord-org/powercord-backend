@@ -32,12 +32,16 @@ module.exports = async function (msg, args) {
 
   const id = parseInt(args[0])
   let rules
-  (await msg.channel.guild.channels.get(config.discord.ids.messageRules[0]).getMessages(2)).reverse().forEach(msg => rules += msg.content)
-  
+  (await msg.channel.guild.channels.get(config.discord.ids.messageRules[0]).getMessages()).reverse().forEach(msg => {
+    rules += msg.content.slice(6, msg.content.length - 3)
+  })
+  rules += '||||' // without this the last rule will get chopped off by the slice
+
   const match = rules.match(new RegExp(`\\[0?${id}] (([^\\[]*)([^\\d]*)([^\\]]*))`))
   if (!match) {
     return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
   }
+  
 
   const rule = match[1].split('\n').map(s => s.trim()).join(' ')
     .replace(/\[#[^a-z0-9-_]?([a-z0-9-_]+)\]/ig, (og, name) => {
@@ -45,5 +49,6 @@ module.exports = async function (msg, args) {
       return channel ? `<#${channel.id}>` : og
     })
     .replace(/Actions: /, '\nActions: ');
-  msg.channel.createMessage(`**Rule #${id}**: ${rule.slice(0, rule.length - 4)}\n\n${INFO_STR}`)
+
+  msg.channel.createMessage(`**Rule #${id}**: ${rule.slice(0, rule.length - 4).trim()}\n\n${INFO_STR}`)
 }
