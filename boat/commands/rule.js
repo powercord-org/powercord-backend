@@ -41,14 +41,13 @@ module.exports = async function (msg, args) {
   if (!match) {
     return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
   }
-  
 
   const rule = match[1].split('\n').map(s => s.trim()).join(' ')
     .replace(/\[#[^a-z0-9-_]?([a-z0-9-_]+)\]/ig, (og, name) => {
       const channel = msg.channel.guild.channels.find(c => c.name === name)
       return channel ? `<#${channel.id}>` : og
     })
-    .replace(/Actions: /, '\nActions: ');
+    .replace(/Actions: /, '\nActions: ')
 
   msg.channel.createMessage(`**Rule #${id}**: ${rule.slice(0, rule.length - 4).trim()}\n\n${INFO_STR}`)
 }
