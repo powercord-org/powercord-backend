@@ -22,7 +22,7 @@
 
 const config = require('../../config.json')
 
-const INFO_STR = `You can read all of the server rules in <#${config.discord.ids.messageRules[0]}>.`
+const INFO_STR = `You can read all of the server rules in <#${config.discord.ids.messageRules}>.`
 const USAGE_STR = `Usage: ${config.discord.prefix}rule <rule id>`
 
 module.exports = async function (msg, args) {
@@ -31,11 +31,12 @@ module.exports = async function (msg, args) {
   }
 
   const id = parseInt(args[0])
+  const messages = await msg._client.getMessages(config.discord.ids.messageRules)
   let rules
-  (await msg.channel.guild.channels.get(config.discord.ids.messageRules[0]).getMessages()).reverse().forEach(msg => {
+  messages.reverse().forEach(msg => {
     rules += msg.content.slice(6, msg.content.length - 3)
   })
-  rules += '||||' // without this the last rule will get chopped off by the slice
+  rules += '||||' // without this the last rule will get chopped off by the slice on 53
 
   const match = rules.match(new RegExp(`\\[0?${id}] (([^\\[]*)([^\\d]*)([^\\]]*))`))
   if (!match) {
