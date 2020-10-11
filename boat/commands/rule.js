@@ -22,7 +22,7 @@
 
 const config = require('../../config.json')
 
-const INFO_STR = `You can read all of the server rules in <#${config.discord.ids.messageRules}>.`
+const INFO_STR = `You can read all of the server rules in <#${config.discord.ids.channelRules}>.`
 const USAGE_STR = `Usage: ${config.discord.prefix}rule <rule id>`
 
 module.exports = async function (msg, args) {
@@ -31,7 +31,7 @@ module.exports = async function (msg, args) {
   }
 
   const id = parseInt(args[0])
-  const messages = await msg._client.getMessages(config.discord.ids.messageRules)
+  const messages = await msg._client.getMessages(config.discord.ids.channelRules)
   let rules
   messages.reverse().forEach(msg => {
     rules += msg.content.slice(6, msg.content.length - 3)

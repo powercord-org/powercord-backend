@@ -32,7 +32,6 @@ import Account from './Account'
 import Contributors from './Contributors'
 import Stats from './Stats'
 import Branding from './Branding'
-import PeopleAreDumb from './PeopleAreDumb'
 import MarkdownDocument from './MarkdownDocument'
 import PorkordLicense from './legal/PorkordLicense'
 import Terms from './legal/Terms'
@@ -69,7 +68,10 @@ const Router = () => (
       <main>todo</main>
     </Route>
     <Route path={Routes.FAQ} exact>
-      <PeopleAreDumb/>
+      <Helmet>
+        <title>Frequently Asked Questions</title>
+      </Helmet>
+      <MarkdownDocument document='faq'/>
     </Route>
     <Route path={Routes.INSTALLATION} exact>
       <Helmet>

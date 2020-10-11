@@ -70,6 +70,7 @@ async function initializeFastify (fastify) {
   fastify.get('/installation', () => getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Installation.md'))
   fastify.get('/guidelines', () => getRemoteDocument('https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md'))
   fastify.get('/listing-agreement', () => getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Listing-Websites-Agreement.md'))
+  fastify.get('/faq', () => getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Frequently-Asked-Questions.md'))
   fastify.get('/categories', listCategories)
   fastify.get('/:category/:document', getDocument)
 }

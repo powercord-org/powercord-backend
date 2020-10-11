@@ -48,6 +48,7 @@ bot.registerCommand('edit', require('./commands/mod/edit'))
 bot.registerCommand('eval', require('./commands/admin/eval'))
 bot.registerCommand('ssh', require('./commands/admin/ssh'))
 bot.registerCommand('sync', require('./commands/admin/sync'))
+bot.registerCommand('syncFaq', require('./commands/admin/syncFaq'))
 
 // Other stuff
 modlog.register(bot)
