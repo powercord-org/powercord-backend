@@ -27,6 +27,7 @@ function logout (_, reply) {
 module.exports = async function (fastify) {
   fastify.get('/login', (_, reply) => reply.redirect('/api/v2/oauth/discord'))
   fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
+  fastify.register(require('./advisories'), { prefix: '/advisories' })
   fastify.register(require('./store'), { prefix: '/store' })
   fastify.register(require('./users'), { prefix: '/users' })
   fastify.register(require('./guilds'), { prefix: '/guilds' })

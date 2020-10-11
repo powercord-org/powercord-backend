@@ -20,38 +20,32 @@
  * SOFTWARE.
  */
 
-export const Endpoints = Object.freeze({
-  LOGIN: '/api/v2/login',
-  LOGOUT: '/api/v2/logout',
-  LINK_SPOTIFY: '/api/v2/oauth/spotify',
-  UNLINK_SPOTIFY: '/api/v2/oauth/spotify/unlink',
-  YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
-  CONTRIBUTORS: '/api/v2/stats/contributors',
-  STATS: '/api/v2/stats/numbers',
-  DOCS_CATEGORIES: '/api/v2/docs/categories',
-  DOCS_DOCUMENT: (doc) => `/api/v2/docs/${doc}`,
-  USER_AVATAR: (id) => `/api/v2/avatar/${id}.png`
-})
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-export const Routes = Object.freeze({
-  HOME: '/',
-  ME: '/me',
-  CONTRIBUTORS: '/contributors',
-  STATS: '/stats',
-  BRANDING: '/branding',
-  FAQ: '/faq',
-  STORE: '/store',
-  DOCS: '/docs',
-  GUIDELINES: '/guidelines',
-  INSTALLATION: '/installation',
-  ADVISORIES: '/advisories',
-  ADVISORY: (id) => `/advisory/${id}`,
-  LISTING_AGREEMENT: '/listing-agreement',
-  PORKORD_LICENSE: '/porkord-license',
-  TERMS: '/legal/tos',
-  PRIVACY: '/legal/privacy',
-  BACKOFFICE: '/backoffice',
-  DICKSWORD: 'https://discord.gg/nFRHhDk',
-  PATREON: 'https://patreon.com/aetheryx',
-  GITHUB: 'https://github.com/powercord-org'
-})
+import { Routes } from '../../constants'
+import * as Icons from '@components/Icons'
+
+import style from '@styles/advisories.scss'
+
+function formatDate (date) {
+  return date
+}
+
+const Item = ({ id, level, title, plugin, version, author, published }) => (
+  <div className={`${style.advisory} ${style[`severity${level}`]}`}>
+    <Icons.ShieldDanger className={style.shield}/>
+    <div className={style.details}>
+      <Link className={style.title} to={Routes.ADVISORY(id)}>{title}</Link>
+      <div className={style.properties}>
+        <div>{id}</div>
+        <div><Icons.Extension/> <span>{plugin}</span></div>
+        <div><Icons.Tag/> <span>{version || 'all versions'}</span></div>
+        <div><Icons.Person/> <span>Published {formatDate(published)} by {author}</span></div>
+      </div>
+    </div>
+  </div>
+)
+
+Item.displayName = 'AdvisoryItem'
+export default React.memo(Item)

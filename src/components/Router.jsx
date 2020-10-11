@@ -32,6 +32,8 @@ import Account from './Account'
 import Contributors from './Contributors'
 import Stats from './Stats'
 import Branding from './Branding'
+import Advisories from './Advisories/List'
+import Advisory from './Advisories/Advisory'
 import PeopleAreDumb from './PeopleAreDumb'
 import MarkdownDocument from './MarkdownDocument'
 import PorkordLicense from './legal/PorkordLicense'
@@ -60,6 +62,12 @@ const Router = () => (
     </Route>
     <Route path={Routes.STORE} exact>
       <main>todo</main>
+    </Route>
+    <Route path={Routes.ADVISORIES} exact>
+      <Advisories/>
+    </Route>
+    <Route path={Routes.ADVISORY(':id')} exact>
+      <Advisory/>
     </Route>
     <Route path={Routes.BACKOFFICE} exact>
       <main>todo</main>

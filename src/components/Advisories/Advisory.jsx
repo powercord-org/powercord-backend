@@ -20,38 +20,17 @@
  * SOFTWARE.
  */
 
-export const Endpoints = Object.freeze({
-  LOGIN: '/api/v2/login',
-  LOGOUT: '/api/v2/logout',
-  LINK_SPOTIFY: '/api/v2/oauth/spotify',
-  UNLINK_SPOTIFY: '/api/v2/oauth/spotify/unlink',
-  YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
-  CONTRIBUTORS: '/api/v2/stats/contributors',
-  STATS: '/api/v2/stats/numbers',
-  DOCS_CATEGORIES: '/api/v2/docs/categories',
-  DOCS_DOCUMENT: (doc) => `/api/v2/docs/${doc}`,
-  USER_AVATAR: (id) => `/api/v2/avatar/${id}.png`
-})
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-export const Routes = Object.freeze({
-  HOME: '/',
-  ME: '/me',
-  CONTRIBUTORS: '/contributors',
-  STATS: '/stats',
-  BRANDING: '/branding',
-  FAQ: '/faq',
-  STORE: '/store',
-  DOCS: '/docs',
-  GUIDELINES: '/guidelines',
-  INSTALLATION: '/installation',
-  ADVISORIES: '/advisories',
-  ADVISORY: (id) => `/advisory/${id}`,
-  LISTING_AGREEMENT: '/listing-agreement',
-  PORKORD_LICENSE: '/porkord-license',
-  TERMS: '/legal/tos',
-  PRIVACY: '/legal/privacy',
-  BACKOFFICE: '/backoffice',
-  DICKSWORD: 'https://discord.gg/nFRHhDk',
-  PATREON: 'https://patreon.com/aetheryx',
-  GITHUB: 'https://github.com/powercord-org'
-})
+import { Routes } from '../../constants'
+import * as Icons from '../Icons'
+
+const Advisory = () => (
+  <div>
+    a
+  </div>
+)
+
+Advisory.displayName = 'Advisory'
+export default React.memo(Advisory)
