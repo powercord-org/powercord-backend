@@ -136,12 +136,14 @@ const baseConfig = {
     ]
   },
   plugins: [
+    new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('client') }),
     new StatsWriterPlugin({
       filename: '../http/manifest.webpack.json',
       stats: 'normal',
       transform: (data) => {
         const styles = data.assets.filter(a => a.chunkIdHints.includes('styles'))
         return JSON.stringify({
+          date: new Date(),
           entry: baseConfig.output.publicPath + data.assetsByChunkName.main[0],
           preload: baseConfig.output.publicPath + data.assetsByChunkName.app[0],
           classes: baseConfig.output.publicPath + styles.find(s => s.name.endsWith('js')).name,
@@ -220,7 +222,7 @@ if (isDev) {
       publicPath: '/dist/'
     },
     plugins: [
-      ...baseConfig.plugins.slice(1), // Slice manifest
+      ...baseConfig.plugins.slice(2), // Slice manifest & build side
       new LimitChunkCountPlugin({ maxChunks: 1 }),
       new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('server') })
     ],
