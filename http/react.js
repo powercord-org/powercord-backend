@@ -26,7 +26,7 @@ const { Helmet } = require('react-helmet')
 const { StaticRouter } = require('react-router')
 const { formatUser } = require('./utils/users')
 // noinspection JSFileReferences
-const manifest = require('./dist/manifest.json')
+const manifest = require('./manifest.webpack.json')
 const UserContext = require('../src/components/UserContext')
 
 // noinspection HtmlRequiredLangAttribute,HtmlRequiredTitleElement
@@ -37,16 +37,17 @@ function renderHtml (helmet, html, user = null) {
         ${helmet ? helmet.title.toString() : ''}
         ${helmet ? helmet.meta.toString() : ''}
         ${helmet ? helmet.link.toString() : ''}
-        ${manifest['styles.css'] ? `<link rel='stylesheet' href='${manifest['styles.css']}'/>` : ''}
+        <link rel='stylesheet' href='${manifest.styles}'/>
+        <link rel='preload' as='script' href='${manifest.preload}'/>
       </head>
       <body ${helmet ? helmet.bodyAttributes.toString() : ''}>
         <noscript>
           <div class='no-js'>JavaScript is required for this website to work as intended. Please enable it in your browser settings.</div>
         </noscript>
         <div id='react-root'>${html || ''}</div>
-        <script id='init'>window.USER = ${JSON.stringify(user).replace('<', '&lt;').replace('>', '&gt;')}</script>
-        <script src='${manifest['main.js']}'></script>
-        ${manifest['styles.js'] ? `<script src='${manifest['styles.js']}'></script>` : ''}
+        <script id='init'>window.USER = ${JSON.stringify(user).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</script>
+        <script src='${manifest.entry}'></script>
+        <script src='${manifest.classes}'></script>
       </body>
     </html>
   `.split('\n').map(l => l.trim()).join('')

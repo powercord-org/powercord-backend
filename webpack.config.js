@@ -22,8 +22,8 @@
 
 const { resolve } = require('path')
 const { existsSync, readdirSync, unlinkSync } = require('fs')
+const { StatsWriterPlugin } = require('webpack-stats-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
-const ManifestPlugin = require('webpack-manifest-plugin')
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
@@ -43,7 +43,6 @@ const baseConfig = {
   output: {
     filename: isDev ? '[name].js' : '[contenthash].js',
     chunkFilename: isDev ? '[name].chk.js' : '[contenthash].js',
-    path: resolve(__dirname, 'dist'),
     publicPath: '/dist/'
   },
   resolve: {
@@ -80,10 +79,7 @@ const baseConfig = {
       {
         test: /\.s?css$/,
         use: [
-          {
-            loader: MiniCSSExtractPlugin.loader,
-            options: { hmr: isDev }
-          },
+          MiniCSSExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
@@ -95,7 +91,7 @@ const baseConfig = {
           },
           {
             loader: 'postcss-loader',
-            options: { plugins: [ require('autoprefixer') ] }
+            options: { postcssOptions: { plugins: [ 'autoprefixer' ] } }
           },
           'sass-loader'
         ]
@@ -140,9 +136,18 @@ const baseConfig = {
     ]
   },
   plugins: [
-    new ManifestPlugin({
-      writeToFileEmit: true,
-      fileName: resolve(__dirname, 'http', 'dist', 'manifest.json')
+    new StatsWriterPlugin({
+      filename: '../http/manifest.webpack.json',
+      stats: 'normal',
+      transform: (data) => {
+        const styles = data.assets.filter(a => a.chunkIdHints.includes('styles'))
+        return JSON.stringify({
+          entry: baseConfig.output.publicPath + data.assetsByChunkName.main[0],
+          preload: baseConfig.output.publicPath + data.assetsByChunkName.app[0],
+          classes: baseConfig.output.publicPath + styles.find(s => s.name.endsWith('js')).name,
+          styles: baseConfig.output.publicPath + styles.find(s => s.name.endsWith('css')).name,
+        }, null, 2)
+      }
     }),
     new MiniCSSExtractPlugin({
       filename: isDev ? '[name].css' : '[contenthash].css',
@@ -158,11 +163,7 @@ const baseConfig = {
   optimization: {
     minimize: !isDev,
     minimizer: [
-      new TerserJSPlugin({
-        extractComments: false,
-        parallel: true,
-        cache: true
-      }),
+      new TerserJSPlugin({ parallel: true }),
       new OptimizeCSSAssetsPlugin({
         cssProcessorPluginOptions: {
           preset: [ 'default', {
@@ -177,7 +178,7 @@ const baseConfig = {
     splitChunks: {
       cacheGroups: {
         styles: {
-          name: 'styles',
+          idHint: 'styles',
           test: /\.s?css$/,
           chunks: 'all',
           enforce: true
@@ -202,9 +203,7 @@ if (isDev) {
       compiler.hooks.compile.tap('cleanBuild', () => {
         if (existsSync(compiler.options.output.path)) {
           for (const filename of readdirSync(compiler.options.output.path)) {
-            if (filename !== 'manifest.json') {
-              unlinkSync(resolve(compiler.options.output.path, filename))
-            }
+            unlinkSync(resolve(compiler.options.output.path, filename))
           }
         }
       })
@@ -221,7 +220,7 @@ if (isDev) {
       publicPath: '/dist/'
     },
     plugins: [
-      ...baseConfig.plugins.slice(1),
+      ...baseConfig.plugins.slice(1), // Slice manifest
       new LimitChunkCountPlugin({ maxChunks: 1 }),
       new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('server') })
     ],
