@@ -50,14 +50,15 @@ module.exports = {
       msg = await msg.channel.getMessage(msg.id)
     }
 
+    const filter = u => u.id !== msg.author.id && !config.discord.ids.shitstars.users.includes(u.id)
     if (emoji.name === STARBOARD_EMOTE && this._isProcessable(msg, user)) {
       const reactions = await this._getAllReactions(msg, STARBOARD_EMOTE)
-      this.updateStarCount(msg, reactions.filter(u => u.id !== msg.author.id).length)
+      this.updateStarCount(msg, reactions.filter(filter).length)
     }
 
     if (emoji.name === CUTEBOARD_EMOTE && this._isProcessable(msg, user)) {
       const reactions = await this._getAllReactions(msg, CUTEBOARD_EMOTE)
-      this.updateStarCount(msg, reactions.filter(u => u.id !== msg.author.id).length, true)
+      this.updateStarCount(msg, reactions.filter(filter).length, true)
     }
   },
 
