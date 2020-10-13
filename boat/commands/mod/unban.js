@@ -22,10 +22,10 @@
 
 const config = require('../../../config.json')
 
-const USAGE_STR = `Usage: ${config.discord.prefix}kick [mention] (reason)`
+const USAGE_STR = `Usage: ${config.discord.prefix}unban [userID] (reason)`
 
 module.exports = async function (msg, args) {
-  if (!msg.member.permission.has('kickMembers')) {
+  if (!msg.member.permission.has('banMembers')) {
     return msg.channel.createMessage('no')
   }
 
@@ -33,13 +33,9 @@ module.exports = async function (msg, args) {
     return msg.channel.createMessage(USAGE_STR)
   }
 
-  const target = args.shift().replace(/<@!?(\d+)>/, '$1')
+  const target = args.shift()
   const reason = `[${msg.author.username}#${msg.author.discriminator}] ${args.join(' ') || 'No reason specified.'}`
-
-  if (target === msg.author.id) {
-    return msg.channel.createMessage('Don\'t do that to yourself')
-  }
   
-  msg.channel.guild.kickMember(target, reason)
-  return msg.channel.createMessage('Yeeted')
+  msg.channel.guild.unbanMember(target, reason)
+  return msg.channel.createMessage('Un-yeeted')
 }

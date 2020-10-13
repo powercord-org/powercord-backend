@@ -45,6 +45,8 @@ bot.registerCommand('help', require('./commands/help'), { description: 'Shows th
 
 bot.registerCommand('edit', require('./commands/mod/edit'))
 bot.registerCommand('kick', require('./commands/mod/kick'))
+bot.registerCommand('ban', require('./commands/mod/ban'))
+bot.registerCommand('unban', require('./commands/mod/unban'))
 
 bot.registerCommand('eval', require('./commands/admin/eval'))
 bot.registerCommand('ssh', require('./commands/admin/ssh'))

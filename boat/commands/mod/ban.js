@@ -22,10 +22,10 @@
 
 const config = require('../../../config.json')
 
-const USAGE_STR = `Usage: ${config.discord.prefix}kick [mention] (reason)`
+const USAGE_STR = `Usage: ${config.discord.prefix}ban [mention] (reason)`
 
 module.exports = async function (msg, args) {
-  if (!msg.member.permission.has('kickMembers')) {
+  if (!msg.member.permission.has('banMembers')) {
     return msg.channel.createMessage('no')
   }
 
@@ -40,6 +40,6 @@ module.exports = async function (msg, args) {
     return msg.channel.createMessage('Don\'t do that to yourself')
   }
   
-  msg.channel.guild.kickMember(target, reason)
-  return msg.channel.createMessage('Yeeted')
+  msg.channel.guild.banMember(target, 0, reason)
+  return msg.channel.createMessage('Ultra-yeeted')
 }
