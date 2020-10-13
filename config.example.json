@@ -25,7 +25,11 @@
       "channelModLogs": "",
       "channelMessageLogs": "",
       "channelRules": "",
-      "channelFaq": ""
+      "channelFaq": "",
+      "shitstars": {
+        "users": [],
+        "channels": []
+      }
     }
   },
   "spotify": {

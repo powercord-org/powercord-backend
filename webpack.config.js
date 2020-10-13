@@ -147,7 +147,7 @@ const baseConfig = {
           entry: baseConfig.output.publicPath + data.assetsByChunkName.main[0],
           preload: baseConfig.output.publicPath + data.assetsByChunkName.app[0],
           classes: baseConfig.output.publicPath + styles.find(s => s.name.endsWith('js')).name,
-          styles: baseConfig.output.publicPath + styles.find(s => s.name.endsWith('css')).name,
+          styles: baseConfig.output.publicPath + styles.find(s => s.name.endsWith('css')).name
         }, null, 2)
       }
     }),
