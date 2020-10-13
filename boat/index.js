@@ -44,6 +44,7 @@ bot.registerCommand('tag', require('./commands/tag'), { description: 'Custom com
 bot.registerCommand('help', require('./commands/help'), { description: 'Shows this very help message' })
 
 bot.registerCommand('edit', require('./commands/mod/edit'))
+bot.registerCommand('kick', require('./commands/mod/kick'))
 
 bot.registerCommand('eval', require('./commands/admin/eval'))
 bot.registerCommand('ssh', require('./commands/admin/ssh'))
