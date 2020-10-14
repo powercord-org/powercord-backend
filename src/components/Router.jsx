@@ -32,6 +32,7 @@ import Account from './Account'
 import Contributors from './Contributors'
 import Stats from './Stats'
 import Branding from './Branding'
+import Documentation from './Documentation'
 import MarkdownDocument from './MarkdownDocument'
 import PorkordLicense from './legal/PorkordLicense'
 import Terms from './legal/Terms'
@@ -61,11 +62,13 @@ const Router = () => (
       <main>todo</main>
     </Route>
     <Route path={Routes.BACKOFFICE} exact>
-      <main>todo</main>
+      <AuthBoundary staff>
+        <main>todo</main>
+      </AuthBoundary>
     </Route>
     {/* Documents */}
-    <Route path={Routes.DOCS} exact>
-      <main>todo</main>
+    <Route path={[ Routes.DOCS, Routes.DOCS_ITEM(':category', ':document') ]} exact>
+      <Documentation/>
     </Route>
     <Route path={Routes.FAQ} exact>
       <Helmet>

@@ -35,6 +35,9 @@ import('@components/App' /* webpackChunkName: "app" */).then(mdl => {
         </UserContext.Provider>
       </Router>, document.querySelector('#react-root')
     )
+
+    document.getElementById('init').remove()
+    delete window.USER
   } else {
     ReactDOM.render(
       <Router>
@@ -44,6 +47,4 @@ import('@components/App' /* webpackChunkName: "app" */).then(mdl => {
       </Router>, document.querySelector('#react-root')
     )
   }
-  document.getElementById('init').remove()
-  delete window.USER
 })

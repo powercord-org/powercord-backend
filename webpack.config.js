@@ -70,7 +70,13 @@ const baseConfig = {
               plugins: [
                 '@babel/plugin-syntax-dynamic-import',
                 '@babel/plugin-proposal-object-rest-spread',
-                isDev ? require.resolve('react-refresh/babel') : null
+                isDev ? require.resolve('react-refresh/babel') : null,
+                [ 'prismjs', {
+                  languages: [ 'javascript', 'css', 'scss', 'json' ],
+                  plugins: [ 'line-numbers' ],
+                  theme: 'tomorrow',
+                  css: true
+                } ]
               ].filter(Boolean)
             }
           }
@@ -94,7 +100,21 @@ const baseConfig = {
             options: { postcssOptions: { plugins: [ 'autoprefixer' ] } }
           },
           'sass-loader'
-        ]
+        ],
+        exclude: [ /node_modules/ ]
+      },
+      {
+        test: /\.s?css$/,
+        use: [
+          MiniCSSExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: { postcssOptions: { plugins: [ 'autoprefixer' ] } }
+          },
+          'sass-loader'
+        ],
+        include: [ /node_modules/ ]
       },
       {
         test: /\.(svg|mp4|webm|woff2?|eot|ttf|otf|wav|ico)$/,
@@ -190,6 +210,7 @@ const baseConfig = {
   },
   devServer: {
     quiet: true,
+    publicPath: '/dist',
     historyApiFallback: true,
     allowedHosts: [ 'localhost', '.ngrok.io' ], // Learn more about ngrok here: https://ngrok.com/
     proxy: { '/': `http://localhost:${require('./config.json').port}` }

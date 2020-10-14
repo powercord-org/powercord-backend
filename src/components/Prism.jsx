@@ -20,39 +20,37 @@
  * SOFTWARE.
  */
 
-.wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  grid-gap: 1rem;
+import React from 'react'
+import Prism from 'prismjs'
+
+import style from '@styles/markdown.scss'
+
+function PrismComponent ({ language, code }) {
+  let lines = []
+  if (Prism.languages[language]) {
+    lines = Prism.highlight(code, Prism.languages[language], language)
+      .replace(
+        /<span class="([a-z ]+)">([^<]*)<\/span>/g,
+        (_, className, code) => code.split('\n').map(l => `<span class="${className}">${l}</span>`).join('\n')
+      )
+      .split('\n')
+  } else {
+    lines = code.replace(/</g, '&lt;').replace(/>/g, '&gt;').split('\n')
+  }
+
+  return (
+    <pre className={style.codeblock}>
+      <code>
+        {lines.map((line, i) => (
+          <div className={style.line}>
+            <div className={style.lineNumber}>{i + 1}</div>
+            <div dangerouslySetInnerHTML={{ __html: line }}/>
+          </div>
+        ))}
+      </code>
+    </pre>
+  )
 }
 
-.container {
-  background-color: #252525;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-
-  img {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    margin-right: 16px;
-    flex-shrink: 0;
-  }
-
-  div {
-    max-width: calc(100% - 88px);
-  }
-
-  h3 {
-    margin: 0;
-    font-size: 24px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-
-    span {
-      font-size: .6em;
-      opacity: 0.6;
-    }
-  }
-}
+PrismComponent.displayName = 'Prism'
+export default React.memo(PrismComponent)

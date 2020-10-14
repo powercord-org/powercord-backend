@@ -17,6 +17,7 @@ config.json
 *.log
 _work
 *.nogit.*
+*.nogit/
 
 # todo: remove
 # temporary

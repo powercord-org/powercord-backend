@@ -28,7 +28,7 @@ import UserContext from './UserContext'
 
 const AuthBoundary = (props) => (
   <UserContext.Consumer>
-    {user => user // todo: staff-locked routes
+    {user => user && (!props.staff || user?.badges?.staff)
       ? props.children
       : <Container>
         <h1>You must be authenticated to see this</h1>

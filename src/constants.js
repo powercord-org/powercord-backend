@@ -30,6 +30,7 @@ export const Endpoints = Object.freeze({
   STATS: '/api/v2/stats/numbers',
   DOCS_CATEGORIES: '/api/v2/docs/categories',
   DOCS_DOCUMENT: (doc) => `/api/v2/docs/${doc}`,
+  DOCS_CATEGORIZED: (cat, doc) => `/api/v2/docs/${cat}/${doc}`,
   USER_AVATAR: (id) => `/api/v2/avatar/${id}.png`
 })
 
@@ -42,6 +43,7 @@ export const Routes = Object.freeze({
   FAQ: '/faq',
   STORE: '/store',
   DOCS: '/docs',
+  DOCS_ITEM: (cat, doc) => `/docs/${cat}/${doc}`,
   GUIDELINES: '/guidelines',
   INSTALLATION: '/installation',
   LISTING_AGREEMENT: '/listing-agreement',

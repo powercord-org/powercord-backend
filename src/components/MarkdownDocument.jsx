@@ -29,6 +29,7 @@ import { Endpoints } from '../constants'
 import Container from './Container'
 import Spinner from './Spinner'
 import NotFound from './NotFound'
+import Prism from './Prism'
 
 import style from '@styles/markdown.scss'
 
@@ -36,7 +37,7 @@ const rules = [
   [ /(\*\*|__)([^*_]+)\1/g, ([ ,, text ]) => (<b>{text}</b>) ],
   [ /([*_])([^*_]+)\1(?:[^*_]|$)/g, ([ ,, text ]) => (<i>{text}</i>) ],
   [ /(~~)([^~]+)\1/g, ([ ,, text ]) => (<del>{text}</del>) ],
-  [ /(`)([^`]+)\1/g, ([ ,, text ]) => (<code>{text}</code>) ],
+  [ /(`)([^`]+)\1/g, ([ ,, text ]) => (<code className={style.inline}>{text}</code>) ],
   [ /!\[([^\]]+)\]\(((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*)\)/g, ([ , alt, img ]) => (<img src={img} alt={alt}/>) ],
   [ /\[([^\]]+)\]\(((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*)\)/g, ([ , label, link ]) => renderLink(link, label) ],
   [ /((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*)/g, ([ , link ]) => renderLink(link, link) ],
@@ -114,24 +115,26 @@ const Markdown = React.memo(
               <blockquote>{renderInline(element.content)}</blockquote>
             )
           }
-          console.log(element)
-          return null
+          return React.createElement('div', { className: `${style.note} ${style[element.color.toLowerCase()]}` }, renderInline(element.content))
         case 'CODEBLOCK':
-          console.log(element)
-          return null
+          return <Prism language={element.lang} code={element.code}/>
         case 'TABLE':
           return (
             <table cellSpacing='0'>
-              <tr>
-                {element.thead.map((th, i) =>
-                  <th key={`th-${i}`}>{renderInline(th)}</th>
-                )}
-              </tr>
-              {element.tbody.map((tr, i) => <tr key={`tr-${i}`}>
-                {tr.map((td, i) => <td key={`td-${i}`} style={element.center[i] ? { textAlign: 'center' } : null}>
-                  {renderInline(td)}
-                </td>)}
-              </tr>)}
+              <thead>
+                <tr>
+                  {element.thead.map((th, i) =>
+                    <th key={`th-${i}`}>{renderInline(th)}</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {element.tbody.map((tr, i) => <tr key={`tr-${i}`}>
+                  {tr.map((td, i) => <td key={`td-${i}`} style={element.center[i] ? { textAlign: 'center' } : null}>
+                    {renderInline(td)}
+                  </td>)}
+                </tr>)}
+              </tbody>
             </table>
           )
       }
@@ -141,6 +144,7 @@ const Markdown = React.memo(
 const MarkdownDocument = ({ document }) => {
   const [ doc, setDoc ] = React.useState(null)
   React.useEffect(() => {
+    // todo: cache
     if (doc) setDoc(null)
     fetch(Endpoints.DOCS_DOCUMENT(document))
       .then(r => r.json())

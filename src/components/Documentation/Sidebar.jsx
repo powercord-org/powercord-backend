@@ -20,39 +20,33 @@
  * SOFTWARE.
  */
 
-.wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  grid-gap: 1rem;
+import React from 'react'
+import { NavLink } from 'react-router-dom'
+
+import style from '@styles/docs.scss'
+import { Routes } from '../../constants'
+
+function Sidebar ({ categories }) {
+  console.log(categories)
+  return (
+    <div className={style.sidebar}>
+      {categories.map(category => (
+        <React.Fragment key={category.id}>
+          <h3>{category.name}</h3>
+          {category.docs.map(doc => (
+            <NavLink
+              key={`${category.id}-${doc.id}`}
+              to={Routes.DOCS_ITEM(category.id, doc.id)}
+              activeClassName={style.active}
+            >
+              {doc.title}
+            </NavLink>
+          ))}
+        </React.Fragment>
+      ))}
+    </div>
+  )
 }
 
-.container {
-  background-color: #252525;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-
-  img {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    margin-right: 16px;
-    flex-shrink: 0;
-  }
-
-  div {
-    max-width: calc(100% - 88px);
-  }
-
-  h3 {
-    margin: 0;
-    font-size: 24px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-
-    span {
-      font-size: .6em;
-      opacity: 0.6;
-    }
-  }
-}
+Sidebar.displayName = 'DocsSidebar'
+export default React.memo(Sidebar)

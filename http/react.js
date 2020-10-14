@@ -30,15 +30,15 @@ const manifest = require('./manifest.webpack.json')
 const UserContext = require('../src/components/UserContext')
 
 // noinspection HtmlRequiredLangAttribute,HtmlRequiredTitleElement
-function renderHtml (helmet, html, user = null) {
+function renderHtml (helmet, html, user = null, dev = false) {
   return `<!DOCTYPE html>
     <html lang="en">
       <head>
         ${helmet ? helmet.title.toString() : ''}
         ${helmet ? helmet.meta.toString() : ''}
         ${helmet ? helmet.link.toString() : ''}
-        <link rel='stylesheet' href='${manifest.styles}'/>
-        <link rel='preload' as='script' href='${manifest.preload}'/>
+        ${!dev ? `<link rel='stylesheet' href='${manifest.styles}'/>` : ''}
+        ${!dev ? `<link rel='preload' as='script' href='${manifest.preload}'/>` : ''}
       </head>
       <body ${helmet ? helmet.bodyAttributes.toString() : ''}>
         <noscript>
@@ -46,8 +46,8 @@ function renderHtml (helmet, html, user = null) {
         </noscript>
         <div id='react-root'>${html || ''}</div>
         <script id='init'>window.USER = ${JSON.stringify(user).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</script>
-        <script src='${manifest.entry}'></script>
-        <script src='${manifest.classes}'></script>
+        ${!dev ? `<script src='${manifest.entry}'></script>` : '<script src=\'/dist/main.js\'></script>'}
+        ${!dev ? `<script src='${manifest.classes}'></script>` : ''}
       </body>
     </html>
   `.split('\n').map(l => l.trim()).join('')
@@ -66,7 +66,7 @@ module.exports = (request, reply) => {
   const user = request.user ? formatUser(request.user, true) : null
   // Just return empty html while developing
   if (process.argv.includes('-d')) {
-    return reply.type('text/html').send(renderHtml(null, null, user))
+    return reply.type('text/html').send(renderHtml(null, null, user, true))
   }
 
   // SSR

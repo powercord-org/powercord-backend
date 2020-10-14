@@ -35,10 +35,10 @@ function listCategories (_, reply) {
 function getDocument (request, reply) {
   const { category, document } = request.params
   const cat = docsStore.find(c => c.id === category)
-  if (!cat) return reply.code(404).send('Not Found')
-  const doc = cat.find(d => d.id === document)
-  if (!doc) return reply.code(404).send('Not Found')
-  reply.send(document)
+  if (!cat) return reply.code(404).send({ error: 404, message: 'Not Found' })
+  const doc = cat.docs.find(d => d.id === document)
+  if (!doc) return reply.code(404).send({ error: 404, message: 'Not Found' })
+  reply.send(doc)
 }
 
 async function getRemoteDocument (url) {
@@ -53,7 +53,7 @@ async function getRemoteDocument (url) {
 async function initializeFastify (fastify) {
   const docsPath = path.join(__dirname, '../../../docs')
   for (const cat of await fsp.readdir(docsPath)) {
-    const catId = cat.split('-')[1]
+    const catId = cat.replace(/\d+-/, '')
     const docs = []
     for (const document of await fsp.readdir(`${docsPath}/${cat}`)) {
       const md = await fsp.readFile(`${docsPath}/${cat}/${document}`, 'utf8')
@@ -62,7 +62,7 @@ async function initializeFastify (fastify) {
 
     docsStore.push({
       id: catId,
-      name: catId.split('_').map(s => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
+      name: catId.split('-').map(s => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
       docs
     })
   }
