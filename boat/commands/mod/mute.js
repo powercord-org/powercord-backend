@@ -21,8 +21,9 @@
  */
 
 const config = require('../../../config.json')
+const task = require('../../tasks')
 
-const USAGE_STR = `Usage: ${config.discord.prefix}mute [mention] (reason)`
+const USAGE_STR = `Usage: ${config.discord.prefix}mute [mention] (reason)|(duration)`
 
 module.exports = async function (msg, args) {
   if (!msg.member.permission.has('manageRoles')) {
@@ -34,12 +35,31 @@ module.exports = async function (msg, args) {
   }
 
   const target = args.shift().replace(/<@!?(\d+)>/, '$1')
-  const reason = `[${msg.author.username}#${msg.author.discriminator}] ${args.join(' ') || 'No reason specified.'}`
+  const reason = `[${msg.author.username}#${msg.author.discriminator}] ${args.join(' ').split('|')[0] || 'No reason specified.'}`
+  const rawDuration = msg.content.includes('|')? msg.content.split('|')[1].trim().toLowerCase().match(/\d+(m|h|d)/): null
 
   if (target === msg.author.id) {
     return msg.channel.createMessage('You cannot be silenced')
   }
   
-  msg.channel.guild.addMemberRole(target, config.discord.ids.roleMuted, reason)
+  if (rawDuration) {
+    let duration
+
+    if (rawDuration[0].endsWith('m')) {
+      duration = rawDuration[0].match(/\d+/)[0] * 1000 * 60
+    }
+    else if (rawDuration[0].endsWith('h')) {
+      duration = rawDuration[0].match(/\d+/)[0] * 1000 * 60 * 60
+    }
+    else if (rawDuration[0].endsWith('d')) {
+      duration = rawDuration[0].match(/\d+/)[0] * 1000 * 60 * 60 * 24
+    }
+    else {
+      return msg.channel.createMessage('Invalid duration')
+    }
+    setTimeout(task.unMute, duration, [msg._client, target, `${msg.author.username}#${msg.author.discriminator}`,'Automatically unmuted'])
+  }
+
+  msg.channel.guild.addMemberRole(target, config.discord.ids.roleMuted, `${reason} ${rawDuration? `(for ${rawDuration[0]})`: ''}`)
   return msg.channel.createMessage('Shut')
 }

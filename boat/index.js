@@ -29,6 +29,7 @@ const roles = require('./roles')
 const canary = require('./canary')
 const starboard = require('./starboard')
 const config = require('../config.json')
+const task = require('./tasks')
 
 const bot = new CommandClient(config.discord.botToken, {
   // todo: do we need guild members? dont think so but that needs some testing (esp. for mod log(?))

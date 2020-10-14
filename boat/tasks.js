@@ -20,27 +20,11 @@
  * SOFTWARE.
  */
 
-const config = require('../../../config.json')
-const task = require('../../tasks')
+const config = require('../config.json')
+const GUILD = config.discord.ids.serverId
 
-const USAGE_STR = `Usage: ${config.discord.prefix}unmute [mention] (reason)`
-
-module.exports = async function (msg, args) {
-  if (!msg.member.permission.has('manageRoles')) {S
-    return msg.channel.createMessage('no')
+module.exports = {
+  unMute([bot, userID, moderator, reason = 'No reason specified.']) {
+    bot.removeGuildMemberRole(GUILD, userID, config.discord.ids.roleMuted, `[${moderator}] ${reason}`)
   }
-
-  if (args.length === 0) {
-    return msg.channel.createMessage(USAGE_STR)
-  }
-
-  const target = args.shift().replace(/<@!?(\d+)>/, '$1')
-  //const reason = `[${msg.author.username}#${msg.author.discriminator}] ${args.join(' ') || 'No reason specified.'}`
-
-  if (target === msg.author.id) {
-    return msg.channel.createMessage('You\'re already talking fam.')
-  }
-  
-  task.unMute([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`])
-  return msg.channel.createMessage('Speak')
 }
