@@ -17,6 +17,7 @@ config.json
 *.log
 _work
 *.nogit.*
+package-lock.json
 
 # todo: remove
 # temporary
