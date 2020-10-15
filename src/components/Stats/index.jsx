@@ -23,9 +23,9 @@
 import React, { useState, useEffect } from 'react'
 import Helmet from 'react-helmet'
 
-import { Endpoints } from '../../constants'
 import Container from '../Container'
 import UsersGraph from './UsersGraph'
+import { Endpoints } from '../../constants'
 
 import style from '@styles/stats.scss'
 
@@ -43,6 +43,7 @@ const Stats = () => {
       </Helmet>
       <h1>Statistics</h1>
       <p>We love stats. So have stats. It's free. I think.</p>
+      <p style={{ display: 'none' }}>it just cost my sanity doing boring maths. - bowoser</p>
       <UsersGraph {...(data ? data.users : {})}/>
       <div className={style.group}>
         <div>
