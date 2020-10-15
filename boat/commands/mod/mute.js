@@ -35,7 +35,7 @@ module.exports = async function (msg, args) {
   }
 
   const target = args.shift().replace(/<@!?(\d+)>/, '$1')
-  const reason = `[${msg.author.username}#${msg.author.discriminator}] ${args.join(' ').split('|')[0] || 'No reason specified.'}`
+  const reason = `${args.join(' ').split('|')[0] || 'No reason specified.'}`
   const rawDuration = msg.content.includes('|')? msg.content.split('|')[1].trim().toLowerCase().match(/\d+(m|h|d)/): null
 
   if (target === msg.author.id) {
@@ -60,6 +60,6 @@ module.exports = async function (msg, args) {
     setTimeout(task.unMute, duration, [msg._client, target, `${msg.author.username}#${msg.author.discriminator}`,'Automatically unmuted'])
   }
 
-  msg.channel.guild.addMemberRole(target, config.discord.ids.roleMuted, `${reason} ${rawDuration? `(for ${rawDuration[0]})`: ''}`)
+  task.mute([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${reason} ${rawDuration? `(for ${rawDuration[0]})`: ''}`])
   return msg.channel.createMessage('Shut')
 }

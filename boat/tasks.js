@@ -24,7 +24,23 @@ const config = require('../config.json')
 const GUILD = config.discord.ids.serverId
 
 module.exports = {
+  mute([bot, userID, moderator, reason = 'No reason specified.']) {
+    bot.addGuildMemberRole(GUILD, userID, config.discord.ids.roleMuted, `[${moderator}] ${reason}`)
+  },
+
   unMute([bot, userID, moderator, reason = 'No reason specified.']) {
     bot.removeGuildMemberRole(GUILD, userID, config.discord.ids.roleMuted, `[${moderator}] ${reason}`)
+  },
+
+  kick([bot, userID, moderator, reason = 'No reason specified.']) {
+    bot.kickGuildMember(GUILD, userID, `[${moderator}] ${reason}`)
+  },
+
+  ban([bot, userID, moderator, reason = 'No reason specified.']) {
+    bot.banGuildMember(GUILD, userID, 0, `[${moderator}] ${reason}`)
+  },
+
+  unban([bot, userID, moderator, reason = 'No reason specified.']) {
+    bot.unbanGuildMember(GUILD, userID, `[${moderator}] ${reason}`)
   }
 }

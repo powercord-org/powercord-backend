@@ -21,6 +21,7 @@
  */
 
 const config = require('../../../config.json')
+const task = require('../../tasks')
 
 const USAGE_STR = `Usage: ${config.discord.prefix}kick [mention] (reason)`
 
@@ -34,12 +35,11 @@ module.exports = async function (msg, args) {
   }
 
   const target = args.shift().replace(/<@!?(\d+)>/, '$1')
-  const reason = `[${msg.author.username}#${msg.author.discriminator}] ${args.join(' ') || 'No reason specified.'}`
 
   if (target === msg.author.id) {
     return msg.channel.createMessage('Don\'t do that to yourself')
   }
   
-  msg.channel.guild.kickMember(target, reason)
+  task.kick([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`])
   return msg.channel.createMessage('Yeeted')
 }

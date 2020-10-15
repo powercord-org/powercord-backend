@@ -21,6 +21,7 @@
  */
 
 const config = require('../../../config.json')
+const task = require('../../tasks')
 
 const USAGE_STR = `Usage: ${config.discord.prefix}unban [userID] (reason)`
 
@@ -34,8 +35,7 @@ module.exports = async function (msg, args) {
   }
 
   const target = args.shift()
-  const reason = `[${msg.author.username}#${msg.author.discriminator}] ${args.join(' ') || 'No reason specified.'}`
   
-  msg.channel.guild.unbanMember(target, reason)
+  task.unban([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`])
   return msg.channel.createMessage('Un-yeeted')
 }
