@@ -40,6 +40,6 @@ module.exports = async function (msg, args) {
     return msg.channel.createMessage('Don\'t do that to yourself')
   }
   
-  task.kick([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`])
+  task.kick(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`)
   return msg.channel.createMessage('Yeeted')
 }

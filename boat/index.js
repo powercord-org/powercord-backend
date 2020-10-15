@@ -77,4 +77,4 @@ MongoClient.connect(config.mango, { useUnifiedTopology: true })
     bot.connect()
   })
 
-cron.schedule('* * * * *', () => task.handelSchedule(bot))
+cron.schedule('* * * * *', () => task.handleSchedule(bot))

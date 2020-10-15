@@ -71,6 +71,6 @@ module.exports = async function (msg, args) {
     //setTimeout(task.unban, duration, [msg._client, target, `${msg.author.username}#${msg.author.discriminator}`,'Automatically unbanned'])
   }
   
-  task.ban([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${reason} ${rawDuration? `(for ${rawDuration[0]})`: ''}`])
+  task.ban(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${reason} ${rawDuration? `(for ${rawDuration[0]})`: ''}`)
   return msg.channel.createMessage('Ultra-yeeted')
 }

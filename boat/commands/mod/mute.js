@@ -72,6 +72,6 @@ module.exports = async function (msg, args) {
     //setTimeout(task.unMute, duration, [msg._client, target, `${msg.author.username}#${msg.author.discriminator}`,'Automatically unmuted'])
   }
 
-  task.mute([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${reason} ${rawDuration? `(for ${rawDuration[0]})`: ''}`])
+  task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${reason} ${rawDuration? `(for ${rawDuration[0]})`: ''}`)
   return msg.channel.createMessage('Shut')
 }
