@@ -24,16 +24,60 @@ import React, { useState, useEffect } from 'react'
 import Helmet from 'react-helmet'
 
 import Container from '../Container'
-import UsersGraph from './UsersGraph'
+import Numbers from './Numbers'
 import { Endpoints } from '../../constants'
+import { simpleChart, multipleChart, stackedChart } from './compute'
 
 import style from '@styles/stats.scss'
+import Chart from './Chart'
+
+let chartsCache = null
 
 const Stats = () => {
-  const [ data, setData ] = useState(null)
+  const [ charts, setCharts ] = useState(chartsCache)
 
   useEffect(() => {
-    fetch(Endpoints.STATS).then(r => r.json()).then(setData)
+    if (!charts) {
+      fetch(Endpoints.STATS).then(r => r.json()).then(data => {
+        chartsCache = {
+          numbers: {
+            total: data.users.count,
+            month: data.users.month[49] - data.users.month[0],
+            week: data.users.week[49] - data.users.week[0],
+            helpers: data.helpers,
+            plugins: data.plugins,
+            themes: data.themes
+          },
+          users: {
+            allTime: simpleChart(data.users.allTime, 'users', '#7289da'),
+            month: simpleChart(data.users.month, 'users', '#7289da'),
+            week: simpleChart(data.users.week, 'users', '#7289da')
+          }
+        }
+
+        if (data.guild) {
+          chartsCache.guild = {
+            users: {
+              month: simpleChart(data.guild.month.map(d => d.total), 'total', '#7289da'),
+              week: simpleChart(data.guild.week.map(d => d.total), 'total', '#7289da'),
+              day: simpleChart(data.guild.day.map(d => d.total), 'total', '#7289da')
+            },
+            messages: {
+              month: multipleChart(data.guild.month, [ 'deletedMessages', 'sentMessages' ], [ '#f04747', '#7289da' ]),
+              week: multipleChart(data.guild.week, [ 'deletedMessages', 'sentMessages' ], [ '#f04747', '#7289da' ]),
+              day: multipleChart(data.guild.day, [ 'deletedMessages', 'sentMessages' ], [ '#f04747', '#7289da' ])
+            },
+            presences: {
+              month: stackedChart(data.guild.month, [ 'dnd', 'idle', 'online' ], [ '#f04747', '#faa61a', '#43b581' ]),
+              week: stackedChart(data.guild.week, [ 'dnd', 'idle', 'online' ], [ '#f04747', '#faa61a', '#43b581' ]),
+              day: stackedChart(data.guild.day, [ 'dnd', 'idle', 'online' ], [ '#f04747', '#faa61a', '#43b581' ])
+            }
+          }
+        }
+
+        setCharts(chartsCache)
+      })
+    }
   }, [])
 
   return (
@@ -44,38 +88,54 @@ const Stats = () => {
       <h1>Statistics</h1>
       <p>We love stats. So have stats. It's free. I think.</p>
       <p style={{ display: 'none' }}>it just cost my sanity doing boring maths. - bowoser</p>
-      <UsersGraph {...(data ? data.users : {})}/>
-      <div className={style.group}>
-        <div>
-          <h3>Total users</h3>
-          <span>{data ? data.users.count : 'Loading...'}</span>
-        </div>
-        <div>
-          <h3>New users last month</h3>
-          <span>{data ? data.users.month[49] - data.users.month[0] : 'Loading...'}</span>
-        </div>
-        <div>
-          <h3>New users last week</h3>
-          <span>{data ? data.users.week[49] - data.users.week[0] : 'Loading...'}</span>
-        </div>
-      </div>
 
-      <div className={style.group}>
-        <div>
-          <h3>Helpers</h3>
-          <span>{data ? data.helpers : 'Loading...'}</span>
-        </div>
-        <div>
-          <h3>Published plugins</h3>
-          <span>Soon!</span>
-        </div>
-        <div>
-          <h3>Published themes</h3>
-          <span>Soon!</span>
-        </div>
-      </div>
-      <p>Helpers include community members who contributed in any way to Powercord: Code contributors,
-        translators, bug hunters.</p>
+      <Chart
+        title='Registered Powercord accounts'
+        dataset={charts && charts.users}
+        modes={[
+          { name: 'All Time', key: 'allTime' },
+          { name: 'Last Month', key: 'month' },
+          { name: 'Last Week', key: 'week' }
+        ]}
+      />
+      <Numbers {...(charts ? charts.numbers : {})}/>
+
+      {charts?.guild && (
+        <>
+          <h2>Powercord's Community Server</h2>
+          <Chart
+            legend={{ online: 'Online', idle: 'Idle', dnd: 'Do Not Disturb' }}
+            title='Online people'
+            dataset={charts && charts.guild.presences}
+            modes={[
+              { name: 'Last Month', key: 'month' },
+              { name: 'Last Week', key: 'week' },
+              { name: 'Last Day', key: 'day' }
+            ]}
+          />
+
+          <Chart
+            title='Server members'
+            dataset={charts && charts.guild.users}
+            modes={[
+              { name: 'Last Month', key: 'month' },
+              { name: 'Last Week', key: 'week' },
+              { name: 'Last Day', key: 'day' }
+            ]}
+          />
+
+          <Chart
+            title='Messages seen'
+            legend={{ sentMessages: 'Messages Sent', deletedMessages: 'Messages Deleted' }}
+            dataset={charts && charts.guild.messages}
+            modes={[
+              { name: 'Last Month', key: 'month' },
+              { name: 'Last Week', key: 'week' },
+              { name: 'Last Day', key: 'day' }
+            ]}
+          />
+        </>
+      )}
     </Container>
   )
 }

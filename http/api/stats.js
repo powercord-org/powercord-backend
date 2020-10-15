@@ -50,6 +50,7 @@ function datesOverTime (dates, pointsCount = 50) {
   for (const date of dates) {
     for (const scale of [ 'allTime', 'month', 'week' ]) {
       if (!buffer[scale]) buffer[scale] = date
+      if (data[scale].length === 50) break
       if (buffer[scale] - date > delta[scale]) {
         buffer[scale] = date
         data[scale].unshift(buffer.count)
@@ -136,12 +137,11 @@ async function computeUsersOverTime (mongo) {
 
 async function computeGuildStats (mongo) {
   const monthAgo = new Date(Date.now() - 30 * 24 * 3600e3)
-  const cursor = mongo.db.collection('guild-stats').find({ date: { $gte: monthAgo } }).sort({ date: 1 })
+  const cursor = mongo.db.collection('guild-stats').find({ date: { $gte: monthAgo }, online: { $not: { $eq: 0 } } }).sort({ date: 1 })
   const data = await cursor.toArray()
   cursor.close()
 
-  const toKeep = data.filter(data => data.date.getMinutes() % 30 === 0)
-  return formatPeriodicData(toKeep)
+  return formatPeriodicData(data)
 }
 
 async function contributors () {
@@ -166,8 +166,7 @@ async function contributors () {
 async function numbers () {
   return {
     users: await cache.getOrCompute('account_stats', () => computeUsersOverTime(this.mongo)),
-    // guild: await cache.getOrCompute('guild_stats', () => computeGuildStats(this.mongo), true),
-    guild: await computeGuildStats(this.mongo),
+    guild: await cache.getOrCompute('guild_stats', () => computeGuildStats(this.mongo), true),
     helpers: await this.mongo.db.collection('users').countDocuments({
       $or: [
         { 'badges.contributor': true },

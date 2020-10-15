@@ -25,25 +25,30 @@ const cron = require('node-cron')
 module.exports = {
   register (bot) {
     this.bot = bot
-    this.messageCounter = 0
+    this.messageSentCounter = 0
+    this.messageDeletedCounter = 0
 
-    bot.on('messageCreate', () => (this.messageCounter++))
-    bot.on('messageDeleteBulk', (messages) => (this.messageCounter -= messages.length)) // Bans, mostly
+    bot.on('messageCreate', () => (this.messageSentCounter++))
+    bot.on('messageDelete', () => (this.messageDeletedCounter++))
+    bot.on('messageDeleteBulk', (messages) => (this.messageDeletedCounter += messages.length)) // Bans, mostly
 
     cron.schedule('*/30 * * * *', this.collectStats.bind(this))
     cron.schedule('0 0 * * *', this.purgeOldData.bind(this))
   },
 
   async collectStats () {
-    const counts = { online: 0, idle: 0, dnd: 0 }
+    const counts = { total: 0, online: 0, idle: 0, dnd: 0 }
     const members = await this.bot.guilds.get('538759280057122817').fetchMembers({ presences: true })
-    members.forEach(member => member.status && member.status !== 'offline' && counts[member.status]++)
-    const seenMessages = this.messageCounter
-    this.messageCounter = 0
+    members.forEach(member => counts.total++ | (member.status && member.status !== 'offline' && counts[member.status]++))
+    const sentMessages = this.messageSentCounter
+    const deletedMessages = this.messageDeletedCounter
+    this.messageSentCounter = 0
+    this.messageDeletedCounter = 0
 
     this.bot.mongo.collection('guild-stats').insertOne({
       date: new Date(),
-      seenMessages,
+      sentMessages,
+      deletedMessages,
       ...counts
     })
   },
