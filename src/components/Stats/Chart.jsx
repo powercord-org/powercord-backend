@@ -76,7 +76,7 @@ const ChartSide = React.memo(
 
 // eslint-disable-next-line react/display-name
 const ChartBottom = React.memo(
-  function ({ mode, width, height }) {
+  function ({ reduced, mode, width, height }) {
     const now = Date.now()
     const baseHeight = height - 35
     const delta = (width - 50) / SHOWN_DATES
@@ -125,6 +125,7 @@ const ChartBottom = React.memo(
     return (
       <g>
         {dates.map((d, i) => {
+          if (reduced && i % 2 !== 0) return null
           const x = Math.round(50 + (delta * (i + 0.5)))
           return (
             <g key={d}>
@@ -140,11 +141,11 @@ const ChartBottom = React.memo(
 
 // eslint-disable-next-line react/display-name
 const ChartDataset = React.memo(
-  function ({ width, height, dataset }) {
+  function ({ reduced, width, height, dataset }) {
     return (
       <g>
         {Object.entries(dataset.dataset).map(([ key, { color, points } ]) => (
-          <ChartLine key={key} set={key} width={width} height={height} color={color} points={points}/>
+          <ChartLine key={key} set={key} width={width} height={height} color={color} points={points} reduced={reduced}/>
         ))}
       </g>
     )
@@ -153,18 +154,20 @@ const ChartDataset = React.memo(
 
 // eslint-disable-next-line react/display-name
 const ChartLine = React.memo(
-  function ({ width, height, set, color, points }) {
+  function ({ reduced, width, height, set, color, points }) {
     const usableWidth = width - 60
     const usableHeight = height - 50
     const heightMargin = 15
     const widthMargin = 60
 
     const mappedPoints = useMemo(
-      () => points.map(p => ({ x: p.x * usableWidth + widthMargin, y: usableHeight - (p.y * usableHeight) + heightMargin })),
-      [ width, height, points ]
+      () => points
+        .filter((_, i) => !reduced || i % 2 === 0)
+        .map(p => ({ x: p.x * usableWidth + widthMargin, y: usableHeight - (p.y * usableHeight) + heightMargin })),
+      [ width, height, points, reduced ]
     )
 
-    const linePath = useMemo(() => mappedPoints.map(p => `${p.x},${p.y}`).join(' '), mappedPoints)
+    const linePath = useMemo(() => mappedPoints.map(p => `${p.x},${p.y}`).join(' '), [ mappedPoints ])
 
     return (
       <g data-dataset={set}>
@@ -179,6 +182,7 @@ const ChartLine = React.memo(
 
 function Chart (props) {
   const ref = useRef()
+  const [ reduced, setReduced ] = useState(typeof window === 'undefined' ? false : window.innerWidth < 810)
   const [ mode, setMode ] = useState(props.defaultMode || props.modes[0].key)
   const [ [ width, height ], setSize ] = useState([ 0, 0 ])
   const dataset = useMemo(() => props.dataset && props.dataset[mode], [ props.dataset, mode ])
@@ -188,13 +192,19 @@ function Chart (props) {
       if (ref.current) {
         const { width: w } = ref.current.getBoundingClientRect()
         setSize([ w, Math.round((w - 80) * HEIGHT_RATIO) + 50 ])
+
+        if (!reduced && window.innerWidth < 810) {
+          setReduced(true)
+        } else if (reduced && window.innerWidth > 810) {
+          setReduced(false)
+        }
       }
     }
 
     computeSize()
     window.addEventListener('resize', computeSize)
     return () => window.removeEventListener('resize', computeSize)
-  }, [ ref.current ])
+  }, [ ref.current, reduced ])
 
   return (
     <section className={style.chart} ref={ref}>
@@ -211,8 +221,8 @@ function Chart (props) {
       {dataset && props.legend && <ChartLegend legend={props.legend} dataset={dataset}/>}
       <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         {dataset && <ChartSide width={width} height={height} dataset={dataset}/>}
-        {dataset && <ChartBottom mode={mode} width={width} height={height}/>}
-        {dataset && <ChartDataset width={width} height={height} dataset={dataset}/>}
+        {dataset && <ChartBottom reduced={reduced} mode={mode} width={width} height={height}/>}
+        {dataset && <ChartDataset reduced={reduced} width={width} height={height} dataset={dataset}/>}
       </svg>
     </section>
   )

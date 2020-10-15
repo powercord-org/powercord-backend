@@ -104,50 +104,8 @@
     font-size: 22px;
   }
 
-  &:first-of-type h3 {
+  &:first-of-type > div:first-of-type h3 {
     margin-top: 0;
-  }
-}
-
-
-.graph-old {
-  background-color: #252525;
-
-  header {
-    height: 65px;
-    display: flex;
-    flex-direction: column;
-    padding: 8px 16px;
-
-    div:first-child {
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
-    .btns-old {
-      display: flex;
-      align-items: center;
-      flex: 1;
-    }
-  }
-
-  button {
-    height: 24px;
-    background-color: #454545;
-    margin-left: 8px;
-    border-radius: 4px;
-    padding: 0 8px;
-
-    &.selected-old {
-      background-color: #252525;
-      cursor: initial;
-    }
-  }
-
-  svg {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    width: 100%; 
   }
 }
 
@@ -162,18 +120,12 @@
     }
   }
 
-  .graph-old header {
-    height: 40px;
-    align-items: center;
-    flex-direction: row;
-
-    .btns-old {
-      justify-content: flex-end;
-    }
-  }
-
   .group {
     display: flex;
+
+    &:first-of-type h3 {
+      margin-top: 0;
+    }
 
     div {
       width: 33%;
