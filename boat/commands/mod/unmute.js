@@ -26,7 +26,7 @@ const task = require('../../tasks')
 const USAGE_STR = `Usage: ${config.discord.prefix}unmute [mention] (reason)`
 
 module.exports = async function (msg, args) {
-  if (!msg.member.permission.has('manageRoles')) {S
+  if (!msg.member.permission.has('manageMessages')) {S
     return msg.channel.createMessage('no')
   }
 
