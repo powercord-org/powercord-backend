@@ -63,11 +63,7 @@ module.exports = async function (msg, args) {
     entry.mod = `${msg.author.username}#${msg.author.discriminator}`
     entry.time = Date.now() + duration
 
-    msg._client.mongo.collection('tasks').updateOne(
-      { _id: msg.id },
-      {  $set: { ...entry } },
-      { upsert: true }
-    )
+    msg._client.mongo.collection('tasks').insertOne(entry)
     //setTimeout(task.unban, duration, [msg._client, target, `${msg.author.username}#${msg.author.discriminator}`,'Automatically unbanned'])
   }
   
