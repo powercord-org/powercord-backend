@@ -20,6 +20,13 @@
  * SOFTWARE.
  */
 
+function roundMinMax (all) {
+  const min = Math.min.apply(Math, all)
+  const max = Math.max.apply(Math, all)
+  const roundTo = (max - min < 500) ? 250 : 500
+  return [ Math.floor(min / roundTo) * roundTo, Math.ceil(max / roundTo) * roundTo ]
+}
+
 function placePoints (points, min, max) {
   let xBuf = 0
   const xDelta = 1 / points.length
@@ -34,15 +41,13 @@ function placePoints (points, min, max) {
 }
 
 export function simpleChart (points, key, color) {
-  const max = Math.ceil(Math.max.apply(Math, points) / 500) * 500
-  const min = Math.floor(Math.min.apply(Math, points) / 500) * 500
+  const [ min, max ] = roundMinMax(points)
   return { min, max, dataset: { [key]: { color, points: placePoints(points, min, max) } } }
 }
 
 export function multipleChart (dataset, keys, colors) {
   const all = keys.map((k, i) => dataset.map(d => d[k])).flat()
-  const max = Math.ceil(Math.max.apply(Math, all) / 500) * 500
-  const min = Math.floor(Math.min.apply(Math, all) / 500) * 500
+  const [ min, max ] = roundMinMax(all)
   const dset = {}
 
   keys.forEach((k, i) => (dset[k] = { color: colors[i], points: placePoints(dataset.map(d => d[k]), min, max) }))
@@ -61,15 +66,13 @@ export function stackedChart (dataset, keys, colors) {
     return adj
   })
 
-  // Compute chart boundaries (last one will always be the largest dataset)
-  const maxPoints = dataset.map(d => d[keys[keys.length - 1]])
-  const minPoints = dataset.map(d => d[keys[0]])
-  const max = Math.ceil(Math.max.apply(Math, maxPoints) / 500) * 500
-  const min = Math.floor(Math.min.apply(Math, minPoints) / 500) * 500
+  // Compute chart boundaries
+  const points = dataset.map(d => [ d[keys[0]], d[keys[keys.length - 1]] ]).flat()
+  const [ min, max ] = roundMinMax(points)
 
   // Place points
   let xBuf = 0
-  const xDelta = 1 / maxPoints.length
+  const xDelta = 1 / (points.length / 2)
   const finalDataset = {}
   for (const data of dataset) {
     for (const key of keys) {
