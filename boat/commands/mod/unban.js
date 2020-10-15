@@ -35,7 +35,7 @@ module.exports = async function (msg, args) {
   }
 
   const target = args.shift()
-  
+
   task.unban(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`)
   return msg.channel.createMessage('Un-yeeted')
 }
