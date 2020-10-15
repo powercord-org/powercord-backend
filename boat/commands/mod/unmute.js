@@ -41,6 +41,6 @@ module.exports = async function (msg, args) {
     return msg.channel.createMessage('You\'re already talking fam.')
   }
   
-  task.unMute([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`])
+  task.unmute([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`])
   return msg.channel.createMessage('Speak')
 }

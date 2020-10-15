@@ -20,15 +20,23 @@
  * SOFTWARE.
  */
 
+const { data } = require('autoprefixer')
 const config = require('../config.json')
 const GUILD = config.discord.ids.serverId
 
 module.exports = {
+  EMPTY_TASK_OBJ: {
+    type: null,
+    target: null,
+    mod: null,
+    time: null
+  },
+
   mute([bot, userID, moderator, reason = 'No reason specified.']) {
     bot.addGuildMemberRole(GUILD, userID, config.discord.ids.roleMuted, `[${moderator}] ${reason}`)
   },
 
-  unMute([bot, userID, moderator, reason = 'No reason specified.']) {
+  unmute([bot, userID, moderator, reason = 'No reason specified.']) {
     bot.removeGuildMemberRole(GUILD, userID, config.discord.ids.roleMuted, `[${moderator}] ${reason}`)
   },
 
@@ -42,5 +50,24 @@ module.exports = {
 
   unban([bot, userID, moderator, reason = 'No reason specified.']) {
     bot.unbanGuildMember(GUILD, userID, `[${moderator}] ${reason}`)
-  }
+  },
+
+  async handelSchedule(bot) {
+    const tasks = await bot.mongo.collection('tasks').find().toArray()
+
+    tasks.forEach(task => {
+      if (task.time < Date.now()) {
+        
+        switch (task.type) {
+          case 'unmute':
+            this.unmute([bot, task.target, task.mod, 'Automatically unmuted'])
+            break
+          case 'unban':
+            this.unban([bot, task.target, task.mod, 'Automatically unbanned'])
+            break
+        }
+        bot.mongo.collection('tasks').deleteOne({_id: task._id})
+      }
+    })
+  }  
 }

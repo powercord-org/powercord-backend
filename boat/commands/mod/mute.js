@@ -57,7 +57,19 @@ module.exports = async function (msg, args) {
     else {
       return msg.channel.createMessage('Invalid duration')
     }
-    setTimeout(task.unMute, duration, [msg._client, target, `${msg.author.username}#${msg.author.discriminator}`,'Automatically unmuted'])
+
+    const entry = task.EMPTY_TASK_OBJ
+    entry.type = 'unmute'
+    entry.target = target
+    entry.mod = `${msg.author.username}#${msg.author.discriminator}`
+    entry.time = Date.now() + duration
+
+    msg._client.mongo.collection('tasks').updateOne(
+      { _id: msg.id },
+      {  $set: { ...entry } },
+      { upsert: true }
+    )
+    //setTimeout(task.unMute, duration, [msg._client, target, `${msg.author.username}#${msg.author.discriminator}`,'Automatically unmuted'])
   }
 
   task.mute([msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${reason} ${rawDuration? `(for ${rawDuration[0]})`: ''}`])

@@ -22,6 +22,7 @@
 
 const { CommandClient } = require('eris')
 const { MongoClient } = require('mongodb')
+const cron = require('node-cron')
 const modlog = require('./modlog')
 const sniper = require('./sniper')
 const logger = require('./logger')
@@ -75,3 +76,5 @@ MongoClient.connect(config.mango, { useUnifiedTopology: true })
     console.log('Connecting to the Discord App Gateway WebSocket powered by Elixir and Web Scale Technology')
     bot.connect()
   })
+
+cron.schedule('* * * * *', () => task.handelSchedule(bot))
