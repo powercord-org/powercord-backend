@@ -28,11 +28,11 @@ const logger = require('./logger')
 const roles = require('./roles')
 const canary = require('./canary')
 const starboard = require('./starboard')
+const stats = require('./stats')
 const config = require('../config.json')
 
 const bot = new CommandClient(config.discord.botToken, {
-  // todo: do we need guild members? dont think so but that needs some testing (esp. for mod log(?))
-  intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildMessages', 'guildMessageReactions' ]
+  intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildPresences', 'guildMessages', 'guildMessageReactions' ]
 }, { defaultHelpCommand: false, prefix: config.discord.prefix })
 
 // Commands
@@ -57,6 +57,7 @@ logger.register(bot)
 roles.register(bot)
 canary.register(bot)
 starboard.register(bot)
+stats.register(bot)
 
 // Events
 bot.on('ready', () => console.log('Ready.'))
