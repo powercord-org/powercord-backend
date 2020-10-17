@@ -62,7 +62,6 @@ module.exports = async function (msg, args) {
     entry.time = Date.now() + duration
 
     msg._client.mongo.collection('tasks').insertOne(entry)
-    // setTimeout(task.unMute, duration, [msg._client, target, `${msg.author.username}#${msg.author.discriminator}`,'Automatically unmuted'])
   }
 
   task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${reason} ${rawDuration ? `(for ${rawDuration[0]})` : ''}`)

@@ -61,7 +61,6 @@ module.exports = async function (msg, args) {
     entry.time = Date.now() + duration
 
     msg._client.mongo.collection('tasks').insertOne(entry)
-    // setTimeout(task.unban, duration, [msg._client, target, `${msg.author.username}#${msg.author.discriminator}`,'Automatically unbanned'])
   }
 
   task.ban(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${reason} ${rawDuration ? `(for ${rawDuration[0]})` : ''}`)
