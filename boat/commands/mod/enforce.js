@@ -92,33 +92,40 @@ async function punish (msg, target, sentence, rule) {
       entry.mod = `${msg.author.username}#${msg.author.discriminator}`
       entry.time = Date.now() + 2 * 1000 * 60 * 60
       msg._client.mongo.collection('tasks').insertOne(entry)
-      return task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 2h)`)
+      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 2h)`)
+      break
     case '12h mute':
       entry.type = 'unmute'
       entry.target = target
       entry.mod = `${msg.author.username}#${msg.author.discriminator}`
       entry.time = Date.now() + 12 * 1000 * 60 * 60
       msg._client.mongo.collection('tasks').insertOne(entry)
-      return task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 12h)`)
+      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 12h)`)
+      break
     case '3d mute':
       entry.type = 'unmute'
       entry.target = target
       entry.mod = `${msg.author.username}#${msg.author.discriminator}`
       entry.time = Date.now() + 3 * 24 * 1000 * 60 * 60
       msg._client.mongo.collection('tasks').insertOne(entry)
-      return task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 3d)`)
+      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 3d)`)
+      break
     case '7d mute':
       entry.type = 'unmute'
       entry.target = target
       entry.mod = `${msg.author.username}#${msg.author.discriminator}`
       entry.time = Date.now() + 7 * 24 * 1000 * 60 * 60
       msg._client.mongo.collection('tasks').insertOne(entry)
-      return task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 7d)`)
+      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 7d)`)
+      break
     case 'indefinite mute':
-      return task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule}`)
+      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule}`)
+      break
     case 'indefinite ban':
-      return task.ban(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule}`)
+      task.ban(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule}`)
+      break
     default:
       return msg.channel.createMessage(`Unable to process \`${sentence}\`, please mod manualy.`)
   }
+  return msg.channel.createMessage(`A ${sentence} has been applied.`)
 }
