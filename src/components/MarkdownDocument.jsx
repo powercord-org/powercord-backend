@@ -40,7 +40,7 @@ const rules = [
   [ /(`)([^`]+)\1/g, ([ ,, text ]) => (<code className={style.inline}>{text}</code>) ],
   [ /!\[([^\]]+)\]\(((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*)\)/g, ([ , alt, img ]) => (<img src={img} alt={alt}/>) ],
   [ /\[([^\]]+)\]\(((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*)\)/g, ([ , label, link ]) => renderLink(link, label) ],
-  [ /((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*)/g, ([ , link ]) => renderLink(link, link) ],
+  [ /((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*[a-z0-9-_&?])/g, ([ , link ]) => renderLink(link, link) ],
   [ /<br\/?>/g, () => <br/> ]
 ]
 
