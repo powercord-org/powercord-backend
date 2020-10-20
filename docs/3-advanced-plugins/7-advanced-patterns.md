@@ -7,4 +7,4 @@ achieve what may seem impossible at first. Note that here, we'll consider you've
 deep understanding of React.
 
 Even if we do a lot of the dirty work behind the scenes, it's still really recommended to understand what's going
-under the hoods to understand the errors you'll face, or any weird behavior occurring.
+under the hood to understand the errors you'll face, or any weird behavior occurring.

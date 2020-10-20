@@ -20,30 +20,50 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import style from '@styles/docs.scss'
 import { Routes } from '../../constants'
+import style from '@styles/docs.scss'
 
-function Sidebar ({ categories }) {
-  console.log(categories)
+function Sidebar ({ categories, title }) {
+  const [ opened, setOpened ] = useState(false)
+
+  const sidebarRef = useRef()
+  const toggle = useCallback(() => setOpened(!opened), [ opened ])
+  useEffect(() => {
+    if (opened && sidebarRef.current) {
+      sidebarRef.current.addEventListener('click', toggle)
+      return () => sidebarRef.current.removeEventListener('click', toggle)
+    }
+  }, [ opened, sidebarRef.current ])
+
   return (
-    <div className={style.sidebar}>
-      {categories.map(category => (
-        <React.Fragment key={category.id}>
-          <h3>{category.name}</h3>
-          {category.docs.map(doc => (
-            <NavLink
-              key={`${category.id}-${doc.id}`}
-              to={Routes.DOCS_ITEM(category.id, doc.id)}
-              activeClassName={style.active}
-            >
-              {doc.title}
-            </NavLink>
-          ))}
-        </React.Fragment>
-      ))}
+    <div className={[ style.sidebar, opened && style.opened ].filter(Boolean).join(' ')} ref={sidebarRef}>
+      <div className={style.title}>
+        <div className={style.burgerking} onClick={toggle}>
+          <span/>
+          <span/>
+          <span/>
+        </div>
+        <span>{title || 'Loading...'}</span>
+      </div>
+      <div className={style.inner}>
+        {categories.map(category => (
+          <React.Fragment key={category.id}>
+            <h3>{category.name}</h3>
+            {category.docs.map(doc => (
+              <NavLink
+                key={`${category.id}-${doc.id}`}
+                to={Routes.DOCS_ITEM(category.id, doc.id)}
+                activeClassName={style.active}
+              >
+                {doc.title}
+              </NavLink>
+            ))}
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   )
 }

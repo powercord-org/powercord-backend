@@ -4,8 +4,8 @@ facing a security alert prompt, but don't freak out: if you see it, it means Pow
 triggered internal protocols to ensure your safety.
 
 >warning
-> In all cases, if you are suspecting your account to be at risk, change your password **immediately**, and that **even
-> if you have two factor authentication enabled**.
+> In all cases, if you are suspecting your account to be at risk, change your password **immediately**, **even  if you
+> have two factor authentication enabled**.
 
 ## How to know a modal is authentic?
 Figuring out what's fishing and what's not can be hard. People dedicated enough can make modals that look so realistic

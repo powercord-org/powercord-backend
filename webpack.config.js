@@ -232,6 +232,7 @@ if (isDev) {
       })
   })
 
+  const baseUse = baseConfig.module.rules[0].use[baseConfig.module.rules[0].use.length - 1]
   const nodeCfg = {
     ...baseConfig,
     entry: resolve(src, 'components', 'App.jsx'),
@@ -241,6 +242,25 @@ if (isDev) {
       libraryTarget: 'commonjs2',
       path: resolve(__dirname, 'http', 'dist'),
       publicPath: '/dist/'
+    },
+    module: {
+      ...baseConfig.module,
+      rules: [
+        {
+          ...baseConfig.module.rules[0],
+          use: [
+            ...baseConfig.module.rules[0].use.slice(0, baseConfig.module.rules[0].use.length - 2),
+            {
+              ...baseUse,
+              options: {
+                ...baseUse.options,
+                plugins: baseUse.options.plugins.slice(0, baseUse.options.plugins.length - 2)
+              }
+            }
+          ]
+        },
+        ...baseConfig.module.rules.slice(1)
+      ]
     },
     plugins: [
       ...baseConfig.plugins.slice(2), // Slice manifest & build side

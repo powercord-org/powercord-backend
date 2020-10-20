@@ -81,10 +81,9 @@ function Docs () {
     return <Redirect to={Routes.DOCS_ITEM(categories[0].id, categories[0].docs[0].id)}/>
   }
 
-  console.log(document)
   return (
     <main className={style.container}>
-      <Sidebar categories={categories}/>
+      <Sidebar categories={categories} title={document?.title}/>
       <div className={style.contents}>
         <MarkdownDocument document={docKey}/>
       </div>

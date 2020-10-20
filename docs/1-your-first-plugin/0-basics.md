@@ -46,7 +46,7 @@ If you have a dedicated support server, you can specify an invite link (without 
 display it to end users.
 
 >warning
-> This feature will be monitored, and any abuse in the intent to advertise an irrelevant server will be moderated.
+> This feature will be moderated, and any abuse in the intent to advertise an irrelevant server will be punished.
 
 ###### Discord invite example usage
 ```json
