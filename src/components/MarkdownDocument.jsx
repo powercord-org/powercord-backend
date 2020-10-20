@@ -20,12 +20,10 @@
  * SOFTWARE.
  */
 
-/* eslint-disable react/display-name */
+import React, { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
-import React from 'react'
-import { Link } from 'react-router-dom'
-
-import { Endpoints } from '../constants'
+import { Endpoints, Routes } from '../constants'
 import Container from './Container'
 import Spinner from './Spinner'
 import NotFound from './NotFound'
@@ -39,9 +37,10 @@ const rules = [
   [ /(~~)([^~]+)\1/g, ([ ,, text ]) => (<del>{text}</del>) ],
   [ /(`)([^`]+)\1/g, ([ ,, text ]) => (<code className={style.inline}>{text}</code>) ],
   [ /!\[([^\]]+)\]\(((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*)\)/g, ([ , alt, img ]) => (<img src={img} alt={alt}/>) ],
-  [ /\[([^\]]+)\]\(((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*)\)/g, ([ , label, link ]) => renderLink(link, label) ],
+  [ /\[([^\]]+)\]\(((?:(?:##[\w\d-/]+)?#[\w\d-]+|(?:\/|https?:\/\/)[\w\d./?=#%&-]+))\)/g, ([ , label, link ]) => renderLink(link, label) ],
   [ /((?:(?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*[a-z0-9-_&?])/g, ([ , link ]) => renderLink(link, link) ],
-  [ /<br\/?>/g, () => <br/> ]
+  [ /<br\/?>/g, () => <br/> ],
+  [ /\\([\\*_-])/g, ([ , escaped ]) => escaped ]
 ]
 
 function renderLink (link, display) {
@@ -50,6 +49,17 @@ function renderLink (link, display) {
     const url = new URL(link)
     if (url.host === 'powercord.dev') {
       return <Link to={url.pathname + url.search + url.hash}>{display}</Link>
+    }
+    if (link.startsWith('##')) {
+      const [ cat, doc ] = link.slice(2).split('#')[0].split('/')
+      const anchor = link.slice(2).split('#')[1]
+
+      return <Link to={`${Routes.DOCS_ITEM(cat, doc)}#${anchor}`}>{display}</Link>
+    }
+    if (link.startsWith('#')) {
+      return (
+        <a href={link}>{display}</a>
+      )
     }
     return (
       <a href={link} target='_blank' rel='noreferrer'>{display}</a>
@@ -93,6 +103,7 @@ function renderListItem (ordered, item) {
   return null
 }
 
+// eslint-disable-next-line react/display-name
 const Markdown = React.memo(
   ({ contents }) =>
     contents.map(element => {
@@ -101,7 +112,7 @@ const Markdown = React.memo(
           return React.createElement(
             `h${element.depth}`,
             { id: element.content.replace(/[^\w]+/ig, '-').replace(/^-+|-+$/g, '').toLowerCase() },
-            element.content
+            renderInline(element.content)
           )
         case 'TEXT':
           return (
@@ -141,16 +152,37 @@ const Markdown = React.memo(
     })
 )
 
-const MarkdownDocument = ({ document }) => {
-  const [ doc, setDoc ] = React.useState(null)
-  React.useEffect(() => {
-    // todo: cache
-    if (doc) setDoc(null)
-    fetch(Endpoints.DOCS_DOCUMENT(document))
-      .then(r => r.json())
-      .then(d => setDoc(d))
-      .catch(() => setDoc(false))
-  }, [ document ])
+const cache = {}
+// Bypass cache during dev
+const getCache = (d) => process.env.NODE_ENV === 'production' ? cache[d] : null
+
+const MarkdownDocument = ({ document: mdDocument }) => {
+  const [ firstLoaded, setFirstLoaded ] = useState(false)
+  const [ doc, setDoc ] = useState(getCache(mdDocument))
+  const { hash } = useLocation()
+
+  useEffect(() => {
+    const cached = getCache(mdDocument)
+    if (firstLoaded) setDoc(cached)
+    else setFirstLoaded(true)
+
+    if (!cached) {
+      fetch(Endpoints.DOCS_DOCUMENT(mdDocument))
+        .then(r => r.json())
+        .then(d => (cache[mdDocument] = d) | setDoc(d))
+        .catch(() => (cache[mdDocument] = false) | setDoc(false))
+    }
+  }, [ mdDocument ])
+
+  useEffect(() => {
+    if (doc && hash) {
+      const element = document.querySelector(hash)
+      if (element) {
+        setTimeout(() => element.scrollIntoView(), 10)
+        return void 0
+      }
+    }
+  }, [ doc, hash ])
 
   if (doc === false) {
     return <NotFound/>

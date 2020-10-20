@@ -31,6 +31,16 @@
     padding: 8px 16px;
   }
 
+  h3 {
+    font-size: 24px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    code {
+      font-size: 100%;
+    }
+  }
+
   img {
     margin: 16px 0;
   }
@@ -153,11 +163,10 @@
     + div {
       max-width: calc(100% - 36px);
       flex-wrap: wrap;
-      white-space: pre-wrap;
+      white-space: pre;
 
       span {
         max-width: 100%;
-        display: inline-block;
         white-space: pre-wrap;
       }
     }
