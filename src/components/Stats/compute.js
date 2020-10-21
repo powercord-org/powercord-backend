@@ -23,7 +23,7 @@
 function roundMinMax (all) {
   const min = Math.min.apply(Math, all)
   const max = Math.max.apply(Math, all)
-  const roundTo = (max - min < 500) ? 250 : 500
+  const roundTo = (max - min < 100) ? 50 : (max - min < 250) ? 100 : 500
   return [ Math.floor(min / roundTo) * roundTo, Math.ceil(max / roundTo) * roundTo ]
 }
 

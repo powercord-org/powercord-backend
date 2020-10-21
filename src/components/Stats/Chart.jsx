@@ -53,13 +53,14 @@ const ChartSide = React.memo(
   function ({ width, height, dataset }) {
     const topMargin = 15
     const delta = (height - topMargin - 35) / 4
+    const linesDelta = dataset.max - dataset.min
     const lines = [
-      dataset.max,
-      dataset.max / 4 * 2,
-      dataset.max / 4 * 3,
-      dataset.max / 4,
+      dataset.min + linesDelta,
+      dataset.min + (linesDelta / 4 * 3),
+      dataset.min + (linesDelta / 4 * 2),
+      dataset.min + (linesDelta / 4),
       dataset.min
-    ]
+    ].map(a => Math.round(a))
 
     return (
       <g>
