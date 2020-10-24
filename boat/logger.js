@@ -48,7 +48,7 @@ module.exports = {
         .replace('$username', cleanUsername)
         .replace('$discrim', msg.author.discriminator)
         .replace(/\$userId/g, msg.author.id)
-        .replace('$time', time.toString())
+        .replace('$time', time.toUTCString())
         .replace('$duration', prettyMs(Date.now() - time))
         .replace('$message', cleanMessage)
       )
