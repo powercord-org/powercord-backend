@@ -21,11 +21,13 @@
  */
 
 const config = require('../config.json')
+const prettyMs = require('pretty-ms')
 
 const zws = '\u200B'
 const template = `
 Message deleted in <#$channelId>
 Author: $username#$discrim ($userId; <@$userId>)
+Timestamp: $time ($duration ago)
 Message contents: \`\`\`
 $message
 \`\`\`
@@ -40,11 +42,14 @@ module.exports = {
 
       const cleanMessage = msg.cleanContent.replace(/`/g, `\`${zws}`)
       const cleanUsername = msg.author.username.replace(/@/g, `@${zws}`).replace(/`/g, `\`${zws}`)
+      const time = new Date(msg.timestamp)
       bot.createMessage(config.discord.ids.channelMessageLogs, template
         .replace('$channelId', msg.channel.id)
         .replace('$username', cleanUsername)
         .replace('$discrim', msg.author.discriminator)
         .replace(/\$userId/g, msg.author.id)
+        .replace('$time', time.toString())
+        .replace('$duration', prettyMs(Date.now() - time))
         .replace('$message', cleanMessage)
       )
     })
