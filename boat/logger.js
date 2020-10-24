@@ -21,7 +21,6 @@
  */
 
 const config = require('../config.json')
-const prettyMs = require('pretty-ms')
 
 const zws = '\u200B'
 const template = `
@@ -49,9 +48,21 @@ module.exports = {
         .replace('$discrim', msg.author.discriminator)
         .replace(/\$userId/g, msg.author.id)
         .replace('$time', time.toUTCString())
-        .replace('$duration', prettyMs(Date.now() - time))
+        .replace('$duration', humanTime(Date.now() - time))
         .replace('$message', cleanMessage)
       )
     })
   }
+}
+
+function humanTime (time) {
+  const plurialify = (c, w) => c === 1 ? w : w + 's'
+  const h = Math.floor(time / 3600e3)
+  const m = Math.floor(time / 60e3)
+  const s = Math.floor(time / 1e3)
+  return [
+    h ? h + ' ' + plurialify(h, 'hour') : '',
+    m ? m + ' ' + plurialify(m, 'minute') : '',
+    s ? s + ' ' + plurialify(s, 'second') : ''
+  ].filter(Boolean).join(', ') || 'under a second'
 }
