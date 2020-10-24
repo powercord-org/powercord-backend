@@ -190,7 +190,7 @@ Powercord's SDK provides a quick and easy way to fire up a fake splash screen an
 all of the screen states. Learn more about it [here](#using_powercord/sdk##splash-screen).
 
 ### Overlay theming
->warning
+>warn
 > Overlay theming is **experimental** and is hard to test because most Powercord developers use Linux, where the
 > in-game overlay isn't available. You might experience huge performance drops for heavy css. Use it at your own
 > risk.

@@ -1,10 +1,16 @@
+<!--
+  Copyright (c) 2020 aetheryx & Bowser65
+  This work is licensed under a Creative Commons Attribution-NoDerivatives 4.0 International License.
+  https://creativecommons.org/licenses/by-nd/4.0
+-->
+
 # Security Alerts
 Powercord has a lot of built-in security and self-defense features to ensure users safety. In some cases, you may be
 facing a security alert prompt, but don't freak out: if you see it, it means Powercord caught the incident and
 triggered internal protocols to ensure your safety.
 
->warning
-> In all cases, if you are suspecting your account to be at risk, change your password **immediately**, **even  if you
+>warn
+> In all cases, if you are suspecting your account to be at risk, change your password **immediately**, **even if you
 > have two factor authentication enabled**.
 
 ## How to know a modal is authentic?

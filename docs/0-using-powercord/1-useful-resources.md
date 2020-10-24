@@ -1,3 +1,9 @@
+<!--
+  Copyright (c) 2020 aetheryx & Bowser65
+  This work is licensed under a Creative Commons Attribution-NoDerivatives 4.0 International License.
+  https://creativecommons.org/licenses/by-nd/4.0
+-->
+
 # Useful Resources
 Powercord provides a lot of features out of the box, but the community also put some work into making developer's life
 easier when using Powercord or working with our APIs. 
@@ -5,7 +11,7 @@ easier when using Powercord or working with our APIs.
 Since they are very useful and made by very cute people we've listed them all here so you can easily find some
 good high™️ quality™️ stuff.
 
->warning
+>warn
 > While we list them here, the Powercord Staff is not maintaining nor endorsing those. If you happen to find
 > an issue with one of the resources below, please report it to the creator of it and not the Powercord Staff.
 
@@ -44,6 +50,6 @@ the theme and the manifest file). Supports both old and new META format.
 A compatibility layer that lets you run BetterDiscord plugins directly in Powercord. It can also provide
 EnhancedDiscord compatibiliy through a [BD plugin](https://github.com/Juby210/EDPluginsLoader)
 
->warning
+>warn
 > While a decent effort is being made to ensure compatibility, BetterDiscord is a completely different environment
 > compared to Powercord. Expect some plugins to be incompatible, and some hiccups to occur.

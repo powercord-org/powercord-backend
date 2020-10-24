@@ -1,3 +1,9 @@
+<!--
+  Copyright (c) 2020 aetheryx & Bowser65
+  This work is licensed under a Creative Commons Attribution-NoDerivatives 4.0 International License.
+  https://creativecommons.org/licenses/by-nd/4.0
+-->
+
 # Plugin Lifecycle
 Your plugin gets loaded in ram, fed some data, and gets wiped from ram. That's a really sad story but we're not here
 for tears but to understand a plugin's lifecycle. It's slightly more complete than on the previous versions, but

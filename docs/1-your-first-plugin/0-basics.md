@@ -1,3 +1,9 @@
+<!--
+  Copyright (c) 2020 aetheryx & Bowser65
+  This work is licensed under a Creative Commons Attribution-NoDerivatives 4.0 International License.
+  https://creativecommons.org/licenses/by-nd/4.0
+-->
+
 # Plugin Basics
 Powercord plugins are more complex than a single file, but don't worry, it's still super simple and will even
 simplify your life during plugin development.
@@ -45,7 +51,7 @@ The string can be formatted in 2 ways:
 If you have a dedicated support server, you can specify an invite link (without the discord.gg part), so Powercord can
 display it to end users.
 
->warning
+>warn
 > This feature will be moderated, and any abuse in the intent to advertise an irrelevant server will be punished.
 
 ###### Discord invite example usage

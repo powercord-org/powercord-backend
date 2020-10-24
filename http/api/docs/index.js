@@ -53,6 +53,8 @@ async function getRemoteDocument (url) {
 async function initializeFastify (fastify) {
   const docsPath = path.join(__dirname, '../../../docs')
   for (const cat of await fsp.readdir(docsPath)) {
+    if (cat === 'LICENSE' || cat === 'README.md') continue
+
     const catId = cat.replace(/^\d+-/, '')
     const docs = []
     for (const document of await fsp.readdir(`${docsPath}/${cat}`)) {
