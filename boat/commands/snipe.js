@@ -47,7 +47,7 @@ module.exports = function (msg) {
 
     length += name.length + snipe.msg.length
     fields[cursor].push({
-      name: `${snipe.author} (${snipe.type})`,
+      name: `${snipe.author} (${snipe.type}) in #${snipe.channel}`,
       value: snipe.msg.slice(0, 1024)
     })
 
