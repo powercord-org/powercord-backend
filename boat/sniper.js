@@ -37,7 +37,7 @@ module.exports = {
     })
 
     bot.on('messageUpdate', (msg, old) => {
-      if (!old || !msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
+      if (!old || !msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || msg.content === old.content) {
         return // Let's ignore
       }
 
@@ -51,6 +51,7 @@ module.exports = {
       _id: id,
       author: `${msg.author.username}#${msg.author.discriminator}`,
       msg: msg.content.replace(/\(/g, `${zws}(`),
+      channel: msg.channel.name,
       type
     })
 
