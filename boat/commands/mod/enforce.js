@@ -48,8 +48,12 @@ module.exports = async function (msg, args) {
   if (target === msg.author.id) {
     return msg.channel.createMessage('I thought you don\'t break rules')
   }
-
-  punish(msg, target, actions[entry.cases[rule - 1]++], rule)
+  
+  if (actions[entry.cases[rule - 1]]) {
+    punish(msg, target, actions[entry.cases[rule - 1]++], rule)
+  } else {
+    return msg.channel.createMessage(`The mamixmum punishment has already been applied for rule ${rule}`)
+  }
 
   msg._client.mongo.collection('enforce').updateOne(
     { _id: target },
@@ -83,49 +87,55 @@ async function processRule (msg, id) {
 
 async function punish (msg, target, sentence, rule) {
   const entry = task.EMPTY_TASK_OBJ
-  switch (sentence) {
-    case 'warning':
-      return msg.channel.createMessage(`<@${target}>, you have broken rule ${rule}. More serious action will be taken the next time you do so.`)
-    case '2h mute':
-      entry.type = 'unmute'
-      entry.target = target
-      entry.mod = `${msg.author.username}#${msg.author.discriminator}`
-      entry.time = Date.now() + 2 * 1000 * 60 * 60
-      msg._client.mongo.collection('tasks').insertOne(entry)
-      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 2h)`)
-      break
-    case '12h mute':
-      entry.type = 'unmute'
-      entry.target = target
-      entry.mod = `${msg.author.username}#${msg.author.discriminator}`
-      entry.time = Date.now() + 12 * 1000 * 60 * 60
-      msg._client.mongo.collection('tasks').insertOne(entry)
-      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 12h)`)
-      break
-    case '3d mute':
-      entry.type = 'unmute'
-      entry.target = target
-      entry.mod = `${msg.author.username}#${msg.author.discriminator}`
-      entry.time = Date.now() + 3 * 24 * 1000 * 60 * 60
-      msg._client.mongo.collection('tasks').insertOne(entry)
-      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 3d)`)
-      break
-    case '7d mute':
-      entry.type = 'unmute'
-      entry.target = target
-      entry.mod = `${msg.author.username}#${msg.author.discriminator}`
-      entry.time = Date.now() + 7 * 24 * 1000 * 60 * 60
-      msg._client.mongo.collection('tasks').insertOne(entry)
-      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule} (for 7d)`)
-      break
-    case 'indefinite mute':
-      task.mute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule}`)
-      break
-    case 'indefinite ban':
-      task.ban(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `Breaking rule ${rule}`)
-      break
-    default:
-      return msg.channel.createMessage(`Unable to process \`${sentence}\`, please mod manualy.`)
+  let reply, type, duration, time, mod = `${msg.author.username}#${msg.author.discriminator}`
+
+  if (sentence.includes('12h')) {
+    duration = '12h'
+    time = Date.now() + 12 * 1000 * 60 * 60
+  } else if (sentence.includes('2h')){
+    duration = '2h'
+    time = Date.now() + 2 * 1000 * 60 * 60
+  } else if (sentence.includes('3d')) {
+    duration = '3d'
+    time = Date.now() + 3 * 24 * 1000 * 60 * 60
+  } else if (sentence.includes('7d')) {
+    duration = '7d'
+    time = Date.now() + 7 * 24 * 1000 * 60 * 60
+  } else {
+    duration = null
+    time = null
   }
-  return msg.channel.createMessage(`A ${sentence} has been applied.`)
+
+  if (sentence.includes('warning')) {
+    type = 'warning'
+    reply = `<@${target}>, you have broken rule ${rule}. More serious action will be taken the next time you do so.`
+  } else if (sentence.includes('mute/ban')) {
+    type = 'error'
+    reply = `Unable to process \`${sentence}\`, please mod manualy.`
+  } else if (sentence.includes('mute')) {
+    type = 'mute'
+    reply = `<@${target}>, you have broken rule ${rule} and have been muted ${duration === null ? '': `for ${duration}`}`
+  } else if (sentence.includes('ban')) {
+    type = 'ban'
+    reply = `<@${target}>, you have broken rule ${rule} and have been banned`
+  } else {
+    type = 'error'
+    reply = `Unable to process \`${sentence}\`, please mod manualy.`
+  }
+
+  if (time !== null) {
+    entry.type = 'unmute'
+    entry.target = target
+    entry.mod = mod
+    entry.time = time
+    msg._client.mongo.collection('tasks').insertOne(entry)
+  }
+
+  if (type === 'mute') {
+    task.mute(msg._client, target, mod, `Breaking rule ${rule} ${duration === null ? '' : `(for ${duration})`}`)
+  } else if (type === 'ban') {
+    task.ban(msg._client, target, mod, `Breaking rule ${rule}`)
+  }
+  
+  return msg.channel.createMessage(reply)
 }
