@@ -66,7 +66,7 @@ roles.register(bot)
 canary.register(bot)
 starboard.register(bot)
 stats.register(bot)
-autotag.regester(bot)
+autotag.register(bot)
 
 // Events
 bot.on('ready', () => console.log('Ready.'))
