@@ -23,7 +23,7 @@
 const config = require('../config.json')
 
 module.exports = {
-  async register (bot) {
+  register (bot) {
     bot.on('messageCreate', (msg) => this.process(msg))
   },
 
