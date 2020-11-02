@@ -48,10 +48,11 @@ module.exports = async function (msg, args) {
   }
 
   const actions = rawRule.split('Actions:')[1].trim().split(' -> ')
-  const cases = await msg._client.mongo.collection('enforce').find({ userID: target, rule: ruleID }).toArray()
+  const cases = await msg._client.mongo.collection('enforce').countDocuments({ userID: target, rule: ruleID })
+  // .find({ userID: target, rule: ruleID }).toArray()
 
-  if (actions[cases.length]) {
-    punish(msg, target, actions[cases.length], ruleID)
+  if (actions[cases]) {
+    punish(msg, target, actions[cases], ruleID)
   } else {
     return msg.channel.createMessage(`The mamixmum punishment has already been applied for rule ${ruleID}`)
   }
