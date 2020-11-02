@@ -22,6 +22,7 @@
 
 const config = require('../../../config.json')
 const task = require('../../tasks')
+const { parseDuration } = require('../../utils')
 
 const USAGE_STR = `Usage: ${config.discord.prefix}ban [mention] (reason)|(duration)`
 
@@ -43,17 +44,11 @@ module.exports = async function (msg, args) {
   }
 
   if (rawDuration) {
-    let duration
-
-    if (rawDuration[0].endsWith('m')) {
-      duration = rawDuration[0].match(/\d+/)[0] * 1000 * 60
-    } else if (rawDuration[0].endsWith('h')) {
-      duration = rawDuration[0].match(/\d+/)[0] * 1000 * 60 * 60
-    } else if (rawDuration[0].endsWith('d')) {
-      duration = rawDuration[0].match(/\d+/)[0] * 1000 * 60 * 60 * 24
-    } else {
+    const duration = parseDuration(rawDuration[0])
+    if (duration === null) {
       return msg.channel.createMessage('Invalid duration')
     }
+
     const entry = task.EMPTY_TASK_OBJ
     entry.type = 'unban'
     entry.target = target

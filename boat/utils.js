@@ -44,6 +44,18 @@ module.exports = {
       .replace(/Actions: /, '\nActions: ')
 
     return rule.slice(0, rule.length - 4).trim()
+  },
+
+  parseDuration (rawDuration) {
+    if (rawDuration.endsWith('m')) {
+      return rawDuration.match(/\d+/)[0] * 1000 * 60
+    } else if (rawDuration.endsWith('h')) {
+      return rawDuration.match(/\d+/)[0] * 1000 * 60 * 60
+    } else if (rawDuration.endsWith('d')) {
+      return rawDuration.match(/\d+/)[0] * 1000 * 60 * 60 * 24
+    } else {
+      return null
+    }
   }
 
 }

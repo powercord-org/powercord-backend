@@ -22,7 +22,7 @@
 
 const config = require('../../../config.json')
 const task = require('../../tasks')
-const { parseRule } = require('../../utils')
+const { parseRule, parseDuration } = require('../../utils')
 
 const USAGE_STR = `Usage: ${config.discord.prefix}enforce [mention] [ruleID]`
 
@@ -71,24 +71,10 @@ module.exports = async function (msg, args) {
 
 async function punish (msg, target, sentence, rule) {
   const entry = task.EMPTY_TASK_OBJ
-  let reply; let type; let duration; let time; const mod = `${msg.author.username}#${msg.author.discriminator}`
+  let reply; let type; const mod = `${msg.author.username}#${msg.author.discriminator}`
 
-  if (sentence.includes('12h')) {
-    duration = '12h'
-    time = Date.now() + 12 * 1000 * 60 * 60
-  } else if (sentence.includes('2h')) {
-    duration = '2h'
-    time = Date.now() + 2 * 1000 * 60 * 60
-  } else if (sentence.includes('3d')) {
-    duration = '3d'
-    time = Date.now() + 3 * 24 * 1000 * 60 * 60
-  } else if (sentence.includes('7d')) {
-    duration = '7d'
-    time = Date.now() + 7 * 24 * 1000 * 60 * 60
-  } else {
-    duration = null
-    time = null
-  }
+  const duration = sentence.match(/\d+(m|h|d)/) ? sentence.match(/\d+(m|h|d)/)[0] : null
+  const time = duration ? Date.now() + parseDuration(duration) : null
 
   if (sentence.includes('warning')) {
     type = 'warning'
