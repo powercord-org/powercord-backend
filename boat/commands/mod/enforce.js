@@ -35,10 +35,6 @@ module.exports = async function (msg, args) {
     return msg.channel.createMessage(USAGE_STR)
   }
 
-  if (args[1] > 10 || args[1] < 1) {
-    return msg.channel.createMessage('Please provide a valid ruleID')
-  }
-
   const target = args.shift().replace(/<@!?(\d+)>/, '$1')
   const ruleID = parseInt(args[0])
   const rawRule = await parseRule(ruleID, msg)
@@ -47,26 +43,24 @@ module.exports = async function (msg, args) {
     return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}`)
   }
 
-  const actions = rawRule.split('Actions:')[1].trim().split(' -> ')
-  const entry = await msg._client.mongo.collection('enforce').findOne({ _id: target }) || {
-    cases: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-  }
-
   if (target === msg.author.id) {
     return msg.channel.createMessage('I thought you don\'t break rules')
   }
 
-  if (actions[entry.cases[ruleID - 1]]) {
-    punish(msg, target, actions[entry.cases[ruleID - 1]++], ruleID)
+  const actions = rawRule.split('Actions:')[1].trim().split(' -> ')
+  const cases = await msg._client.mongo.collection('enforce').find({ userID: target, rule: ruleID }).toArray()
+
+  if (actions[cases.length]) {
+    punish(msg, target, actions[cases.length], ruleID)
   } else {
     return msg.channel.createMessage(`The mamixmum punishment has already been applied for rule ${ruleID}`)
   }
 
-  msg._client.mongo.collection('enforce').updateOne(
-    { _id: target },
-    { $set: { ...entry } },
-    { upsert: true }
-  )
+  msg._client.mongo.collection('enforce').insertOne({
+    userID: target,
+    rule: ruleID,
+    mod: `${msg.author.username}#${msg.author.discriminator}`
+  })
 }
 
 async function punish (msg, target, sentence, rule) {
