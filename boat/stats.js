@@ -21,6 +21,7 @@
  */
 
 const cron = require('node-cron')
+const config = require('../config.json')
 
 module.exports = {
   register (bot) {
@@ -38,7 +39,7 @@ module.exports = {
 
   async collectStats () {
     const counts = { total: 0, online: 0, idle: 0, dnd: 0 }
-    const members = await this.bot.guilds.get('538759280057122817').fetchMembers({ presences: true })
+    const members = await this.bot.guilds.get(config.discord.ids.serverId).fetchMembers({ presences: true })
     members.forEach(member => counts.total++ | (member.status && member.status !== 'offline' && counts[member.status]++))
     const sentMessages = this.messageSentCounter
     const deletedMessages = this.messageDeletedCounter
