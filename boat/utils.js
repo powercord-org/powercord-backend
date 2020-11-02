@@ -20,23 +20,30 @@
  * SOFTWARE.
  */
 
-const config = require('../../config.json')
-const { parseRule } = require('../utils')
+const config = require('../config.json')
 
-const INFO_STR = `You can read all of the server rules in <#${config.discord.ids.channelRules}>.`
-const USAGE_STR = `Usage: ${config.discord.prefix}rule <rule id>`
+module.exports = {
+  async parseRule (ruleID, msg) {
+    const messages = await msg._client.getMessages(config.discord.ids.channelRules)
+    let rules
+    messages.reverse().forEach(msg => {
+      rules += msg.content.slice(6, msg.content.length - 3)
+    })
+    rules += '||||' // without this the last rule will get chopped off by the slice on 53
 
-module.exports = async function (msg, args) {
-  if (args.length === 0) {
-    return msg.channel.createMessage(`${USAGE_STR}\n\n${INFO_STR}`)
+    const match = rules.match(new RegExp(`\\[0?${ruleID}] (([^\\[]*)([^\\d]*)([^\\]]*))`))
+    if (!match) {
+      return null
+    }
+
+    const rule = match[1].split('\n').map(s => s.trim()).join(' ')
+      .replace(/\[#[^a-z0-9-_]?([a-z0-9-_]+)\]/ig, (og, name) => {
+        const channel = msg.channel.guild.channels.find(c => c.name === name)
+        return channel ? `<#${channel.id}>` : og
+      })
+      .replace(/Actions: /, '\nActions: ')
+
+    return rule.slice(0, rule.length - 4).trim()
   }
 
-  const id = parseInt(args[0])
-  const rule = await parseRule(id, msg)
-
-  if (rule === null) {
-    return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
-  }
-
-  msg.channel.createMessage(`**Rule #${id}**: ${rule}\n\n${INFO_STR}`)
 }

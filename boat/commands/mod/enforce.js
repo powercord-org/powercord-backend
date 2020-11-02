@@ -22,6 +22,7 @@
 
 const config = require('../../../config.json')
 const task = require('../../tasks')
+const { parseRule } = require('../../utils')
 
 const USAGE_STR = `Usage: ${config.discord.prefix}enforce [mention] [ruleID]`
 
@@ -39,8 +40,14 @@ module.exports = async function (msg, args) {
   }
 
   const target = args.shift().replace(/<@!?(\d+)>/, '$1')
-  const rule = parseInt(args[0])
-  const actions = await processRule(msg, rule)
+  const ruleID = parseInt(args[0])
+  const rawRule = await parseRule(ruleID, msg)
+
+  if (rawRule === null) {
+    return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}`)
+  }
+
+  const actions = rawRule.split('Actions:')[1].trim().split(' -> ')
   const entry = await msg._client.mongo.collection('enforce').findOne({ _id: target }) || {
     cases: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
   }
@@ -48,11 +55,11 @@ module.exports = async function (msg, args) {
   if (target === msg.author.id) {
     return msg.channel.createMessage('I thought you don\'t break rules')
   }
-  
-  if (actions[entry.cases[rule - 1]]) {
-    punish(msg, target, actions[entry.cases[rule - 1]++], rule)
+
+  if (actions[entry.cases[ruleID - 1]]) {
+    punish(msg, target, actions[entry.cases[ruleID - 1]++], ruleID)
   } else {
-    return msg.channel.createMessage(`The mamixmum punishment has already been applied for rule ${rule}`)
+    return msg.channel.createMessage(`The mamixmum punishment has already been applied for rule ${ruleID}`)
   }
 
   msg._client.mongo.collection('enforce').updateOne(
@@ -62,37 +69,14 @@ module.exports = async function (msg, args) {
   )
 }
 
-async function processRule (msg, id) {
-  const messages = await msg._client.getMessages(config.discord.ids.channelRules)
-  let rules
-  messages.reverse().forEach(msg => {
-    rules += msg.content.slice(6, msg.content.length - 3)
-  })
-  rules += '||||'
-
-  const match = rules.match(new RegExp(`\\[0?${id}] (([^\\[]*)([^\\d]*)([^\\]]*))`))
-  if (!match) {
-    return msg.channel.createMessage('This rule doesn\'t exist.')
-  }
-
-  const rule = match[1].split('\n').map(s => s.trim()).join(' ')
-    .replace(/\[#[^a-z0-9-_]?([a-z0-9-_]+)\]/ig, (og, name) => {
-      const channel = msg.channel.guild.channels.find(c => c.name === name)
-      return channel ? `<#${channel.id}>` : og
-    })
-    .replace(/Actions: /, '\nActions: ')
-
-  return rule.slice(0, rule.length - 4).split('Actions:')[1].trim().split(' -> ')
-}
-
 async function punish (msg, target, sentence, rule) {
   const entry = task.EMPTY_TASK_OBJ
-  let reply, type, duration, time, mod = `${msg.author.username}#${msg.author.discriminator}`
+  let reply; let type; let duration; let time; const mod = `${msg.author.username}#${msg.author.discriminator}`
 
   if (sentence.includes('12h')) {
     duration = '12h'
     time = Date.now() + 12 * 1000 * 60 * 60
-  } else if (sentence.includes('2h')){
+  } else if (sentence.includes('2h')) {
     duration = '2h'
     time = Date.now() + 2 * 1000 * 60 * 60
   } else if (sentence.includes('3d')) {
@@ -114,7 +98,7 @@ async function punish (msg, target, sentence, rule) {
     reply = `Unable to process \`${sentence}\`, please mod manualy.`
   } else if (sentence.includes('mute')) {
     type = 'mute'
-    reply = `<@${target}>, you have broken rule ${rule} and have been muted ${duration === null ? '': `for ${duration}`}`
+    reply = `<@${target}>, you have broken rule ${rule} and have been muted ${duration === null ? '' : `for ${duration}`}`
   } else if (sentence.includes('ban')) {
     type = 'ban'
     reply = `<@${target}>, you have broken rule ${rule} and have been banned`
@@ -136,6 +120,6 @@ async function punish (msg, target, sentence, rule) {
   } else if (type === 'ban') {
     task.ban(msg._client, target, mod, `Breaking rule ${rule}`)
   }
-  
+
   return msg.channel.createMessage(reply)
 }
