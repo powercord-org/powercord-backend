@@ -24,7 +24,7 @@ const config = require('../config.json')
 
 const BOARD_MINIMUM = 3
 const CUTEBOARD_EMOTE = '🌺'
-const STARBOARD_EMOTE = '⭐'
+const STARBOARD_EMOTE = [ '⭐', '🌟', '💫', '✨' ]
 const GENERIC_STAR_OBJ = {
   messageId: null,
   stars: 0
@@ -51,8 +51,8 @@ module.exports = {
     }
 
     const filter = u => u.id !== msg.author.id && !config.discord.ids.shitstars.users.includes(u.id)
-    if (emoji.name === STARBOARD_EMOTE && this._isProcessable(msg, user)) {
-      const reactions = await this._getAllReactions(msg, STARBOARD_EMOTE)
+    if (STARBOARD_EMOTE.includes(emoji.name) && this._isProcessable(msg, user)) {
+      const reactions = await this._getAllReactions(msg, emoji.name)
       this.updateStarCount(msg, reactions.filter(filter).length)
     }
 
