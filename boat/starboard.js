@@ -50,15 +50,14 @@ module.exports = {
       msg = await msg.channel.getMessage(msg.id)
     }
 
-    const filter = u => u.id !== msg.author.id && !config.discord.ids.shitstars.users.includes(u.id)
     if (STARBOARD_EMOTES.includes(emoji.name) && this._isProcessable(msg, user)) {
-      const reactions = await this._getAllReactions(msg, emoji.name)
-      this.updateStarCount(msg, reactions.filter(filter).length)
+      const reactionCount = await this._getAllReactions(msg, 'star')
+      this.updateStarCount(msg, reactionCount)
     }
 
     if (emoji.name === CUTEBOARD_EMOTE && this._isProcessable(msg, user)) {
-      const reactions = await this._getAllReactions(msg, CUTEBOARD_EMOTE)
-      this.updateStarCount(msg, reactions.filter(filter).length, true)
+      const reactionCount = await this._getAllReactions(msg, 'cute')
+      this.updateStarCount(msg, reactionCount, true)
     }
   },
 
@@ -68,10 +67,7 @@ module.exports = {
       ...GENERIC_STAR_OBJ,
       cute
     }
-
-    if (entry.stars < count) {
-      entry.stars = count
-    }
+    entry.stars = count
 
     if (entry.stars < BOARD_MINIMUM) {
       if (entry.messageId) {
@@ -95,19 +91,33 @@ module.exports = {
     )
   },
 
-  async _getAllReactions (msg, reaction) {
-    let after = null
-    let stop = false
-    const reactions = []
-    while (!stop) {
-      const fetched = await msg.getReaction(reaction, 100, null, after)
-      reactions.push(...fetched)
-
-      after = fetched.pop().id
-      stop = reactions.length !== 100
+  async _getAllReactions (msg, type) {
+    let reactions = [ CUTEBOARD_EMOTE ]
+    if (type === 'star') {
+      reactions = STARBOARD_EMOTES
     }
+    const filter = u => u.id !== msg.author.id && !config.discord.ids.shitstars.users.includes(u.id)
+    let count = 0
 
-    return reactions
+    for (let i = 0; i < reactions.length; i++) {
+      let after = null
+      let stop = false
+      const reaction = reactions[i]
+      const msgReactions = []
+      while (!stop) {
+        const fetched = await msg.getReaction(reaction, 100, null, after)
+        msgReactions.push(...fetched)
+
+        if (fetched.length > 0) {
+          after = fetched.pop().id
+        }
+        stop = msgReactions.length !== 100
+      }
+      if (count < msgReactions.filter(filter).length) {
+        count = msgReactions.filter(filter).length
+      }
+    }
+    return count
   },
 
   _isProcessable (msg, stargazer) {
@@ -118,7 +128,7 @@ module.exports = {
       !config.discord.ids.shitstars.channels.includes(msg.channel.id) &&
       !config.discord.ids.shitstars.users.includes(msg.author.id) &&
       !config.discord.ids.shitstars.users.includes(stargazer.id) &&
-    !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'))
+      !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'))
   },
 
   _buildStarMessage (stars, msg, cute) {
