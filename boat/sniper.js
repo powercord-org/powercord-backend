@@ -50,7 +50,7 @@ module.exports = {
     this.lastMessages.push({
       _id: id,
       author: `${msg.author.username}#${msg.author.discriminator}`,
-      msg: msg.content.replace(/\(/g, `${zws}(`),
+      msg: msg.content ? msg.content.replace(/\(/g, `${zws}(`) : 'This message had no text content.',
       channel: msg.channel.name,
       type
     })
