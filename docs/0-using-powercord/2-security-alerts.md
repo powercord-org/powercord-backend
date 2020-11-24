@@ -10,8 +10,8 @@ facing a security alert prompt, but don't freak out: if you see it, it means Pow
 triggered internal protocols to ensure your safety.
 
 >warn
-> In all cases, if you are suspecting your account to be at risk, change your password **immediately**, **even if you
-> have two factor authentication enabled**.
+> In all cases, if you are suspecting your account to be at risk, change your password **immediately even if you
+> have two factor authentication enabled**. Also consider regenerating your 2FA backup codes, for additional safety.
 
 ## How to know a modal is authentic?
 Figuring out what's fishing and what's not can be hard. People dedicated enough can make modals that look so realistic
@@ -41,7 +41,7 @@ and what precautions we recommend taking regarding the incident.
 ### In case of doubts
 If you have any doubts, there's still a few things you can do:
  - Check https://powercord.dev/advisories to see if we published any recent security vulnerability.
- - Join our [support server](https://discord.gg/nFRHhDk) and ask us directly. We'll answer you as best as we can.
+ - Join our [support server](https://discord.gg/gs4ZMbBfCh) and ask us directly. We'll answer you as best as we can.
 
 We take security and your safety very seriously, and we're doing our best to prevent any piece of malware to get
 through and cause harm.

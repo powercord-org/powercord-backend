@@ -27,7 +27,7 @@ the JSON structure yourself.
  - https://github.com/NurMarvin/powercord-snippets
  - View on the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=marvin.powercord-snippets)
 
-A VSCode extension that adds useful snippets to develop plugins *faster*.  🚀
+A VSCode extension that adds useful snippets to develop plugins *faster*. 🚀
 
 **To install**: Launch VS Code Quick Open (Ctrl+P), paste `ext install marvin.powercord-snippets`, and press enter.
 

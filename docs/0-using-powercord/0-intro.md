@@ -12,6 +12,6 @@ For the installation procedure, please refer to https://powercord.dev/installati
 [Frequently Asked Questions](https://powercord.dev/faq), they contain a lot of valuable info!
 
 If you need support with Powercord ~~or simply want to hang out with the community~~, you can join our server
-[here](https://discord.gg/nFRHhDk).
+[here](https://discord.gg/gs4ZMbBfCh).
 
 Happy hacking!

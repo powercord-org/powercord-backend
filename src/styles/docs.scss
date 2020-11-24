@@ -94,7 +94,7 @@
   background-color: #252525;
   flex-direction: column;
   align-items: flex-end;
-  overflow-y: auto;
+  overflow-y: scroll;
   padding: 20px;
   display: flex;
   width: 275px;
@@ -213,7 +213,7 @@
 
 @media screen and (min-width: 1010px) {
   .container {
-    overflow-y: auto;
+    overflow-y: scroll;
     margin-top: 0;
   }
 

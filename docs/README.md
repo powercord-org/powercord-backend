@@ -5,6 +5,7 @@ Docs are overrated tho
 You don't
 
 ## Formatting
+<!-- todo: once sf is viable use its parser and components -->
 The documentations follows Borkenware's extended markdown syntax used in [Spoonfeed](https://github.com/borkenware/spoonfeed),
 which is documented [here](https://github.com/borkenware/spoonfeed/blob/mistress/USAGE.md#writing-markdown).
 

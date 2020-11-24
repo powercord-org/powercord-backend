@@ -13,13 +13,14 @@ still remains fairly easy.
 We got inspiration from React for our implementation, but it's basically a collection of specific methods called
 during various stages of your plugin. Right when it started for example, or right before unloading.
 
-They are extremely useful and useful, as it's where the entry and exit logic resides for the most part.
+They are extremely useful, as it's where the entry and exit logic resides for the most part. Their names are
+intentionally a bit verbose, to avoid any conflict with your own logic.
 
 >info
 > **Protip**: all of the lifecycle methods can be async. They'll be awaited when necessary by Powercord, like when
 > there's a load order requesting a plugin to be loaded.
 
-## `pluginStart`
+## `startPlugin`
 You've probably already seen this one in the Plugin Basics, but that's the really first method called in your plugin.
 This is where you'll put all of the logic that makes your plugin more than a dead piece of code doing nothing.
 
@@ -30,6 +31,20 @@ it did, event listeners, timeouts, etc etc.
 Note that Powercord will take care of removing React components injected by the plugin, so no need to care too much
 about that side of things. That is, provided you properly cleanup injections done.
 
+## `pluginDidInstall`
+Called when the plugin is ran for the first time after being installed.
+
+>info
+> Using this to generate and collect analytics is strictly forbidden.
+
 ## `pluginDidUpdate`
 This is called when the plugin has been updated and a **version change** did occur as per the manifest data. The
 method receives two arguments: `previousVersion` and `newVersion`. Both strictly from the manifest.
+
+## `pluginWillUninstall`
+Called when the plugin will be uninstalled. `pluginWillUnload` will also be called. Note that it is unnecessary to
+clear config as Powercord will already handle that for you.
+
+>info
+> Using this method to show a prompt asking the user if they are sure about it, or otherwise use it to get user
+> input before uninstall is prohibited, as per [guideline #5](https://powercord.dev/guidelines#5-no-advertising-promotion-or-spam-of-any-kind).

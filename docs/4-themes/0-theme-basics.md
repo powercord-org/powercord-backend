@@ -1,4 +1,5 @@
 # Theme Basics
+<!-- todo: write stuff -->
 
 ## How to publish?
 Once your theme is ready, you can go to the Powercord Store, in the section "Get in touch", go to "Publish a product"

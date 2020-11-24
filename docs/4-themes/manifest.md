@@ -1,4 +1,6 @@
 # Manifest
+<!-- todo: cleanup and rewrite some parts to new stuff -->
+
 Themes manifest are similar to plugin manifests, but with some key differences. If you've made plugin manifests you'll
 most likely recognize some structures, but we'll still document the entire manifest structure.
 

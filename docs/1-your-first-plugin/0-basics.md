@@ -57,7 +57,7 @@ display it to end users.
 ###### Discord invite example usage
 ```json
 {
-  "discord": "nFRHhDk" // This list contains all the valid consent types
+  "discord": "gs4ZMbBfCh"
 }
 ```
 
@@ -110,6 +110,17 @@ just `true`.
 
 \* Refer to the [Network Library](##advanced-plugins/net#manifest-permissions) documentation for more detail.
 
+###### Permissions example usage
+```json
+{
+  "permissions": {
+    "http": true,
+    "net": [ "whois.nic.google" ],
+    "eud": false // This has no effect, you can just skip it. Just know it works, if anything.
+  }
+}
+```
+
 ### `consent` key
 Even though most OSS licenses allow redistributing software provided the copyright notice is kept, this "trust license
 text" approach ended in several troubles between developers and 3rd party plugin & theme listing websites.
@@ -133,8 +144,12 @@ Now, we're getting to the fun part: some actual code. Before we start, we'll ans
 
 TypeScript is completely irrelevant in the scope of a client mod with no knowledge of 99% of the modules it'll use, and
 other languages being completely not adapted to work in this scenario. For the nerds who'd like to use WebAssembly,
-it's unfortunately disabled as per a security policy; we aren't confident enough letting WebAssembly code out there
-in the wild being ran, and we're concerned about possible safety measure bypass.
+it's unfortunately disabled* as per a security policy; we aren't confident enough letting WebAssembly code out there
+in the wild being ran, as it can conflict with our no-obfuscated policies and may be able to get pass some of our
+protection (which isn't only runtime).
+
+\*We may, in the future, look into enabling back WebAssembly support. For now, there is just no real use case that
+can't be achieved using pure JS and available APIs.
 
 Now that this is landed: here's what your plugin will look like. There's a lot you may not understand, but don't
 freak out yet, you'll see it's super easy.
@@ -156,6 +171,14 @@ the DevTools console. Not much, but something to be proud of :)
 The most important thing to remember here is how to form the basic plugin class structure. The more you'll look
 through docs the more you'll understand it, but that's it for now.
 
+### Can I use multiple files? And node libraries?
+Yes! That's one of the advantages Powercord plugins have compared to BetterDiscord's: developers can split their code
+in multiple files, which makes for clearer code and the ability to use syntax like JSX.
+
+However, there is a downside: the more files you have, the more Powercord has to work to load your plugin, resulting
+in slower plugin startup and some resource usage on the user's end. For your own code, the difference will be negligible
+but if you import libraries, this will quickly add up and slow down the plugin startup.
+
 ### Wait, but how can I use CSS in my plugin?
 It's super simple: you simply import it. No questions added. You can import plain css, scss, less or stylus files and
 Powercord will take care of them for you. Note that we recommend using plain css for small needs, for performance
@@ -165,6 +188,10 @@ reasons.
 ```js
 import 'style.css' // As easy as that!
 ```
+
+#### And how to un-import?
+You can't. If you need to remove a stylesheet at runtime, you mostly did something wrong or are attempting to do
+something the wrong way. To make some css apply conditionally, use a class that you can toggle.
 
 ## How to publish?
 Once your plugin is ready, you can go to the Powercord Store, in the section "Get in touch", go to "Publish a product"

@@ -105,7 +105,7 @@ const baseConfig = {
       {
         test: /\.s?css$/,
         use: [
-          MiniCSS.loader,
+          IS_DEV ? 'style-loader' : MiniCSS.loader,
           'css-loader',
           {
             loader: 'postcss-loader',
