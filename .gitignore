@@ -18,7 +18,4 @@ config.json
 _work
 *.nogit.*
 *.nogit/
-
-# todo: remove
-# temporary
-boat/ssh
+package-lock.json

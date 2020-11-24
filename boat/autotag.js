@@ -20,23 +20,25 @@
  * SOFTWARE.
  */
 
-const config = require('../../config.json')
-const { parseRule } = require('../utils')
+const config = require('../config.json')
 
-const INFO_STR = `You can read all of the server rules in <#${config.discord.ids.channelRules}>.`
-const USAGE_STR = `Usage: ${config.discord.prefix}rule <rule id>`
+module.exports = {
+  register (bot) {
+    bot.on('messageCreate', (msg) => this.process(msg))
+  },
 
-module.exports = async function (msg, args) {
-  if (args.length === 0) {
-    return msg.channel.createMessage(`${USAGE_STR}\n\n${INFO_STR}`)
+  async process (msg) {
+    if (!msg.content.startsWith(config.discord.prefix)) {
+      return
+    }
+
+    const command = msg.content.slice(config.discord.prefix.length, msg.content.length).toLowerCase()
+    const tags = await msg._client.mongo.collection('tags').find().toArray()
+
+    tags.forEach(tag => {
+      if (tag._id.toLowerCase() === command) {
+        return msg.channel.createMessage(tag.content)
+      }
+    })
   }
-
-  const id = parseInt(args[0])
-  const rule = await parseRule(id, msg)
-
-  if (rule === null) {
-    return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
-  }
-
-  msg.channel.createMessage(`**Rule #${id}**: ${rule}\n\n${INFO_STR}`)
 }

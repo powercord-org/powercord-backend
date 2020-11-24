@@ -37,8 +37,8 @@ function renderHtml (helmet, html, user = null, dev = false) {
         ${helmet ? helmet.title.toString() : ''}
         ${helmet ? helmet.meta.toString() : ''}
         ${helmet ? helmet.link.toString() : ''}
-        ${!dev ? `<link rel='stylesheet' href='${manifest.styles}'/>` : ''}
-        ${!dev ? `<link rel='preload' as='script' href='${manifest.preload}'/>` : ''}
+        ${manifest['styles.css'] ? `<link rel='stylesheet' href='${manifest['styles.css']}'/>` : ''}
+        ${manifest['app.js'] ? `<link rel='preload' as='script' href='${manifest['app.js']}'/>` : ''}
       </head>
       <body ${helmet ? helmet.bodyAttributes.toString() : ''}>
         <noscript>
@@ -46,8 +46,8 @@ function renderHtml (helmet, html, user = null, dev = false) {
         </noscript>
         <div id='react-root'>${html || ''}</div>
         <script id='init'>window.USER = ${JSON.stringify(user).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</script>
-        ${!dev ? `<script src='${manifest.entry}'></script>` : '<script src=\'/dist/main.js\'></script>'}
-        ${!dev ? `<script src='${manifest.classes}'></script>` : ''}
+        <script src='${manifest['main.js']}'></script>
+        <script src='${manifest['styles.js']}'></script>
       </body>
     </html>
   `.split('\n').map(l => l.trim()).join('')

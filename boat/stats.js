@@ -20,41 +20,41 @@
  * SOFTWARE.
  */
 
+const cron = require('node-cron')
 const config = require('../config.json')
-const zws = '\u200B'
 
 module.exports = {
-  SNIPE_LIFETIME: 30,
-  lastMessages: [],
-
   register (bot) {
-    bot.on('messageDelete', (msg) => {
-      if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
-        return // Let's ignore
-      }
+    this.bot = bot
+    this.messageSentCounter = 0
+    this.messageDeletedCounter = 0
 
-      this.catch(msg, 'delete')
-    })
+    bot.on('messageCreate', () => (this.messageSentCounter++))
+    bot.on('messageDelete', () => (this.messageDeletedCounter++))
+    bot.on('messageDeleteBulk', (messages) => (this.messageDeletedCounter += messages.length)) // Bans, mostly
 
-    bot.on('messageUpdate', (msg, old) => {
-      if (!old || !msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || msg.content === old.content) {
-        return // Let's ignore
-      }
+    cron.schedule('*/30 * * * *', this.collectStats.bind(this))
+    cron.schedule('0 0 * * *', this.purgeOldData.bind(this))
+  },
 
-      this.catch({ ...msg, content: old.content }, 'edit')
+  async collectStats () {
+    const counts = { total: 0, online: 0, idle: 0, dnd: 0 }
+    const members = await this.bot.guilds.get(config.discord.ids.serverId).fetchMembers({ presences: true })
+    members.forEach(member => counts.total++ | (member.status && member.status !== 'offline' && counts[member.status]++))
+    const sentMessages = this.messageSentCounter
+    const deletedMessages = this.messageDeletedCounter
+    this.messageSentCounter = 0
+    this.messageDeletedCounter = 0
+
+    this.bot.mongo.collection('guild-stats').insertOne({
+      date: new Date(),
+      sentMessages,
+      deletedMessages,
+      ...counts
     })
   },
 
-  catch (msg, type) {
-    const id = Math.random()
-    this.lastMessages.push({
-      _id: id,
-      author: `${msg.author.username}#${msg.author.discriminator}`,
-      msg: msg.content ? msg.content.replace(/\(/g, `${zws}(`) : 'This message had no text content.',
-      channel: msg.channel.name,
-      type
-    })
-
-    setTimeout(() => (this.lastMessages = this.lastMessages.filter(m => m._id !== id)), this.SNIPE_LIFETIME * 1e3)
+  async purgeOldData () {
+    // Only keep a month & a half of data
   }
 }
