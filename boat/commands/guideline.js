@@ -71,7 +71,7 @@ module.exports = async function (msg, args) {
     }
     msg.channel.createMessage({ embed })
   } catch (e) {
-    console.log(e)
+    console.error('error occurred while fetching guidelines', e)
     msg.channel.createMessage('An unexpected error occurred. Maybe GitHub is having troubles?')
   }
 }
