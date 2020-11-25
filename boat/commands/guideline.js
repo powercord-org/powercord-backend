@@ -36,8 +36,20 @@ module.exports = async function (msg, args) {
     const guidelines = await fetch(GUIDELINES_DOCUMENT).then(r => r.text())
 
     if (args[0] === 'defs') {
-      const defs = guidelines.split('## Definitions')[1].split('\n\n')[0].trim()
-      return msg.channel.createMessage(`**Definitions:**\n ${defs}\n\n${INFO_STR}`)
+      const defs = guidelines.split('## Definitions')[1].split('\n\n')[0].trim().split('\n')
+      const fields = []
+      defs.forEach(def => {
+        fields.push({
+          name: def.split(':')[0].replace('-', ' ').trim(),
+          value: def.split(':')[1]
+        })
+      })
+      const embed = {
+        title: 'Definitions',
+        description: INFO_STR,
+        fields
+      }
+      return msg.channel.createMessage({ embed })
     }
 
     const id = parseInt(args[0])
@@ -47,10 +59,19 @@ module.exports = async function (msg, args) {
     }
 
     const guideline = match[0].slice(2).replace(/\n\n/g, '<br><br>').split('\n')
-    guideline[0] = `**Guideline #${guideline[0]}**\n`
-    const parts = guideline.map(g => g.replace(/<br>/g, '\n'))
-    msg.channel.createMessage(`${parts.join('').trim()}\n\n${INFO_STR}`)
+    const embed = {
+      title: guideline.shift(),
+      description: guideline.map(g => g.replace(/<br>/g, '\n')).join('').trim(),
+      fields: [
+        {
+          name: 'Read all the guidelines',
+          value: 'https://powercord.dev/guidelines'
+        }
+      ]
+    }
+    msg.channel.createMessage({ embed })
   } catch (e) {
+    console.error('error occurred while fetching guidelines', e)
     msg.channel.createMessage('An unexpected error occurred. Maybe GitHub is having troubles?')
   }
 }
