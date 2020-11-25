@@ -5,7 +5,7 @@ dependencies:
   fastify-cookie: 4.1.0
   fastify-mongodb: 2.0.1
   fastify-raw-body: 3.0.0
-  fastify-tokenize: 1.1.3
+  fastify-tokenize: 1.2.0
   marked: 1.2.5
   mongodb: 3.6.3
   node-cron: 2.0.3
@@ -454,6 +454,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-MNyI92qZq6jrQkXvtIiykvl4WtoRrVV9MPn+ZfsoEENjiWcBQ3ZSHrkxnJWgWtLX3XXqX5hrSQ+X69wkmesXuQ==
+  /@cyyynthia/tokenize/1.1.1:
+    dev: false
+    resolution:
+      integrity: sha512-X4LTS10swLii1Hc4chNJUCH8cQ1UsFArmj8+xsGtLHNU+tScjWmj4XnUNnwwCRGT3Wh8EAOIYNcXAK0bPFEPMQ==
   /@eslint/eslintrc/0.2.1:
     dependencies:
       ajv: 6.12.6
@@ -3268,12 +3272,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-3bL5M9p2CUyK7pkPuLUBcSE2WjbOn4jgvp4aRgpw3NYyy+DnKo0LsgApPiq0HNxIv11K0e0pX+xv4MzDCX/NUw==
-  /fastify-plugin/1.6.1:
-    dependencies:
-      semver: 6.3.0
-    dev: false
-    resolution:
-      integrity: sha512-APBcb27s+MjaBIerFirYmBLatoPCgmHZM6XP0K+nDL9k0yX8NJPWDY1RAC3bh6z+AB5ULS2j31BUfLMT3uaZ4A==
   /fastify-plugin/2.1.1:
     dependencies:
       semver: 7.3.2
@@ -3286,6 +3284,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-R2XUkpsuXvz7mctqyY7Y9+CGeYd+ITNUXuGdpOVsIuqHkzARMHm4ZwFGl8xrGJgRAMwMmlWQbX8nduSlexKkjA==
+  /fastify-plugin/3.0.0:
+    dev: false
+    resolution:
+      integrity: sha512-ZdCvKEEd92DNLps5n0v231Bha8bkz1DjnPP/aEz37rz/q42Z5JVLmgnqR4DYuNn3NXAO3IDCPyRvgvxtJ4Ym4w==
   /fastify-raw-body/3.0.0:
     dependencies:
       fastify-plugin: 2.2.0
@@ -3296,13 +3298,13 @@ packages:
       node: '>= 10'
     resolution:
       integrity: sha512-6rosnctF+ExjLjMZ90RK50+KqalvF9CVUp+6jxicyZNFQ3/rsHEapJjMNL0kew6V97DTS3Hn6WEWjjS/Nel/bw==
-  /fastify-tokenize/1.1.3:
+  /fastify-tokenize/1.2.0:
     dependencies:
-      fastify-plugin: 1.6.1
-      node-tokenize: 1.0.6
+      '@cyyynthia/tokenize': 1.1.1
+      fastify-plugin: 3.0.0
     dev: false
     resolution:
-      integrity: sha512-0vxmV9s/IjsaLI5ToE0OsLhqbsm9xeQEDUwqHcXl6lJP5RQzaWGnMMi6kzZcoDNTEau40htX+wCp2yVqRUgNgw==
+      integrity: sha512-0B8tsgU7ydYAOisViq+cCSMvCK5Kva7oD59V1O0xO6lwC40pIY/qVWEC7zhS66XtLVqraL8IoHsXg2gI+7R1xQ==
   /fastify-warning/0.2.0:
     dev: false
     resolution:
@@ -5704,10 +5706,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-V5QF9noGFl3EymEwUYzO+3NTDpGfQB4ve6Qfnzf3UNydMhjQRVPR1DZTuvWiLzaFJYw2fmDwAfnRNEVb64hSIg==
-  /node-tokenize/1.0.6:
-    dev: false
-    resolution:
-      integrity: sha512-i0FzuDhE8aMNoIvAafU4tR2vxf4gdJ8Pr9SdYj7XSIbDjJJICBILTtCZE5FHB0pm6FFV24GHuEnCYdQ9w5H89g==
   /nodemon/2.0.6:
     dependencies:
       chokidar: 3.4.0
@@ -7625,6 +7623,7 @@ packages:
     resolution:
       integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
   /semver/6.3.0:
+    dev: true
     hasBin: true
     resolution:
       integrity: sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
@@ -9182,7 +9181,7 @@ specifiers:
   fastify-cookie: ^4.1.0
   fastify-mongodb: ^2.0.1
   fastify-raw-body: ^3.0.0
-  fastify-tokenize: ^1.1.3
+  fastify-tokenize: ^1.2.0
   file-loader: ^6.2.0
   friendly-errors-webpack-plugin: ^1.7.0
   image-webpack-loader: ^7.0.1

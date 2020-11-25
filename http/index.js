@@ -36,7 +36,7 @@ fastify.register(require('fastify-tokenize'), {
   cookieSigned: true,
   fetchAccount: async (id) => {
     const user = await fastify.mongo.db.collection('users').findOne({ _id: id })
-    if (user) user.tokensValidSince = 0
+    if (user) user.lastTokenReset = 0
     return user
   }
 })

@@ -20,7 +20,7 @@
     "fastify-cookie": "^4.1.0",
     "fastify-mongodb": "^2.0.1",
     "fastify-raw-body": "^3.0.0",
-    "fastify-tokenize": "^1.1.3",
+    "fastify-tokenize": "^1.2.0",
     "marked": "^1.2.5",
     "mongodb": "^3.6.3",
     "node-cron": "^2.0.3",
