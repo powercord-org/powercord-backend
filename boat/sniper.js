@@ -59,6 +59,6 @@ module.exports = {
   }
 }
 
-function isPrivate(channel) {
-  return Boolean(channel.permissionOverwrites.get(channel.guild.id).deny & 1024)
+function isPrivate (channel) {
+  return Boolean(channel.permissionOverwrites.get(channel.guild.id)?.deny & 1024)
 }
