@@ -29,7 +29,7 @@ module.exports = {
 
   register (bot) {
     bot.on('messageDelete', (msg) => {
-      if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
+      if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || isPrivate(msg.channel)) {
         return // Let's ignore
       }
 
@@ -37,7 +37,7 @@ module.exports = {
     })
 
     bot.on('messageUpdate', (msg, old) => {
-      if (!old || !msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || msg.content === old.content) {
+      if (!old || !msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || msg.content === old.content || isPrivate(msg.channel)) {
         return // Let's ignore
       }
 
@@ -57,4 +57,8 @@ module.exports = {
 
     setTimeout(() => (this.lastMessages = this.lastMessages.filter(m => m._id !== id)), this.SNIPE_LIFETIME * 1e3)
   }
+}
+
+function isPrivate(channel) {
+  return channel.permissionOverwrites.filter(overwrite => overwrite.id === channel.guild.id && !overwrite.has('readMessages')).length === 1
 }
