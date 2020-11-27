@@ -20,22 +20,35 @@
  * SOFTWARE.
  */
 
-function logout (_, reply) {
-  return reply.setCookie('token', null, { maxAge: 0, path: '/' }).redirect('/')
+import React from 'react'
+
+import * as Icons from '@components/Icons'
+import style from '@styles/paginator.scss'
+
+function Paginator ({ current, total, setPage }) {
+  const prevLocked = current === 1
+  const nextLocked = current === total
+
+  return (
+    <div className={style.wrapper}>
+      <div className={style.container}>
+        <button className={style.button} disabled={prevLocked} onClick={() => setPage(1)}>
+          <Icons.ArrowBackDouble/>
+        </button>
+        <button className={style.button} disabled={prevLocked} onClick={() => setPage(current - 1)}>
+          <Icons.ArrowBack/>
+        </button>
+        <div className={style.pages}>Page {current} of {total}</div>
+        <button className={style.button} disabled={nextLocked} onClick={() => setPage(current + 1)}>
+          <Icons.ArrowNext/>
+        </button>
+        <button className={style.button} disabled={nextLocked} onClick={() => setPage(total)}>
+          <Icons.ArrowNextDouble/>
+        </button>
+      </div>
+    </div>
+  )
 }
 
-module.exports = async function (fastify) {
-  fastify.get('/login', (_, reply) => reply.redirect('/api/v2/oauth/discord'))
-  fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
-  fastify.register(require('./advisories'), { prefix: '/advisories' })
-  fastify.register(require('./store'), { prefix: '/store' })
-  fastify.register(require('./users'), { prefix: '/users' })
-  fastify.register(require('./guilds'), { prefix: '/guilds' })
-  fastify.register(require('./stats'), { prefix: '/stats' })
-  fastify.register(require('./docs'), { prefix: '/docs' })
-  fastify.register(require('./honks'), { prefix: '/honks' })
-  fastify.register(require('./oauth'), { prefix: '/oauth' })
-  fastify.register(require('./misc'))
-  fastify.register(require('./legacyLinking')) // todo: remove
-  fastify.get('*', (_, reply) => reply.code(404).send({ error: 404, message: 'Not Found' }))
-}
+Paginator.displayName = 'Paginator'
+export default React.memo(Paginator)

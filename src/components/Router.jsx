@@ -32,11 +32,14 @@ import Account from './Account'
 import Contributors from './Contributors'
 import Stats from './Stats'
 import Branding from './Branding'
+import Advisories from './Advisories/List'
+import Advisory from './Advisories/Advisory'
 import MarkdownDocument from './MarkdownDocument'
 import PorkordLicense from './legal/PorkordLicense'
 import Terms from './legal/Terms'
 import Privacy from './legal/Privacy'
 import NotFound from './NotFound'
+import Soon from './Soon'
 
 const Router = () => (
   <Switch>
@@ -58,10 +61,16 @@ const Router = () => (
       <Branding/>
     </Route>
     <Route path={Routes.STORE} exact>
-      <main>todo</main>
+      {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
+    </Route>
+    <Route path={Routes.ADVISORIES} exact>
+      {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
+    </Route>
+    <Route path={Routes.ADVISORY(':id')} exact>
+      {process.env.NODE_ENV === 'development' ? <Advisory/> : <Soon/>}
     </Route>
     <Route path={Routes.BACKOFFICE} exact>
-      <main>todo</main>
+      {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
     </Route>
     {/* Documents */}
     <Route path={Routes.DOCS} exact>

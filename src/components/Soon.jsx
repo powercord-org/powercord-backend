@@ -20,22 +20,17 @@
  * SOFTWARE.
  */
 
-function logout (_, reply) {
-  return reply.setCookie('token', null, { maxAge: 0, path: '/' }).redirect('/')
+import React from 'react'
+
+function Soon () {
+  return (
+    <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 64, paddingBottom: 64 }}>
+      <img style={{ width: 400 }} src='https://canary.discord.com/assets/ccf4c733929efd9762ab02cd65175377.svg' alt=''/>
+      <div style={{ fontSize: 32 }}>Coming soon, come back later!</div>
+      <div style={{ fontSize: 8, opacity: 0.4 }}>u cute uwu</div>
+    </main>
+  )
 }
 
-module.exports = async function (fastify) {
-  fastify.get('/login', (_, reply) => reply.redirect('/api/v2/oauth/discord'))
-  fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
-  fastify.register(require('./advisories'), { prefix: '/advisories' })
-  fastify.register(require('./store'), { prefix: '/store' })
-  fastify.register(require('./users'), { prefix: '/users' })
-  fastify.register(require('./guilds'), { prefix: '/guilds' })
-  fastify.register(require('./stats'), { prefix: '/stats' })
-  fastify.register(require('./docs'), { prefix: '/docs' })
-  fastify.register(require('./honks'), { prefix: '/honks' })
-  fastify.register(require('./oauth'), { prefix: '/oauth' })
-  fastify.register(require('./misc'))
-  fastify.register(require('./legacyLinking')) // todo: remove
-  fastify.get('*', (_, reply) => reply.code(404).send({ error: 404, message: 'Not Found' }))
-}
+Soon.displayName = 'Soon'
+export default React.memo(Soon)

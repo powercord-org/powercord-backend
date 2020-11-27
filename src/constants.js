@@ -23,6 +23,8 @@
 export const Endpoints = Object.freeze({
   LOGIN: '/api/v2/login',
   LOGOUT: '/api/v2/logout',
+  ADVISORIES: '/api/v2/advisories',
+  ADVISORY: (id) => `/api/v2/advisories/${id}`,
   LINK_SPOTIFY: '/api/v2/oauth/spotify',
   UNLINK_SPOTIFY: '/api/v2/oauth/spotify/unlink',
   YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
@@ -44,6 +46,8 @@ export const Routes = Object.freeze({
   DOCS: '/docs',
   GUIDELINES: '/guidelines',
   INSTALLATION: '/installation',
+  ADVISORIES: '/advisories',
+  ADVISORY: (id) => `/advisories/${id}`,
   LISTING_AGREEMENT: '/listing-agreement',
   PORKORD_LICENSE: '/porkord-license',
   TERMS: '/legal/tos',

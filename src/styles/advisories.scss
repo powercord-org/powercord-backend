@@ -1,0 +1,166 @@
+/*
+ * Copyright (c) 2018-2020 aetheryx & Bowser65
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+%list-base {
+  display: flex;
+  background-color: #252525;
+  border: 1px #151515 solid;
+}
+
+.list-header {
+  @extend %list-base;
+  padding: 8px 16px;
+  justify-content: flex-end;
+}
+
+.list-item {
+  @extend %list-base;
+  border-top-width: 0;
+  padding: 16px;
+}
+
+.list-title {
+  margin-top: -4px;
+  font-size: 22px;
+  color: inherit;
+}
+
+.list-id {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.shield {
+  margin-top: 1px;
+  width: 24px;
+  height: 24px;
+  margin-right: 16px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+
+  b {
+    font-weight: 600;
+  }
+}
+
+.properties {
+  display: flex;
+  font-size: 14px;
+  color: #b1b1b1;
+  margin-top: 6px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+
+  div {
+    display: flex;
+    align-items: center;
+
+    + div {
+      margin-left: 16px;
+    }
+  }
+}
+
+.severity0 {
+  color: #a7a7a7;
+}
+
+.severity1 {
+  color: #fffc4f;
+}
+
+.severity2 {
+  color: #ff9900;
+}
+
+.severity3 {
+  color: #f04747;
+}
+
+@keyframes rainbow {
+  from { color: #6666ff; }
+  10% { color: #0099ff; }
+  50% { color: #00ff00; }
+  75% { color: #ff3399; }
+  to { color: #6666ff; }
+}
+
+.severity4 {
+  animation: rainbow 2s linear infinite;
+}
+
+.tooltip {
+  display: flex;
+  padding: 8px;
+
+  img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+
+  .name {
+    margin-bottom: 4px;
+  }
+
+  .found {
+    display: flex;
+  }
+
+  .found-kind {
+    display: flex;
+    align-items: center;
+
+    &:not(:first-of-type) {
+      margin-left: 8px;
+    }
+  }
+
+  .shield {
+    width: 16px;
+    height: 16px;
+    margin-top: 0;
+    margin-right: 4px;
+  }
+}
+
+.title {
+  margin-bottom: 0;
+}
+
+.sub-title {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.id {
+  color: #999;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+}

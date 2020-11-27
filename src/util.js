@@ -20,22 +20,34 @@
  * SOFTWARE.
  */
 
-function logout (_, reply) {
-  return reply.setCookie('token', null, { maxAge: 0, path: '/' }).redirect('/')
-}
+export const Time = Object.freeze({
+  SECOND: 1e3,
+  MINUTE: 60e3,
+  HOUR: 3600e3,
+  DAY: 86400e3,
+  WEEK: 86400e3 * 7,
+  MONTH: 86400e3 * 30,
+  YEAR: 86400e3 * 365
+})
 
-module.exports = async function (fastify) {
-  fastify.get('/login', (_, reply) => reply.redirect('/api/v2/oauth/discord'))
-  fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
-  fastify.register(require('./advisories'), { prefix: '/advisories' })
-  fastify.register(require('./store'), { prefix: '/store' })
-  fastify.register(require('./users'), { prefix: '/users' })
-  fastify.register(require('./guilds'), { prefix: '/guilds' })
-  fastify.register(require('./stats'), { prefix: '/stats' })
-  fastify.register(require('./docs'), { prefix: '/docs' })
-  fastify.register(require('./honks'), { prefix: '/honks' })
-  fastify.register(require('./oauth'), { prefix: '/oauth' })
-  fastify.register(require('./misc'))
-  fastify.register(require('./legacyLinking')) // todo: remove
-  fastify.get('*', (_, reply) => reply.code(404).send({ error: 404, message: 'Not Found' }))
+export const TIME_UNITS = Object.freeze(Object.keys(Time))
+
+// Stupid but enough:tm:
+export const pluralify = (c, w) => c === 1 ? w : `${w}s`
+
+// Doesn't account for real month duration nor leap years, screw this
+export function formatDate (date) {
+  const ms = new Date(date).getTime()
+  const elapsed = Date.now() - ms
+  if (elapsed <= 0) return 'just now'
+  for (let i = 1; i < TIME_UNITS.length; i++) {
+    if (elapsed < Time[TIME_UNITS[i]]) {
+      const label = TIME_UNITS[i - 1].toLowerCase()
+      const delta = Math.floor(elapsed / Time[TIME_UNITS[i - 1]])
+      return `${delta} ${pluralify(delta, label)} ago`
+    }
+  }
+
+  const delta = Math.floor(elapsed / Time.YEAR)
+  return `${delta} ${pluralify(delta, 'year')} ago`
 }

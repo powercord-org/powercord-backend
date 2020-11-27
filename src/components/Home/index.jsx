@@ -26,7 +26,7 @@ import { Link } from 'react-router-dom'
 import { Routes } from '../../constants'
 import Container from '../Container'
 import Section from './Section'
-import * as Icons from './Icons'
+import * as Icons from '../Icons'
 
 import style from '@styles/home.scss'
 
