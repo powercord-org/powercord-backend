@@ -29,6 +29,10 @@
 .features {
   display: flex;
   flex-wrap: wrap;
+
+  + p {
+    margin: 0;
+  }
 }
 
 .section {
@@ -77,6 +81,11 @@
   p {
     margin: 0;
   }
+}
+
+.note {
+  font-size: 14px;
+  color: #999;
 }
 
 @media screen and (min-width: 580px) {
