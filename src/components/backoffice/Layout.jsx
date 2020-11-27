@@ -22,33 +22,15 @@
 
 import React from 'react'
 
-import * as Icons from '@components/Icons'
-import style from '@styles/paginator.scss'
+import Sidebar from './Sidebar'
 
-function Paginator ({ current, total, setPage }) {
-  const prevLocked = current === 1
-  const nextLocked = current === total
-
+function Layout () {
   return (
-    <div className={style.wrapper}>
-      <div className={style.container}>
-        <button className={style.button} disabled={prevLocked} onClick={() => setPage(1)}>
-          <Icons.ArrowHeadBackDouble/>
-        </button>
-        <button className={style.button} disabled={prevLocked} onClick={() => setPage(current - 1)}>
-          <Icons.ArrowHeadBack/>
-        </button>
-        <div className={style.pages}>Page {current} of {total}</div>
-        <button className={style.button} disabled={nextLocked} onClick={() => setPage(current + 1)}>
-          <Icons.ArrowHeadNext/>
-        </button>
-        <button className={style.button} disabled={nextLocked} onClick={() => setPage(total)}>
-          <Icons.ArrowHeadNextDouble/>
-        </button>
-      </div>
-    </div>
+    <main>
+      <Sidebar/>
+    </main>
   )
 }
 
-Paginator.displayName = 'Paginator'
-export default React.memo(Paginator)
+Layout.displayName = 'BackofficeLayout'
+export default Layout

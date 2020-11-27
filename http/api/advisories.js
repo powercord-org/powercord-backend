@@ -22,26 +22,27 @@
 
 // todo: use real data LOL
 
-const fakeAdv = (lvl) => ({
-  id: `PC-2020-00${1 + lvl}`,
-  level: lvl,
-  title: 'Fake advisory',
-  date: '2020-11-13T10:55:32.490Z',
-  target: {
-    name: 'Fake plugin',
-    developer: 'Fake developer'
-  },
-  publisher: lvl === 2
-    ? {
-      name: 'Fake publisher',
-      avatar: 'https://cdn.discordapp.com/avatars/94762492923748352/ad72202b231eb0d8404dd0db15a5edd4.png?size=128',
-      low: 1 + Math.floor(Math.random() * 5),
-      moderate: 1 + Math.floor(Math.random() * 5),
-      high: 1 + Math.floor(Math.random() * 5),
-      critical: 1 + Math.floor(Math.random() * 5)
-    }
-    : null
-})
+const fakeAdv = (lvl) =>
+  ({
+    id: `PC-2020-00${1 + lvl}`,
+    level: lvl,
+    title: 'Fake advisory',
+    date: '2020-11-13T10:55:32.490Z',
+    target: {
+      name: 'Fake plugin',
+      developer: 'Fake developer'
+    },
+    publisher: lvl === 2
+      ? ({
+          name: 'Fake publisher',
+          avatar: 'https://cdn.discordapp.com/avatars/94762492923748352/ad72202b231eb0d8404dd0db15a5edd4.png?size=128',
+          low: 1 + Math.floor(Math.random() * 5),
+          moderate: 1 + Math.floor(Math.random() * 5),
+          high: 1 + Math.floor(Math.random() * 5),
+          critical: 1 + Math.floor(Math.random() * 5)
+        })
+      : null
+  })
 
 const adv = { // this is already real data tho
   id: 'PC-2020-000',

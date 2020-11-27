@@ -117,7 +117,7 @@ function Advisories () {
             </div>
             <List list={list}/>
           </>
-        )}
+          )}
 
       {pages.total > 1 && <Paginator current={page} total={pages.total} setPage={setPage}/>}
     </Container>

@@ -1,0 +1,104 @@
+/*
+ * Copyright (c) 2018-2020 aetheryx & Bowser65
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+.container {
+  width: 400px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #252525;
+  padding: 24px;
+
+  h1 {
+    font-size: 26px;
+    font-weight: inherit;
+    font-family: 'Discord', sans-serif;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 8px;
+
+    &:not(:first-of-type) {
+      margin-top: 32px;
+    }
+  }
+}
+
+.back {
+  flex-shrink: 0;
+  margin-bottom: 32px;
+
+  a {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.items {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  color: inherit;
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 8px 16px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+
+  svg {
+    width: 28px;
+    height: 28px;
+    margin-right: 16px;
+  }
+
+  &:hover {
+    text-decoration: none;
+    background-color: rgba(255, 255, 255, .03);
+  }
+}
+
+.user {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+
+  img {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    margin-right: 16px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+}

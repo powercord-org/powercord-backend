@@ -78,9 +78,9 @@ const App = () => {
         <link href='https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap' rel='stylesheet'/>
         <link href='https://cdn.jsdelivr.net/npm/typeface-jetbrains-mono@1.0.5/dist/index.min.css' rel='stylesheet'></link>
       </Helmet>
-      <Header/>
+      {!pathname.startsWith('/backoffice') && <Header/>}
       <Router/>
-      <Footer/>
+      {!pathname.startsWith('/backoffice') && <Footer/>}
       <Cookies/>
     </>
   )

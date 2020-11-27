@@ -53,7 +53,7 @@ export const Routes = Object.freeze({
   TERMS: '/legal/tos',
   PRIVACY: '/legal/privacy',
   BACKOFFICE: '/backoffice',
-  DICKSWORD: 'https://discord.gg/nFRHhDk',
+  DICKSWORD: 'https://discord.gg/gs4ZMbBfCh',
   PATREON: 'https://patreon.com/aetheryx',
   GITHUB: 'https://github.com/powercord-org'
 })

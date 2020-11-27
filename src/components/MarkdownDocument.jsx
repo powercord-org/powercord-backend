@@ -135,6 +135,8 @@ const Markdown = React.memo(
             </table>
           )
       }
+
+      return null
     })
 )
 
@@ -160,7 +162,7 @@ const MarkdownDocument = ({ document }) => {
             <h1>{doc.title}</h1>
             <Markdown contents={doc.contents}/>
           </div>
-        )}
+          )}
     </Container>
   )
 }

@@ -41,6 +41,8 @@ import Privacy from './legal/Privacy'
 import NotFound from './NotFound'
 import Soon from './Soon'
 
+const Backoffice = React.lazy(() => import('./backoffice/Layout'))
+
 const Router = () => (
   <Switch>
     <Route path={Routes.HOME} exact>
@@ -70,7 +72,13 @@ const Router = () => (
       {process.env.NODE_ENV === 'development' ? <Advisory/> : <Soon/>}
     </Route>
     <Route path={Routes.BACKOFFICE} exact>
-      {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
+      {process.env.NODE_ENV === 'development'
+        ? (
+          <React.Suspense fallback='Loading...'>
+            <Backoffice/>
+          </React.Suspense>
+          )
+        : <Soon/>}
     </Route>
     {/* Documents */}
     <Route path={Routes.DOCS} exact>
