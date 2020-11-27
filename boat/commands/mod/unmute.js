@@ -20,23 +20,26 @@
  * SOFTWARE.
  */
 
-const config = require('../../config.json')
-const { parseRule } = require('../utils')
+const config = require('../../../config.json')
+const task = require('../../tasks')
 
-const INFO_STR = `You can read all of the server rules in <#${config.discord.ids.channelRules}>.`
-const USAGE_STR = `Usage: ${config.discord.prefix}rule <rule id>`
+const USAGE_STR = `Usage: ${config.discord.prefix}unmute [mention] (reason)`
 
 module.exports = async function (msg, args) {
+  if (!msg.member.permission.has('manageMessages')) {
+    return msg.channel.createMessage('no')
+  }
+
   if (args.length === 0) {
-    return msg.channel.createMessage(`${USAGE_STR}\n\n${INFO_STR}`)
+    return msg.channel.createMessage(USAGE_STR)
   }
 
-  const id = parseInt(args[0])
-  const rule = await parseRule(id, msg)
+  const target = args.shift().replace(/<@!?(\d+)>/, '$1')
 
-  if (rule === null) {
-    return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
+  if (target === msg.author.id) {
+    return msg.channel.createMessage('You\'re already talking fam.')
   }
 
-  msg.channel.createMessage(`**Rule #${id}**: ${rule}\n\n${INFO_STR}`)
+  task.unmute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`)
+  return msg.channel.createMessage('Speak')
 }

@@ -52,6 +52,7 @@
       "always-multiline"
     ],
     "object-property-newline": "error",
+    "no-useless-escape": "error",
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
     "react/no-this-in-sfc": "error",

@@ -21,44 +21,41 @@
  */
 
 const config = require('../config.json')
-const zws = '\u200B'
 
 module.exports = {
-  SNIPE_LIFETIME: 30,
-  lastMessages: [],
-
-  register (bot) {
-    bot.on('messageDelete', (msg) => {
-      if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || isPrivate(msg.channel)) {
-        return // Let's ignore
-      }
-
-      this.catch(msg, 'delete')
+  async parseRule (ruleID, msg) {
+    const messages = await msg._client.getMessages(config.discord.ids.channelRules)
+    let rules
+    messages.reverse().forEach(msg => {
+      rules += msg.content.slice(6, msg.content.length - 3)
     })
+    rules += '||||' // without this the last rule will get chopped off by the slice on 53
 
-    bot.on('messageUpdate', (msg, old) => {
-      if (!old || !msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || msg.content === old.content || isPrivate(msg.channel)) {
-        return // Let's ignore
-      }
+    const match = rules.match(new RegExp(`\\[0?${ruleID}] (([^\\[]*)([^\\d]*)([^\\]]*))`))
+    if (!match) {
+      return null
+    }
 
-      this.catch({ ...msg, content: old.content }, 'edit')
-    })
+    const rule = match[1].split('\n').map(s => s.trim()).join(' ')
+      .replace(/\[#[^a-z0-9-_]?([a-z0-9-_]+)\]/ig, (og, name) => {
+        const channel = msg.channel.guild.channels.find(c => c.name === name)
+        return channel ? `<#${channel.id}>` : og
+      })
+      .replace(/Actions: /, '\nActions: ')
+
+    return rule.slice(0, rule.length - 4).trim()
   },
 
-  catch (msg, type) {
-    const id = Math.random()
-    this.lastMessages.push({
-      _id: id,
-      author: `${msg.author.username}#${msg.author.discriminator}`,
-      msg: msg.content ? msg.content.replace(/\(/g, `${zws}(`) : 'This message had no text content.',
-      channel: msg.channel.name,
-      type
-    })
-
-    setTimeout(() => (this.lastMessages = this.lastMessages.filter(m => m._id !== id)), this.SNIPE_LIFETIME * 1e3)
+  parseDuration (rawDuration) {
+    if (rawDuration.endsWith('m')) {
+      return rawDuration.match(/\d+/)[0] * 1000 * 60
+    } else if (rawDuration.endsWith('h')) {
+      return rawDuration.match(/\d+/)[0] * 1000 * 60 * 60
+    } else if (rawDuration.endsWith('d')) {
+      return rawDuration.match(/\d+/)[0] * 1000 * 60 * 60 * 24
+    } else {
+      return null
+    }
   }
-}
 
-function isPrivate (channel) {
-  return Boolean(channel.permissionOverwrites.get(channel.guild.id)?.deny & 1024)
 }

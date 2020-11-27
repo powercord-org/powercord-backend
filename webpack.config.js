@@ -20,38 +20,39 @@
  * SOFTWARE.
  */
 
-const { resolve } = require('path')
+const { join } = require('path')
 const { existsSync, readdirSync, unlinkSync } = require('fs')
-const TerserJSPlugin = require('terser-webpack-plugin')
-const ManifestPlugin = require('webpack-manifest-plugin')
-const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
-const { DefinePlugin, optimize: { LimitChunkCountPlugin } } = require('webpack')
+const { DefinePlugin, HotModuleReplacementPlugin, optimize: { LimitChunkCountPlugin } } = require('webpack')
+
+const MiniCSS = require('mini-css-extract-plugin')
+const Manifest = require('webpack-manifest-plugin')
+const CssMinimizer = require('css-minimizer-webpack-plugin')
+const ReactRefresh = require('@pmmmwh/react-refresh-webpack-plugin')
+const FriendlyErrors = require('friendly-errors-webpack-plugin')
 
 // Env vars
-let commitHash = null
-try { commitHash = require('child_process').execSync('git rev-parse HEAD').toString().trim() } catch (e) {}
-
-const isDev = process.env.NODE_ENV === 'development'
-const src = resolve(__dirname, 'src')
+const COMMIT_HASH = require('child_process').execSync('git rev-parse HEAD').toString().trim()
+const IS_DEV = process.env.NODE_ENV === 'development'
+const SRC = join(__dirname, 'src')
+const OUT = join(__dirname, 'dist')
 
 const baseConfig = {
-  mode: isDev ? 'development' : 'production',
-  entry: resolve(src, 'main.jsx'),
+  mode: IS_DEV ? 'development' : 'production',
+  context: SRC,
+  entry: './main.jsx',
   output: {
-    filename: isDev ? '[name].js' : '[contenthash].js',
-    chunkFilename: isDev ? '[name].chk.js' : '[contenthash].js',
-    path: resolve(__dirname, 'dist'),
+    path: OUT,
+    filename: IS_DEV ? '[name].js' : '[contenthash].js',
+    chunkFilename: IS_DEV ? '[name].chk.js' : '[contenthash].js',
+    chunkLoadingGlobal: 'w',
     publicPath: '/dist/'
   },
   resolve: {
     extensions: [ '.js', '.jsx' ],
     alias: {
-      '@components': resolve(__dirname, 'src', 'components'),
-      '@styles': resolve(__dirname, 'src', 'styles'),
-      '@assets': resolve(__dirname, 'src', 'assets')
+      '@components': join(SRC, 'components'),
+      '@styles': join(SRC, 'styles'),
+      '@assets': join(SRC, 'assets')
     }
   },
   module: {
@@ -59,19 +60,16 @@ const baseConfig = {
     rules: [
       {
         test: /\.jsx?/,
-        include: src,
+        include: SRC,
         use: [
           {
             loader: 'babel-loader',
             options: {
-              cacheDirectory: true,
-              cacheCompression: true,
-              compact: true,
-              presets: [ '@babel/preset-react' ],
+              presets: [ '@babel/react' ],
               plugins: [
-                '@babel/plugin-syntax-dynamic-import',
-                '@babel/plugin-proposal-object-rest-spread',
-                isDev ? require.resolve('react-refresh/babel') : null
+                '@babel/syntax-dynamic-import',
+                '@babel/proposal-object-rest-spread',
+                IS_DEV ? 'react-refresh/babel' : null
               ].filter(Boolean)
             }
           }
@@ -80,10 +78,7 @@ const baseConfig = {
       {
         test: /\.s?css$/,
         use: [
-          {
-            loader: MiniCSSExtractPlugin.loader,
-            options: { hmr: isDev }
-          },
+          IS_DEV ? 'style-loader' : MiniCSS.loader,
           {
             loader: 'css-loader',
             options: {
@@ -95,10 +90,24 @@ const baseConfig = {
           },
           {
             loader: 'postcss-loader',
-            options: { plugins: [ require('autoprefixer') ] }
+            options: { postcssOptions: { plugins: [ 'autoprefixer' ] } }
           },
           'sass-loader'
-        ]
+        ],
+        exclude: [ /node_modules/ ]
+      },
+      {
+        test: /\.s?css$/,
+        use: [
+          MiniCSS.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: { postcssOptions: { plugins: [ 'autoprefixer' ] } }
+          },
+          'sass-loader'
+        ],
+        include: [ /node_modules/ ]
       },
       {
         test: /\.(svg|mp4|webm|woff2?|eot|ttf|otf|wav|ico)$/,
@@ -119,7 +128,7 @@ const baseConfig = {
           {
             loader: 'image-webpack-loader',
             options: {
-              disable: isDev,
+              disable: IS_DEV,
               mozjpeg: {
                 progressive: true,
                 quality: 95
@@ -140,40 +149,13 @@ const baseConfig = {
     ]
   },
   plugins: [
-    new ManifestPlugin({
-      writeToFileEmit: true,
-      fileName: resolve(__dirname, 'http', 'dist', 'manifest.json')
-    }),
-    new MiniCSSExtractPlugin({
-      filename: isDev ? '[name].css' : '[contenthash].css',
-      chunkFilename: isDev ? '[name].css' : '[contenthash].css'
-    }),
-    new DefinePlugin({
-      WEBPACK: {
-        GIT_REVISION: JSON.stringify(commitHash)
-      },
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-    })
+    new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('client') }),
+    new Manifest({ writeToFileEmit: true, fileName: join(__dirname, 'http', 'manifest.webpack.json') }),
+    new DefinePlugin({ GIT_REVISION: JSON.stringify(COMMIT_HASH) })
   ],
   optimization: {
-    minimize: !isDev,
-    minimizer: [
-      new TerserJSPlugin({
-        extractComments: false,
-        parallel: true,
-        cache: true
-      }),
-      new OptimizeCSSAssetsPlugin({
-        cssProcessorPluginOptions: {
-          preset: [ 'default', {
-            cssDeclarationSorter: true,
-            discardUnused: true,
-            mergeIdents: true,
-            reduceIdents: true
-          } ]
-        }
-      })
-    ],
+    minimize: !IS_DEV,
+    minimizer: [ '...', new CssMinimizer() ],
     splitChunks: {
       cacheGroups: {
         styles: {
@@ -186,55 +168,52 @@ const baseConfig = {
     }
   },
   devServer: {
+    port: 8080,
+    hot: true,
     quiet: true,
+    publicPath: '/dist/',
     historyApiFallback: true,
-    allowedHosts: [ 'localhost', '.ngrok.io' ], // Learn more about ngrok here: https://ngrok.com/
     proxy: { '/': `http://localhost:${require('./config.json').port}` }
   }
 }
 
-if (isDev) {
-  baseConfig.plugins.push(new FriendlyErrorsWebpackPlugin(), new ReactRefreshWebpackPlugin())
+if (IS_DEV) {
+  baseConfig.plugins.push(new HotModuleReplacementPlugin(), new FriendlyErrors(), new ReactRefresh())
   module.exports = baseConfig
 } else {
-  baseConfig.plugins.push({
-    apply: (compiler) =>
-      compiler.hooks.compile.tap('cleanBuild', () => {
-        if (existsSync(compiler.options.output.path)) {
-          for (const filename of readdirSync(compiler.options.output.path)) {
-            if (filename !== 'manifest.json') {
-              unlinkSync(resolve(compiler.options.output.path, filename))
+  baseConfig.plugins.push(
+    new MiniCSS({ filename: '[contenthash].css', chunkFilename: '[contenthash].css' }),
+    {
+      apply: (compiler) =>
+        compiler.hooks.compile.tap('cleanBuild', () => {
+          if (existsSync(compiler.options.output.path)) {
+            for (const filename of readdirSync(compiler.options.output.path)) {
+              unlinkSync(join(compiler.options.output.path, filename))
             }
           }
-        }
-      })
-  })
+        })
+    }
+  )
 
   const nodeCfg = {
     ...baseConfig,
-    entry: resolve(src, 'components', 'App.jsx'),
+    entry: './components/App.jsx',
+    target: 'node',
     output: {
       filename: 'App.js',
       chunkFilename: '[name].chk.js',
       libraryTarget: 'commonjs2',
-      path: resolve(__dirname, 'http', 'dist'),
+      path: join(__dirname, 'http', 'dist'),
       publicPath: '/dist/'
     },
     plugins: [
-      ...baseConfig.plugins.slice(1),
+      ...baseConfig.plugins.slice(2), // Slice manifest & build side
       new LimitChunkCountPlugin({ maxChunks: 1 }),
       new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('server') })
     ],
-    optimization: {
-      ...baseConfig.optimization,
-      minimize: false
-    },
-    target: 'node',
+    optimization: { minimize: false },
     externals: [ require('webpack-node-externals')() ],
-    node: {
-      __dirname: false,
-      __filename: false
-    }
+    node: { __dirname: false, __filename: false }
   }
 
   module.exports = [ baseConfig, nodeCfg ]

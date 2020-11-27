@@ -22,17 +22,20 @@
 
 const { CommandClient } = require('eris')
 const { MongoClient } = require('mongodb')
+const cron = require('node-cron')
 const modlog = require('./modlog')
 const sniper = require('./sniper')
 const logger = require('./logger')
 const roles = require('./roles')
 const canary = require('./canary')
 const starboard = require('./starboard')
+const stats = require('./stats')
 const config = require('../config.json')
+const task = require('./tasks')
+const autotag = require('./autotag')
 
 const bot = new CommandClient(config.discord.botToken, {
-  // todo: do we need guild members? dont think so but that needs some testing (esp. for mod log(?))
-  intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildMessages', 'guildMessageReactions' ]
+  intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildPresences', 'guildMessages', 'guildMessageReactions' ]
 }, { defaultHelpCommand: false, prefix: config.discord.prefix })
 
 // Commands
@@ -44,10 +47,17 @@ bot.registerCommand('tag', require('./commands/tag'), { description: 'Custom com
 bot.registerCommand('help', require('./commands/help'), { description: 'Shows this very help message' })
 
 bot.registerCommand('edit', require('./commands/mod/edit'))
+bot.registerCommand('kick', require('./commands/mod/kick'))
+bot.registerCommand('ban', require('./commands/mod/ban'))
+bot.registerCommand('unban', require('./commands/mod/unban'))
+bot.registerCommand('mute', require('./commands/mod/mute'))
+bot.registerCommand('unmute', require('./commands/mod/unmute'))
+bot.registerCommand('enforce', require('./commands/mod/enforce'))
 
 bot.registerCommand('eval', require('./commands/admin/eval'))
 bot.registerCommand('ssh', require('./commands/admin/ssh'))
 bot.registerCommand('sync', require('./commands/admin/sync'))
+bot.registerCommand('syncFaq', require('./commands/admin/syncFaq'))
 
 // Other stuff
 modlog.register(bot)
@@ -56,6 +66,8 @@ logger.register(bot)
 roles.register(bot)
 canary.register(bot)
 starboard.register(bot)
+stats.register(bot)
+autotag.register(bot)
 
 // Events
 bot.on('ready', () => console.log('Ready.'))
@@ -68,3 +80,5 @@ MongoClient.connect(config.mango, { useUnifiedTopology: true })
     console.log('Connecting to the Discord App Gateway WebSocket powered by Elixir and Web Scale Technology')
     bot.connect()
   })
+
+cron.schedule('* * * * *', () => task.handleSchedule(bot))

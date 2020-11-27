@@ -26,21 +26,25 @@
   }
 }
 
-.graph {
+.chart {
   background-color: #252525;
+  margin-bottom: 32px;
 
   header {
     height: 65px;
     display: flex;
     flex-direction: column;
     padding: 8px 16px;
+    margin-bottom: 8px;
 
-    div:first-child {
+    h3 {
+      font-size: 16px;
       font-weight: 600;
       flex-shrink: 0;
+      margin: 0;
     }
 
-    .btns {
+    .buttons {
       display: flex;
       align-items: center;
       flex: 1;
@@ -59,20 +63,34 @@
       cursor: initial;
     }
   }
-
-  svg {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    width: 100%; 
-  }
 }
 
-.side {
+.grid-line {
+  fill: none;
+  stroke: #fff;
+  stroke-opacity: .06;
+}
+
+.grid-text {
+  fill: #b9bbbe;
+  cursor: default;
+  font-size: 12px;
+  user-select: none;
+}
+
+.legend {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 14px;
-  opacity: 0.6;
+  padding: 0 32px 16px;
+}
+
+.legend-entry {
+  display: flex;
+  align-items: center;
+  margin-right: 32px;
+
+  svg {
+    margin-right: 8px;
+  }
 }
 
 .group {
@@ -85,21 +103,29 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 22px;
   }
+
+  &:first-of-type > div:first-of-type h3 {
+    margin-top: 0;
+  }
 }
 
 @media screen and (min-width: 1180px) {
-  .graph header {
+  .chart header {
     height: 40px;
     align-items: center;
     flex-direction: row;
 
-    .btns {
+    .buttons {
       justify-content: flex-end;
     }
   }
 
   .group {
     display: flex;
+
+    &:first-of-type h3 {
+      margin-top: 0;
+    }
 
     div {
       width: 33%;
