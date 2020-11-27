@@ -88,7 +88,7 @@ function Advisories () {
           })
         })
         .catch(e => {
-          console.error('[Advisories] Failed to load advisories', e)
+          console.error('[Advisories] Failed to load advisories:', e)
           setPages(false)
         })
     }

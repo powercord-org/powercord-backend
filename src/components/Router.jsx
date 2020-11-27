@@ -40,6 +40,7 @@ import PorkordLicense from './legal/PorkordLicense'
 import Terms from './legal/Terms'
 import Privacy from './legal/Privacy'
 import NotFound from './NotFound'
+import Soon from './Soon'
 
 const Router = () => (
   <Switch>
@@ -61,16 +62,16 @@ const Router = () => (
       <Branding/>
     </Route>
     <Route path={Routes.STORE} exact>
-      <main>todo</main>
+      {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
     </Route>
     <Route path={Routes.ADVISORIES} exact>
-      <Advisories/>
+      {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
     </Route>
     <Route path={Routes.ADVISORY(':id')} exact>
-      <Advisory/>
+      {process.env.NODE_ENV === 'development' ? <Advisory/> : <Soon/>}
     </Route>
     <Route path={Routes.BACKOFFICE} exact>
-      <main>todo</main>
+      {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
     </Route>
     {/* Documents */}
     <Route path={Routes.DOCS} exact>

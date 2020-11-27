@@ -38,6 +38,16 @@
   padding: 16px;
 }
 
+.list-title {
+  margin-top: -4px;
+  font-size: 22px;
+  color: inherit;
+}
+
+.list-id {
+  font-family: 'JetBrains Mono', monospace;
+}
+
 .shield {
   margin-top: 1px;
   width: 24px;
@@ -52,12 +62,6 @@
   b {
     font-weight: 600;
   }
-}
-
-.title {
-  margin-top: -4px;
-  font-size: 22px;
-  color: inherit;
 }
 
 .properties {
@@ -98,6 +102,18 @@
   color: #f04747;
 }
 
+@keyframes rainbow {
+  from { color: #6666ff; }
+  10% { color: #0099ff; }
+  50% { color: #00ff00; }
+  75% { color: #ff3399; }
+  to { color: #6666ff; }
+}
+
+.severity4 {
+  animation: rainbow 2s linear infinite;
+}
+
 .tooltip {
   display: flex;
   padding: 8px;
@@ -132,4 +148,19 @@
     margin-top: 0;
     margin-right: 4px;
   }
+}
+
+.title {
+  margin-bottom: 0;
+}
+
+.sub-title {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.id {
+  color: #999;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
 }
