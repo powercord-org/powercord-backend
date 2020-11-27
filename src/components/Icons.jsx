@@ -3,14 +3,16 @@ import React from 'react'
 function buildIcon (name, viewBox, paths) {
   if (!Array.isArray(paths)) paths = [ paths ]
 
-  const Icon = (props) => (
-    <svg xmlns='http://www.w3.org/2000/svg' viewBox={viewBox} {...props}>
+  const Icon = (props, ref) => (
+    <svg ref={ref} xmlns='http://www.w3.org/2000/svg' viewBox={viewBox} {...props}>
       {paths.map(path => <path key={path} fill='currentColor' d={path}/>)}
     </svg>
   )
-  Icon.defaultProps = { width: 24, height: 24 }
   Icon.displayName = `Icon(${name})`
-  return React.memo(Icon)
+  const FwIcon = React.forwardRef(Icon)
+
+  FwIcon.defaultProps = { width: 24, height: 24 }
+  return React.memo(FwIcon)
 }
 
 // Home icons
@@ -26,3 +28,9 @@ export const ShieldDanger = buildIcon('ShieldDanger', '0 0 16 16', 'M7.467.133a1
 export const Extension = buildIcon('Extension', '0 0 24 24', 'M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5a2.5 2.5 0 0 0-5 0V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7s2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5a2.5 2.5 0 0 0 0-5z')
 export const Tag = buildIcon('Tag', '0 0 16 16', 'M2.5 7.775V2.75a.25.25 0 0 1 .25-.25h5.025a.25.25 0 0 1 .177.073l6.25 6.25a.25.25 0 0 1 0 .354l-5.025 5.025a.25.25 0 0 1-.354 0l-6.25-6.25a.25.25 0 0 1-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.75 1.75 0 0 1 1 7.775zM6 5a1 1 0 1 0 0 2a1 1 0 0 0 0-2z')
 export const Person = buildIcon('Extension', '0 0 24 24', 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4s-4 1.79-4 4s1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z')
+
+// Paginator icons
+export const ArrowBack = buildIcon('ArrowBack', '0 0 24 24', 'M13.83 19a1 1 0 0 1-.78-.37l-4.83-6a1 1 0 0 1 0-1.27l5-6a1 1 0 0 1 1.54 1.28L10.29 12l4.32 5.36a1 1 0 0 1-.78 1.64z')
+export const ArrowBackDouble = buildIcon('ArrowBackDouble', '0 0 24 24', [ 'M11.64 5.23a1 1 0 0 0-1.41.13l-5 6a1 1 0 0 0 0 1.27l4.83 6a1 1 0 0 0 .78.37a1 1 0 0 0 .78-1.63L7.29 12l4.48-5.37a1 1 0 0 0-.13-1.4z', 'M14.29 12l4.48-5.37a1 1 0 0 0-1.54-1.28l-5 6a1 1 0 0 0 0 1.27l4.83 6a1 1 0 0 0 .78.37a1 1 0 0 0 .78-1.63z' ])
+export const ArrowNext = buildIcon('ArrowNext', '0 0 24 24', 'M10 19a1 1 0 0 1-.64-.23a1 1 0 0 1-.13-1.41L13.71 12L9.39 6.63a1 1 0 0 1 .15-1.41a1 1 0 0 1 1.46.15l4.83 6a1 1 0 0 1 0 1.27l-5 6A1 1 0 0 1 10 19z')
+export const ArrowNextDouble = buildIcon('ArrowNextDouble', '0 0 24 24', [ 'M18.78 11.37l-4.78-6a1 1 0 0 0-1.41-.15a1 1 0 0 0-.15 1.41L16.71 12l-4.48 5.37a1 1 0 0 0 .13 1.41A1 1 0 0 0 13 19a1 1 0 0 0 .77-.36l5-6a1 1 0 0 0 .01-1.27z', 'M7 5.37a1 1 0 0 0-1.61 1.26L9.71 12l-4.48 5.36a1 1 0 0 0 .13 1.41A1 1 0 0 0 6 19a1 1 0 0 0 .77-.36l5-6a1 1 0 0 0 0-1.27z' ])

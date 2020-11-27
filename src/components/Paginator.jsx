@@ -21,31 +21,34 @@
  */
 
 import React from 'react'
-import { Link } from 'react-router-dom'
 
-import { Routes } from '../../constants'
 import * as Icons from '@components/Icons'
+import style from '@styles/paginator.scss'
 
-import style from '@styles/advisories.scss'
+function Paginator ({ current, total, setPage }) {
+  const prevLocked = current === 1
+  const nextLocked = current === total
 
-function formatDate (date) {
-  return date
-}
-
-const Item = ({ id, level, title, plugin, version, author, published }) => (
-  <div className={`${style.advisory} ${style[`severity${level}`]}`}>
-    <Icons.ShieldDanger className={style.shield}/>
-    <div className={style.details}>
-      <Link className={style.title} to={Routes.ADVISORY(id)}>{title}</Link>
-      <div className={style.properties}>
-        <div>{id}</div>
-        <div><Icons.Extension/> <span>{plugin}</span></div>
-        <div><Icons.Tag/> <span>{version || 'all versions'}</span></div>
-        <div><Icons.Person/> <span>Published {formatDate(published)} by {author}</span></div>
+  return (
+    <div className={style.wrapper}>
+      <div className={style.container}>
+        <button className={style.button} disabled={prevLocked} onClick={() => setPage(1)}>
+          <Icons.ArrowBackDouble/>
+        </button>
+        <button className={style.button} disabled={prevLocked} onClick={() => setPage(current - 1)}>
+          <Icons.ArrowBack/>
+        </button>
+        <div className={style.pages}>Page {current} of {total}</div>
+        <button className={style.button} disabled={nextLocked} onClick={() => setPage(current + 1)}>
+          <Icons.ArrowNext/>
+        </button>
+        <button className={style.button} disabled={nextLocked} onClick={() => setPage(total)}>
+          <Icons.ArrowNextDouble/>
+        </button>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
-Item.displayName = 'AdvisoryItem'
-export default React.memo(Item)
+Paginator.displayName = 'Paginator'
+export default React.memo(Paginator)

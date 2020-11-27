@@ -20,116 +20,46 @@
  * SOFTWARE.
  */
 
-%list-base {
+.wrapper {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
   display: flex;
   background-color: #252525;
   border: 1px #151515 solid;
-}
 
-.list-header {
-  @extend %list-base;
-  padding: 8px 16px;
-  justify-content: flex-end;
-}
-
-.list-item {
-  @extend %list-base;
-  border-top-width: 0;
-  padding: 16px;
-}
-
-.shield {
-  margin-top: 1px;
-  width: 24px;
-  height: 24px;
-  margin-right: 16px;
-}
-
-.details {
-  display: flex;
-  flex-direction: column;
-
-  b {
-    font-weight: 600;
-  }
-}
-
-.title {
-  margin-top: -4px;
-  font-size: 22px;
-  color: inherit;
-}
-
-.properties {
-  display: flex;
-  font-size: 14px;
-  color: #b1b1b1;
-  margin-top: 6px;
-
-  svg {
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
-  }
-
-  div {
+  div, button {
     display: flex;
     align-items: center;
+    justify-content: center;
 
-    + div {
-      margin-left: 16px;
+    &:not(:first-child) { 
+      border-left: 1px #151515 solid;
     }
   }
 }
 
-.severity0 {
-  color: #a7a7a7;
-}
+.button {
+  padding: 4px;
 
-.severity1 {
-  color: #fffc4f;
-}
-
-.severity2 {
-  color: #ff9900;
-}
-
-.severity3 {
-  color: #f04747;
-}
-
-.tooltip {
-  display: flex;
-  padding: 8px;
-
-  img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 8px;
+  &:not(:disabled):hover {
+    background-color: rgba(0, 0, 0, .2);
   }
 
-  .name {
-    margin-bottom: 4px;
-  }
+  &:disabled {
+    cursor: not-allowed;
 
-  .found {
-    display: flex;
-  }
-
-  .found-kind {
-    display: flex;
-    align-items: center;
-
-    &:not(:first-of-type) {
-      margin-left: 8px;
+    svg {
+      opacity: 0.4;
     }
   }
+}
 
-  .shield {
-    width: 16px;
-    height: 16px;
-    margin-top: 0;
-    margin-right: 4px;
-  }
+.pages {
+  padding: 4px 8px;
 }

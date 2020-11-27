@@ -8,6 +8,7 @@ node_modules
 # yes
 .cache
 boat/.canary.cache.json
+manifest.webpack.json
 http/dist
 dist
 
@@ -16,7 +17,5 @@ config.json
 *.log
 _work
 *.nogit.*
-
-# todo: remove
-# temporary
-boat/ssh
+*.nogit/
+package-lock.json
