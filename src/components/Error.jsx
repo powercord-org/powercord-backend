@@ -20,39 +20,20 @@
  * SOFTWARE.
  */
 
-const fakeAdv = (lvl) => ({
-  id: 'PC-2020-001',
-  level: lvl,
-  title: 'Fake advisory',
-  date: '2020-11-13T10:55:32.490Z',
-  plugin: {
-    name: 'Fake plugin',
-    developer: 'Fake developer'
-  },
-  publisher: {
-    name: 'Fake publisher',
-    avatar: 'https://cdn.discordapp.com/avatars/94762492923748352/ad72202b231eb0d8404dd0db15a5edd4.png?size=128',
-    low: 1 + Math.floor(Math.random() * 5),
-    moderate: 1 + Math.floor(Math.random() * 5),
-    high: 1 + Math.floor(Math.random() * 5),
-    critical: 1 + Math.floor(Math.random() * 5)
-  }
-})
+import React from 'react'
 
-const advisories = [ fakeAdv(0), fakeAdv(1), fakeAdv(2), fakeAdv(3) ]
+import { Error as ErrorIcon } from '@components/Icons'
+import style from '@styles/main.scss'
 
-async function getAdvisories (request) {
-  return {
-    advisories,
-    pages: 1
-  }
+const Error = ({ message }) => {
+  return (
+    <div className={style.error}>
+      <ErrorIcon/>
+      <span>{message}. Please try again later.</span>
+    </div>
+  )
 }
 
-async function getAdvisory (request) {
-  return request.params.id
-}
-
-module.exports = async function (fastify) {
-  fastify.get('/', getAdvisories)
-  fastify.get('/:id([A-Z]{2,3}-\\d{4}-\\d{3,4})', getAdvisory)
-}
+Error.displayName = 'Error'
+Error.defaultProps = { message: 'An error occurred' }
+export default React.memo(Error)

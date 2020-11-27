@@ -149,3 +149,16 @@ li {
 .serious {
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
 }
+
+.error {
+  background-color: #f04747;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  padding: 8px;
+
+  svg {
+    margin-right: 8px;
+  }
+}
+

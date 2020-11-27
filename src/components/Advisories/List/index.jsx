@@ -22,32 +22,16 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 
+import Error from '@components/Error'
 import Spinner from '@components/Spinner'
 import Container from '@components/Container'
 import Tooltip from '@components/Tooltip'
 import Paginator from '@components/Paginator'
 import AdvisoryItem from './Item'
 
-import styles from '@styles/advisories.scss'
+import { Endpoints } from '../../../constants'
 
-const fakeAdv = (lvl) => ({
-  id: 'PC-2020-001',
-  level: lvl,
-  title: 'Fake advisory',
-  date: '2020-11-13T10:55:32.490Z',
-  plugin: {
-    name: 'Fake plugin',
-    developer: 'Fake developer'
-  },
-  publisher: {
-    name: 'Fake publisher',
-    avatar: 'https://cdn.discordapp.com/avatars/94762492923748352/ad72202b231eb0d8404dd0db15a5edd4.png?size=128',
-    low: 1 + Math.floor(Math.random() * 5),
-    moderate: 1 + Math.floor(Math.random() * 5),
-    high: 1 + Math.floor(Math.random() * 5),
-    critical: 1 + Math.floor(Math.random() * 5)
-  }
-})
+import styles from '@styles/advisories.scss'
 
 function ListComponent ({ list }) {
   if (list.length === 0) {
@@ -65,23 +49,9 @@ function ListComponent ({ list }) {
 ListComponent.displayName = 'AdvisoriesList'
 const List = React.memo(ListComponent)
 
-function Advisories () {
-  const [ totalPages, setTotalPages ] = useState(0)
-  const [ pages, sePages ] = useState({})
-  const [ page, setPage ] = useState(1)
-  const list = useMemo(() => pages[page], [ pages, page ])
-
-  useEffect(() => {
-    // todo: http
-    setTotalPages(69)
-    sePages({
-      ...pages,
-      [page]: [ fakeAdv(0), fakeAdv(1), fakeAdv(2), fakeAdv(3) ]
-    })
-  }, [ page ])
-
+function IntroComponent () {
   return (
-    <Container>
+    <>
       <h1>Powercord Security Advisories</h1>
       <p>
         This database lists all of the discovered security vulnerabilities and threats discovered in the Powercord
@@ -91,7 +61,51 @@ function Advisories () {
         If a plugin has a known high severity vulnerability, Powercord will not load the plugin and alert users. For
         lower severity issues, users will still be warned but will have the choice to load the plugin anyway.
       </p>
+    </>
+  )
+}
 
+IntroComponent.displayName = 'AdvisoriesIntro'
+const Intro = React.memo(IntroComponent)
+
+function Advisories () {
+  const [ pages, setPages ] = useState({ total: 0, items: {} })
+  const [ page, setPage ] = useState(1)
+  const list = useMemo(() => pages && pages.items[page], [ pages, page ])
+
+  useEffect(() => {
+    if (!pages.items[page]) {
+      fetch(Endpoints.ADVISORIES)
+        .then(r => r.json())
+        .then(data => {
+          setPages({
+            ...pages,
+            total: data.pages,
+            items: {
+              ...pages.items,
+              [page]: data.advisories
+            }
+          })
+        })
+        .catch(e => {
+          console.error('[Advisories] Failed to load advisories', e)
+          setPages(false)
+        })
+    }
+  }, [ page ])
+
+  if (!pages) {
+    return (
+      <Container>
+        <Intro/>
+        <Error message='Failed to load advisories'/>
+      </Container>
+    )
+  }
+
+  return (
+    <Container>
+      <Intro/>
       {!list
         ? <Spinner/>
         : (
@@ -105,7 +119,7 @@ function Advisories () {
           </>
         )}
 
-      {totalPages > 1 && <Paginator current={page} total={totalPages} setPage={setPage}/>}
+      {pages.total > 1 && <Paginator current={page} total={pages.total} setPage={setPage}/>}
     </Container>
   )
 }
