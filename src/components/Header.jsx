@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import { memo, useMemo, useState, useCallback, useEffect, useContext } from 'react'
+import { memo, useMemo, useState, useCallback, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Routes } from '@constants'

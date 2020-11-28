@@ -75,9 +75,11 @@ function Router () {
       <Route path={Routes.BACKOFFICE} exact>
         {process.env.NODE_ENV === 'development'
           ? (
-            <Suspense fallback='Loading...'>
-              <Backoffice/>
-            </Suspense>
+            <AuthBoundary staff>
+              <Suspense fallback='Loading...'>
+                <Backoffice/>
+              </Suspense>
+            </AuthBoundary>
             )
           : <Soon/>}
       </Route>

@@ -22,21 +22,32 @@
 
 import { memo, useContext } from 'react'
 
-import { Endpoints } from '@constants'
+import { Routes, Endpoints } from '@constants'
 import Container from './Container'
 import UserContext from './UserContext'
 
 function AuthBoundary ({ children, staff }) {
   const user = useContext(UserContext)
 
-  return user // todo: staff-locked routes
-    ? children
-    : (
-        <Container>
-          <h1>You must be authenticated to see this</h1>
-          <a href={Endpoints.LOGIN}>Login</a>
-        </Container>
-      )
+  if (!user) {
+    return (
+      <Container>
+        <h1>You must be authenticated to see this</h1>
+        <a href={Endpoints.LOGIN}>Login</a>
+      </Container>
+    )
+  }
+
+  if (staff && !user.badges.staff) {
+    return (
+      <Container>
+        <h1>Go away. Right now.</h1>
+        <a href={Routes.HOME}>go away</a>
+      </Container>
+    )
+  }
+
+  return children
 }
 
 AuthBoundary.displayName = 'AuthBoundary'
