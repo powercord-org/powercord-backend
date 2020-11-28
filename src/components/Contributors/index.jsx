@@ -20,19 +20,19 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo, useEffect, useState } from 'react'
 import Helmet from 'react-helmet'
 
-import { Endpoints } from '../../constants'
+import { Endpoints } from '@constants'
 import Container from '@components/Container'
 import Spinner from '@components/Spinner'
 import Contributor from './Contributor'
 
 import style from '@styles/contributors.scss'
 
-const Contributors = () => {
-  const [ contributors, setContributors ] = React.useState(null)
-  React.useEffect(() => {
+function Contributors () {
+  const [ contributors, setContributors ] = useState(null)
+  useEffect(() => {
     fetch(Endpoints.CONTRIBUTORS)
       .then(r => r.json())
       .then(c => setContributors(c))
@@ -69,4 +69,4 @@ const Contributors = () => {
 }
 
 Contributors.displayName = 'Contributors'
-export default React.memo(Contributors)
+export default memo(Contributors)

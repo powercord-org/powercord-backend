@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-const React = require('react')
-const UserContext = React.createContext(null)
+const { createContext } = require('react')
+const UserContext = createContext(null)
 UserContext.displayName = 'UserContext'
 module.exports = UserContext

@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo } from 'react'
 
 import style from '@styles/stats.scss'
 
-const Stats = ({ total, month, week, helpers, plugins, themes }) => {
+function Stats ({ total, month, week, helpers, plugins, themes }) {
   const loaded = typeof total !== 'undefined'
   return (
     <>
@@ -64,4 +64,4 @@ const Stats = ({ total, month, week, helpers, plugins, themes }) => {
 }
 
 Stats.displayName = 'Stats'
-export default React.memo(Stats)
+export default memo(Stats)

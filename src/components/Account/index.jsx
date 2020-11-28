@@ -20,17 +20,17 @@
  * SOFTWARE.
  */
 
-import React, { useContext, useCallback } from 'react'
+import { memo, useContext, useCallback } from 'react'
 import Helmet from 'react-helmet'
 
-import { Endpoints } from '../../constants'
-import UserContext from '../UserContext'
-import Container from '../Container'
+import { Endpoints } from '@constants'
+import UserContext from '@components/UserContext'
+import Container from '@components/Container'
 import Cutie from './Cutie'
 
 import style from '@styles/account.scss'
 
-const Account = () => {
+function Account () {
   const user = useContext(UserContext)
   const yeetAccount = useCallback(() => {
     if (confirm('Are you sure? This action is irreversible.')) {
@@ -67,4 +67,4 @@ const Account = () => {
 }
 
 Account.displayName = 'Account'
-export default React.memo(Account)
+export default memo(Account)

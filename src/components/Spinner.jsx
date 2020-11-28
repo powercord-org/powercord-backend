@@ -20,11 +20,10 @@
  * SOFTWARE.
  */
 
-import React from 'react'
-
+import { memo } from 'react'
 import style from '@styles/spinner.scss'
 
-const Spinner = ({ balls }) => {
+function Spinner ({ balls }) {
   if (balls) {
     return (
       <div className={style.balls}>
@@ -41,4 +40,4 @@ const Spinner = ({ balls }) => {
 }
 
 Spinner.displayName = 'Spinner'
-export default React.memo(Spinner)
+export default memo(Spinner)

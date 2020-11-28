@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-import React from 'react'
-import Helmet from 'react-helmet'
+import { memo, useEffect } from 'react'
 import { useLocation } from 'react-router'
+import Helmet from 'react-helmet'
 
 import Header from './Header'
 import Router from './Router'
@@ -31,15 +31,15 @@ import Cookies from './Cookies'
 
 import '@styles/main.scss'
 
-const App = () => {
+function App () {
   const { hash, pathname } = useLocation()
   if (process.env.BUILD_SIDE !== 'server') {
-    React.useEffect(() => {
+    useEffect(() => {
       if (hash) {
         const element = document.querySelector(hash)
         if (element) {
           setTimeout(() => element.scrollIntoView(), 10)
-          return void 0
+          return
         }
       }
       window.scrollTo(0, 0)
@@ -87,4 +87,4 @@ const App = () => {
 }
 
 App.displayName = 'App'
-export default React.memo(App)
+export default memo(App)

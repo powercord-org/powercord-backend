@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo } from 'react'
 
 import style from '@styles/account.scss'
 
@@ -31,18 +31,20 @@ const includes = [
   'A custom role in our server, custom badge color, custom profile badge, custom server badge'
 ]
 
-const Cutie = ({ tier }) => (
-  <>
-    <div className={style.cutie}>
-      <img src={require('@assets/cutie.svg').default} alt='Powercord Cutie'/>
-      <div>
-        <span>Thank you for supporting Powercord! You are a tier {tier} patron.</span>
-        <span>Includes: {includes[tier - 1]}.</span>
+function Cutie ({ tier }) {
+  return (
+    <>
+      <div className={style.cutie}>
+        <img src={require('@assets/cutie.svg').default} alt='Powercord Cutie'/>
+        <div>
+          <span>Thank you for supporting Powercord! You are a tier {tier} patron.</span>
+          <span>Includes: {includes[tier - 1]}.</span>
+        </div>
       </div>
-    </div>
-    {/* Soon! <p>You can customize your perks directly within the Discord client, if you have Powercord injected.</p> */}
-  </>
-)
+      {/* Soon! <p>You can customize your perks directly within the Discord client, if you have Powercord injected.</p> */}
+    </>
+  )
+}
 
 Cutie.displayName = 'Cutie'
-export default React.memo(Cutie)
+export default memo(Cutie)

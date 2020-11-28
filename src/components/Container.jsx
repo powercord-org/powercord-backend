@@ -20,15 +20,17 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo } from 'react'
 
 import style from '@styles/main.scss'
 
-const Container = ({ children, className }) => (
-  <main className={[ style.container, className ].filter(Boolean).join(' ')}>
-    {children}
-  </main>
-)
+function Container ({ children, className }) {
+  return (
+    <main className={[ style.container, className ].filter(Boolean).join(' ')}>
+      {children}
+    </main>
+  )
+}
 
 Container.displayName = 'Container'
-export default React.memo(Container)
+export default memo(Container)

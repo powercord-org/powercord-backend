@@ -20,8 +20,7 @@
  * SOFTWARE.
  */
 
-import React from 'react'
-
+import { memo } from 'react'
 import * as Icons from '@components/Icons'
 import style from '@styles/paginator.scss'
 
@@ -51,4 +50,4 @@ function Paginator ({ current, total, setPage }) {
 }
 
 Paginator.displayName = 'Paginator'
-export default React.memo(Paginator)
+export default memo(Paginator)

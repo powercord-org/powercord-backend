@@ -20,19 +20,21 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Routes } from '../constants'
+import { Routes } from '@constants'
 import Container from './Container'
 
-const NotFound = () => (
-  <Container>
-    <h1>Seems like you're lost...</h1>
-    <p>There's nothing to see around here</p>
-    <Link to={Routes.HOME}>Go back home</Link>
-  </Container>
-)
+function NotFound () {
+  return (
+    <Container>
+      <h1>Seems like you're lost...</h1>
+      <p>There's nothing to see around here</p>
+      <Link to={Routes.HOME}>Go back home</Link>
+    </Container>
+  )
+}
 
 NotFound.displayName = 'NotFound'
-export default React.memo(NotFound)
+export default memo(NotFound)

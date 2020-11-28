@@ -20,14 +20,13 @@
  * SOFTWARE.
  */
 
-import React, { useCallback, useState } from 'react'
+import { memo, cloneElement, useCallback, useState } from 'react'
 import { createPortal } from 'react-dom'
-
 import style from '@styles/tooltip.scss'
 
 function Tooltip ({ children, text, position, align, forceDisplay }) {
   if (process.env.NODE_ENV === 'development' && forceDisplay) {
-    console.warn('[Tooltip.jsx] Force display was turned on, make sure to remove it is intended before pushing it to production builds!')
+    console.warn('[Tooltip] Force display was turned on, make sure to make sure it is intended before pushing it to production builds!')
   }
 
   if (!children) return null
@@ -100,15 +99,12 @@ function Tooltip ({ children, text, position, align, forceDisplay }) {
 
   return (
     <>
-      {React.cloneElement(children, { ref: r => setElementRef(r), onMouseEnter, onMouseLeave })}
+      {cloneElement(children, { ref: r => setElementRef(r), onMouseEnter, onMouseLeave })}
       {tooltip}
     </>
   )
 }
 
 Tooltip.displayName = 'Tooltip'
-Tooltip.defaultProps = {
-  position: 'top',
-  align: 'left'
-}
-export default React.memo(Tooltip)
+Tooltip.defaultProps = { position: 'top', align: 'left' }
+export default memo(Tooltip)

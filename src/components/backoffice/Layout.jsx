@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo } from 'react'
 
 import Sidebar from './Sidebar'
 
@@ -33,4 +33,4 @@ function Layout () {
 }
 
 Layout.displayName = 'BackofficeLayout'
-export default Layout
+export default memo(Layout)

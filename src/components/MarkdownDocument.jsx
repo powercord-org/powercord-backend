@@ -22,10 +22,10 @@
 
 /* eslint-disable react/display-name */
 
-import React from 'react'
+import { createElement, memo, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Endpoints } from '../constants'
+import { Endpoints } from '@constants'
 import Container from './Container'
 import Spinner from './Spinner'
 import NotFound from './NotFound'
@@ -85,19 +85,19 @@ function renderInline (md) {
 
 function renderListItem (ordered, item) {
   if (typeof item === 'string') {
-    return React.createElement('li', null, renderInline(item))
+    return createElement('li', null, renderInline(item))
   } else if (Array.isArray(item)) {
-    return React.createElement(ordered ? 'ol' : 'ul', null, item.map(i => renderListItem(ordered, i)))
+    return createElement(ordered ? 'ol' : 'ul', null, item.map(i => renderListItem(ordered, i)))
   }
   return null
 }
 
-const Markdown = React.memo(
+const Markdown = memo(
   ({ contents }) =>
     contents.map(element => {
       switch (element.type) {
         case 'TITLE':
-          return React.createElement(
+          return createElement(
             `h${element.depth}`,
             { id: element.content.replace(/[^\w]+/ig, '-').replace(/^-+|-+$/g, '').toLowerCase() },
             element.content
@@ -107,7 +107,7 @@ const Markdown = React.memo(
             <p>{renderInline(element.content)}</p>
           )
         case 'LIST':
-          return React.createElement(element.ordered ? 'ol' : 'ul', null, element.items.map(i => renderListItem(element.ordered, i)))
+          return createElement(element.ordered ? 'ol' : 'ul', null, element.items.map(i => renderListItem(element.ordered, i)))
         case 'NOTE':
           if (element.quote) {
             return (
@@ -140,9 +140,9 @@ const Markdown = React.memo(
     })
 )
 
-const MarkdownDocument = ({ document }) => {
-  const [ doc, setDoc ] = React.useState(null)
-  React.useEffect(() => {
+function MarkdownDocument ({ document }) {
+  const [ doc, setDoc ] = useState(null)
+  useEffect(() => {
     if (doc) setDoc(null)
     fetch(Endpoints.DOCS_DOCUMENT(document))
       .then(r => r.json())
@@ -153,6 +153,7 @@ const MarkdownDocument = ({ document }) => {
   if (doc === false) {
     return <NotFound/>
   }
+
   return (
     <Container>
       {!doc
@@ -168,4 +169,4 @@ const MarkdownDocument = ({ document }) => {
 }
 
 MarkdownDocument.displayName = 'MarkdownDocument'
-export default React.memo(MarkdownDocument)
+export default memo(MarkdownDocument)

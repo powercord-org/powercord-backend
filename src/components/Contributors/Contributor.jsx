@@ -20,19 +20,20 @@
  * SOFTWARE.
  */
 
-import React from 'react'
-
+import { memo } from 'react'
+import { Endpoints } from '@constants'
 import style from '@styles/contributors.scss'
-import { Endpoints } from '../../constants'
 
-const Contributor = (user) => (
-  <div className={style.container}>
-    <img src={Endpoints.USER_AVATAR(user._id)} alt={`${user.username}'s avatar`}/>
-    <div>
-      <h3>{user.username}<span>#{user.discriminator}</span></h3>
+function Contributor (user) {
+  return (
+    <div className={style.container}>
+      <img src={Endpoints.USER_AVATAR(user._id)} alt={`${user.username}'s avatar`}/>
+      <div>
+        <h3>{user.username}<span>#{user.discriminator}</span></h3>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 Contributor.displayName = 'Contributor'
-export default React.memo(Contributor)
+export default memo(Contributor)

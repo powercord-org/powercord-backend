@@ -20,16 +20,15 @@
  * SOFTWARE.
  */
 
-import React, { useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 
+import { Endpoints } from '@constants'
 import Error from '@components/Error'
 import Spinner from '@components/Spinner'
 import Container from '@components/Container'
 import Tooltip from '@components/Tooltip'
 import Paginator from '@components/Paginator'
 import AdvisoryItem from './Item'
-
-import { Endpoints } from '../../../constants'
 
 import styles from '@styles/advisories.scss'
 
@@ -47,7 +46,7 @@ function ListComponent ({ list }) {
 }
 
 ListComponent.displayName = 'AdvisoriesList'
-const List = React.memo(ListComponent)
+const List = memo(ListComponent)
 
 function IntroComponent () {
   return (
@@ -66,7 +65,7 @@ function IntroComponent () {
 }
 
 IntroComponent.displayName = 'AdvisoriesIntro'
-const Intro = React.memo(IntroComponent)
+const Intro = memo(IntroComponent)
 
 function Advisories () {
   const [ pages, setPages ] = useState({ total: 0, items: {} })
@@ -125,4 +124,4 @@ function Advisories () {
 }
 
 Advisories.displayName = 'Advisories'
-export default React.memo(Advisories)
+export default memo(Advisories)

@@ -20,19 +20,21 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo, createElement } from 'react'
 
 import style from '@styles/home.scss'
 
-const Section = ({ icon, title, desc, isSoon }) => (
-  <section className={[ isSoon && style.soon, style.section ].filter(Boolean).join(' ')}>
-    {React.createElement(icon)}
-    <div>
-      <h3>{title}</h3>
-      <p>{desc}</p>
-    </div>
-  </section>
-)
+function Section ({ icon, title, desc, isSoon }) {
+  return (
+    <section className={[ isSoon && style.soon, style.section ].filter(Boolean).join(' ')}>
+      {createElement(icon)}
+      <div>
+        <h3>{title}</h3>
+        <p>{desc}</p>
+      </div>
+    </section>
+  )
+}
 
 Section.displayName = 'Section'
-export default React.memo(Section)
+export default memo(Section)

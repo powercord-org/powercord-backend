@@ -20,15 +20,15 @@
  * SOFTWARE.
  */
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-import UserContext from '@components/UserContext'
+import { render, hydrate } from 'react-dom'
 import { BrowserRouter as Router } from 'react-router-dom'
+
+import UserContext from '@components/UserContext'
 
 import('@components/App' /* webpackChunkName: "app" */).then(mdl => {
   const App = mdl.default
   if (process.env.NODE_ENV === 'production') {
-    ReactDOM.hydrate(
+    hydrate(
       <Router>
         <UserContext.Provider value={window.USER}>
           <App/>
@@ -36,7 +36,7 @@ import('@components/App' /* webpackChunkName: "app" */).then(mdl => {
       </Router>, document.querySelector('#react-root')
     )
   } else {
-    ReactDOM.render(
+    render(
       <Router>
         <UserContext.Provider value={window.USER}>
           <App/>

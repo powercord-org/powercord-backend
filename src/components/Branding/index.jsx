@@ -20,15 +20,15 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo } from 'react'
 import Helmet from 'react-helmet'
 
-import Container from '../Container'
+import Container from '@components/Container'
 import Asset from './Asset'
 
 import style from '@styles/branding.scss'
 
-const Branding = () => {
+function Branding () {
   return (
     <Container>
       <Helmet>
@@ -104,4 +104,4 @@ const Branding = () => {
 }
 
 Branding.displayName = 'Branding'
-export default React.memo(Branding)
+export default memo(Branding)

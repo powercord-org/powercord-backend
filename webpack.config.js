@@ -52,7 +52,9 @@ const baseConfig = {
     alias: {
       '@components': join(SRC, 'components'),
       '@styles': join(SRC, 'styles'),
-      '@assets': join(SRC, 'assets')
+      '@assets': join(SRC, 'assets'),
+      '@constants': join(SRC, 'constants.js'),
+      '@util': join(SRC, 'util.js')
     }
   },
   module: {
@@ -65,7 +67,7 @@ const baseConfig = {
           {
             loader: 'babel-loader',
             options: {
-              presets: [ '@babel/react' ],
+              presets: [ [ '@babel/react', { runtime: 'automatic' } ] ],
               plugins: [
                 '@babel/syntax-dynamic-import',
                 '@babel/proposal-object-rest-spread',

@@ -20,15 +20,15 @@
  * SOFTWARE.
  */
 
-import React, { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Routes } from '../../../constants'
+import { Routes } from '@constants'
 
 import Tooltip from '@components/Tooltip'
 import * as Icons from '@components/Icons'
 
-import { formatDate } from '../../../util'
+import { formatDate } from '@util'
 import { getRandomName, SEVERITY } from '../util'
 
 import style from '@styles/advisories.scss'
@@ -59,7 +59,7 @@ function TooltipInfoComponent ({ publisher }) {
 }
 
 TooltipInfoComponent.displayName = 'AdvisoryTooltipInfo'
-const TooltipInfo = React.memo(TooltipInfoComponent)
+const TooltipInfo = memo(TooltipInfoComponent)
 
 function Item (props) {
   const random = useMemo(getRandomName, [])
@@ -102,4 +102,4 @@ function Item (props) {
 }
 
 Item.displayName = 'AdvisoryItem'
-export default React.memo(Item)
+export default memo(Item)

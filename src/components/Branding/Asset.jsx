@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo } from 'react'
 
 import style from '@styles/branding.scss'
 
-const BrandAsset = ({ transparent, name, copyrightYear, copyrightHolder, links }) => {
+function BrandAsset ({ transparent, name, copyrightYear, copyrightHolder, links }) {
   return (
     <section className={style.asset}>
       <h3>{name}</h3>
@@ -44,4 +44,4 @@ const BrandAsset = ({ transparent, name, copyrightYear, copyrightHolder, links }
 }
 
 BrandAsset.displayName = 'BrandAsset'
-export default React.memo(BrandAsset)
+export default memo(BrandAsset)

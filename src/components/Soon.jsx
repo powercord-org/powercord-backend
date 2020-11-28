@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo } from 'react'
 
 function Soon () {
   return (
@@ -33,4 +33,4 @@ function Soon () {
 }
 
 Soon.displayName = 'Soon'
-export default React.memo(Soon)
+export default memo(Soon)

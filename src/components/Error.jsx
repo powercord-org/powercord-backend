@@ -20,12 +20,12 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo } from 'react'
 
 import { Error as ErrorIcon } from '@components/Icons'
 import style from '@styles/main.scss'
 
-const Error = ({ message }) => {
+function Error ({ message }) {
   return (
     <div className={style.error}>
       <ErrorIcon/>
@@ -36,4 +36,4 @@ const Error = ({ message }) => {
 
 Error.displayName = 'Error'
 Error.defaultProps = { message: 'An error occurred' }
-export default React.memo(Error)
+export default memo(Error)

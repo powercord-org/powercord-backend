@@ -20,10 +20,10 @@
  * SOFTWARE.
  */
 
-import React, { useEffect, useState, useMemo } from 'react'
+import { memo, useEffect, useState, useMemo } from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
 
-import { Endpoints, Routes } from '../../constants'
+import { Endpoints, Routes } from '@constants'
 import Container from '@components/Container'
 import Spinner from '@components/Spinner'
 import Error from '@components/Error'
@@ -107,4 +107,4 @@ function Advisory () {
 }
 
 Advisory.displayName = 'Advisory'
-export default React.memo(Advisory)
+export default memo(Advisory)

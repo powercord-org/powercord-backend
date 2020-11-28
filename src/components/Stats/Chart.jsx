@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import React, { useState, useRef, useEffect, useMemo } from 'react'
+import { memo, useState, useRef, useEffect, useMemo } from 'react'
 
 import style from '@styles/stats.scss'
 
@@ -30,7 +30,7 @@ const SHOWN_DATES = 7
 const MONTHS = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec' ]
 
 // eslint-disable-next-line react/display-name
-const ChartLegend = React.memo(
+const ChartLegend = memo(
   function ({ legend, dataset: { dataset } }) {
     return (
       <div className={style.legend}>
@@ -49,7 +49,7 @@ const ChartLegend = React.memo(
 )
 
 // eslint-disable-next-line react/display-name
-const ChartSide = React.memo(
+const ChartSide = memo(
   function ({ width, height, dataset }) {
     const topMargin = 15
     const delta = (height - topMargin - 35) / 4
@@ -76,7 +76,7 @@ const ChartSide = React.memo(
 )
 
 // eslint-disable-next-line react/display-name
-const ChartBottom = React.memo(
+const ChartBottom = memo(
   function ({ reduced, mode, width, height }) {
     const now = Date.now()
     const baseHeight = height - 35
@@ -141,7 +141,7 @@ const ChartBottom = React.memo(
 )
 
 // eslint-disable-next-line react/display-name
-const ChartDataset = React.memo(
+const ChartDataset = memo(
   function ({ reduced, width, height, dataset }) {
     return (
       <g>
@@ -154,7 +154,7 @@ const ChartDataset = React.memo(
 )
 
 // eslint-disable-next-line react/display-name
-const ChartLine = React.memo(
+const ChartLine = memo(
   function ({ reduced, width, height, set, color, points }) {
     const usableWidth = width - 60
     const usableHeight = height - 50
@@ -230,4 +230,4 @@ function Chart (props) {
 }
 
 Chart.displayName = 'Chart'
-export default React.memo(Chart)
+export default memo(Chart)

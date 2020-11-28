@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-import React from 'react'
-import Helmet from 'react-helmet'
+import { memo, lazy, Suspense } from 'react'
 import { Switch, Route } from 'react-router-dom'
+import Helmet from 'react-helmet'
 
-import { Routes } from '../constants'
+import { Routes } from '@constants'
 
 import AuthBoundary from './AuthBoundary'
 import Home from './Home'
@@ -41,89 +41,91 @@ import Privacy from './legal/Privacy'
 import NotFound from './NotFound'
 import Soon from './Soon'
 
-const Backoffice = React.lazy(() => import('./backoffice/Layout'))
+const Backoffice = lazy(() => import('./backoffice/Layout'))
 
-const Router = () => (
-  <Switch>
-    <Route path={Routes.HOME} exact>
-      <Home/>
-    </Route>
-    <Route path={Routes.ME} exact>
-      <AuthBoundary>
-        <Account/>
-      </AuthBoundary>
-    </Route>
-    <Route path={Routes.CONTRIBUTORS} exact>
-      <Contributors/>
-    </Route>
-    <Route path={Routes.STATS} exact>
-      <Stats/>
-    </Route>
-    <Route path={Routes.BRANDING} exact>
-      <Branding/>
-    </Route>
-    <Route path={Routes.STORE} exact>
-      {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
-    </Route>
-    <Route path={Routes.ADVISORIES} exact>
-      {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
-    </Route>
-    <Route path={Routes.ADVISORY(':id')} exact>
-      {process.env.NODE_ENV === 'development' ? <Advisory/> : <Soon/>}
-    </Route>
-    <Route path={Routes.BACKOFFICE} exact>
-      {process.env.NODE_ENV === 'development'
-        ? (
-          <React.Suspense fallback='Loading...'>
-            <Backoffice/>
-          </React.Suspense>
-          )
-        : <Soon/>}
-    </Route>
-    {/* Documents */}
-    <Route path={Routes.DOCS} exact>
-      <main>todo</main>
-    </Route>
-    <Route path={Routes.FAQ} exact>
-      <Helmet>
-        <title>Frequently Asked Questions</title>
-      </Helmet>
-      <MarkdownDocument document='faq'/>
-    </Route>
-    <Route path={Routes.INSTALLATION} exact>
-      <Helmet>
-        <title>Installation</title>
-      </Helmet>
-      <MarkdownDocument document='installation'/>
-    </Route>
-    <Route path={Routes.GUIDELINES} exact>
-      <Helmet>
-        <title>Guidelines</title>
-      </Helmet>
-      <MarkdownDocument document='guidelines'/>
-    </Route>
-    <Route path={Routes.LISTING_AGREEMENT} exact>
-      <Helmet>
-        <title>Listing Agreement</title>
-      </Helmet>
-      <MarkdownDocument document='listing-agreement'/>
-    </Route>
-    {/* Legal */}
-    <Route path={Routes.PORKORD_LICENSE} exact>
-      <PorkordLicense/>
-    </Route>
-    <Route path={Routes.TERMS} exact>
-      <Terms/>
-    </Route>
-    <Route path={Routes.PRIVACY} exact>
-      <Privacy/>
-    </Route>
-    {/* Fallback */}
-    <Route>
-      <NotFound/>
-    </Route>
-  </Switch>
-)
+function Router () {
+  return (
+    <Switch>
+      <Route path={Routes.HOME} exact>
+        <Home/>
+      </Route>
+      <Route path={Routes.ME} exact>
+        <AuthBoundary>
+          <Account/>
+        </AuthBoundary>
+      </Route>
+      <Route path={Routes.CONTRIBUTORS} exact>
+        <Contributors/>
+      </Route>
+      <Route path={Routes.STATS} exact>
+        <Stats/>
+      </Route>
+      <Route path={Routes.BRANDING} exact>
+        <Branding/>
+      </Route>
+      <Route path={Routes.STORE} exact>
+        {process.env.NODE_ENV === 'development' ? <main>todo</main> : <Soon/>}
+      </Route>
+      <Route path={Routes.ADVISORIES} exact>
+        {process.env.NODE_ENV === 'development' ? <Advisories/> : <Soon/>}
+      </Route>
+      <Route path={Routes.ADVISORY(':id')} exact>
+        {process.env.NODE_ENV === 'development' ? <Advisory/> : <Soon/>}
+      </Route>
+      <Route path={Routes.BACKOFFICE} exact>
+        {process.env.NODE_ENV === 'development'
+          ? (
+            <Suspense fallback='Loading...'>
+              <Backoffice/>
+            </Suspense>
+            )
+          : <Soon/>}
+      </Route>
+      {/* Documents */}
+      <Route path={Routes.DOCS} exact>
+        <main>todo</main>
+      </Route>
+      <Route path={Routes.FAQ} exact>
+        <Helmet>
+          <title>Frequently Asked Questions</title>
+        </Helmet>
+        <MarkdownDocument document='faq'/>
+      </Route>
+      <Route path={Routes.INSTALLATION} exact>
+        <Helmet>
+          <title>Installation</title>
+        </Helmet>
+        <MarkdownDocument document='installation'/>
+      </Route>
+      <Route path={Routes.GUIDELINES} exact>
+        <Helmet>
+          <title>Guidelines</title>
+        </Helmet>
+        <MarkdownDocument document='guidelines'/>
+      </Route>
+      <Route path={Routes.LISTING_AGREEMENT} exact>
+        <Helmet>
+          <title>Listing Agreement</title>
+        </Helmet>
+        <MarkdownDocument document='listing-agreement'/>
+      </Route>
+      {/* Legal */}
+      <Route path={Routes.PORKORD_LICENSE} exact>
+        <PorkordLicense/>
+      </Route>
+      <Route path={Routes.TERMS} exact>
+        <Terms/>
+      </Route>
+      <Route path={Routes.PRIVACY} exact>
+        <Privacy/>
+      </Route>
+      {/* Fallback */}
+      <Route>
+        <NotFound/>
+      </Route>
+    </Switch>
+  )
+}
 
 Router.displayName = 'Router'
-export default React.memo(Router)
+export default memo(Router)

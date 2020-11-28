@@ -20,22 +20,24 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo, useContext } from 'react'
 
-import { Endpoints } from '../constants'
+import { Endpoints } from '@constants'
 import Container from './Container'
 import UserContext from './UserContext'
 
-const AuthBoundary = (props) => (
-  <UserContext.Consumer>
-    {user => user // todo: staff-locked routes
-      ? props.children
-      : <Container>
-        <h1>You must be authenticated to see this</h1>
-        <a href={Endpoints.LOGIN}>Login</a>
-      </Container>}
-  </UserContext.Consumer>
-)
+function AuthBoundary ({ children, staff }) {
+  const user = useContext(UserContext)
+
+  return user // todo: staff-locked routes
+    ? children
+    : (
+        <Container>
+          <h1>You must be authenticated to see this</h1>
+          <a href={Endpoints.LOGIN}>Login</a>
+        </Container>
+      )
+}
 
 AuthBoundary.displayName = 'AuthBoundary'
-export default React.memo(AuthBoundary)
+export default memo(AuthBoundary)

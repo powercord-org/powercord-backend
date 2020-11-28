@@ -20,25 +20,25 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Routes } from '../constants'
+import { Routes } from '@constants'
 
 import style from '@styles/cookies.scss'
 
 const AGREE_DATE = '2020-06-15'
 
-const Cookies = () => {
+function Cookies () {
   if (process.env.BUILD_SIDE === 'server') {
     return null
   }
 
-  const [ hasAgreed, setHasAgreed ] = React.useState(localStorage.getItem('cookie-consent') === AGREE_DATE)
-  const onAgree = () => {
+  const [ hasAgreed, setHasAgreed ] = useState(localStorage.getItem('cookie-consent') === AGREE_DATE)
+  const onAgree = useCallback(() => {
     setHasAgreed(true)
     localStorage.setItem('cookie-consent', AGREE_DATE)
-  }
+  }, [])
 
   return !hasAgreed && (
     <div className={style.container}>
@@ -50,4 +50,4 @@ const Cookies = () => {
 }
 
 Cookies.displayName = 'Cookies'
-export default React.memo(Cookies)
+export default memo(Cookies)

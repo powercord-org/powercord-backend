@@ -20,11 +20,10 @@
  * SOFTWARE.
  */
 
-import React from 'react'
+import { memo, useMemo, useState, useCallback, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Routes } from '../constants'
-import UserContext from './UserContext'
+import { Routes } from '@constants'
 import LoginButton from './LoginButton'
 
 import style from '@styles/header.scss'
@@ -32,11 +31,11 @@ import style from '@styles/header.scss'
 import powercordPlug from '@assets/powercord.svg'
 import spookycordPlug from '@assets/spookycord.svg'
 
-const Header = () => {
-  const isOctober = React.useMemo(() => (new Date().getUTCMonth()) === 9, [])
-  const [ opened, setOpened ] = React.useState(false)
-  const toggle = React.useCallback(() => setOpened(!opened), [ opened ])
-  React.useEffect(() => {
+function Header () {
+  const isOctober = useMemo(() => (new Date().getUTCMonth()) === 9, [])
+  const [ opened, setOpened ] = useState(false)
+  const toggle = useCallback(() => setOpened(!opened), [ opened ])
+  useEffect(() => {
     if (opened) {
       window.addEventListener('click', toggle)
       return () => window.removeEventListener('click', toggle)
@@ -56,9 +55,7 @@ const Header = () => {
         <a href={Routes.DICKSWORD} target='_blank' rel='noreferrer'>Discord Server</a>
       </nav>
       <div className={style.account}>
-        <UserContext.Consumer>
-          {user => <LoginButton user={user}/>}
-        </UserContext.Consumer>
+        <LoginButton/>
       </div>
       <div className={style.burgerking} onClick={toggle}>
         <span/>
@@ -70,4 +67,4 @@ const Header = () => {
 }
 
 Header.displayName = 'Header'
-export default React.memo(Header)
+export default memo(Header)

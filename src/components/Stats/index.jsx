@@ -20,20 +20,20 @@
  * SOFTWARE.
  */
 
-import React, { useState, useEffect } from 'react'
+import { memo, useState, useEffect } from 'react'
 import Helmet from 'react-helmet'
 
-import Container from '../Container'
+import { Endpoints } from '@constants'
+import Container from '@components/Container'
 import Numbers from './Numbers'
-import { Endpoints } from '../../constants'
+import Chart from './Chart'
 import { simpleChart, multipleChart, stackedChart } from './compute'
 
 import style from '@styles/stats.scss'
-import Chart from './Chart'
 
 let chartsCache = null
 
-const Stats = () => {
+function Stats () {
   const [ charts, setCharts ] = useState(chartsCache)
 
   useEffect(() => {
@@ -141,4 +141,4 @@ const Stats = () => {
 }
 
 Stats.displayName = 'Stats'
-export default React.memo(Stats)
+export default memo(Stats)

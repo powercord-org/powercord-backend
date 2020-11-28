@@ -20,12 +20,12 @@
  * SOFTWARE.
  */
 
-import React, { useContext } from 'react'
+import { memo, useContext } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 
-import { Endpoints } from '../../constants'
+import { Endpoints } from '@constants'
 import UserContext from '@components/UserContext'
-import { ArrowLeft, Users, Document, Extension, Explore, ShieldDanger, IntegrationInstruction } from '@components/Icons'
+import * as Icons from '@components/Icons'
 
 import style from '@styles/backoffice/sidebar.scss'
 
@@ -37,31 +37,31 @@ function Sidebar () {
       <h1>Powercord Admin</h1>
       <div className={style.back}>
         <Link to='/'>
-          <ArrowLeft/> <span>Go back to powercord.dev</span>
+          <Icons.ArrowLeft/> <span>Go back to powercord.dev</span>
         </Link>
       </div>
 
       <div className={style.items}>
         <h2>Manage Powercord</h2>
         <NavLink className={style.item} to='/'>
-          <Users/> <span>Users</span>
+          <Icons.Users/> <span>Users</span>
         </NavLink>
         <NavLink className={style.item} to='/'>
-          <Document/> <span>Forms</span>
+          <Icons.Document/> <span>Forms</span>
         </NavLink>
         <NavLink className={style.item} to='/'>
-          <Extension/> <span>Plugins &amp; Themes</span>
+          <Icons.Extension/> <span>Plugins &amp; Themes</span>
         </NavLink>
         <NavLink className={style.item} to='/'>
-          <Explore/> <span>Store Frontpage</span>
+          <Icons.Explore/> <span>Store Frontpage</span>
         </NavLink>
         <NavLink className={style.item} to='/'>
-          <ShieldDanger/> <span>Advisories</span>
+          <Icons.ShieldDanger/> <span>Advisories</span>
         </NavLink>
 
         <h2>Community Events</h2>
         <NavLink className={style.item} to='/'>
-          <IntegrationInstruction/> <span>Super Secret Event</span>
+          <Icons.IntegrationInstruction/> <span>Super Secret Event</span>
         </NavLink>
       </div>
 
@@ -77,4 +77,4 @@ function Sidebar () {
 }
 
 Sidebar.displayName = 'BackofficeSidebar'
-export default Sidebar
+export default memo(Sidebar)
