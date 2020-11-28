@@ -44,6 +44,7 @@ import('@components/App' /* webpackChunkName: "app" */).then(mdl => {
       </Router>, document.querySelector('#react-root')
     )
   }
+
   document.getElementById('init').remove()
   delete window.USER
 })

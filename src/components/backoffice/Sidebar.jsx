@@ -23,7 +23,7 @@
 import { memo, useContext } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 
-import { Endpoints } from '@constants'
+import { Routes, Endpoints } from '@constants'
 import UserContext from '@components/UserContext'
 import * as Icons from '@components/Icons'
 
@@ -36,31 +36,75 @@ function Sidebar () {
     <nav className={style.container}>
       <h1>Powercord Admin</h1>
       <div className={style.back}>
-        <Link to='/'>
-          <Icons.ArrowLeft/> <span>Go back to powercord.dev</span>
+        <Link to={Routes.HOME}>
+          <Icons.ArrowLeft/>
+          <span>Go back to {location.hostname}</span>
         </Link>
       </div>
 
       <div className={style.items}>
         <h2>Manage Powercord</h2>
-        <NavLink className={style.item} to='/'>
-          <Icons.Users/> <span>Users</span>
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/users'>
+          <Icons.Users/>
+          <span>Users</span>
         </NavLink>
-        <NavLink className={style.item} to='/'>
-          <Icons.Document/> <span>Forms</span>
+
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/forms'>
+          <Icons.Document/>
+          <span>Forms</span>
+          <span className={style.badge}>69</span>
         </NavLink>
-        <NavLink className={style.item} to='/'>
-          <Icons.Extension/> <span>Plugins &amp; Themes</span>
+        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/forms/product'>
+          <Icons.Extension/>
+          <span>Product submissions</span>
+          <span className={style.badge}>69</span>
         </NavLink>
-        <NavLink className={style.item} to='/'>
-          <Icons.Explore/> <span>Store Frontpage</span>
+        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/forms/verification'>
+          <Icons.Verified/>
+          <span>Verification requests</span>
+          <span className={style.badge}>69</span>
         </NavLink>
-        <NavLink className={style.item} to='/'>
-          <Icons.ShieldDanger/> <span>Advisories</span>
+        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/forms/hosting'>
+          <Icons.Server/>
+          <span>Hosting requests</span>
+          <span className={style.badge}>69</span>
+        </NavLink>
+        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/forms/reports'>
+          <Icons.Flag/>
+          <span>Abuse reports</span>
+          <span className={style.badge}>69</span>
+        </NavLink>
+
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/products'>
+          <Icons.Tag/>
+          <span>Products</span>
+        </NavLink>
+        <NavLink className={style.subitem} exact activeClassName={style.active} to='/backoffice/products/plugins'>
+          <Icons.Extension/>
+          <span>Plugins</span>
+        </NavLink>
+        <NavLink className={style.subitem} exact activeClassName={style.active} to='/backoffice/products/themes'>
+          <Icons.Brush/>
+          <span>Themes</span>
+        </NavLink>
+
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/store'>
+          <Icons.Explore/>
+          <span>Store Frontpage</span>
+        </NavLink>
+
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/advisories'>
+          <Icons.ShieldDanger/>
+          <span>Advisories</span>
+        </NavLink>
+        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/advisories/reports'>
+          <Icons.Target/>
+          <span>Reports</span>
+          <span className={style.badge}>69</span>
         </NavLink>
 
         <h2>Community Events</h2>
-        <NavLink className={style.item} to='/'>
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/super-secret-event'>
           <Icons.IntegrationInstruction/> <span>Super Secret Event</span>
         </NavLink>
       </div>

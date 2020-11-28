@@ -24,30 +24,54 @@ const React = require('react')
 const ReactDOMServer = require('react-dom/server')
 const { Helmet } = require('react-helmet')
 const { StaticRouter } = require('react-router')
+const { randomBytes } = require('crypto')
 const { formatUser } = require('./utils/users')
-// noinspection JSFileReferences
 const manifest = require('./manifest.webpack.json')
 const UserContext = require('../src/components/UserContext')
 
-// noinspection HtmlRequiredLangAttribute,HtmlRequiredTitleElement
-function renderHtml (helmet, html, user = null) {
+let integrity
+try { integrity = require('./integrity.webpack.json') } catch (e) { integrity = {} }
+
+function renderResource (file) {
+  let html = ''
+  if (!manifest[file]) return html
+
+  if (file.endsWith('css')) {
+    html += `<link rel='stylesheet' href='${manifest[file]}'`
+  } else {
+    html += `<script src='${manifest[file]}'`
+  }
+
+  if (!process.argv.includes('-d') && integrity[file]) {
+    html += ` integrity='${integrity[file]}' crossorigin='anonymous'`
+  }
+
+  if (file.endsWith('css')) {
+    html += '/>'
+  } else {
+    html += '></script>'
+  }
+
+  return html
+}
+
+function renderHtml (helmet, html, user, nonce) {
   return `<!DOCTYPE html>
     <html lang="en">
       <head>
         ${helmet ? helmet.title.toString() : ''}
         ${helmet ? helmet.meta.toString() : ''}
         ${helmet ? helmet.link.toString() : ''}
-        ${manifest['styles.css'] ? `<link rel='stylesheet' href='${manifest['styles.css']}'/>` : ''}
-        ${manifest['app.js'] ? `<link rel='preload' as='script' href='${manifest['app.js']}'/>` : ''}
+        ${renderResource('styles.css')}
       </head>
       <body ${helmet ? helmet.bodyAttributes.toString() : ''}>
         <noscript>
           <div class='no-js'>JavaScript is required for this website to work as intended. Please enable it in your browser settings.</div>
         </noscript>
         <div id='react-root'>${html || ''}</div>
-        <script id='init'>window.USER = ${JSON.stringify(user).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</script>
-        <script src='${manifest['main.js']}'></script>
-        <script src='${manifest['styles.js']}'></script>
+        <script id='init' nonce='${nonce}'>window.USER = ${JSON.stringify(user).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</script>
+        ${renderResource('main.js')}
+        ${renderResource('styles.js')}
       </body>
     </html>
   `.split('\n').map(l => l.trim()).join('')
@@ -63,11 +87,17 @@ function renderReact (request, context) {
 }
 
 module.exports = (request, reply) => {
+  const nonce = randomBytes(16).toString('hex')
   const user = request.user ? formatUser(request.user, true) : null
   // Just return empty html while developing
   if (process.argv.includes('-d')) {
-    return reply.type('text/html').send(renderHtml(null, null, user))
+    return reply.type('text/html').send(renderHtml(null, null, user, nonce))
   }
+
+  // Security headers
+  reply.header('content-security-policy', `default-src 'self'; script-src 'self' 'nonce-${nonce}'; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' https://cdn.discordapp.com http://127.0.0.1:6462; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net;`)
+  reply.header('x-xss-protection', '1; mode=block')
+  reply.header('x-frame-options', 'DENY')
 
   // SSR
   const context = {}
@@ -76,5 +106,5 @@ module.exports = (request, reply) => {
     return reply.redirect(context.url)
   }
   const html = ReactDOMServer.renderToString(rendered)
-  reply.type('text/html').send(renderHtml(Helmet.renderStatic(), html, user))
+  reply.type('text/html').send(renderHtml(Helmet.renderStatic(), html, user, nonce))
 }

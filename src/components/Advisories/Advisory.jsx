@@ -22,6 +22,7 @@
 
 import { memo, useEffect, useState, useMemo } from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
+import Helmet from 'react-helmet'
 
 import { Endpoints, Routes } from '@constants'
 import Container from '@components/Container'
@@ -64,6 +65,9 @@ function Advisory () {
   if (state === States.LOADING) {
     return (
       <Container>
+        <Helmet>
+          <title>Powercord Security Advisories</title>
+        </Helmet>
         <Spinner/>
       </Container>
     )
@@ -72,6 +76,9 @@ function Advisory () {
   if (state === States.ERROR) {
     return (
       <Container>
+        <Helmet>
+          <title>Powercord Security Advisories</title>
+        </Helmet>
         <Error message={`Failed to load advisory ${advisoryId}`}/>
       </Container>
     )
@@ -83,6 +90,9 @@ function Advisory () {
 
   return (
     <Container>
+      <Helmet>
+        <title>{advisory.title}</title>
+      </Helmet>
       <span className={style.id}>
         <Link to={Routes.ADVISORIES}>Powercord Security Advisories</Link> / {advisory.id}
       </span>

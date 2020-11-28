@@ -43,6 +43,23 @@ import Soon from './Soon'
 
 const Backoffice = lazy(() => import('./backoffice/Layout'))
 
+function BackofficeWrapperComponent () { // Wrapper component is needed to ensure no suspense gets rendered server-side
+  if (process.env.BUILD_SIDE === 'server') {
+    return 'Loading...'
+  }
+
+  return (
+    <AuthBoundary staff>
+      <Suspense fallback='Loading...'>
+        <Backoffice/>
+      </Suspense>
+    </AuthBoundary>
+  )
+}
+
+BackofficeWrapperComponent.displayName = 'BackofficeWrapper'
+const BackofficeWrapper = memo(BackofficeWrapperComponent)
+
 function Router () {
   return (
     <Switch>
@@ -72,16 +89,8 @@ function Router () {
       <Route path={Routes.ADVISORY(':id')} exact>
         {process.env.NODE_ENV === 'development' ? <Advisory/> : <Soon/>}
       </Route>
-      <Route path={Routes.BACKOFFICE} exact>
-        {process.env.NODE_ENV === 'development'
-          ? (
-            <AuthBoundary staff>
-              <Suspense fallback='Loading...'>
-                <Backoffice/>
-              </Suspense>
-            </AuthBoundary>
-            )
-          : <Soon/>}
+      <Route path={Routes.BACKOFFICE}>
+        {process.env.NODE_ENV === 'development' ? <BackofficeWrapper/> : <Soon/>}
       </Route>
       {/* Documents */}
       <Route path={Routes.DOCS} exact>

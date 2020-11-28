@@ -21,14 +21,15 @@
  */
 
 const { join } = require('path')
-const { existsSync, readdirSync, unlinkSync } = require('fs')
-const { DefinePlugin, HotModuleReplacementPlugin, optimize: { LimitChunkCountPlugin } } = require('webpack')
+const { existsSync, readdirSync, unlinkSync, writeFileSync } = require('fs')
+const { createHash } = require('crypto')
 
 const MiniCSS = require('mini-css-extract-plugin')
 const Manifest = require('webpack-manifest-plugin')
 const CssMinimizer = require('css-minimizer-webpack-plugin')
 const ReactRefresh = require('@pmmmwh/react-refresh-webpack-plugin')
 const FriendlyErrors = require('friendly-errors-webpack-plugin')
+const { DefinePlugin, HotModuleReplacementPlugin, optimize: { LimitChunkCountPlugin } } = require('webpack')
 
 // Env vars
 const COMMIT_HASH = require('child_process').execSync('git rev-parse HEAD').toString().trim()
@@ -44,6 +45,7 @@ const baseConfig = {
     path: OUT,
     filename: IS_DEV ? '[name].js' : '[contenthash].js',
     chunkFilename: IS_DEV ? '[name].chk.js' : '[contenthash].js',
+    crossOriginLoading: 'anonymous',
     chunkLoadingGlobal: 'w',
     publicPath: '/dist/'
   },
@@ -153,8 +155,26 @@ const baseConfig = {
   plugins: [
     new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('client') }),
     new Manifest({ writeToFileEmit: true, fileName: join(__dirname, 'http', 'manifest.webpack.json') }),
+    !IS_DEV && {
+      apply: (compiler) =>
+        compiler.hooks.emit.tap('emitIntegrity', (compilation) => {
+          const stats = compilation.getStats().toJson({ all: false, assets: true })
+          const integrity = {}
+          for (const [ chk, files ] of Object.entries(stats.assetsByChunkName)) {
+            for (const file of files) {
+              const sauce = compilation.assets[file].source()
+              const sha256 = createHash('sha256').update(sauce, 'utf8').digest('base64')
+              const sha512 = createHash('sha512').update(sauce, 'utf8').digest('base64')
+              integrity[`${chk}.${file.split('.').pop()}`] = `sha256-${sha256} sha512-${sha512}`
+            }
+          }
+
+          const file = join(__dirname, 'http', 'integrity.webpack.json')
+          writeFileSync(file, JSON.stringify(integrity, null, 2), 'utf8')
+        })
+    },
     new DefinePlugin({ GIT_REVISION: JSON.stringify(COMMIT_HASH) })
-  ],
+  ].filter(Boolean),
   optimization: {
     minimize: !IS_DEV,
     minimizer: [ '...', new CssMinimizer() ],
@@ -209,7 +229,7 @@ if (IS_DEV) {
       publicPath: '/dist/'
     },
     plugins: [
-      ...baseConfig.plugins.slice(2), // Slice manifest & build side
+      ...baseConfig.plugins.slice(4), // Slice manifest, build side, sri
       new LimitChunkCountPlugin({ maxChunks: 1 }),
       new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('server') })
     ],

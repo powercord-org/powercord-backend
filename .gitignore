@@ -9,6 +9,7 @@ node_modules
 .cache
 boat/.canary.cache.json
 manifest.webpack.json
+integrity.webpack.json
 http/dist
 dist
 

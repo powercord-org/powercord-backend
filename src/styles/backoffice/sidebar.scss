@@ -63,15 +63,20 @@
   flex-direction: column;
 }
 
-.item {
+.item, .subitem {
   color: inherit;
   display: flex;
   align-items: center;
-  font-size: 18px;
-  font-weight: 600;
-  padding: 8px 16px;
-  margin-bottom: 8px;
   border-radius: 5px;
+
+  &:hover {
+    text-decoration: none;
+    background-color: rgba(255, 255, 255, .03);
+  }
+
+  &.active {
+    background-color: rgba(255, 255, 255, .05);
+  }
 
   svg {
     width: 28px;
@@ -79,10 +84,44 @@
     margin-right: 16px;
   }
 
-  &:hover {
-    text-decoration: none;
-    background-color: rgba(255, 255, 255, .03);
+  + .item {
+    margin-top: 8px;
   }
+
+  + .subitem {
+    margin-top: 4px;
+  }
+}
+
+.item {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 4px 16px;
+}
+
+.subitem {
+  padding: 4px 16px;
+  margin-left: 44px;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+  }
+
+  .badge {
+    font-size: 11px;
+  }
+}
+
+.badge {
+  margin-left: auto;
+  font-size: 14px;
+  line-height: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #666;
+  border-radius: 8px;
+  padding: 2px 4px;
 }
 
 .user {

@@ -29,7 +29,7 @@ const html = (jwt) => `
 </head>
 <body>
 <p>Linking...</p>
-<img src='http://localhost:6462/wallpaper.png?jsonweebtoken=${jwt}' style='display: none;' alt='loading'/>
+<img src='http://127.0.0.1:6462/wallpaper.png?jsonweebtoken=${jwt}' style='display: none;' alt='loading'/>
 <script>setTimeout(() => document.querySelector('p').innerText = 'You can close this page',1e3)</script>
 </body>
 </html>

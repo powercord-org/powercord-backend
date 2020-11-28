@@ -21,6 +21,7 @@
  */
 
 import { memo, useEffect, useMemo, useState } from 'react'
+import Helmet from 'react-helmet'
 
 import { Endpoints } from '@constants'
 import Error from '@components/Error'
@@ -51,6 +52,9 @@ const List = memo(ListComponent)
 function IntroComponent () {
   return (
     <>
+      <Helmet>
+        <title>Powercord Security Advisories</title>
+      </Helmet>
       <h1>Powercord Security Advisories</h1>
       <p>
         This database lists all of the discovered security vulnerabilities and threats discovered in the Powercord
