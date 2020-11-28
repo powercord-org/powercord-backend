@@ -25,7 +25,7 @@ import { memo } from 'react'
 function Soon () {
   return (
     <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 64, paddingBottom: 64 }}>
-      <img style={{ width: 400 }} src='https://canary.discord.com/assets/ccf4c733929efd9762ab02cd65175377.svg' alt=''/>
+      <img style={{ width: 400 }} src='https://discord.com/assets/ccf4c733929efd9762ab02cd65175377.svg' alt=''/>
       <div style={{ fontSize: 32 }}>Coming soon, come back later!</div>
       <div style={{ fontSize: 8, opacity: 0.4 }}>u cute uwu</div>
     </main>

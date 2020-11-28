@@ -95,7 +95,7 @@ module.exports = (request, reply) => {
   }
 
   // Security headers
-  reply.header('content-security-policy', `default-src 'self'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' https://cdn.discordapp.com http://127.0.0.1:6462; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net;`)
+  reply.header('content-security-policy', `default-src 'self'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' https://cdn.discordapp.com https://discord.com http://127.0.0.1:6462; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net;`)
   reply.header('x-xss-protection', '1; mode=block')
   reply.header('x-frame-options', 'DENY')
 
