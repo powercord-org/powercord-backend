@@ -75,7 +75,7 @@ module.exports = {
 
     let embed = { description: 'Some member update happend and soemthing broke' }
     if (oldMember.nick !== newMember.nick) embed = this.nickChange(newMember, oldMember.nick)
-    if (oldMember.roles !== newMember.roles) embed = this.roleChange(newMember, oldMember)
+    else if (oldMember.roles !== newMember.roles) embed = this.roleChange(newMember, oldMember)
 
     bot.createMessage(memberLog, { embed })
   },
