@@ -21,6 +21,7 @@
  */
 
 const config = require('../config.json')
+const { humanTime } = require('./utils')
 
 const zws = '\u200B'
 const template = `
@@ -31,18 +32,6 @@ Message contents: \`\`\`
 $message
 \`\`\`
 `.trim()
-
-function humanTime (time) {
-  const plurialify = (c, w) => c === 1 ? w : `${w}s`
-  const h = Math.floor(time / 3600e3)
-  const m = Math.floor((time - h * 3600e3) / 60e3)
-  const s = Math.floor((time - h * 3600e3 - m * 60e3) / 1e3)
-  return [
-    h ? `${h} ${plurialify(h, 'hour')}` : '',
-    m ? `${m} ${plurialify(m, 'minute')}` : '',
-    s ? `${s} ${plurialify(s, 'second')}` : ''
-  ].filter(Boolean).join(', ') || 'under a second'
-}
 
 module.exports = {
   register (bot) {
