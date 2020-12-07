@@ -73,9 +73,15 @@ module.exports = {
   memberUpdate (bot, guild, newMember, oldMember) {
     if (guild.id !== config.discord.ids.serverId) return
 
-    let embed = { description: 'Some member update happend and soemthing broke' }
+    let embed = {
+      title: `An external update happened to ${newMember.username}#${newMember.discriminator}`,
+      color: 0xbdda72,
+      thumbnail: { url: newMember.avatarURL },
+      footer: { text: `Discord ID: ${newMember.id}` }
+    }
+
     if (oldMember.nick !== newMember.nick) embed = this.nickChange(newMember, oldMember.nick)
-    else if (oldMember.roles !== newMember.roles) embed = this.roleChange(newMember, oldMember)
+    if (newMember.roles.length !== oldMember.roles.length || !newMember.roles.every(role => oldMember.roles.includes(role))) embed = this.roleChange(newMember, oldMember)
 
     bot.createMessage(memberLog, { embed })
   },
@@ -131,7 +137,7 @@ module.exports = {
 
     return {
       title: `${newMember.username}#${newMember.discriminator} had a role update`,
-      color: 0xbdda72,
+      color: 0xdf799d,
       fields,
       thumbnail: { url: newMember.avatarURL },
       footer: { text: `Discord ID: ${newMember.id}` }
