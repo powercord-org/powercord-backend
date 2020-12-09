@@ -49,7 +49,10 @@ async function getDiscordAvatar (user, update) {
 
 async function avatar (request, reply) {
   const user = await this.mongo.db.collection('users').findOne({ _id: request.params.id })
-  if (!user) reply.code(422).send()
+  if (!user) {
+    return reply.code(422).send()
+  }
+
   if (!user.avatar) {
     // todo: How to deal with those cases?
     // this means default avatar has to be displayed
