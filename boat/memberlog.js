@@ -29,12 +29,13 @@ module.exports = {
   register (bot) {
     if (!memberLog || memberLog === '') return
 
-    bot.on('guildMemberAdd', (guild, member) => this.memberAdd(bot, guild, member))
-    bot.on('guildMemberRemove', (guild, member) => this.memberRemove(bot, guild, member))
-    bot.on('guildMemberUpdate', (guild, member, oldMember) => this.memberUpdate(bot, guild, member, oldMember))
+    this.bot = bot
+    bot.on('guildMemberAdd', this.memberAdd.bind(this))
+    bot.on('guildMemberRemove', this.memberRemove.bind(this))
+    bot.on('guildMemberUpdate', this.memberUpdate.bind(this))
   },
 
-  memberAdd (bot, guild, member) {
+  memberAdd (guild, member) {
     if (guild.id !== config.discord.ids.serverId) return
     const createdAt = new Date(member.createdAt)
     const now = new Date()
@@ -47,10 +48,10 @@ module.exports = {
       thumbnail: { url: member.avatarURL },
       footer: { text: `Discord ID: ${member.id}` }
     }
-    bot.createMessage(memberLog, { embed })
+    this.bot.createMessage(memberLog, { embed })
   },
 
-  memberRemove (bot, guild, member) {
+  memberRemove (guild, member) {
     if (guild.id !== config.discord.ids.serverId) return
     const now = Date.now()
     let description = `<@${member.id}> was not in the cache when they left`
@@ -67,10 +68,10 @@ module.exports = {
       thumbnail: { url: member.user.avatarURL },
       footer: { text: `Discord ID: ${member.user.id}` }
     }
-    bot.createMessage(memberLog, { embed })
+    this.bot.createMessage(memberLog, { embed })
   },
 
-  memberUpdate (bot, guild, newMember, oldMember) {
+  memberUpdate (guild, newMember, oldMember) {
     if (guild.id !== config.discord.ids.serverId) return
 
     let embed = {
@@ -83,7 +84,7 @@ module.exports = {
     if (oldMember.nick !== newMember.nick) embed = this.nickChange(newMember, oldMember.nick)
     if (newMember.roles.length !== oldMember.roles.length || !newMember.roles.every(role => oldMember.roles.includes(role))) embed = this.roleChange(newMember, oldMember)
 
-    bot.createMessage(memberLog, { embed })
+    this.bot.createMessage(memberLog, { embed })
   },
 
   nickChange (member, oldNick) {
