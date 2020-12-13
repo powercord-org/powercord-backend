@@ -127,7 +127,7 @@ module.exports = {
         inline: true
       })
     }
-    if (oldRoleNames[0]) {
+    if (oldRoleNames.length > 0) {
       fields.push({
         name: 'Roles removed',
         value: oldRoleNames.join('\n'),
