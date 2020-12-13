@@ -142,14 +142,5 @@ module.exports = {
       thumbnail: { url: newMember.avatarURL },
       footer: { text: `Discord ID: ${newMember.id}` }
     }
-  },
-
-  // thanks stack overflow
-  _comparer (otherArray) {
-    return function (current) {
-      return otherArray.filter(function (other) {
-        return other === current
-      }).length === 0
-    }
   }
 }
