@@ -120,7 +120,7 @@ module.exports = {
     })
 
     const fields = []
-    if (newRoleNames[0]) {
+    if (newRoleNames.length > 0) {
       fields.push({
         name: 'Roles added',
         value: newRoleNames.join('\n'),
