@@ -107,8 +107,8 @@ module.exports = {
   },
 
   roleChange (newMember, oldMember) {
-    const newRoleIDs = newMember.roles.filter(this._comparer(oldMember.roles))
-    const oldRoleIDs = oldMember.roles.filter(this._comparer(newMember.roles))
+    const newRoleIDs = newMember.roles.filter(r => !oldMember.roles.includes(r))
+    const oldRoleIDs = oldMember.roles.filter(r => !newMember.roles.includes(r))
 
     const newRoleNames = []
     const oldRoleNames = []
