@@ -41,7 +41,7 @@ module.exports = {
 
     const embed = {
       title: `${member.username}#${member.discriminator} just joined`,
-      description: `Account created at ${createdAt.toUTCString()} (${humanTime(now - createdAt)})`,
+      description: `<@${member.id}> created their accout at ${createdAt.toUTCString()} (${humanTime(now - createdAt)})`,
       timestamp: now.toISOString(),
       color: 0x7289da,
       thumbnail: { url: member.avatarURL },
@@ -53,11 +53,11 @@ module.exports = {
   memberRemove (bot, guild, member) {
     if (guild.id !== config.discord.ids.serverId) return
     const now = Date.now()
-    let description = 'This member was not in the cache when they left'
+    let description = `<@${member.id}> was not in the cache when they left`
 
     if (member.joinedAt) {
       const joinedAt = new Date(member.joinedAt)
-      description = `They were here for ${humanTime(now - joinedAt)}`
+      description = `<@${member.id}> was here for ${humanTime(now - joinedAt)}`
     }
 
     const embed = {
