@@ -108,15 +108,15 @@ module.exports = {
   },
 
   roleChange (newMember, oldMember) {
-    const newRoleIDs = newMember.roles.filter(r => !oldMember.roles.includes(r))
-    const oldRoleIDs = oldMember.roles.filter(r => !newMember.roles.includes(r))
+    const addedRoleIds = newMember.roles.filter(r => !oldMember.roles.includes(r))
+    const removedRoleIds = oldMember.roles.filter(r => !newMember.roles.includes(r))
 
     const newRoleNames = []
     const oldRoleNames = []
-    newMember.guild.roles.filter(role => newRoleIDs.includes(role.id)).forEach(role => {
+    newMember.guild.roles.filter(role => addedRoleIds.includes(role.id)).forEach(role => {
       newRoleNames.push(role.name)
     })
-    newMember.guild.roles.filter(role => oldRoleIDs.includes(role.id)).forEach(role => {
+    newMember.guild.roles.filter(role => removedRoleIds.includes(role.id)).forEach(role => {
       oldRoleNames.push(role.name)
     })
 
