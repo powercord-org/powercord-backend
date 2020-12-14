@@ -35,7 +35,7 @@ async function addTag (msg, args) {
     return msg.channel.createMessage('This tag already exists.')
   }
 
-  await msg._client.mongo.collection('tags').insertOne({ _id: args[1], content: args.slice(2).join(' ') })
+  await msg._client.mongo.collection('tags').insertOne({ _id: args[1], content: msg.content.slice(msg.content.indexOf(args[1]) + args[1].length).trim() })
   msg.channel.createMessage('Tag created.')
 }
 
@@ -44,7 +44,7 @@ async function editTag (msg, args) {
     return msg.channel.createMessage('This tag does not exist.')
   }
 
-  await msg._client.mongo.collection('tags').updateOne({ _id: args[1] }, { $set: { content: args.slice(2).join(' ') } })
+  await msg._client.mongo.collection('tags').updateOne({ _id: args[1] }, { $set: { content: msg.content.slice(msg.content.indexOf(args[1]) + args[1].length).trim() } })
   msg.channel.createMessage('Tag updated.')
 }
 
