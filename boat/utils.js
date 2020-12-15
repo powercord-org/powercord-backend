@@ -56,6 +56,19 @@ module.exports = {
     } else {
       return null
     }
-  }
+  },
 
+  humanTime (time) {
+    const plurialify = (c, w) => c === 1 ? w : `${w}s`
+    const d = Math.floor(time / 86400e3)
+    const h = Math.floor((time - d * 86400e3) / 3600e3)
+    const m = Math.floor((time - d * 86400e3 - h * 3600e3) / 60e3)
+    const s = Math.floor((time - d * 86400e3 - h * 3600e3 - m * 60e3) / 1e3)
+    return [
+      d ? `${d} ${plurialify(h, 'day')}` : '',
+      h ? `${h} ${plurialify(h, 'hour')}` : '',
+      m ? `${m} ${plurialify(m, 'minute')}` : '',
+      s ? `${s} ${plurialify(s, 'second')}` : ''
+    ].filter(Boolean).join(', ') || 'under a second'
+  }
 }

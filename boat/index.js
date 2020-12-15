@@ -33,6 +33,7 @@ const stats = require('./stats')
 const config = require('../config.json')
 const task = require('./tasks')
 const autotag = require('./autotag')
+const memberLog = require('./memberlog')
 
 const bot = new CommandClient(config.discord.botToken, {
   intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildPresences', 'guildMessages', 'guildMessageReactions' ]
@@ -68,6 +69,7 @@ canary.register(bot)
 starboard.register(bot)
 stats.register(bot)
 autotag.register(bot)
+memberLog.register(bot)
 
 // Events
 bot.on('ready', () => console.log('Ready.'))
