@@ -58,6 +58,10 @@ module.exports = {
     }
   },
 
+  plurialify (count, word) {
+    return count === 1 ? word : `${word}s`
+  },
+
   humanTime (time) {
     const plurialify = (c, w) => c === 1 ? w : `${w}s`
     const y = Math.floor(time / 31536000e3)
