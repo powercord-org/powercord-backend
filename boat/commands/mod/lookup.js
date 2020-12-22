@@ -87,7 +87,8 @@ module.exports = async function (msg, args) {
         name: 'Rule Infractions',
         value: infractionString === '' ? 'None' : infractionString
       }
-    ]
+    ],
+    footer: { text: `Discord ID: ${member.id}` }
   }
 
   return msg.channel.createMessage({ embed })
