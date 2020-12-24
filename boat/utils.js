@@ -22,7 +22,7 @@
 
 const config = require('../config.json')
 
-module.exports = {
+const utils = {
   async parseRule (ruleID, msg) {
     const messages = await msg._client.getMessages(config.discord.ids.channelRules)
     let rules
@@ -59,18 +59,23 @@ module.exports = {
   },
 
   humanTime (time) {
-    const plurialify = (c, w) => c === 1 ? w : `${w}s`
     const y = Math.floor(time / 31536000e3)
     const d = Math.floor((time - y * 31536000e3) / 86400e3)
     const h = Math.floor((time - y * 31536000e3 - d * 86400e3) / 3600e3)
     const m = Math.floor((time - y * 31536000e3 - d * 86400e3 - h * 3600e3) / 60e3)
     const s = Math.floor((time - y * 31536000e3 - d * 86400e3 - h * 3600e3 - m * 60e3) / 1e3)
     return [
-      y ? `${y} ${plurialify(y, 'year')}` : '',
-      d ? `${d} ${plurialify(h, 'day')}` : '',
-      h ? `${h} ${plurialify(h, 'hour')}` : '',
-      m ? `${m} ${plurialify(m, 'minute')}` : '',
-      s ? `${s} ${plurialify(s, 'second')}` : ''
+      y ? `${y} ${utils.plurialify(y, 'year')}` : '',
+      d ? `${d} ${utils.plurialify(h, 'day')}` : '',
+      h ? `${h} ${utils.plurialify(h, 'hour')}` : '',
+      m ? `${m} ${utils.plurialify(m, 'minute')}` : '',
+      s ? `${s} ${utils.plurialify(s, 'second')}` : ''
     ].filter(Boolean).join(', ') || 'under a second'
+  },
+
+  plurialify (count, word) {
+    return count === 1 ? word : `${word}s`
   }
 }
+
+module.exports = utils
