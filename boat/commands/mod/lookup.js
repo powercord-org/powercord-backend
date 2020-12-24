@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+const { LoaderTargetPlugin } = require('webpack')
 const config = require('../../../config.json')
 const { humanTime, plurialify } = require('../../utils')
 
@@ -58,18 +59,27 @@ module.exports = async function (msg, args) {
 
     if (infraction) {
       infractions[infractions.indexOf(infraction)].count++
+      infractions[infractions.indexOf(infraction)].occurances.push(`• ${doc._id.getTimestamp().toUTCString()}`)
     } else {
       infractions.push({
         rule: doc.rule,
-        count: 1
+        count: 1,
+        occurances: [`• ${doc._id.getTimestamp().toUTCString()}`]
       })
     }
   })
 
-  let infractionString = ''
+  const fields = [ {
+    name: 'Roles',
+    value: roles.join()
+  }]
 
-  infractions.forEach(({ rule, count }) => {
-    infractionString += `Rule ${rule} broken ${count} ${plurialify(count, 'time')}\n`
+  infractions.forEach(({ rule, count, occurances }) => {
+    fields.push({
+      name: `Rule ${rule} broken ${count} ${plurialify(count, 'time')}`,
+      value: occurances.join('\n'),
+      inline: true
+    })
   })
 
   const embed = {
@@ -79,15 +89,7 @@ module.exports = async function (msg, args) {
     },
     description: `**Account created:** ${createdAt.toUTCString()} (${humanTime(now - createdAt)} ago)\n\n**Joined:** ${joinedAt.toUTCString()} (${humanTime(now - joinedAt)}`,
     timestamp: now.toISOString(),
-    fields: [
-      {
-        name: 'Roles',
-        value: roles.join()
-      }, {
-        name: 'Rule Infractions',
-        value: infractionString === '' ? 'None' : infractionString
-      }
-    ],
+    fields,
     footer: { text: `Discord ID: ${member.id}` }
   }
 
