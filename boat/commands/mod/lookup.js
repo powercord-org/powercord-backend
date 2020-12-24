@@ -23,7 +23,7 @@
 const config = require('../../../config.json')
 const { humanTime, plurialify } = require('../../utils')
 
-const USAGE_STR = `Usage: ${config.discord.prefix}lookup [mention || discord id]`
+const USAGE_STR = `Usage: ${config.discord.prefix}lookup <mention || discord id>`
 
 module.exports = async function (msg, args) {
   if (!msg.member.permission.has('manageMessages')) {
