@@ -73,7 +73,7 @@ async function punish (msg, target, sentence, rule) {
 
   if (sentence.includes('warning')) {
     type = 'warning'
-    reply = `<@${target}>, you have broken rule ${rule}. More serious action will be taken the next time you do so.`
+    reply = `<@${target}>, you have broken rule ${rule}. More serious action will be taken the next time you do so.\n\n**Rule ${rule}**\n${await parseRule(rule, msg)}`
   } else if (sentence.includes('mute/ban')) {
     type = 'error'
     reply = `Unable to process \`${sentence}\`, please mod manualy.`
