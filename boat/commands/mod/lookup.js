@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-const { LoaderTargetPlugin } = require('webpack')
 const config = require('../../../config.json')
 const { humanTime, plurialify } = require('../../utils')
 
@@ -64,7 +63,7 @@ module.exports = async function (msg, args) {
       infractions.push({
         rule: doc.rule,
         count: 1,
-        occurances: [`• ${doc._id.getTimestamp().toUTCString()}`]
+        occurances: [ `• ${doc._id.getTimestamp().toUTCString()}` ]
       })
     }
   })
@@ -72,7 +71,7 @@ module.exports = async function (msg, args) {
   const fields = [ {
     name: 'Roles',
     value: roles.join()
-  }]
+  } ]
 
   infractions.forEach(({ rule, count, occurances }) => {
     fields.push({
