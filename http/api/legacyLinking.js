@@ -39,7 +39,11 @@ function legacy (request, reply) {
   if (!request.user) {
     return reply.redirect('/api/v2/oauth/discord?redirect=/api/v2/users/@me/link/legacy')
   }
-  reply.type('text/html').send(html(reply.unsignCookie(request.cookies.token)))
+
+  const cookie = reply.unsignCookie(request.cookies.token)
+  if (!cookie.valid) reply.redirect('/')
+
+  reply.type('text/html').send(html(cookie.value))
 }
 
 module.exports = async function (fastify) {

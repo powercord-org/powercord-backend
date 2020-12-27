@@ -25,10 +25,10 @@ const { existsSync, readdirSync, unlinkSync, writeFileSync } = require('fs')
 const { createHash } = require('crypto')
 
 const MiniCSS = require('mini-css-extract-plugin')
-const Manifest = require('webpack-manifest-plugin')
 const CssMinimizer = require('css-minimizer-webpack-plugin')
 const ReactRefresh = require('@pmmmwh/react-refresh-webpack-plugin')
 const FriendlyErrors = require('friendly-errors-webpack-plugin')
+const { WebpackManifestPlugin: Manifest } = require('webpack-manifest-plugin')
 const { DefinePlugin, HotModuleReplacementPlugin, optimize: { LimitChunkCountPlugin } } = require('webpack')
 
 // Env vars

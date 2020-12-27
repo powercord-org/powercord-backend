@@ -45,6 +45,7 @@ async function discord (request, reply) {
       } catch (e) {
         // Let it fail silently
       }
+
       await collection.insertOne({
         _id: user.id,
         username: user.username,
@@ -85,8 +86,10 @@ async function discord (request, reply) {
     })
 
     if (request.cookies.redirect) {
-      return reply.setCookie('redirect', null, { maxAge: 0 })
-        .redirect(reply.unsignCookie(request.cookies.redirect))
+      const cookie = reply.unsignCookie(request.cookies.redirect)
+      if (cookie.valid) {
+        return reply.setCookie('redirect', null, { maxAge: 0 }).redirect(cookie.value)
+      }
     }
     return reply.redirect('/me')
   }
