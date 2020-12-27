@@ -70,7 +70,7 @@ module.exports = async function (msg, args) {
 
   const fields = [ {
     name: 'Roles',
-    value: roles.join()
+    value: roles.length > 0 ? roles.join(' ') : 'None'
   } ]
 
   infractions.forEach(({ rule, count, occurances }) => {
