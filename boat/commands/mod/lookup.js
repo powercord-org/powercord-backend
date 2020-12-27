@@ -62,10 +62,10 @@ module.exports = async function (msg, args) {
       })
     }
   })
-
+  const roles = getMemberRoles(guild, member)
   const fields = [ {
     name: 'Roles',
-    value: getMemberRoles(guild, member).join(' ')
+    value: roles.length > 0 ? roles.join(' ') : 'None'
   } ]
 
   infractions.forEach(({ rule, count, occurances }) => {
