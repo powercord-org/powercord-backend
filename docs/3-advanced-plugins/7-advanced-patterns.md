@@ -5,7 +5,6 @@
 -->
 
 # Advanced Patterns
-
 >info
 > This section is for really advanced developers who mastered JavaScript, have strong understanding of React and
 > all the technologies involved in Discord internals, and have strong understanding of Powercord APIs.

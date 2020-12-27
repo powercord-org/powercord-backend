@@ -5,3 +5,4 @@
 -->
 
 # Profile Connections
+<!-- todo: define whether or not we keep this API or not, or if we move it somewhere else -->

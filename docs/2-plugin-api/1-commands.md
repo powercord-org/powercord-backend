@@ -5,3 +5,4 @@
 -->
 
 # Custom Commands
+<!-- todo: define how commands will look with Slash Commands stuff out -->

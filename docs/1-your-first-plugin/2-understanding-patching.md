@@ -15,6 +15,16 @@ the function you patched is called, to call your own logic rather than the origi
 Since Powercord has to deal with multiple injections and needs to be able to add/remove some on-fly, you won't
 actually tap into the functions yourself but use our [injector API](##plugin-api/injector) to run your own logic.
 
+## Magic, until a certain point
+Despite being able to run virtually any piece of code you desire, it doesn't mean you should. As documented in the
+[injector API](##plugin-api/injector#injecting), there are limitations due to the fact Discord expects something
+specific. If Discord requests a banana, and you give a coconut, Discord may start to see you're trying to fool it.
+
+The most common mistake is making your injection `async`. Doing so means you'll always return a `Promise`, which
+is something Discord (or the libraries it's using) are totally not expecting, resulting in a problem. You have to
+be careful and make sure to wrap things properly to not cause conflicts with existing logic. But don't worry, we've
+documented the most common tricks in the [injector API](##plugin-api/injector#injecting).
+
 ## I'm curious, how does Powercord actually inject?
 If you are that curious, you are welcome to check our [injector source code](<!-- todo: link -->), however here's the
 very basic logic:
