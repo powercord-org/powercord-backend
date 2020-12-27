@@ -21,7 +21,7 @@
  */
 
 const config = require('../config.json')
-const { humanTime } = require('./utils')
+const { humanTime, getMemberRoles } = require('./utils')
 
 const memberLog = config.discord.ids.channelMemberLogs
 
@@ -53,7 +53,7 @@ module.exports = {
 
   memberRemove (guild, member) {
     if (guild.id !== config.discord.ids.serverId) return
-    const now = Date.now()
+    const now = new Date()
     let description = `<@${member.id}> was not in the cache when they left`
 
     if (member.joinedAt) {
@@ -61,11 +61,21 @@ module.exports = {
       description = `<@${member.id}> was here for ${humanTime(now - joinedAt)}`
     }
 
+    const fields = []
+    if (member.roles?.length > 0) {
+      fields.push({
+        name: 'Roles',
+        value: getMemberRoles(guild, member).join(' ')
+      })
+    }
+
     const embed = {
       title: `${member.user.username}#${member.user.discriminator} just left`,
       description,
+      fields,
       color: 0xdac372,
       thumbnail: { url: member.user.avatarURL },
+      timestamp: now.toISOString(),
       footer: { text: `Discord ID: ${member.user.id}` }
     }
     this.bot.createMessage(memberLog, { embed })

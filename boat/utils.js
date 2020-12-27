@@ -75,6 +75,14 @@ const utils = {
 
   plurialify (count, word) {
     return count === 1 ? word : `${word}s`
+  },
+
+  getMemberRoles (guild, member) {
+    const roles = []
+    guild.roles.filter(role => member.roles.includes(role.id)).forEach(role => {
+      roles.push(role.mention)
+    })
+    return roles
   }
 }
 
