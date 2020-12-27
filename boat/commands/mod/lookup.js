@@ -62,7 +62,7 @@ module.exports = async function (msg, args) {
       })
     }
   })
-  const roles = getMemberRoles(guild, member)
+  const roles = getMemberRoles(guild, member).map(role => role.mention)
   const fields = [ {
     name: 'Roles',
     value: roles.length > 0 ? roles.join(' ') : 'None'

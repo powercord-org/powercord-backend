@@ -78,11 +78,7 @@ const utils = {
   },
 
   getMemberRoles (guild, member) {
-    const roles = []
-    guild.roles.filter(role => member.roles.includes(role.id)).forEach(role => {
-      roles.push(role.mention)
-    })
-    return roles
+    return guild.roles.filter(role => member.roles.includes(role.id))
   }
 }
 

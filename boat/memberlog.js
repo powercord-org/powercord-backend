@@ -65,7 +65,7 @@ module.exports = {
     if (member.roles?.length > 0) {
       fields.push({
         name: 'Roles',
-        value: getMemberRoles(guild, member).join(' ')
+        value: getMemberRoles(guild, member).map(role => role.mention).join(' ')
       })
     }
 
