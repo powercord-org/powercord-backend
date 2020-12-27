@@ -78,7 +78,7 @@ const utils = {
   },
 
   getMemberRoles (guild, member) {
-    return guild.roles.filter(role => member.roles.includes(role.id))
+    return member.roles.map(id => guild.roles.get(id))
   }
 }
 
