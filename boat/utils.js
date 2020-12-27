@@ -75,6 +75,10 @@ const utils = {
 
   plurialify (count, word) {
     return count === 1 ? word : `${word}s`
+  },
+
+  getMemberRoles (guild, member) {
+    return member.roles.map(id => guild.roles.get(id))
   }
 }
 
