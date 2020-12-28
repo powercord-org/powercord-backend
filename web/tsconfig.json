@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true, 
+    "strictPropertyInitialization": true,
+  
+    "noEmitOnError": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "allowUnreachableCode": false,
+    // "allowJs": false,
+
+    "lib": [ "es2020.string", "es2020.bigint" ],
+    "jsx": "preserve",
+    "baseUrl": "src",
+    "paths": {
+      "@components/*": [ "components/*" ],
+      "@styles/*": [ "styles/*" ],
+      "@assets/*": [ "assets/*" ],
+      "@constants": [ "constants.js" ],
+      "@util": [ "util.js" ]
+    },
+
+    "target": "es6",
+    "esModuleInterop": true
+  },
+  "include": [ "src/**/*" ]
+}
