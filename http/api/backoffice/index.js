@@ -20,9 +20,17 @@
  * SOFTWARE.
  */
 
-const { fetchSuggestions } = require('./suggestions')
+function verifyAdmin (request, reply, next) {
+  if (request.user?.badges.staff) {
+    return next()
+  }
+
+  reply.code(403)
+  next(new Error('Missing permissions'))
+}
 
 module.exports = async function (fastify) {
-  fastify.get('/suggestions', () => fetchSuggestions())
-  fastify.register(require('./forms'), { prefix: '/forms' })
+  fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken, verifyAdmin ], { relation: 'and' }))
+
+  fastify.register(require('./crud'), { prefix: '/users', data: { collection: 'users', projection: { accounts: 0, settings: 0 } } })
 }

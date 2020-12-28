@@ -43,67 +43,49 @@ function Sidebar () {
       </div>
 
       <div className={style.items}>
-        <h2>Manage Powercord</h2>
+        <div className={style.section}>Manage Powercord</div>
         <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/users'>
           <Icons.Users/>
           <span>Users</span>
         </NavLink>
 
-        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/forms'>
-          <Icons.Document/>
-          <span>Forms</span>
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/advisories'>
+          <Icons.ShieldDanger/>
+          <span>Advisories</span>
           <span className={style.badge}>69</span>
         </NavLink>
-        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/forms/product'>
-          <Icons.Extension/>
-          <span>Product submissions</span>
-          <span className={style.badge}>69</span>
-        </NavLink>
-        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/forms/verification'>
-          <Icons.Verified/>
-          <span>Verification requests</span>
-          <span className={style.badge}>69</span>
-        </NavLink>
-        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/forms/hosting'>
-          <Icons.Server/>
-          <span>Hosting requests</span>
-          <span className={style.badge}>69</span>
-        </NavLink>
-        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/forms/reports'>
-          <Icons.Flag/>
-          <span>Abuse reports</span>
-          <span className={style.badge}>69</span>
+
+        <div className={style.section}>Powercord Store</div>
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/store-frontpage'>
+          <Icons.Explore/>
+          <span>Frontpage</span>
         </NavLink>
 
         <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/products'>
           <Icons.Tag/>
           <span>Products</span>
-        </NavLink>
-        <NavLink className={style.subitem} exact activeClassName={style.active} to='/backoffice/products/plugins'>
-          <Icons.Extension/>
-          <span>Plugins</span>
-        </NavLink>
-        <NavLink className={style.subitem} exact activeClassName={style.active} to='/backoffice/products/themes'>
-          <Icons.Brush/>
-          <span>Themes</span>
-        </NavLink>
-
-        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/store'>
-          <Icons.Explore/>
-          <span>Store Frontpage</span>
-        </NavLink>
-
-        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/advisories'>
-          <Icons.ShieldDanger/>
-          <span>Advisories</span>
-        </NavLink>
-        <NavLink className={style.subitem} activeClassName={style.active} to='/backoffice/advisories/reports'>
-          <Icons.Target/>
-          <span>Reports</span>
           <span className={style.badge}>69</span>
         </NavLink>
 
-        <h2>Community Events</h2>
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/reports'>
+          <Icons.Flag/>
+          <span>Abuse Reports</span>
+          <span className={style.badge}>69</span>
+        </NavLink>
+
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/verification'>
+          <Icons.Verified/>
+          <span>Verification</span>
+          <span className={style.badge}>69</span>
+        </NavLink>
+
+        <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/hosting'>
+          <Icons.Server/>
+          <span>Hosting</span>
+          <span className={style.badge}>69</span>
+        </NavLink>
+
+        <div className={style.section}>Community Events</div>
         <NavLink className={style.item} exact activeClassName={style.active} to='/backoffice/super-secret-event'>
           <Icons.IntegrationInstruction/> <span>Super Secret Event</span>
         </NavLink>

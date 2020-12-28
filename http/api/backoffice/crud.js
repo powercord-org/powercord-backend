@@ -20,9 +20,37 @@
  * SOFTWARE.
  */
 
-const { fetchSuggestions } = require('./suggestions')
+async function read (request, reply) {
+  const data = reply.context.config
+  const collection = this.mongo.db.collection(data.collection)
+  const limit = request.query.limit ?? 50
+  const cursor = ((request.query.page ?? 1) - 1) * limit
 
-module.exports = async function (fastify) {
-  fastify.get('/suggestions', () => fetchSuggestions())
-  fastify.register(require('./forms'), { prefix: '/forms' })
+  const res = await collection.find({}, { projection: data.projection }).limit(limit).skip(cursor).toArray()
+  return res
+}
+
+function create (request, reply) {
+  const data = reply.context.config
+  console.log(data)
+  return {}
+}
+
+function update (request, reply) {
+  const data = reply.context.config
+  console.log(data)
+  return {}
+}
+
+function del (request, reply) {
+  const data = reply.context.config
+  console.log(data)
+  return {}
+}
+
+module.exports = async function (fastify, { data }) {
+  fastify.get('/', { config: data }, read)
+  fastify.create('/', { config: data }, create)
+  fastify.patch('/:id', { config: data }, update)
+  fastify.del('/:id', { config: data }, del)
 }

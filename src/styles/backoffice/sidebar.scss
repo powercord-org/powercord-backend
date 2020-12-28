@@ -21,7 +21,7 @@
  */
 
 .container {
-  width: 400px;
+  width: 360px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -29,21 +29,10 @@
   padding: 24px;
 
   h1 {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: inherit;
     font-family: 'Discord', sans-serif;
     margin: 0;
-  }
-
-  h2 {
-    font-size: 24px;
-    font-weight: 600;
-    margin-top: 0;
-    margin-bottom: 8px;
-
-    &:not(:first-of-type) {
-      margin-top: 32px;
-    }
   }
 }
 
@@ -63,11 +52,23 @@
   flex-direction: column;
 }
 
-.item, .subitem {
+.section {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 8px;
+
+  &:not(:first-of-type) {
+    margin-top: 32px;
+  }
+}
+
+.item {
   color: inherit;
   display: flex;
   align-items: center;
   border-radius: 5px;
+  padding: 4px 8px;
 
   &:hover {
     text-decoration: none;
@@ -79,38 +80,13 @@
   }
 
   svg {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     margin-right: 16px;
   }
 
   + .item {
     margin-top: 8px;
-  }
-
-  + .subitem {
-    margin-top: 4px;
-  }
-}
-
-.item {
-  font-size: 18px;
-  font-weight: 600;
-  padding: 4px 16px;
-}
-
-.subitem {
-  padding: 4px 16px;
-  margin-left: 44px;
-
-  svg {
-    width: 22px;
-    height: 22px;
-    margin-right: 8px;
-  }
-
-  .badge {
-    font-size: 11px;
   }
 }
 

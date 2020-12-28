@@ -31,5 +31,6 @@ async function getEligibility (mongo, user) {
 }
 
 module.exports = async function (fastify) {
+  fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken ]))
   fastify.get('/eligibility', (request) => getEligibility(fastify.mongo, request.user))
 }
