@@ -21,7 +21,7 @@
  */
 
 const config = require('../../../config.json')
-const { humanTime, plurialify } = require('../../utils')
+const { humanTime, plurialify, getMemberRoles } = require('../../utils')
 
 const USAGE_STR = `Usage: ${config.discord.prefix}lookup <mention || discord id>`
 
@@ -47,11 +47,6 @@ module.exports = async function (msg, args) {
   const joinedAt = new Date(member.joinedAt)
   const now = new Date()
 
-  const roles = []
-  guild.roles.filter(role => member.roles.includes(role.id)).forEach(role => {
-    roles.push(role.mention)
-  })
-
   const infractions = []
   await msg._client.mongo.collection('enforce').find({ userID: member.id }).forEach(function (doc) {
     const infraction = infractions.find(inf => inf.rule === doc.rule)
@@ -67,7 +62,7 @@ module.exports = async function (msg, args) {
       })
     }
   })
-
+  const roles = getMemberRoles(guild, member).map(role => role.mention)
   const fields = [ {
     name: 'Roles',
     value: roles.length > 0 ? roles.join(' ') : 'None'
