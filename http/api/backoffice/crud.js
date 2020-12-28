@@ -50,7 +50,7 @@ function del (request, reply) {
 
 module.exports = async function (fastify, { data }) {
   fastify.get('/', { config: data }, read)
-  fastify.create('/', { config: data }, create)
+  fastify.post('/', { config: data }, create)
   fastify.patch('/:id', { config: data }, update)
-  fastify.del('/:id', { config: data }, del)
+  fastify.delete('/:id', { config: data }, del)
 }
