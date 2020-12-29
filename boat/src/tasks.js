@@ -23,6 +23,7 @@
 const config = require('../../config.json')
 const GUILD = config.discord.ids.serverId
 
+// todo: split as an util package + a module
 module.exports = {
   EMPTY_TASK_OBJ: {
     type: null,

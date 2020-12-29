@@ -20,15 +20,21 @@
  * SOFTWARE.
  */
 
-const { join } = require('path')
+import type { Db } from 'mongodb'
 
-// eslint-disable-next-line no-unused-vars
-const CACHE_FILE = join(__dirname, '.canary.cache.json')
+declare module 'eris' {
+  interface CommandClient {
+    mongo: Db
+  }
 
-module.exports = {
-  register (bot) {
-    // todo: schedule periodic update checking w/ node-cron aka the enhanced setInterval
-    // using node-cron here makes the backend more portable and doesn't require external configuration
-    // todo: keep it webhook-based or send through bot?
+  interface Attachment {
+    // todo: if it's not there there's most likely a reason kek, I'll deal with this later
+    width: number
+    height: number
+  }
+
+  interface Base {
+    // todo: I'm not supposed to fuck up with this, but it's god damn handy at times
+    _client: CommandClient
   }
 }

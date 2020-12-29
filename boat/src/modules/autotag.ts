@@ -20,10 +20,17 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  register (bot) {
-    // todo: on member join, check roles & assign what needs to be assigned
-    // todo: schedule constant forced-resync w/ node-cron aka the enhanced setInterval
-    // using node-cron here makes the backend more portable and doesn't require external configuration
-  }
+import type { CommandClient, GuildTextableChannel, Message } from 'eris'
+import config from '../config.js'
+
+async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
+  if (!msg.content.startsWith(config.discord.prefix)) return
+
+  const command = msg.content.slice(config.discord.prefix.length).toLowerCase()
+  const tag = await this.mongo.collection('tags').findOne({ _id: command })
+  if (tag) msg.channel.createMessage(tag.content)
+}
+
+export default function (bot: CommandClient) {
+  bot.on('messageCreate', process)
 }

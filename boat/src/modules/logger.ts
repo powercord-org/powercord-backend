@@ -20,38 +20,37 @@
  * SOFTWARE.
  */
 
-const config = require('../../config.json')
-const { humanTime } = require('./utils')
+import type { CommandClient, GuildTextableChannel, Message } from 'eris'
+import { prettyPrintTimeSpan, stringifyDiscordMessage } from '../util.js'
+import config from '../config.js'
 
-const zws = '\u200B'
-const template = `
-Message deleted in <#$channelId>
+const ZWS = '\u200B'
+const TEMPLATE = `Message deleted in <#$channelId>
 Author: $username#$discrim ($userId; <@$userId>)
 Timestamp: $time ($duration ago)
 Message contents: \`\`\`
 $message
-\`\`\`
-`.trim()
+\`\`\``
 
-module.exports = {
-  register (bot) {
-    bot.on('messageDelete', (msg) => {
-      if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
-        return // Message not cached; let's just ignore
-      }
-
-      const cleanMessage = msg.cleanContent.replace(/`/g, `\`${zws}`)
-      const cleanUsername = msg.author.username.replace(/@/g, `@${zws}`).replace(/`/g, `\`${zws}`)
-      const time = new Date(msg.timestamp)
-      bot.createMessage(config.discord.ids.channelMessageLogs, template
-        .replace('$channelId', msg.channel.id)
-        .replace('$username', cleanUsername)
-        .replace('$discrim', msg.author.discriminator)
-        .replace(/\$userId/g, msg.author.id)
-        .replace('$time', time.toUTCString())
-        .replace('$duration', humanTime(Date.now() - time))
-        .replace('$message', cleanMessage)
-      )
-    })
+async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
+  if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
+    return // Message not cached; let's just ignore
   }
+
+  // todo: log attachments
+  this.createMessage(config.discord.ids.channelMessageLogs, {
+    content: TEMPLATE
+      .replace('$channelId', msg.channel.id)
+      .replace('$username', msg.author.username.replace(/`/g, `\`${ZWS}`))
+      .replace('$discrim', msg.author.discriminator)
+      .replace(/\$userId/g, msg.author.id)
+      .replace('$time', new Date(msg.timestamp).toUTCString())
+      .replace('$duration', prettyPrintTimeSpan(Date.now() - msg.timestamp))
+      .replace('$message', stringifyDiscordMessage(msg).replace(/`/g, `\`${ZWS}`) || '*No contents*'),
+    allowedMentions: {}
+  })
+}
+
+export default function (bot: CommandClient) {
+  bot.on('messageDelete', process)
 }

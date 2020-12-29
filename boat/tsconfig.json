@@ -6,6 +6,7 @@
     "strictBindCallApply": true,
     "strictFunctionTypes": true, 
     "strictPropertyInitialization": true,
+    "incremental": true,
   
     "noEmitOnError": true,
     "noImplicitThis": true,
@@ -14,11 +15,11 @@
     "noImplicitAny": true,
     "allowUnreachableCode": false,
     "allowSyntheticDefaultImports": true,
-    // "allowJs": false,
+    "allowJs": false,
 
     "lib": [ "es2020" ],
     "target": "es2020",
-    "module": "es2020",
+    "module": "esnext",
     "moduleResolution": "node",
     "outDir": "./dist"
   },
