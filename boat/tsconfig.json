@@ -21,7 +21,7 @@
     "target": "es2020",
     "module": "esnext",
     "moduleResolution": "node",
-    "outDir": "./dist"
+    "outDir": "../dist/boat"
   },
   "include": [ "./src/**/*" ]
 }

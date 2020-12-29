@@ -14,12 +14,13 @@
   "scripts": {
     "web:watch": "cross-env NODE_ENV=development webpack serve --config web/webpack.config.cjs",
     "web:build": "cross-env NODE_ENV=production webpack --config web/webpack.config.cjs",
-    "api:dev": "",
+    "api:dev": "tsc-watch --project api/tsconfig.json --onSuccess \"node dist/api/index.js\"",
     "api:build": "tsc --build api/tsconfig.json",
-    "api:start": "",
-    "bot:dev": "tsc-watch --project boat/tsconfig.json --onSuccess \"node boat/dist/index.js\"",
+    "api:start": "node dist/api/index.js",
+    "bot:dev": "tsc-watch --project boat/tsconfig.json --onSuccess \"node dist/boat/index.js\"",
     "bot:build": "tsc --build boat/tsconfig.json",
-    "bot:start": ""
+    "bot:start": "node dist/boat/index.js",
+    "build": "rm -rf dist && pnpm run web:build && pnpm run api:build && pnpm run bot:build"
   },
   "dependencies": {
     "eris": "^0.14.0",
