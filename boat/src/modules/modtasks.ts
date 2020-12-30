@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { CommandClient, Guild, GuildTextableChannel, Message, User } from 'eris'
+import type { CommandClient, Guild, User } from 'eris'
 import type { InsertOneWriteOpResult, ObjectId } from 'mongodb'
 import cron from 'node-cron'
 import { unmute, unban } from '../mod.js'
