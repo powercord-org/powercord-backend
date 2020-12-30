@@ -20,17 +20,31 @@
  * SOFTWARE.
  */
 
-const config = require('../../../config.json')
+import type { GuildTextableChannel, Message } from 'eris'
+import { unmute } from '../../mod.js'
+import config from '../../config.js'
 
-module.exports = async function (msg) {
-  let help = '```asciidoc\n'
-  Object.keys(msg._client.commands).forEach(cmdName => {
-    const cmd = msg._client.commands[cmdName]
-    if (cmd.description !== 'No description') {
-      help += `${config.discord.prefix}${cmdName.padEnd(10)} :: ${cmd.description}\n`
-    }
-  })
-  help += '```'
+const USAGE_STR = `Usage: ${config.discord.prefix}unmute <mention || id> [reason]`
 
-  msg.channel.createMessage(help)
+export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
+  if (!msg.member) return // ???
+  if (!msg.member.permissions.has('manageMessages')) {
+    msg.channel.createMessage('no')
+    return
+  }
+
+  if (args.length === 0) {
+    msg.channel.createMessage(USAGE_STR)
+    return
+  }
+
+  const target = args.shift()!.replace(/<@!?(\d+)>/, '$1')
+
+  if (target === msg.author.id) {
+    msg.channel.createMessage('You\'re already talking fam.')
+    return
+  }
+
+  unmute(msg.channel.guild, target, msg.author, args.length > 0 ? args.join(' ') : void 0)
+  msg.channel.createMessage('Speak')
 }

@@ -29,8 +29,8 @@ type MessageLike = { id: string, author: User, channel: { name: string }, conten
 
 type SnipeRecord = { author: string, msg: string, channel: string, type: 'edit' | 'delete' }
 
+export const SNIPE_LIFETIME = 20
 const ZWS = '\u200B'
-const SNIPE_LIFETIME = 20
 const buffer = new Map<number, SnipeRecord>()
 
 function isPrivate (channel: TextChannel) {

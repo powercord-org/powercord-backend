@@ -24,6 +24,12 @@ import type { GuildTextableChannel, Message } from 'eris'
 import { readdir, stat } from 'fs/promises'
 import { URL } from 'url'
 
+const DURATION_MAP = { m: 60e3, h: 3600e3, d: 86400e3 }
+
+export async function sleep (time: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, time))
+}
+
 export async function readdirRecursive (path: URL): Promise<string[]> {
   const entries = await readdir(path)
   const pending: Array<Promise<string[]>> = []
@@ -72,4 +78,11 @@ export function stringifyDiscordMessage (message: Message<GuildTextableChannel>)
     .replace(/<@!?([0-9]+)>/g, ([ , id ]) => `@${message.channel.guild.members.get(id)?.nick ?? message._client.users.get(id)?.username ?? 'invalid-user'}`)
     .replace(/<@&([0-9]+)>/g, ([ , id ]) => `@${message.channel.guild.roles.get(id)?.name ?? 'invalid-role'}`)
     .replace(/<#([0-9]+)>/g, ([ , id ]) => `@${message.channel.guild.channels.get(id)?.name ?? 'deleted-channel'}`)
+}
+
+export function parseDuration (duration: string): number | null {
+  const match = duration.match(/^(\d+)([mhd])$/)
+  if (!match) return null
+
+  return Number(match[1]) * DURATION_MAP[match[2] as keyof typeof DURATION_MAP]
 }

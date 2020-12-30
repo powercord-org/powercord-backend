@@ -20,26 +20,14 @@
  * SOFTWARE.
  */
 
-const config = require('../../../../config.json')
-const task = require('../../tasks')
+import type { GuildTextableChannel, Message } from 'eris'
 
-const USAGE_STR = `Usage: ${config.discord.prefix}unmute [mention] (reason)`
+export const description = 'Pong'
 
-module.exports = async function (msg, args) {
-  if (!msg.member.permission.has('manageMessages')) {
-    return msg.channel.createMessage('no')
-  }
-
-  if (args.length === 0) {
-    return msg.channel.createMessage(USAGE_STR)
-  }
-
-  const target = args.shift().replace(/<@!?(\d+)>/, '$1')
-
-  if (target === msg.author.id) {
-    return msg.channel.createMessage('You\'re already talking fam.')
-  }
-
-  task.unmute(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`)
-  return msg.channel.createMessage('Speak')
+export function executor (msg: Message<GuildTextableChannel>): void {
+  const startTime = Date.now()
+  msg.channel.createMessage('🏓 Pong!').then(m => {
+    const restLatency = Date.now() - startTime
+    m.edit(`🏓 Pong! | REST: ${restLatency}ms - Gateway: ${msg._client.shards.get(0)!.latency}ms`)
+  })
 }

@@ -20,11 +20,14 @@
  * SOFTWARE.
  */
 
-const config = require('../../../../config.json')
+import type { GuildTextableChannel, Message } from 'eris'
+import config from '../../config.js'
 
-module.exports = async function (msg) {
-  if (!msg.member.permission.has('administrator')) {
-    return msg.channel.createMessage('haha no')
+export async function executor (msg: Message<GuildTextableChannel>): Promise<void> {
+  if (!msg.member) return // ???
+  if (!msg.member.permissions.has('administrator')) {
+    msg.channel.createMessage('haha no')
+    return
   }
 
   const message = await msg.channel.createMessage('<a:loading:660094837437104138> Processing...')
@@ -54,7 +57,8 @@ module.exports = async function (msg) {
     })
 
     newRoles = [ ...new Set(newRoles) ]
-    if (JSON.stringify(originalRoles.sort()) !== JSON.stringify(newRoles.sort())) {
+
+    if (newRoles.length !== originalRoles.length || !newRoles.every((r) => originalRoles.includes(r))) {
       await guild.editMember(user._id, { roles: newRoles })
     }
   }

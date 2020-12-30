@@ -20,14 +20,18 @@
  * SOFTWARE.
  */
 
-const fetch = require('node-fetch')
-const config = require('../../../../config.json')
-const zws = '\u200B'
+import type { GuildTextableChannel, Message } from 'eris'
+import fetch from 'node-fetch'
+import config from '../../config.js'
 
+const ZWS = '\u200B'
 const FAQ_DOCUMENT = 'https://raw.githubusercontent.com/wiki/powercord-org/powercord/Frequently-Asked-Questions.md'
-module.exports = async function (msg) {
-  if (!msg.member.permission.has('administrator')) {
-    return msg.channel.createMessage('lol')
+
+export async function executor (msg: Message<GuildTextableChannel>): Promise<void> {
+  if (!msg.member) return // ???
+  if (!msg.member.permissions.has('administrator')) {
+    msg.channel.createMessage('lol')
+    return
   }
 
   const message = await msg.channel.createMessage('<a:loading:660094837437104138> Processing...')
@@ -50,12 +54,9 @@ module.exports = async function (msg) {
   )
 
   // Purge channel
-  const messages = await msg._client.getMessages(config.discord.ids.channelFaq)
-  await msg._client.deleteMessages(config.discord.ids.channelFaq, messages.map(m => m.id), 'Purging FAQ channel due to sync')
-
-  console.log(faq)
+  await msg._client.purgeChannel(config.discord.ids.channelFaq, void 0, void 0, void 0, void 0, 'Purging FAQ channel due to sync')
   for (const part of faq) {
-    await msg._client.createMessage(config.discord.ids.channelFaq, `${part}\n${zws}`)
+    await msg._client.createMessage(config.discord.ids.channelFaq, `${part}\n${ZWS}`)
   }
 
   message.edit('Done!')

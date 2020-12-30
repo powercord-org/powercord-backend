@@ -25,6 +25,7 @@ devDependencies:
   '@types/mongodb': 3.6.3
   '@types/node': 14.14.16
   '@types/node-cron': 2.0.3
+  '@types/node-fetch': 2.5.7
   '@typescript-eslint/eslint-plugin': 4.11.0_1b9a0c47bb6bc72fe9ec08ec801e03a4
   '@typescript-eslint/parser': 4.11.0_eslint@7.16.0+typescript@4.1.3
   autoprefixer: 10.1.0
@@ -718,6 +719,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-gwBBGeY2XeYBLE0R01K9Sm2hvNcPGmoloL6aqthA3QmBB1GYXTHIJ42AGZL7bdXBRiwbRV8b6NB5iKpl20R3gw==
+  /@types/node-fetch/2.5.7:
+    dependencies:
+      '@types/node': 14.14.16
+      form-data: 3.0.0
+    dev: true
+    resolution:
+      integrity: sha512-o2WVNf5UhWRkxlf6eq+jMZDu7kjgpgJfl4xVNlvryc95O/6F2ld8ztKX+qu+Rjyet93WAWm5LjeX9H5FGkODvw==
   /@types/node/14.0.13:
     dev: true
     resolution:
@@ -1322,6 +1330,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==
+  /asynckit/0.4.0:
+    dev: true
+    resolution:
+      integrity: sha1-x57Zf380y48robyXkLzDZkdLS3k=
   /atob/2.1.2:
     dev: true
     engines:
@@ -2025,6 +2037,14 @@ packages:
     dev: true
     resolution:
       integrity: sha512-puCDz0CzydiSYOrnXpz/PKd69zRrribezjtE9yd4zvytoRc8+RY/KJPvtPFKZS3E3wP6neGyMe0vOTlHO5L3Pw==
+  /combined-stream/1.0.8:
+    dependencies:
+      delayed-stream: 1.0.0
+    dev: true
+    engines:
+      node: '>= 0.8'
+    resolution:
+      integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==
   /commander/2.20.3:
     dev: true
     resolution:
@@ -2654,6 +2674,12 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-QwGuEUouP2kVwQenAsOof5Fv8K9t3D8Ca8NxcXKrIpEHjTXK5J2nXLdP+ALI1cgv8wj7KuwBhTwBkOZSJKM5XQ==
+  /delayed-stream/1.0.0:
+    dev: true
+    engines:
+      node: '>=0.4.0'
+    resolution:
+      integrity: sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
   /denque/1.4.1:
     dev: false
     engines:
@@ -3892,6 +3918,16 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-gQaNKVqBQuwKxybG4iAMMPttXoA=
+  /form-data/3.0.0:
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      mime-types: 2.1.27
+    dev: true
+    engines:
+      node: '>= 6'
+    resolution:
+      integrity: sha512-CKMFDglpbMi6PyN+brwB9Q/GOw0eAnsrEZDgcsH5Krhz5Od/haKHAX0NmQfha2zPPz0JpWzA7GJHGSnvCRLWsg==
   /forwarded/0.1.2:
     engines:
       node: '>= 0.6'
@@ -9496,6 +9532,7 @@ specifiers:
   '@types/mongodb': ^3.6.3
   '@types/node': ^14.14.16
   '@types/node-cron': ^2.0.3
+  '@types/node-fetch': ^2.5.7
   '@typescript-eslint/eslint-plugin': ^4.11.0
   '@typescript-eslint/parser': ^4.11.0
   autoprefixer: ^10.1.0

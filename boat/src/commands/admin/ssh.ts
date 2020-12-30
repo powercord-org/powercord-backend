@@ -20,17 +20,22 @@
  * SOFTWARE.
  */
 
-const { exec } = require('child_process')
-const config = require('../../../../config.json')
+import type { GuildTextableChannel, Message } from 'eris'
+import { exec } from 'child_process'
+import fetch from 'node-fetch'
+import config from '../../config.js'
 
-module.exports = async function (msg) {
-  if (!msg.member.permission.has('administrator')) {
-    return msg.channel.createMessage('haha no')
+export async function executor (msg: Message<GuildTextableChannel>): Promise<void> {
+  if (!msg.member) return // ???
+  if (!msg.member.permissions.has('administrator')) {
+    msg.channel.createMessage('haha no')
+    return
   }
 
   const cmd = msg.content.slice(config.discord.prefix.length + 4)
   if (!cmd) {
-    return msg.channel.createMessage('do you want me to run `rm -fr /`?')
+    msg.channel.createMessage('do you want me to run `rm -fr /`?')
+    return
   }
 
   const m = await msg.channel.createMessage('<a:loading:660094837437104138> Computing...')

@@ -20,26 +20,31 @@
  * SOFTWARE.
  */
 
-const config = require('../../../../config.json')
-const task = require('../../tasks')
+import type { GuildTextableChannel, Message } from 'eris'
+import { kick } from '../../mod.js'
+import config from '../../config.js'
 
-const USAGE_STR = `Usage: ${config.discord.prefix}kick [mention] (reason)`
+const USAGE_STR = `Usage: ${config.discord.prefix}kick <mention || id> [reason]`
 
-module.exports = async function (msg, args) {
-  if (!msg.member.permission.has('kickMembers')) {
-    return msg.channel.createMessage('no')
+export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
+  if (!msg.member) return // ???
+  if (!msg.member.permissions.has('kickMembers')) {
+    msg.channel.createMessage('no')
+    return
   }
 
   if (args.length === 0) {
-    return msg.channel.createMessage(USAGE_STR)
+    msg.channel.createMessage(USAGE_STR)
+    return
   }
 
-  const target = args.shift().replace(/<@!?(\d+)>/, '$1')
+  const target = args.shift()!.replace(/<@!?(\d+)>/, '$1')
 
   if (target === msg.author.id) {
-    return msg.channel.createMessage('Don\'t do that to yourself')
+    msg.channel.createMessage('Don\'t do that to yourself, you\'ll break your leg')
+    return
   }
 
-  task.kick(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`)
-  return msg.channel.createMessage('Yeeted')
+  kick(msg.channel.guild, target, msg.author, args.length > 0 ? args.join(' ') : void 0)
+  msg.channel.createMessage('Yeeted')
 }

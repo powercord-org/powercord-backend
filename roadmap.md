@@ -28,3 +28,4 @@
  - [x] Mod commands + temporary sanctions through the bot (tempmute, tempban)
  - [ ] Migrate from react-helmet to hook-based hoofd
  - [ ] Preact? Maybe?
+ - [ ] Migrate commands to some Saturated Liquid of Anhydrous Software Honey (SLASH) commands

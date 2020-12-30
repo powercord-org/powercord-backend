@@ -26,6 +26,7 @@ import { CommandClient } from 'eris'
 import MongoClient from 'mongodb'
 
 import { readdirRecursive } from './util.js'
+import { loadLaws } from './laws.js'
 import config from './config.js'
 
 const bot = new CommandClient(config.discord.botToken, {
@@ -41,10 +42,7 @@ async function loadModule (module: string) {
 async function loadCommand (command: string) {
   const cmd = await import(command)
   if (typeof cmd.executor !== 'function') throw new TypeError(`Invalid command: ${basename(command)}`)
-  console.log(basename(command, '.js'))
-  // cmd.executor
-  // cmd.description
-  // ...
+  bot.registerCommand(basename(command, '.js'), cmd.executor, { description: cmd.description, aliases: cmd.aliases })
 }
 
 Promise.resolve()
@@ -56,4 +54,5 @@ Promise.resolve()
   .then((commands) => Promise.all(commands.map(loadCommand)))
   .then(() => bot.connect())
   .then(() => console.log('Bot logged in'))
+  .then(() => loadLaws(bot))
   .catch((e) => console.error('An error occurred during startup', e))

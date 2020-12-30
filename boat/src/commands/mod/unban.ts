@@ -20,22 +20,30 @@
  * SOFTWARE.
  */
 
-const config = require('../../../../config.json')
-const task = require('../../tasks')
+import type { GuildTextableChannel, Message } from 'eris'
+import { unban } from '../../mod.js'
+import config from '../../config.js'
 
-const USAGE_STR = `Usage: ${config.discord.prefix}unban [userID] (reason)`
+const USAGE_STR = `Usage: ${config.discord.prefix}unban <mention || id> [reason]`
 
-module.exports = async function (msg, args) {
-  if (!msg.member.permission.has('banMembers')) {
-    return msg.channel.createMessage('no')
+export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
+  if (!msg.member) return // ???
+  if (!msg.member.permissions.has('banMembers')) {
+    msg.channel.createMessage('no')
+    return
   }
 
   if (args.length === 0) {
-    return msg.channel.createMessage(USAGE_STR)
+    msg.channel.createMessage(USAGE_STR)
+    return
   }
 
-  const target = args.shift()
+  const target = args.shift()!.replace(/<@!?(\d+)>/, '$1')
+  if (target === msg.author.id) {
+    msg.channel.createMessage('You ain\'t banned as far as I\'m aware, duh')
+    return
+  }
 
-  task.unban(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${args.join(' ') || 'No reason specified.'}`)
-  return msg.channel.createMessage('Un-yeeted')
+  unban(msg.channel.guild, target, msg.author, args.length > 0 ? args.join(' ') : void 0)
+  msg.channel.createMessage('Un-yeeted')
 }

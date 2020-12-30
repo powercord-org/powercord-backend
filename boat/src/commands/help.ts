@@ -20,10 +20,19 @@
  * SOFTWARE.
  */
 
-module.exports = function (msg) {
-  const startTime = Date.now()
-  msg.channel.createMessage('🏓 Pong!').then(m => {
-    const restLatency = Date.now() - startTime
-    m.edit(`🏓 Pong! | REST: ${restLatency}ms - Gateway: ${msg._client.shards.get(0).latency}ms`)
+import type { GuildTextableChannel, Message } from 'eris'
+import config from '../config.js'
+
+export const description = 'Shows this very help message'
+
+export function executor (msg: Message<GuildTextableChannel>): void {
+  let help = '```asciidoc\n'
+  Object.values(msg._client.commands).forEach((cmd) => {
+    if (cmd.description !== 'No description') {
+      help += `${config.discord.prefix}${cmd.label.padEnd(10)} :: ${cmd.description}\n`
+    }
   })
+  help += '```'
+
+  msg.channel.createMessage(help)
 }

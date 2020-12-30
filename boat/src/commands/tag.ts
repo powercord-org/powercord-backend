@@ -20,53 +20,65 @@
  * SOFTWARE.
  */
 
-const config = require('../../../config.json')
+import type { GuildTextableChannel, Message } from 'eris'
+import config from '../config.js'
 
-async function listTags (msg) {
+async function listTags (msg: Message<GuildTextableChannel>): Promise<void> {
   const tags = await msg._client.mongo.collection('tags').find({}).toArray()
   msg.channel.createMessage(`Available tags: ${tags.map(t => t._id).join(', ')}`)
 }
 
-async function addTag (msg, args) {
-  if (
-    [ 'list', 'add', 'edit', 'delete' ].includes(args[1]) ||
-    await msg._client.mongo.collection('tags').findOne({ _id: args[1] })
-  ) {
-    return msg.channel.createMessage('This tag already exists.')
+async function addTag (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
+  if ([ 'list', 'add', 'edit', 'delete' ].includes(args[1])) {
+    msg.channel.createMessage('Don\'t try to break me, silly.')
+    return
+  }
+
+  if (await msg._client.mongo.collection('tags').findOne({ _id: args[1] })) {
+    msg.channel.createMessage('This tag already exists.')
+    return
   }
 
   await msg._client.mongo.collection('tags').insertOne({ _id: args[1], content: msg.content.slice(msg.content.indexOf(args[1]) + args[1].length).trim() })
   msg.channel.createMessage('Tag created.')
 }
 
-async function editTag (msg, args) {
+async function editTag (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (!await msg._client.mongo.collection('tags').findOne({ _id: args[1] })) {
-    return msg.channel.createMessage('This tag does not exist.')
+    msg.channel.createMessage('This tag does not exist.')
+    return
   }
 
   await msg._client.mongo.collection('tags').updateOne({ _id: args[1] }, { $set: { content: msg.content.slice(msg.content.indexOf(args[1]) + args[1].length).trim() } })
   msg.channel.createMessage('Tag updated.')
 }
 
-async function deleteTag (msg, args) {
+async function deleteTag (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (!await msg._client.mongo.collection('tags').findOne({ _id: args[1] })) {
-    return msg.channel.createMessage('This tag does not exist.')
+    msg.channel.createMessage('This tag does not exist.')
+    return
   }
 
   await msg._client.mongo.collection('tags').deleteOne({ _id: args[1] })
   msg.channel.createMessage('Tag deleted.')
 }
 
-async function sendTag (msg, args) {
+async function sendTag (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   const tag = await msg._client.mongo.collection('tags').findOne({ _id: args[0] })
   if (!tag) {
-    return msg.channel.createMessage('This tag does not exist.')
+    msg.channel.createMessage('This tag does not exist.')
+    return
   }
+
   msg.channel.createMessage(tag.content)
 }
 
-module.exports = function (msg, args) {
-  const elevated = msg.member.permission.has('manageMessages')
+export const description = 'Custom commands'
+
+export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
+  if (!msg.member) return // ???
+
+  const elevated = msg.member.permissions.has('manageMessages')
   if (args.length === 0) {
     const parts = [
       'Usage:',
@@ -82,22 +94,28 @@ module.exports = function (msg, args) {
       )
     }
 
-    return msg.channel.createMessage(parts.join('\n'))
+    msg.channel.createMessage(parts.join('\n'))
+    return
   }
 
-  switch (args[0]) { // I could make use of Eris' subcommands but eh
+  switch (args[0]) { // I could make use of Eris' subcommands but eh - although it may help me get rid of _client, need to check that
     case 'list':
-      return listTags(msg, args)
+      listTags(msg)
+      break
     case 'add':
-      if (!elevated) return msg.channel.createMessage('you tried')
-      return addTag(msg, args)
+      if (!elevated) return void msg.channel.createMessage('you tried')
+      addTag(msg, args)
+      break
     case 'edit':
-      if (!elevated) return msg.channel.createMessage('you tried')
-      return editTag(msg, args)
+      if (!elevated) return void msg.channel.createMessage('you tried')
+      editTag(msg, args)
+      break
     case 'delete':
-      if (!elevated) return msg.channel.createMessage('you tried')
-      return deleteTag(msg, args)
+      if (!elevated) return void msg.channel.createMessage('you tried')
+      deleteTag(msg, args)
+      break
     default:
-      return sendTag(msg, args)
+      sendTag(msg, args)
+      break
   }
 }

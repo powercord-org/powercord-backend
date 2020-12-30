@@ -50,6 +50,7 @@
     "@types/mongodb": "^3.6.3",
     "@types/node": "^14.14.16",
     "@types/node-cron": "^2.0.3",
+    "@types/node-fetch": "^2.5.7",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "autoprefixer": "^10.1.0",

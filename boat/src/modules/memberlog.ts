@@ -116,7 +116,7 @@ function memberRemove (this: CommandClient, guild: Guild, member: Member | Membe
   if (member.roles?.length > 0) {
     fields.push({
       name: 'Roles',
-      value: member.roles.map(id => guild.roles.get(id)!).map((role) => role.mention).join(' ')
+      value: member.roles.map(id => guild.roles.get(id)!.mention).join(' ')
     })
   }
 

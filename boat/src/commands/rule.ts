@@ -20,23 +20,35 @@
  * SOFTWARE.
  */
 
-const config = require('../../../config.json')
-const { parseRule } = require('../utils')
+import type { GuildTextableChannel, Message } from 'eris'
+import { getCivilLaws } from '../laws.js'
+import config from '../config.js'
 
 const INFO_STR = `You can read all of the server rules in <#${config.discord.ids.channelRules}>.`
 const USAGE_STR = `Usage: ${config.discord.prefix}rule <rule id>`
 
-module.exports = async function (msg, args) {
+export const aliases = [ 'rules' ]
+
+export const description = 'Helps people unable to read #rules'
+
+export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (args.length === 0) {
-    return msg.channel.createMessage(`${USAGE_STR}\n\n${INFO_STR}`)
+    msg.channel.createMessage(`${USAGE_STR}\n\n${INFO_STR}`)
+    return
   }
 
   const id = parseInt(args[0])
-  const rule = await parseRule(id, msg)
-
-  if (rule === null) {
-    return msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
+  if (id === -1) {
+    msg.channel.createMessage(`**Rule #-1**: we ban/kick/mute when we want\n\n${INFO_STR}`)
+    return
   }
 
-  msg.channel.createMessage(`**Rule #${id}**: ${rule}\n\n${INFO_STR}`)
+  const law = getCivilLaws().get(id)
+  if (!law) {
+    msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
+    return
+  }
+
+  const actions = law.penalties ? `\n**Actions**: ${law.penalties.join(' ➙ ')}` : ''
+  msg.channel.createMessage(`**Rule #${id}**: ${law.law}${actions}\n\n${INFO_STR}`)
 }

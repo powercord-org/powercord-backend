@@ -20,7 +20,8 @@
  * SOFTWARE.
  */
 
-const sniper = require('../sniper')
+import type { EmbedField, EmbedOptions, GuildTextableChannel, Message } from 'eris'
+import { getLastMessages, SNIPE_LIFETIME } from '../modules/sniper.js'
 
 const ANIMALS = [
   '🦅', '🐦', '🦄', '🐙', '🐢', '🐌', '🐬', '🐠', '🦈', '🦏',
@@ -28,16 +29,20 @@ const ANIMALS = [
   '🐿️', '🦔', '🦩', '🦢'
 ]
 
-module.exports = function (msg) {
-  if (sniper.lastMessages.length === 0) {
+export const description = `Sends a copy of messages deleted or edited in the last ${SNIPE_LIFETIME} seconds.`
+
+export function executor (msg: Message<GuildTextableChannel>): void {
+  const last = getLastMessages()
+  if (last.length === 0) {
     const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)]
-    return msg.channel.createMessage(`${animal} There is nothing to snipe.`)
+    msg.channel.createMessage(`${animal} There is nothing to snipe.`)
+    return
   }
 
-  const fields = [ [] ]
+  const fields: EmbedField[][] = [ [] ]
   let cursor = 0
   let length = 0
-  for (const snipe of sniper.lastMessages) {
+  for (const snipe of last) {
     const name = `${snipe.author} (${snipe.type})`
     if (fields[cursor].length === 25 || length + name.length + Math.floor(snipe.msg.length / 1024) * 3 + snipe.msg.length >= 5900) {
       fields.push([])
@@ -59,15 +64,10 @@ module.exports = function (msg) {
     }
   }
 
-  sniper.lastMessages = []
   fields.forEach((f, i) => {
-    const embed = { fields: f }
-    if (i === 0) {
-      embed.description = `Edits and deletes for the last ${sniper.SNIPE_LIFETIME} seconds`
-    }
-    if (i === fields.length - 1) {
-      embed.footer = { text: `Sniped by ${msg.author.username}#${msg.author.discriminator}` }
-    }
+    const embed: EmbedOptions = { fields: f }
+    if (i === 0) embed.description = `Edits and deletes for the last ${SNIPE_LIFETIME} seconds`
+    if (i === fields.length - 1) embed.footer = { text: `Sniped by ${msg.author.username}#${msg.author.discriminator}` }
 
     msg.channel.createMessage({ embed })
   })

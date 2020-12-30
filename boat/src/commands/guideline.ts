@@ -20,48 +20,45 @@
  * SOFTWARE.
  */
 
-const fetch = require('node-fetch')
-const config = require('../../../config.json')
+import type { GuildTextableChannel, Message } from 'eris'
+import { getCommerceDefinitions, getCommerceLaws } from '../laws.js'
+import config from '../config.js'
 
-const GUIDELINES_DOCUMENT = 'https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md'
 const INFO_STR = 'You can read all of the guidelines at <https://powercord.dev/guidelines>.'
 const USAGE_STR = `Usage: \`${config.discord.prefix}guideline <guideline id>\` or \`${config.discord.prefix}guideline defs\` `
 
-module.exports = async function (msg, args) {
+export const aliases = [ 'guidelines' ]
+
+export const description = 'Points out guidelines from https://powercord.dev/guidelines'
+
+export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
   if (args.length === 0) {
-    return msg.channel.createMessage(`${USAGE_STR}\n\n${INFO_STR}`)
+    msg.channel.createMessage(`${USAGE_STR}\n\n${INFO_STR}`)
+    return
   }
 
-  try {
-    const guidelines = await fetch(GUIDELINES_DOCUMENT).then(r => r.text())
-
-    if (args[0] === 'defs') {
-      const defs = guidelines.split('## Definitions')[1].split('\n\n')[0].trim().split('\n')
-      const fields = []
-      defs.forEach(def => {
-        fields.push({
-          name: def.split(':')[0].replace('-', ' ').trim(),
-          value: def.split(':')[1]
-        })
-      })
-      const embed = {
+  if (args[0] === 'defs') {
+    msg.channel.createMessage({
+      embed: {
         title: 'Definitions',
         description: INFO_STR,
-        fields
+        fields: getCommerceDefinitions()
       }
-      return msg.channel.createMessage({ embed })
-    }
+    })
+    return
+  }
 
-    const id = parseInt(args[0])
-    const match = guidelines.match(new RegExp(`# (${id}[^#]*)`))
-    if (!match) {
-      return msg.channel.createMessage(`This guideline doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
-    }
+  const id = parseInt(args[0])
+  const law = getCommerceLaws().get(id)
+  if (!law) {
+    msg.channel.createMessage(`This guideline doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
+    return
+  }
 
-    const guideline = match[0].slice(2).replace(/\n\n/g, '<br><br>').split('\n')
-    const embed = {
-      title: guideline.shift(),
-      description: guideline.map(g => g.replace(/<br>/g, '\n')).join('').trim(),
+  msg.channel.createMessage({
+    embed: {
+      title: law.law,
+      description: law.article,
       fields: [
         {
           name: 'Read all the guidelines',
@@ -69,9 +66,5 @@ module.exports = async function (msg, args) {
         }
       ]
     }
-    msg.channel.createMessage({ embed })
-  } catch (e) {
-    console.error('error occurred while fetching guidelines', e)
-    msg.channel.createMessage('An unexpected error occurred. Maybe GitHub is having troubles?')
-  }
+  })
 }

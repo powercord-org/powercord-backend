@@ -20,44 +20,44 @@
  * SOFTWARE.
  */
 
-const config = require('../../../../config.json')
-const task = require('../../tasks')
-const { parseDuration } = require('../../utils')
+import type { GuildTextableChannel, Message } from 'eris'
+import { mute } from '../../mod.js'
+import { parseDuration } from '../../util.js'
+import config from '../../config.js'
 
-const USAGE_STR = `Usage: ${config.discord.prefix}ban [mention] (reason)|(duration)`
+const USAGE_STR = `Usage: ${config.discord.prefix}mute <mention || id> [reason]|[duration]`
 
-module.exports = async function (msg, args) {
-  if (!msg.member.permission.has('banMembers')) {
-    return msg.channel.createMessage('no')
+export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
+  if (!msg.member) return // ???
+  if (!msg.member.permissions.has('manageMessages')) {
+    msg.channel.createMessage('no')
+    return
   }
 
   if (args.length === 0) {
-    return msg.channel.createMessage(USAGE_STR)
+    msg.channel.createMessage(USAGE_STR)
+    return
   }
 
-  const target = args.shift().replace(/<@!?(\d+)>/, '$1')
-  const reason = `${args.join(' ').split('|')[0] || 'No reason specified.'}`
+  const target = args.shift()!.replace(/<@!?(\d+)>/, '$1')
+  const reason = args.join(' ').split('|')[0] || void 0
   const rawDuration = msg.content.includes('|') ? msg.content.split('|')[1].trim().toLowerCase().match(/\d+(m|h|d)/) : null
 
   if (target === msg.author.id) {
-    return msg.channel.createMessage('Don\'t do that to yourself')
+    msg.channel.createMessage('You cannot be silenced')
+    return
   }
 
+  let duration
   if (rawDuration) {
-    const duration = parseDuration(rawDuration[0])
-    if (duration === null) {
-      return msg.channel.createMessage('Invalid duration')
+    duration = parseDuration(rawDuration[0])
+    if (!duration) {
+      msg.channel.createMessage('Invalid duration')
+      return
     }
-
-    const entry = task.EMPTY_TASK_OBJ
-    entry.type = 'unban'
-    entry.target = target
-    entry.mod = `${msg.author.username}#${msg.author.discriminator}`
-    entry.time = Date.now() + duration
-
-    msg._client.mongo.collection('tasks').insertOne(entry)
   }
 
-  task.ban(msg._client, target, `${msg.author.username}#${msg.author.discriminator}`, `${reason} ${rawDuration ? `(for ${rawDuration[0]})` : ''}`)
-  return msg.channel.createMessage('Ultra-yeeted')
+  mute(msg.channel.guild, target, msg.author, reason, duration)
+  msg.channel.createMessage('Shut')
+  return
 }

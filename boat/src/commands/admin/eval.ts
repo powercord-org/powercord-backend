@@ -20,18 +20,22 @@
  * SOFTWARE.
  */
 
-const { inspect } = require('util')
-const fetch = require('node-fetch')
-const config = require('../../../../config.json')
+import type { GuildTextableChannel, Message } from 'eris'
+import { inspect } from 'util'
+import fetch from 'node-fetch'
+import config from '../../config.js'
 
-module.exports = async function (msg) {
-  if (!msg.member.permission.has('administrator')) {
-    return msg.channel.createMessage('haha no')
+export async function executor (msg: Message<GuildTextableChannel>): Promise<void> {
+  if (!msg.member) return // ???
+  if (!msg.member.permissions.has('administrator')) {
+    msg.channel.createMessage('haha no')
+    return
   }
 
   const script = msg.content.slice(config.discord.prefix.length + 5)
   if (!script) {
-    return msg.channel.createMessage('do you expect me to suppose the code you want to run?')
+    msg.channel.createMessage('do you expect me to suppose the code you want to run?')
+    return
   }
 
   const m = await msg.channel.createMessage('<a:loading:660094837437104138> Computing...')

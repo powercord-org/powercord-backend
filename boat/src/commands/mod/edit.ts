@@ -20,32 +20,42 @@
  * SOFTWARE.
  */
 
-const config = require('../../../../config.json')
+import type { GuildTextableChannel, Message } from 'eris'
+import config from '../../config.js'
 
-module.exports = async function (msg, args) {
-  if (!msg.member.permission.has('manageMessages')) {
-    return msg.channel.createMessage('no')
+const USAGE_STR = `Usage: ${config.discord.prefix}edit <caseId> <newReason>`
+
+export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
+  if (!msg.member) return // ???
+  if (!msg.member.permissions.has('manageMessages')) {
+    msg.channel.createMessage('no')
+    return
   }
 
-  const caseId = parseInt(args.shift())
+  const caseId = parseInt(args.shift()!)
   let newReason = args.join(' ')
   if (!caseId || !newReason) {
-    return msg.channel.createMessage(`Usage: ${config.discord.prefix}edit [caseId] [newReason]`)
+    msg.channel.createMessage(USAGE_STR)
+    return
   }
 
   const channel = msg._client.getChannel(config.discord.ids.channelModLogs)
+  if (!channel || !('rateLimitPerUser' in channel)) return // ???
+
   const messages = await channel.getMessages(100)
-  const message = messages.find(m => m.content.includes(`Case ${caseId}`))
+  const message = messages.find((m) => m.content.includes(`Case ${caseId}`))
   if (!message) {
-    return msg.channel.createMessage('This case doesn\'t exist or is too old')
+    msg.channel.createMessage('This case doesn\'t exist or is too old.')
+    return
   }
 
-  const modId = message.content.match(/\n__Moderator(?:[^(]+)\((\d+)/)[1]
-  if (modId !== msg.author.id && !msg.member.permission.has('administrator')) {
-    return msg.channel.createMessage('You\'re not the responsible moderator')
+  const modId = message.content.match(/\n__Moderator(?:[^(]+)\((\d+)/)![1]
+  if (modId !== msg.author.id && !msg.member.permissions.has('administrator')) {
+    msg.channel.createMessage('You\'re not the responsible moderator.')
+    return
   }
 
-  const content = message.content.match(/([^]+)\n__Reason__/)[1]
+  const content = message.content.match(/([^]+)\n__Reason__/)![1]
   if (modId !== msg.author.id) {
     newReason += ` *(edited by ${msg.author.username}#${msg.author.discriminator})*`
   }
