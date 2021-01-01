@@ -10,13 +10,11 @@ node_modules
 boat/.canary.cache.json
 manifest.webpack.json
 integrity.webpack.json
-http/dist
 dist
 
 # random shit
 config.json
 *.log
-_work
 *.nogit.*
 *.nogit/
 package-lock.json

@@ -2,12 +2,12 @@
   "apps": [
     {
       "name": "backend",
-      "script": "./http/index.js",
+      "script": "./dist/api/index.js",
       "args": "-p"
     },
     {
       "name": "boat",
-      "script": "./boat/index.js",
+      "script": "./dist/boat/index.js",
       "args": "-p"
     }
   ]
