@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020 aetheryx & Bowser65
+ * Copyright (c) 2018-2021 aetheryx & Cynthia K. Rey
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
