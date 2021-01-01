@@ -3,12 +3,12 @@
     {
       "name": "backend",
       "script": "./dist/api/index.js",
-      "args": "-p"
+      "env": { "NODE_ENV": "production" }
     },
     {
       "name": "boat",
       "script": "./dist/boat/index.js",
-      "args": "-p"
+      "env": { "NODE_ENV": "production" }
     }
   ]
 }
