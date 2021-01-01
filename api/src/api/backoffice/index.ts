@@ -20,9 +20,22 @@
  * SOFTWARE.
  */
 
-const { fetchSuggestions } = require('./suggestions')
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import { User } from '../../types.js'
+import crudModule from './crud.js'
 
-module.exports = async function (fastify) {
-  fastify.get('/suggestions', () => fetchSuggestions())
-  fastify.register(require('./forms'), { prefix: '/forms' })
+// todo: move as a fastify decoration
+function verifyAdmin (request: FastifyRequest, reply: FastifyReply, next: (e?: Error) => void) {
+  const user: User | null | undefined = request.user as User | null | undefined
+  if (user?.badges.staff) {
+    return next()
+  }
+
+  reply.code(403)
+  next(new Error('Missing permissions'))
+}
+
+export default async function (fastify: FastifyInstance): Promise<void> {
+  fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken, verifyAdmin ], { relation: 'and' }))
+  fastify.register(crudModule, { prefix: '/users', data: { collection: 'users', projection: { accounts: 0, settings: 0 } } })
 }

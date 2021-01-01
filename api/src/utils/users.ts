@@ -20,7 +20,9 @@
  * SOFTWARE.
  */
 
-function paywallify (customBadges, tier) {
+import type { User, RestUser } from '../types.js'
+
+function paywallify (customBadges: User['badges']['custom'], tier: number): User['badges']['custom'] {
   tier = 69 // todo: we don't keep track of patreon tier yet
   return {
     color: tier < 1 ? null : customBadges.color || null,
@@ -30,37 +32,22 @@ function paywallify (customBadges, tier) {
   }
 }
 
-function formatUser (user, bypassVisibility) {
+export function formatUser (user: User, bypassVisibility?: boolean): RestUser {
   return {
     id: user._id,
     username: user.username,
     discriminator: user.discriminator,
     avatar: user.avatar,
     badges: {
-      developer: !!user.badges.developer,
-      staff: !!user.badges.staff,
-      support: !!user.badges.support,
-      contributor: !!user.badges.contributor,
+      developer: Boolean(user.badges.developer),
+      staff: Boolean(user.badges.staff),
+      support: Boolean(user.badges.support),
+      contributor: Boolean(user.badges.contributor),
       translator: user.badges.translator || false, // Array of langs or false
-      hunter: !!user.badges.hunter,
-      early: !!user.badges.early,
+      hunter: Boolean(user.badges.hunter),
+      early: Boolean(user.badges.early),
       custom: paywallify(user.badges.custom || {}, user.patronTier || 0)
-    },
-    connections: {
-      spotify: user.accounts.spotify && ((user.accounts.spotify.visible || true) || bypassVisibility) && {
-        name: user.accounts.spotify.name,
-        visible: user.accounts.spotify.visible || true
-      },
-      github: user.accounts.github && ((user.accounts.github.visible || true) || bypassVisibility) && {
-        login: user.accounts.github.login,
-        display: user.accounts.github.display,
-        visible: user.accounts.github.visible || true
-      }
     },
     patronTier: bypassVisibility ? user.patronTier : void 0
   }
-}
-
-module.exports = {
-  formatUser
 }

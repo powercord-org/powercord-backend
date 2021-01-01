@@ -20,28 +20,37 @@
  * SOFTWARE.
  */
 
-const discordApi = require('../utils/discord')
-const discordAuth = require('../oauth/discord')
-const spotifyAuth = require('../oauth/spotify')
-const config = require('../../../config.json')
+// todo: oauth state & schema
 
-async function discord (request, reply) {
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import type { User } from '../types.js'
+import { fetchMember, addRole, setRoles } from '../utils/discord.js'
+import discordAuth from '../oauth/discord.js'
+import spotifyAuth from '../oauth/spotify.js'
+import config from '../config.js'
+
+type OAuth2Query = { error?: string, code?: string, redirect?: string }
+
+async function discord (this: FastifyInstance, request: FastifyRequest<{ Querystring: OAuth2Query }>, reply: FastifyReply): Promise<void> {
   if (request.query.error) {
-    return reply.redirect('/')
+    reply.redirect('/')
+    return
   }
+
   if (request.query.code) {
     const codes = await discordAuth.getToken(request.query.code)
     const user = await discordAuth.getCurrentUser(codes.access_token)
-    const collection = this.mongo.db.collection('users')
-    const banStatus = await this.mongo.db.collection('banned').findOne({ _id: user.id })
+    const collection = this.mongo.db!.collection('users')
+    const banStatus = await this.mongo.db!.collection('banned').findOne({ _id: user.id })
     if (banStatus && banStatus.account) {
       // todo: Notify the user why the auth failed instead of silently failing
-      return reply.redirect('/')
+      reply.redirect('/')
+      return
     }
 
     if (await collection.countDocuments({ _id: user.id }) === 0) {
       try {
-        await discordApi.addRole(user.id, config.discord.ids.roleUser, 'User created their powercord.dev account')
+        await addRole(user.id, config.discord.ids.roleUser, 'User created their powercord.dev account')
       } catch (e) {
         // Let it fail silently
       }
@@ -88,10 +97,12 @@ async function discord (request, reply) {
     if (request.cookies.redirect) {
       const cookie = reply.unsignCookie(request.cookies.redirect)
       if (cookie.valid) {
-        return reply.setCookie('redirect', null, { maxAge: 0 }).redirect(cookie.value)
+        reply.setCookie('redirect', '', { maxAge: 0 }).redirect(cookie.value!)
+        return
       }
     }
-    return reply.redirect('/me')
+    reply.redirect('/me')
+    return
   }
 
   if (request.query.redirect) {
@@ -103,19 +114,21 @@ async function discord (request, reply) {
       maxAge: 3600
     })
   }
-  return reply.redirect(discordAuth.getRedirectUrl())
+
+  reply.redirect(discordAuth.getRedirectUrl())
 }
 
-async function spotify (request, reply) {
+async function spotify (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User, Querystring: OAuth2Query }>, reply: FastifyReply): Promise<void> {
   if (request.query.error) {
     console.log(request.query.error)
-    return reply.redirect('/')
+    reply.redirect('/')
+    return
   }
 
   if (request.query.code) {
     const codes = await spotifyAuth.getToken(request.query.code)
     const user = await spotifyAuth.getCurrentUser(codes.access_token)
-    await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, {
+    await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, {
       $set: {
         'accounts.spotify': {
           accessToken: codes.access_token,
@@ -126,13 +139,14 @@ async function spotify (request, reply) {
         }
       }
     })
-    return reply.redirect('/me')
+    reply.redirect('/me')
+    return
   }
 
-  return reply.redirect(spotifyAuth.getRedirectUrl())
+  reply.redirect(spotifyAuth.getRedirectUrl())
 }
 
-async function unlinkDiscord (request, reply) {
+async function unlinkDiscord (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply): Promise<void> {
   try {
     const toRevoke = [
       config.discord.ids.roleUser,
@@ -141,24 +155,26 @@ async function unlinkDiscord (request, reply) {
       config.discord.ids.roleContributor
     ]
 
-    const member = await discordAuth.fetchMember(request.user._id)
-    const newRoles = member.roles.filter(r => !toRevoke.includes(r))
-    await discordApi.setRoles(request.user._id, newRoles, 'User deleted their powercord.dev account')
+    const member = await fetchMember(request.user!._id)
+    const newRoles = member.roles.filter((r: string) => !toRevoke.includes(r))
+    await setRoles(request.user!._id, newRoles, 'User deleted their powercord.dev account')
   } catch (e) {
     // Let it fail silently
   }
-  await this.mongo.db.collection('users').deleteOne({ _id: request.user._id })
-  reply.setCookie('token', null, { maxAge: 0 }).redirect('/')
+
+  await this.mongo.db!.collection('users').deleteOne({ _id: request.user!._id })
+  reply.setCookie('token', '', { maxAge: 0 }).redirect('/')
 }
 
-async function unlinkSpotify (request, reply) {
-  await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.spotify': null } })
+async function unlinkSpotify (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply): Promise<void> {
+  await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $set: { 'accounts.spotify': null } })
   reply.redirect('/me')
 }
 
-module.exports = async function (fastify) {
+export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get('/discord', discord)
-  fastify.get('/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, spotify)
-  fastify.get('/discord/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkDiscord)
-  fastify.get('/spotify/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkSpotify)
+
+  fastify.get<{ TokenizeUser: User, Querystring: OAuth2Query }>('/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, spotify)
+  fastify.get<{ TokenizeUser: User }>('/discord/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkDiscord)
+  fastify.get<{ TokenizeUser: User }>('/spotify/unlink', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlinkSpotify)
 }

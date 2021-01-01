@@ -20,36 +20,46 @@
  * SOFTWARE.
  */
 
-const fastify = require('fastify')({ logger: true })
-const { createReadStream } = require('fs')
-const { join } = require('path')
+import fastifyFactory from 'fastify'
+import fastifyAuth from 'fastify-auth'
+import fastifyCookie from 'fastify-cookie'
+import fastifyRawBody from 'fastify-raw-body'
+import fastifyMongodb from 'fastify-mongodb'
+import fastifyTokenize from 'fastify-tokenize'
 
-const config = require('../../config.json')
+import apiModule from './api/index.js'
+import config from './config.js'
 
-fastify.register(require('fastify-auth'))
-fastify.register(require('fastify-cookie'))
-fastify.register(require('fastify-raw-body'), { global: false })
-fastify.register(require('fastify-mongodb'), { url: config.mango })
-fastify.register(require('fastify-tokenize'), {
+const fastify = fastifyFactory({ logger: true })
+fastify.register(fastifyAuth)
+fastify.register(fastifyCookie)
+fastify.register(fastifyRawBody, { global: false })
+fastify.register(fastifyMongodb, { url: config.mango })
+fastify.register(fastifyTokenize, {
   secret: config.secret,
   fastifyAuth: true,
   cookieSigned: true,
-  fetchAccount: async (id) => {
-    const user = await fastify.mongo.db.collection('users').findOne({ _id: id })
+  fetchAccount: async (id: string) => {
+    const user = await fastify.mongo.db!.collection('users').findOne({ _id: id })
     if (user) user.lastTokenReset = 0
     return user
   }
 })
 
 // API
-fastify.register(require('./api'), { prefix: '/api' })
+fastify.register(apiModule, { prefix: '/api' })
 
 // REP & React
-fastify.register(async function (fastify) {
-  fastify.get('/robots.txt', (_, reply) => reply.type('text/plain').send(createReadStream(join(__dirname, 'robots.txt'))))
-  fastify.get('*', { preHandler: fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]) }, require('./react'))
-})
+// fastify.register(async function (fastify) {
+//   fastify.get('/robots.txt', (_, reply) => reply.type('text/plain').send(createReadStream(join(__dirname, 'robots.txt'))))
+//   fastify.get('*', { preHandler: fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]) }, require('./react'))
+// })
 
 fastify.ready()
-  .then(() => fastify.listen(config.port))
-  .catch(e => fastify.log.error(e) | process.exit(1))
+  .then(
+    () => fastify.listen(config.port),
+    (e) => {
+      fastify.log.error(e)
+      process.exit(1)
+    }
+  )

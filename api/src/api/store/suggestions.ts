@@ -20,11 +20,30 @@
  * SOFTWARE.
  */
 
-const fetch = require('node-fetch')
-const { getOrCompute } = require('../../utils/cache')
-const config = require('../../../../config.json')
+import fetch from 'node-fetch'
+import { getOrCompute } from '../../utils/cache.js'
+import config from '../../config.js'
 
-function gqlQuery (after) {
+// todo: move for frontend
+type GithubIssue = {
+  number: number
+  title: string
+  author: { login: string, avatarUrl: string } | null
+  body: string
+  reactions: { totalCount: number }
+  labels: { nodes: Array<{ name: string }> }
+}
+
+type Suggestion = {
+  id: GithubIssue['number']
+  title: GithubIssue['title']
+  author: GithubIssue['author']
+  description: string
+  upvotes: number
+  wip: boolean
+}
+
+function gqlQuery (after: string): string {
   return `query {
     repository(name: "suggestions", owner: "powercord-community") {
       issues(states: OPEN, first: 100, labels: ["up for grabs", "work in progress"], orderBy: {field: CREATED_AT, direction: DESC}${after ? `, after: "${after}"` : ''}) {
@@ -35,7 +54,7 @@ function gqlQuery (after) {
   }`
 }
 
-async function fetchAll () {
+async function fetchAll (): Promise<GithubIssue[]> {
   let payload
   const items = []
   do {
@@ -52,7 +71,7 @@ async function fetchAll () {
   return items
 }
 
-function fetchSuggestions () {
+export async function fetchSuggestions (): Promise<Suggestion[]> {
   return getOrCompute('gh_suggestions', async function () {
     const all = await fetchAll()
     return all.sort((a, b) => a.reactions.totalCount > b.reactions.totalCount ? -1 : a.reactions.totalCount < b.reactions.totalCount ? 1 : 0)
@@ -68,8 +87,4 @@ function fetchSuggestions () {
         }
       })
   }, true)
-}
-
-module.exports = {
-  fetchSuggestions
 }

@@ -20,7 +20,12 @@
  * SOFTWARE.
  */
 
-module.exports = async function (fastify) {
-  fastify.register(require('./v2'), { prefix: '/v2' })
-  fastify.get('*', (request, reply) => reply.redirect(request.url.replace('/api', '/api/v2')))
+import type { FastifyInstance } from 'fastify'
+import { fetchSuggestions } from './suggestions.js'
+
+import formModule from './forms.js'
+
+export default async function (fastify: FastifyInstance): Promise<void> {
+  fastify.get('/suggestions', () => fetchSuggestions())
+  fastify.register(formModule, { prefix: '/forms' })
 }

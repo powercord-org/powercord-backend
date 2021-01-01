@@ -20,8 +20,11 @@
  * SOFTWARE.
  */
 
-async function getEligibility (mongo, user) {
-  const banStatus = await mongo.db.collection('banned').findOne({ _id: user._id })
+import type { FastifyInstance, FastifyRequest } from 'fastify'
+import type { User } from '../../types.js'
+
+async function getEligibility (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<unknown> {
+  const banStatus = await this.mongo.db!.collection('banned').findOne({ _id: request.user!._id })
   return {
     publish: !banStatus.publish,
     verification: !banStatus.verification,
@@ -30,7 +33,7 @@ async function getEligibility (mongo, user) {
   }
 }
 
-module.exports = async function (fastify) {
+export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken ]))
-  fastify.get('/eligibility', (request) => getEligibility(fastify.mongo, request.user))
+  fastify.get('/eligibility', getEligibility)
 }

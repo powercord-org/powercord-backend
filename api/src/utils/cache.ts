@@ -20,27 +20,28 @@
  * SOFTWARE.
  */
 
-const { existsSync, mkdirSync } = require('fs')
-const { readFile, writeFile } = require('fs/promises')
-const { join } = require('path')
-const fetch = require('node-fetch')
+import { URL } from 'url'
+import { existsSync, mkdirSync } from 'fs'
+import { readFile, writeFile } from 'fs/promises'
+import { basename } from 'path'
+import fetch from 'node-fetch'
 
-const CACHE_PATH = join(__dirname, '../../.cache')
-if (!existsSync(CACHE_PATH)) {
-  mkdirSync(CACHE_PATH)
-}
+export type CacheResult = { success: false } | { success: true, data: Buffer }
+
+const CACHE_PATH = new URL('../../../.cache', import.meta.url)
+if (!existsSync(CACHE_PATH)) mkdirSync(CACHE_PATH)
 
 // todo: Schedule cache cleanup
 
-function generateKey (hourly) {
+function generateKey (hourly?: boolean) {
   const today = new Date()
   return `${hourly ? 'h-' : 'd-'}${hourly ? today.getUTCHours() : ''}${today.getUTCDate()}${today.getUTCMonth()}${today.getUTCFullYear()}`
 }
 
-async function remoteFile (url) {
+export async function remoteFile (url: URL): Promise<CacheResult> {
   const current = new Date().toDateString().toLowerCase().replace(/ /g, '_')
-  const filename = new URL(url).pathname.split('/').pop()
-  const cacheFile = join(CACHE_PATH, `${current}_${filename}`)
+  const filename = basename(url.pathname)
+  const cacheFile = new URL(`./${current}_${filename}`, CACHE_PATH)
   if (existsSync(cacheFile)) {
     return {
       success: true,
@@ -58,19 +59,15 @@ async function remoteFile (url) {
   }
 }
 
-async function getOrCompute (key, compute, hourly) {
+export async function getOrCompute<T = unknown> (key: string, compute: () => Promise<T> | T, hourly?: boolean): Promise<T> {
   const dateKey = generateKey(hourly)
-  const cacheFile = join(CACHE_PATH, `${dateKey}_${key}.json`)
+  const cacheFile = new URL(`./${dateKey}_${key}.json`, CACHE_PATH)
   if (existsSync(cacheFile)) {
-    return require(cacheFile)
+    const blob = await readFile(cacheFile, 'utf8')
+    return JSON.parse(blob)
   }
 
   const data = await compute()
-  await writeFile(cacheFile, JSON.stringify(data), 'utf-8')
+  await writeFile(cacheFile, JSON.stringify(data), 'utf8')
   return data
-}
-
-module.exports = {
-  remoteFile,
-  getOrCompute
 }

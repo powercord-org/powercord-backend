@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+// todo: rewrite in ts & esm, account for dev env in a better way
 const React = require('react')
 const ReactDOMServer = require('react-dom/server')
 const { Helmet } = require('react-helmet')

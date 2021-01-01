@@ -4,8 +4,8 @@ dependencies:
   fastify-auth: 1.0.1
   fastify-cookie: 5.0.2
   fastify-mongodb: 2.0.1
-  fastify-raw-body: 3.0.0
-  fastify-tokenize: 1.3.0_c33b2af41db548176c9ee86b4854e0fa
+  fastify-raw-body: 3.1.0
+  fastify-tokenize: 1.3.1_c33b2af41db548176c9ee86b4854e0fa
   marked: 1.2.7
   mongodb: 3.6.3
   node-cron: 2.0.3
@@ -22,6 +22,7 @@ devDependencies:
   '@babel/preset-react': 7.12.10_@babel+core@7.12.10
   '@babel/preset-typescript': 7.12.7_@babel+core@7.12.10
   '@pmmmwh/react-refresh-webpack-plugin': 0.4.3_4288a54e90666d2ed69bb85f6b62ff18
+  '@types/marked': 1.2.1
   '@types/mongodb': 3.6.3
   '@types/node': 14.14.16
   '@types/node-cron': 2.0.3
@@ -521,10 +522,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-lnIX7piTxOH22xE7fDXDbSHg9MM1/6ORnafpJmov5rs0kX5g4BZxeXNJLXsMRiO0U5Rb8/FvMS6xlTnTHvxonQ==
-  /@cyyynthia/tokenize/1.1.1:
+  /@cyyynthia/tokenize/1.1.2:
     dev: false
     resolution:
-      integrity: sha512-X4LTS10swLii1Hc4chNJUCH8cQ1UsFArmj8+xsGtLHNU+tScjWmj4XnUNnwwCRGT3Wh8EAOIYNcXAK0bPFEPMQ==
+      integrity: sha512-yCsppfAIkyy+eYjfTwabFqZbJaN5AgFs6r7LMeSfB5v0Omk3sXQPEJdTre+lpEqTcU+YhFq2/iZGYDc+jDx41g==
   /@discoveryjs/json-ext/0.5.2:
     dev: true
     engines:
@@ -702,6 +703,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
+  /@types/marked/1.2.1:
+    dev: true
+    resolution:
+      integrity: sha512-d5adCgRHB+NAme23hkiTkvpfZUDqoNtL2Sr2nZBJqSj3zyHLxsfFWsGQ2sK2z9aX6L1xkJzon2c0jTPcsEjpaQ==
   /@types/minimatch/3.0.3:
     dev: true
     resolution:
@@ -3582,29 +3587,29 @@ packages:
     dev: false
     resolution:
       integrity: sha512-U0gBig5qOm6zfq7qrEek3eKGBwn2ipUDvQqB+k5YfkA3/RkU0bhfQPcRxPQqEz2SYQP9pQ2ZgLaL4bxxnCxn+w==
-  /fastify-plugin/2.2.0:
+  /fastify-plugin/2.3.4:
     dependencies:
-      semver: 7.3.2
+      semver: 7.3.4
     dev: false
     resolution:
-      integrity: sha512-R2XUkpsuXvz7mctqyY7Y9+CGeYd+ITNUXuGdpOVsIuqHkzARMHm4ZwFGl8xrGJgRAMwMmlWQbX8nduSlexKkjA==
+      integrity: sha512-I+Oaj6p9oiRozbam30sh39BiuiqBda7yK2nmSPVwDCfIBlKnT8YB3MY+pRQc2Fcd07bf6KPGklHJaQ2Qu81TYQ==
   /fastify-plugin/3.0.0:
     dev: false
     resolution:
       integrity: sha512-ZdCvKEEd92DNLps5n0v231Bha8bkz1DjnPP/aEz37rz/q42Z5JVLmgnqR4DYuNn3NXAO3IDCPyRvgvxtJ4Ym4w==
-  /fastify-raw-body/3.0.0:
+  /fastify-raw-body/3.1.0:
     dependencies:
-      fastify-plugin: 2.2.0
+      fastify-plugin: 2.3.4
       raw-body: 2.4.1
       secure-json-parse: 2.1.0
     dev: false
     engines:
       node: '>= 10'
     resolution:
-      integrity: sha512-6rosnctF+ExjLjMZ90RK50+KqalvF9CVUp+6jxicyZNFQ3/rsHEapJjMNL0kew6V97DTS3Hn6WEWjjS/Nel/bw==
-  /fastify-tokenize/1.3.0_c33b2af41db548176c9ee86b4854e0fa:
+      integrity: sha512-PisDOcKvefxAZXAi3NLDHzuwHsEwGronaYSpx2hQSRg7Gvv43Rb4i6ARBxnTi5I/Rv/30YbzXorjEJIqwqTwxA==
+  /fastify-tokenize/1.3.1_c33b2af41db548176c9ee86b4854e0fa:
     dependencies:
-      '@cyyynthia/tokenize': 1.1.1
+      '@cyyynthia/tokenize': 1.1.2
       fastify-auth: 1.0.1
       fastify-cookie: 5.0.2
       fastify-plugin: 3.0.0
@@ -3618,7 +3623,7 @@ packages:
       fastify-cookie:
         optional: true
     resolution:
-      integrity: sha512-UUN7sc/p/mND01FUkncbT5S3zrN6UyBfQp4fWgMOlWbKo4zV6alAl7vVBYrZ6fq9fRUbAGqTs5Vu5pfNkhduow==
+      integrity: sha512-ucXdUyoZo6vRn0MlJA/9FeLfF+qdMDYBS3/nzTLsMcOWDkuwoSMq8XdLYGfyNtY6kDIsnvNCZzy81CmUxfsi4A==
   /fastify-warning/0.2.0:
     dev: false
     resolution:
@@ -5583,7 +5588,6 @@ packages:
   /lru-cache/6.0.0:
     dependencies:
       yallist: 4.0.0
-    dev: true
     engines:
       node: '>=10'
     resolution:
@@ -7989,7 +7993,6 @@ packages:
   /semver/7.3.4:
     dependencies:
       lru-cache: 6.0.0
-    dev: true
     engines:
       node: '>=10'
     hasBin: true
@@ -9483,7 +9486,6 @@ packages:
     resolution:
       integrity: sha1-HBH5IY8HYImkfdUS+TxmmaaoHVI=
   /yallist/4.0.0:
-    dev: true
     resolution:
       integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
   /yaml/1.10.0:
@@ -9529,6 +9531,7 @@ specifiers:
   '@babel/preset-react': ^7.12.10
   '@babel/preset-typescript': ^7.12.7
   '@pmmmwh/react-refresh-webpack-plugin': ^0.4.3
+  '@types/marked': ^1.2.1
   '@types/mongodb': ^3.6.3
   '@types/node': ^14.14.16
   '@types/node-cron': ^2.0.3
@@ -9553,8 +9556,8 @@ specifiers:
   fastify-auth: ^1.0.1
   fastify-cookie: ^5.0.2
   fastify-mongodb: ^2.0.1
-  fastify-raw-body: ^3.0.0
-  fastify-tokenize: ^1.3.0
+  fastify-raw-body: ^3.1.0
+  fastify-tokenize: ^1.3.1
   file-loader: ^6.2.0
   friendly-errors-webpack-plugin: ^1.7.0
   image-webpack-loader: ^7.0.1

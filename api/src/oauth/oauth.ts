@@ -20,31 +20,31 @@
  * SOFTWARE.
  */
 
-const qs = require('querystring')
-const fetch = require('node-fetch')
-const config = require('../../../config.json')
+import qs from 'querystring'
+import fetch from 'node-fetch'
+import config from '../config.js'
 
-class OAuth {
-  constructor (clientId, clientSecret, authorizeUrl, tokenUrl) {
-    this.clientId = clientId
-    this.clientSecret = clientSecret
-    this.authorizeUrl = authorizeUrl
-    this.tokenUrl = tokenUrl
+type OAuthTokens = { access_token: string, refresh_token: string, expires_in: number }
+
+export default abstract class OAuth<TUser = Record<string, string>> { // todo: rewrite as a fastify plugin (see crud.ts)
+  constructor (
+    private clientId: string,
+    private clientSecret: string,
+    private authorizeUrl: string,
+    private tokenUrl: string
+  ) {}
+
+  abstract get scopes (): string[]
+
+  async getToken (token: string): Promise<OAuthTokens> {
+    return this.requestToken(token, 'authorization_code')
   }
 
-  get scopes () {
-    throw new Error('not implemented')
+  async refreshToken (token: string): Promise<OAuthTokens> {
+    return this.requestToken(token, 'refresh_token')
   }
 
-  getToken (token) {
-    return this._requestToken(token, 'authorization_code')
-  }
-
-  refreshToken (token) {
-    return this._requestToken(token, 'refresh_token')
-  }
-
-  getRedirectUrl () {
+  getRedirectUrl (): string {
     const data = qs.encode({
       scope: this.scopes.join(' '),
       response_type: 'code',
@@ -55,7 +55,9 @@ class OAuth {
     return `${this.authorizeUrl}?${data}`
   }
 
-  _requestToken (token, type) {
+  abstract getCurrentUser(token: string): Promise<TUser>
+
+  private async requestToken (token: string, type: string): Promise<OAuthTokens> {
     return fetch(this.tokenUrl, {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -70,4 +72,3 @@ class OAuth {
   }
 }
 
-module.exports = OAuth

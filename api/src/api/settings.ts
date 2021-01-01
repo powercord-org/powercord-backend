@@ -20,28 +20,9 @@
  * SOFTWARE.
  */
 
-const fetch = require('node-fetch')
-const OAuth = require('./oauth')
-const config = require('../../../config.json')
+import type { FastifyInstance } from 'fastify'
 
-class Spotify extends OAuth {
-  constructor () {
-    super(
-      config.spotify.clientID,
-      config.spotify.clientSecret,
-      'https://accounts.spotify.com/authorize',
-      'https://accounts.spotify.com/api/token'
-    )
-  }
+// @ts-expect-error -- not implemented
+export default async function (fastify: FastifyInstance): Promise<void> {
 
-  get scopes () {
-    return config.spotify.scopes
-  }
-
-  getCurrentUser (token) {
-    return fetch('https://api.spotify.com/v1/me', { headers: { authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-  }
 }
-
-module.exports = new Spotify()

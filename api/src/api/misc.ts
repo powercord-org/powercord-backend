@@ -20,26 +20,29 @@
  * SOFTWARE.
  */
 
-const fs = require('fs')
-const path = require('path')
-const fetch = require('node-fetch')
-const discord = require('../utils/discord')
-const cache = require('../utils/cache')
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import type { User } from '../types.js'
+import { URL } from 'url'
+import { readFileSync } from 'fs'
+import fetch from 'node-fetch'
+import { fetchUser } from '../utils/discord.js'
+import { remoteFile } from '../utils/cache.js'
 
-const plugXml = fs.readFileSync(path.join(__dirname, '../../src/assets/powercord.svg'), 'utf8')
+// todo: use smth else?
+const plugXml = readFileSync(new URL('../../../web/src/assets/powercord.svg', import.meta.url), 'utf8')
 
-function plug (request, reply) {
-  reply.type('image/svg+xml').send(plugXml.replace('7289DA', request.params.color))
+function plug (request: FastifyRequest<{ Params: { color: string } }>, reply: FastifyReply): void {
+  reply.type('image/svg+xml').send(plugXml.replace(/7289DA/g, request.params.color))
 }
 
-async function getDiscordAvatar (user, update) {
+async function getDiscordAvatar (user: User, update: (avatar: string) => void): Promise<Buffer> {
   if (!user.avatar) {
-    return fetch(`https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`).then(r => r.buffer())
+    return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 5}.png`).then(r => r.buffer())
   }
 
-  const file = await cache.remoteFile(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`)
+  const file = await remoteFile(new URL(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`))
   if (!file.success) {
-    const discordUser = await discord.fetchUser(user._id)
+    const discordUser = await fetchUser(user._id)
     update(discordUser.avatar)
     user.avatar = discordUser.avatar
     return getDiscordAvatar(user, update)
@@ -47,10 +50,11 @@ async function getDiscordAvatar (user, update) {
   return file.data
 }
 
-async function avatar (request, reply) {
-  const user = await this.mongo.db.collection('users').findOne({ _id: request.params.id })
+async function avatar (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply): Promise<void> {
+  const user = await this.mongo.db!.collection('users').findOne({ _id: request.params.id })
   if (!user) {
-    return reply.code(422).send()
+    reply.code(422).send()
+    return
   }
 
   if (!user.avatar) {
@@ -58,11 +62,13 @@ async function avatar (request, reply) {
     // this means default avatar has to be displayed
     // but if we reach this state the avatar will never be updated to newer ones
   }
+
   reply.type('image/png')
-  return getDiscordAvatar(user, avatar => this.mongo.db.collection('users').updateOne({ _id: request.params.id }, { $set: { avatar } }))
+  getDiscordAvatar(user, (avatar) => this.mongo.db!.collection('users').updateOne({ _id: request.params.id }, { $set: { avatar } }))
+  return
 }
 
-module.exports = async function (fastify) {
+export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get('/plug/:color([a-fA-F0-9]{6})', plug)
   fastify.get('/avatar/:id(\\d+).png', avatar)
 }

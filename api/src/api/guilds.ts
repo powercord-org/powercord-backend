@@ -20,8 +20,10 @@
  * SOFTWARE.
  */
 
-function badges () {
-  return this.mongo.db.collection('badges').find({}).toArray().then(b =>
+import type { FastifyInstance } from 'fastify'
+
+async function badges (this: FastifyInstance): Promise<Array<{ name: string, icon: string }>> {
+  return this.mongo.db!.collection('badges').find({}).toArray().then(b =>
     b.reduce((acc, badge) => {
       acc[badge._id] = {
         name: badge.name,
@@ -32,6 +34,6 @@ function badges () {
   )
 }
 
-module.exports = async function (fastify) {
+export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get('/badges', badges)
 }

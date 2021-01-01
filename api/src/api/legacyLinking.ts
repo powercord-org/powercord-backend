@@ -20,8 +20,9 @@
  * SOFTWARE.
  */
 
-const html = (jwt) => `
-<!doctype html>
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+
+const html = (jwt: string): string => `<!doctype html>
 <html>
 <head>
   <meta charset='utf-8'/>
@@ -32,20 +33,20 @@ const html = (jwt) => `
 <img src='http://127.0.0.1:6462/wallpaper.png?jsonweebtoken=${jwt}' style='display: none;' alt='loading'/>
 <script>setTimeout(() => document.querySelector('p').innerText = 'You can close this page',1e3)</script>
 </body>
-</html>
-`
+</html>`
 
-function legacy (request, reply) {
+function legacy (request: FastifyRequest, reply: FastifyReply): void {
   if (!request.user) {
-    return reply.redirect('/api/v2/oauth/discord?redirect=/api/v2/users/@me/link/legacy')
+    reply.redirect('/api/v2/oauth/discord?redirect=/api/v2/users/@me/link/legacy')
+    return
   }
 
   const cookie = reply.unsignCookie(request.cookies.token)
   if (!cookie.valid) reply.redirect('/')
 
-  reply.type('text/html').send(html(cookie.value))
+  reply.type('text/html').send(html(cookie.value!))
 }
 
-module.exports = async function (fastify) {
+export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get('/users/@me/link/legacy', { preHandler: fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]) }, legacy)
 }

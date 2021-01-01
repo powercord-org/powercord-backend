@@ -20,17 +20,28 @@
  * SOFTWARE.
  */
 
-function verifyAdmin (request, reply, next) {
-  if (request.user?.badges.staff) {
-    return next()
+import fetch from 'node-fetch'
+import OAuth from './oauth.js'
+import config from '../config.js'
+
+class Spotify extends OAuth {
+  constructor () {
+    super(
+      config.spotify.clientID,
+      config.spotify.clientSecret,
+      'https://accounts.spotify.com/authorize',
+      'https://accounts.spotify.com/api/token'
+    )
   }
 
-  reply.code(403)
-  next(new Error('Missing permissions'))
+  get scopes () {
+    return config.spotify.scopes
+  }
+
+  async getCurrentUser (token: string) {
+    return fetch('https://api.spotify.com/v1/me', { headers: { authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+  }
 }
 
-module.exports = async function (fastify) {
-  fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken, verifyAdmin ], { relation: 'and' }))
-
-  fastify.register(require('./crud'), { prefix: '/users', data: { collection: 'users', projection: { accounts: 0, settings: 0 } } })
-}
+export default new Spotify()

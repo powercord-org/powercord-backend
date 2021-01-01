@@ -20,42 +20,48 @@
  * SOFTWARE.
  */
 
-const spotifyAuth = require('../oauth/spotify')
-const { formatUser } = require('../utils/users')
-const config = require('../../../config.json')
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import type { User, RestUser } from '../types.js'
+import spotifyAuth from '../oauth/spotify.js'
+import { formatUser } from '../utils/users.js'
+import settingsModule from './settings.js'
+import config from '../config.js'
 
-async function getSelf (request) {
-  return formatUser(request.user, true)
+async function getSelf (request: FastifyRequest<{ TokenizeUser: User }>): Promise<RestUser> {
+  return formatUser(request.user!, true)
 }
 
-async function getUser (request, reply) {
-  const user = await this.mongo.db.collection('users').findOne({ _id: request.params.id })
-  if (!user) return reply.code(404).send({ error: 404, message: 'Not Found' })
+async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply): Promise<RestUser | void> {
+  const user = await this.mongo.db!.collection('users').findOne({ _id: request.params.id })
+  if (!user) {
+    reply.callNotFound()
+    return
+  }
   return formatUser(user)
 }
 
-async function getSpotifyToken (request) {
-  const { spotify } = request.user.accounts
+async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<unknown> {
+  const { spotify } = request.user!.accounts
   if (!spotify) {
     return { token: null }
   }
 
-  if (!spotify.scopes || !config.spotify.scopes.every(key => spotify.scopes.includes(key))) {
-    await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: { 'accounts.spotify': null } })
+  if (!spotify.scopes || !config.spotify.scopes.every((key: string) => spotify.scopes.includes(key))) {
+    await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $set: { 'accounts.spotify': null } })
     return { token: null, revoked: 'SCOPES_UPDATED' }
   }
 
   if (Date.now() >= spotify.expiryDate) {
     try {
       const codes = await spotifyAuth.refreshToken(spotify.refreshToken)
-      const upd = {
+      const upd: Record<string, unknown> = {
         'accounts.spotify.accessToken': codes.access_token,
         'accounts.spotify.expiryDate': Date.now() + (codes.expires_in * 1000)
       }
       if (codes.refresh_token) {
         upd['accounts.spotify.refreshToken'] = codes.refresh_token
       }
-      await this.mongo.db.collection('users').updateOne({ _id: request.user._id }, { $set: upd })
+      await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $set: upd })
       return { token: codes.access_token }
     } catch (e) {
       return { token: null, revoked: 'ACCESS_DENIED' }
@@ -65,9 +71,9 @@ async function getSpotifyToken (request) {
   return { token: spotify.accessToken }
 }
 
-module.exports = async function (fastify) {
-  fastify.register(require('./settings'), { prefix: '/@me' })
-  fastify.get('/@me', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSelf)
-  fastify.get('/@me/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSpotifyToken)
+export default async function (fastify: FastifyInstance): Promise<void> {
+  fastify.register(settingsModule, { prefix: '/@me' })
+  fastify.get<{ TokenizeUser: User }>('/@me', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSelf)
+  fastify.get<{ TokenizeUser: User }>('/@me/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSpotifyToken)
   fastify.get('/:id(\\d+)', getUser)
 }

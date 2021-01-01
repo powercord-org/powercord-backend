@@ -20,61 +20,69 @@
  * SOFTWARE.
  */
 
-const crypto = require('crypto')
-const discord = require('../utils/discord')
-const config = require('../../../config.json')
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import crypto from 'crypto'
+import { fetchUser, removeRole, dispatchHonk } from '../utils/discord.js'
+import config from '../config.js'
+
+type PatreonHeaders = { 'x-patreon-event': string, 'x-patreon-signature': string }
 
 const TIERS = Object.freeze([ 0, 1, 5, 10 ])
+const TIERS_REVERSE = Object.freeze([ 10, 5, 1, 0 ])
+
 const TIER_EMOJIS = Object.freeze([
   '<a:crii:530146779396833290>',
   '<:blobkiss:723562862840119412>',
   '<:blobsmilehearts:723562904950931584>',
   '<:blobhug:723562944964591706>'
 ])
+
 const ACTION_TYPES = Object.freeze([
   'members:pledge:create',
   'members:pledge:update',
   'members:pledge:delete'
 ])
 
-async function patreon (request, reply) {
+async function patreon (this: FastifyInstance, request: FastifyRequest<{ Headers: PatreonHeaders }>, reply: FastifyReply) {
   if (!ACTION_TYPES.includes(request.headers['x-patreon-event'])) {
     return reply.send()
   }
 
-  const signature = crypto.createHmac('md5', config.honks.patreonSecret).update(request.rawBody).digest('hex')
+  const signature = crypto.createHmac('md5', config.honks.patreonSecret).update(request.rawBody ?? '').digest('hex')
   if (signature !== request.headers['x-patreon-signature']) {
     return reply.code(401).send()
   }
 
   let discordUser
   let banned = false
+  // @ts-expect-error -- todo: schema & typing
   const pledged = request.body.data.attributes.currently_entitled_amount_cents / 100
+  // @ts-expect-error -- todo: schema & typing
   const user = request.body.included.find(resource => resource.type === 'user').attributes
   const discordId = user.social_connections.discord && user.social_connections.discord.user_id
-  const tier = TIERS.reverse().findIndex(t => t < pledged)
+  const tier = TIERS_REVERSE.findIndex(t => t < pledged)
 
   if (discordId) {
-    discordUser = await discord.fetchUser(discordId)
-    const banStatus = await this.mongo.db.collection('banned').findOne({ _id: discordId })
+    discordUser = await fetchUser(discordId)
+    const banStatus = await this.mongo.db!.collection('banned').findOne({ _id: discordId })
     if (banStatus && banStatus.pledging) {
       banned = true
     } else {
-      await this.mongo.db.collection('users').updateOne({ _id: discordId }, { $set: { patreonTier: tier } })
+      await this.mongo.db!.collection('users').updateOne({ _id: discordId }, { $set: { patreonTier: tier } })
       if (tier === 0) {
         try {
-          await discord.removeRole(discordId, config.discord.ids.rolePatreonMommy, 'No longer pledging on Patreon')
-          await discord.removeRole(discordId, config.discord.ids.rolePatreonParent, 'No longer pledging on Patreon')
-          await discord.removeRole(discordId, config.discord.ids.rolePatreonDaddy, 'No longer pledging on Patreon')
+          await removeRole(discordId, config.discord.ids.rolePatreonMommy, 'No longer pledging on Patreon')
+          await removeRole(discordId, config.discord.ids.rolePatreonParent, 'No longer pledging on Patreon')
+          await removeRole(discordId, config.discord.ids.rolePatreonDaddy, 'No longer pledging on Patreon')
         } catch (e) {
           // Let the request silently fail; Probably unknown member
-          // todo: analyze the error? schedule retrying?
+          // todo: analyze the error? schedule retrying (429)?
         }
       }
     }
   }
 
-  discord.dispatchHook(config.honks.staff, {
+  dispatchHonk(config.honks.staff, {
     embeds: [ {
       title: `Pledge ${request.headers['x-patreon-event'].split(':').pop()}d`,
       color: 0x7289da,
@@ -100,6 +108,6 @@ async function patreon (request, reply) {
   reply.send()
 }
 
-module.exports = async function (fastify) {
+export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.post('/patreon', { config: { rawBody: true } }, patreon)
 }

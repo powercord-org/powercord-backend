@@ -20,43 +20,52 @@
  * SOFTWARE.
  */
 
-const path = require('path')
-const fsp = require('fs/promises')
-const fetch = require('node-fetch')
-const markdown = require('./markdown')
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import type { Document } from './markdown.js'
+import { URL } from 'url'
+import { readdir, readFile } from 'fs/promises'
+import fetch from 'node-fetch'
+import markdown from './markdown.js'
 
-const docsStore = []
-const remoteCache = {}
+type GetDocParams = { category: string, document: string }
+type DocsStore = Array<{ id: string, name: string, docs: Array<Document & { id: string }> }>
 
-function listCategories (_, reply) {
+// todo: use maps instead
+const docsStore: DocsStore = []
+const remoteCache = new Map<string, Document>()
+
+function listCategories (this: FastifyInstance, _: FastifyRequest, reply: FastifyReply): void {
   reply.send(docsStore.map(c => ({ ...c, docs: c.docs.map(d => ({ ...d, contents: void 0 })) })))
 }
 
-function getDocument (request, reply) {
+function getDocument (this: FastifyInstance, request: FastifyRequest<{ Params: GetDocParams }>, reply: FastifyReply): void {
   const { category, document } = request.params
   const cat = docsStore.find(c => c.id === category)
-  if (!cat) return reply.code(404).send({ error: 404, message: 'Not Found' })
+  if (!cat) return void reply.callNotFound()
+  // @ts-expect-error -- smth I prolly fixed in rewrite; cba
   const doc = cat.find(d => d.id === document)
-  if (!doc) return reply.code(404).send({ error: 404, message: 'Not Found' })
+  if (!doc) return void reply.callNotFound()
   reply.send(document)
 }
 
-async function getRemoteDocument (url) {
-  if (!remoteCache[url]) {
+async function getRemoteDocument (url: string): Promise<unknown> { // todo
+  if (!remoteCache.has(url)) {
     const md = await fetch(url).then(r => r.text())
-    remoteCache[url] = markdown(md)
-    setTimeout(() => delete remoteCache[url], 300e3)
+    remoteCache.set(url, markdown(md))
+    setTimeout(() => remoteCache.delete(url), 300e3)
   }
-  return remoteCache[url]
+  return remoteCache.get(url)
 }
 
-async function initializeFastify (fastify) {
-  const docsPath = path.join(__dirname, '../../../docs')
-  for (const cat of await fsp.readdir(docsPath)) {
+export default async function (fastify: FastifyInstance): Promise<void> {
+  const docsUrl = new URL('../../../../docs/', import.meta.url)
+  for (const cat of await readdir(docsUrl)) {
     const catId = cat.split('-')[1]
     const docs = []
-    for (const document of await fsp.readdir(`${docsPath}/${cat}`)) {
-      const md = await fsp.readFile(`${docsPath}/${cat}/${document}`, 'utf8')
+    const catUrl = new URL(`${cat}/`, docsUrl)
+    for (const document of await readdir(catUrl)) {
+      const docUrl = new URL(document, catUrl)
+      const md = await readFile(docUrl, 'utf8')
       docs.push({ id: document.split('.')[0], ...markdown(md) })
     }
 
@@ -74,5 +83,3 @@ async function initializeFastify (fastify) {
   fastify.get('/categories', listCategories)
   fastify.get('/:category/:document', getDocument)
 }
-
-module.exports = initializeFastify

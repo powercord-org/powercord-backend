@@ -20,23 +20,28 @@
  * SOFTWARE.
  */
 
-function logout (_, reply) {
-  return reply.setCookie('token', null, { maxAge: 0, path: '/' }).redirect('/')
+import type { DiscordUser } from '../types.js'
+import OAuth from './oauth.js'
+import { fetchCurrentUser } from '../utils/discord.js'
+import config from '../config.js'
+
+class Discord extends OAuth<DiscordUser> {
+  constructor () {
+    super(
+      config.discord.clientID,
+      config.discord.clientSecret,
+      'https://discord.com/oauth2/authorize',
+      'https://discord.com/api/v6/oauth2/token'
+    )
+  }
+
+  get scopes () {
+    return [ 'identify' ]
+  }
+
+  async getCurrentUser (token: string) {
+    return fetchCurrentUser(token)
+  }
 }
 
-module.exports = async function (fastify) {
-  fastify.get('/login', (_, reply) => reply.redirect('/api/v2/oauth/discord'))
-  fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
-  fastify.register(require('./backoffice'), { prefix: '/backoffice' })
-  fastify.register(require('./advisories'), { prefix: '/advisories' })
-  fastify.register(require('./store'), { prefix: '/store' })
-  fastify.register(require('./users'), { prefix: '/users' })
-  fastify.register(require('./guilds'), { prefix: '/guilds' })
-  fastify.register(require('./stats'), { prefix: '/stats' })
-  fastify.register(require('./docs'), { prefix: '/docs' })
-  fastify.register(require('./honks'), { prefix: '/honks' })
-  fastify.register(require('./oauth'), { prefix: '/oauth' })
-  fastify.register(require('./misc'))
-  fastify.register(require('./legacyLinking')) // todo: remove (v3)
-  fastify.setNotFoundHandler((_, reply) => reply.code(404).send({ error: 404, message: 'Not Found' }))
-}
+export default new Discord()

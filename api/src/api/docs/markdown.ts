@@ -20,12 +20,16 @@
  * SOFTWARE.
  */
 
-const marked = require('marked')
+import type { Tokens } from 'marked'
+import marked from 'marked'
 
-function processListNode (node) {
-  const list = []
+export type Document = { title: string | null, parts: string[], contents: unknown[] }
+
+function processListNode (node: Tokens.List): unknown[] {
+  const list: unknown[] = []
   node.items.forEach(item => {
     let str = ''
+    // @ts-expect-error -- prolly smth I fixed in docs rewrtie
     item.tokens.forEach(tok => {
       switch (tok.type) {
         case 'text':
@@ -45,12 +49,14 @@ function processListNode (node) {
   return list
 }
 
-module.exports = function (markdown) {
+export default function (markdown: string): Document {
   const lex = marked.lexer(markdown)
   let title = null
   const parts = []
   const contents = []
   for (const node of lex) {
+    if (!('type' in node)) continue
+
     switch (node.type) {
       case 'heading':
         if (node.depth === 1) {
@@ -82,14 +88,16 @@ module.exports = function (markdown) {
         contents.push({
           type: 'NOTE',
           quote: node.raw.startsWith('> '),
-          color: !node.raw.startsWith('> ') && blockquote.shift().toUpperCase(),
+          color: !node.raw.startsWith('> ') && blockquote.shift()!.toUpperCase(),
           content: blockquote.join(' ').replace(/[ \n]*<br\/?>[ \n]*/ig, '\n')
         })
         break
       }
+      // @ts-expect-error -- prolly smth I fixed in docs rewrtie
       case 'list':
         contents.push({
           type: 'LIST',
+          // @ts-expect-error -- prolly smth I fixed in docs rewrtie
           ordered: node.ordered,
           items: processListNode(node)
         })

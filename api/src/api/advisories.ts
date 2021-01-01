@@ -20,9 +20,11 @@
  * SOFTWARE.
  */
 
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+
 // todo: use real data LOL
 
-const fakeAdv = (lvl) =>
+const fakeAdv = (lvl: number) =>
   ({
     id: `PC-2020-00${1 + lvl}`,
     level: lvl,
@@ -61,19 +63,19 @@ const adv = { // this is already real data tho
 
 const advisories = [ fakeAdv(0), fakeAdv(1), fakeAdv(2), fakeAdv(3) ]
 
-async function getAdvisories (request) {
+async function getAdvisories () {
   return {
     advisories,
     pages: 1
   }
 }
 
-async function getAdvisory (request, reply) {
+async function getAdvisory (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
   if (request.params.id !== 'PC-2020-000') return reply.code(404).send({ error: 404, message: 'Not Found' })
   return adv
 }
 
-module.exports = async function (fastify) {
+export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get('/', getAdvisories)
   fastify.get('/:id([A-Z]{2,3}-\\d{4}-\\d{3,4})', getAdvisory)
 }

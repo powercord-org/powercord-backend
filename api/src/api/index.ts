@@ -20,37 +20,10 @@
  * SOFTWARE.
  */
 
-async function read (request, reply) {
-  const data = reply.context.config
-  const collection = this.mongo.db.collection(data.collection)
-  const limit = request.query.limit ?? 50
-  const cursor = ((request.query.page ?? 1) - 1) * limit
+import type { FastifyInstance } from 'fastify'
+import v2Module from './v2.js'
 
-  const res = await collection.find({}, { projection: data.projection }).limit(limit).skip(cursor).toArray()
-  return res
-}
-
-function create (request, reply) {
-  const data = reply.context.config
-  console.log(data)
-  return {}
-}
-
-function update (request, reply) {
-  const data = reply.context.config
-  console.log(data)
-  return {}
-}
-
-function del (request, reply) {
-  const data = reply.context.config
-  console.log(data)
-  return {}
-}
-
-module.exports = async function (fastify, { data }) {
-  fastify.get('/', { config: data }, read)
-  fastify.post('/', { config: data }, create)
-  fastify.patch('/:id', { config: data }, update)
-  fastify.delete('/:id', { config: data }, del)
+export default async function (fastify: FastifyInstance): Promise<void> {
+  fastify.register(v2Module, { prefix: '/v2' })
+  fastify.register(v2Module, { prefix: '/' })
 }

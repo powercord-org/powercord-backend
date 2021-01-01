@@ -20,27 +20,8 @@
  * SOFTWARE.
  */
 
-const OAuth = require('./oauth')
-const discordApi = require('../utils/discord')
-const config = require('../../../config.json')
+import { URL } from 'url'
+import { readFileSync } from 'fs'
 
-class Discord extends OAuth {
-  constructor () {
-    super(
-      config.discord.clientID,
-      config.discord.clientSecret,
-      'https://discord.com/oauth2/authorize',
-      'https://discord.com/api/v6/oauth2/token'
-    )
-  }
-
-  get scopes () {
-    return [ 'identify' ]
-  }
-
-  getCurrentUser (token) {
-    return discordApi.fetchCurrentUser(token)
-  }
-}
-
-module.exports = new Discord()
+const blob = readFileSync(new URL('../../config.json', import.meta.url), 'utf8')
+export default JSON.parse(blob)
