@@ -64,6 +64,7 @@ const baseConfig = {
     rules: [
       {
         test: /\.(ts|js)x?/,
+        type: 'javascript/auto',
         include: SRC,
         use: [
           {

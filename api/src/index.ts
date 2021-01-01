@@ -28,6 +28,7 @@ import fastifyMongodb from 'fastify-mongodb'
 import fastifyTokenize from 'fastify-tokenize'
 
 import apiModule from './api/index.js'
+import webModule from './web.js'
 import config from './config.js'
 
 const fastify = fastifyFactory({ logger: true })
@@ -46,14 +47,8 @@ fastify.register(fastifyTokenize, {
   }
 })
 
-// API
 fastify.register(apiModule, { prefix: '/api' })
-
-// REP & React
-// fastify.register(async function (fastify) {
-//   fastify.get('/robots.txt', (_, reply) => reply.type('text/plain').send(createReadStream(join(__dirname, 'robots.txt'))))
-//   fastify.get('*', { preHandler: fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]) }, require('./react'))
-// })
+fastify.register(webModule)
 
 fastify.ready()
   .then(

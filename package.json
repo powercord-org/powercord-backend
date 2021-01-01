@@ -12,14 +12,15 @@
     "pnpm": ">= 5.13"
   },
   "scripts": {
-    "web:watch": "cross-env NODE_ENV=development webpack serve --config web/webpack.config.cjs",
+    "web:dev": "cross-env NODE_ENV=development webpack serve --config web/webpack.config.cjs",
     "web:build": "cross-env NODE_ENV=production webpack --config web/webpack.config.cjs",
     "api:dev": "tsc-watch --project api/tsconfig.json --onSuccess \"node dist/api/index.js\"",
     "api:build": "tsc --build api/tsconfig.json",
-    "api:start": "node dist/api/index.js",
+    "api:start": "cross-env NODE_ENV=production node dist/api/index.js",
+    "api:debug-prod": "cross-env NODE_ENV=production node --inspect-brk dist/api/index.js",
     "bot:dev": "tsc-watch --project boat/tsconfig.json --onSuccess \"node dist/boat/index.js\"",
     "bot:build": "tsc --build boat/tsconfig.json",
-    "bot:start": "node dist/boat/index.js",
+    "bot:start": "cross-env NODE_ENV=production node dist/boat/index.js",
     "build": "rm -rf dist && pnpm run web:build && pnpm run api:build && pnpm run bot:build"
   },
   "dependencies": {
@@ -52,6 +53,10 @@
     "@types/node": "^14.14.16",
     "@types/node-cron": "^2.0.3",
     "@types/node-fetch": "^2.5.7",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-helmet": "^6.1.0",
+    "@types/react-router": "^5.1.9",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "autoprefixer": "^10.1.0",

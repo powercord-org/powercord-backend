@@ -90,7 +90,7 @@ async function discord (this: FastifyInstance, request: FastifyRequest<{ Queryst
       signed: true,
       sameSite: 'lax',
       path: '/',
-      secure: !process.argv.includes('-d'),
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 3600
     })
 
@@ -110,7 +110,7 @@ async function discord (this: FastifyInstance, request: FastifyRequest<{ Queryst
       signed: true,
       httpOnly: true,
       sameSite: 'lax',
-      secure: !process.argv.includes('-d'),
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 3600
     })
   }

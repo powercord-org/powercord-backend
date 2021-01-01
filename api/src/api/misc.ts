@@ -47,10 +47,11 @@ async function getDiscordAvatar (user: User, update: (avatar: string) => void): 
     user.avatar = discordUser.avatar
     return getDiscordAvatar(user, update)
   }
+
   return file.data
 }
 
-async function avatar (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply): Promise<void> {
+async function avatar (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply): Promise<Buffer | void> {
   const user = await this.mongo.db!.collection('users').findOne({ _id: request.params.id })
   if (!user) {
     reply.code(422).send()
@@ -64,8 +65,7 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<{ Params: 
   }
 
   reply.type('image/png')
-  getDiscordAvatar(user, (avatar) => this.mongo.db!.collection('users').updateOne({ _id: request.params.id }, { $set: { avatar } }))
-  return
+  return getDiscordAvatar(user, (avatar) => this.mongo.db!.collection('users').updateOne({ _id: request.params.id }, { $set: { avatar } }))
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {

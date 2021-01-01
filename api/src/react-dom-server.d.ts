@@ -20,31 +20,8 @@
  * SOFTWARE.
  */
 
-import { render, hydrate } from 'react-dom'
-import { BrowserRouter as Router } from 'react-router-dom'
-
-import UserContext from '@components/UserContext'
-
-import('@components/App' /* webpackChunkName: "app" */).then(mdl => {
-  const App = mdl.default
-  if (process.env.NODE_ENV === 'production') {
-    hydrate(
-      <Router>
-        <UserContext.Provider value={window.USER}>
-          <App/>
-        </UserContext.Provider>
-      </Router>, document.querySelector('#react-root')
-    )
-
-    document.getElementById('init').remove()
-    delete window.USER
-  } else {
-    render(
-      <Router>
-        <UserContext.Provider value={window.USER}>
-          <App/>
-        </UserContext.Provider>
-      </Router>, document.querySelector('#react-root')
-    )
-  }
-})
+// dumb esm
+declare module 'react-dom/server.js' {
+  import * as ReactDomServer from 'react-dom/server'
+  export = ReactDomServer
+}

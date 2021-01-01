@@ -28,7 +28,7 @@ import fetch from 'node-fetch'
 
 export type CacheResult = { success: false } | { success: true, data: Buffer }
 
-const CACHE_PATH = new URL('../../../.cache', import.meta.url)
+const CACHE_PATH = new URL('../../../.cache/', import.meta.url)
 if (!existsSync(CACHE_PATH)) mkdirSync(CACHE_PATH)
 
 // todo: Schedule cache cleanup
