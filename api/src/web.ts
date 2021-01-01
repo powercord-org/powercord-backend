@@ -25,11 +25,15 @@ import type { User } from './types'
 import { URL } from 'url'
 import { readFile } from 'fs/promises'
 import { randomBytes } from 'crypto'
-import { createElement as h } from 'react'
-import { Helmet } from 'react-helmet'
-import { StaticRouter } from 'react-router'
+import React from 'react'
+import ReactHelmet from 'react-helmet'
+import ReactRouter from 'react-router'
 import ReactDomServer from 'react-dom/server.js'
 import { formatUser } from './utils/users.js'
+
+const h = React.createElement
+const StaticRouter = ReactRouter.StaticRouter
+const Helmet = (ReactHelmet as any).Helmet as typeof ReactHelmet
 
 async function loadJson (file: string): Promise<Record<string, string>> {
   const url = new URL(file, import.meta.url)
