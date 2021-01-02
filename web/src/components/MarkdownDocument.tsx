@@ -127,7 +127,7 @@ function renderMarkdownNode (node: MarkdownNode) {
     case MarkdownType.Anchor:
       return h('a', { href: node.anchor }, renderMarkdown(node.label))
     case MarkdownType.Document:
-      return h(Link, { to: `${Routes.DOCS_ITEM(node.category!, node.document)}${node.anchor ? `#${node.anchor}` : ''}` }, renderMarkdown(node.label))
+      return h(Link, { to: `${Routes.DOCS_ITEM(node.category!, node.document)}${node.anchor ?? ''}` }, renderMarkdown(node.label))
     case MarkdownType.Image:
       return h('img', { src: node.src, alt: node.alt })
     case MarkdownType.Video:

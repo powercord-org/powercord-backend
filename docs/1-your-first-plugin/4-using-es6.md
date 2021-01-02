@@ -1,5 +1,5 @@
 <!--
-  Copyright (c) 2020 aetheryx & Bowser65
+  Copyright (c) 2020-2021 aetheryx & Cynthia K. Rey
   This work is licensed under a Creative Commons Attribution-NoDerivatives 4.0 International License.
   https://creativecommons.org/licenses/by-nd/4.0
 -->
@@ -15,8 +15,8 @@ They are the recommended way of importing/exporting stuff, although `require` is
 on dropping support. Be careful, Powercord internals use ES6 exports.
 
 There's great documentation on MDN Web Docs that we recommend checking out:
- - [`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
- - [`export`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export)
+[`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import),
+[`export`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export)
 
 ## How to debug/test in DevTools?
 Since you can't import directly within DevTools, quickly testing things out is way more limited than what it used to be

@@ -1,5 +1,5 @@
 <!--
-  Copyright (c) 2020 aetheryx & Bowser65
+  Copyright (c) 2020-2021 aetheryx & Cynthia K. Rey
   This work is licensed under a Creative Commons Attribution-NoDerivatives 4.0 International License.
   https://creativecommons.org/licenses/by-nd/4.0
 -->
@@ -108,7 +108,7 @@ just `true`.
 | eud           | Collect and use End User Data | None                      |
 | gkeybinds     | Register system-wide keybinds | None                      |
 
-\* Refer to the [Network Library](##advanced-plugins/net#manifest-permissions) documentation for more detail.
+\*Refer to the [Network Library](##advanced-plugins/net#manifest-permissions) documentation for more detail.
 
 ###### Permissions example usage
 ```json

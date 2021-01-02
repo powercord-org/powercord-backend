@@ -1,5 +1,5 @@
 <!--
-  Copyright (c) 2020 aetheryx & Bowser65
+  Copyright (c) 2020-2021 aetheryx & Cynthia K. Rey
   This work is licensed under a Creative Commons Attribution-NoDerivatives 4.0 International License.
   https://creativecommons.org/licenses/by-nd/4.0
 -->
@@ -22,25 +22,19 @@ import { inject, uninject } from '@powercord/injector'
 ## Injecting
 ###### `inject` signature
 ```js
-inject(id, targetModule, targetMethod, injectFunction [, pre])
+inject(id, mdl, method, fn [, before])
 ```
+| Parameter | Type | Description |
+|---|---|---|
+| id | string | The injection ID. Must be unique within your plugin, can be used to [uninject](#uninject) and will show up in logs. |
+| mdl | object | The module containing the function you want to inject into. |
+| method | string | The name of the function you want to inject into. Must be a member of the module you passed, otherwise a TypeError will be raised. |
+| fn | function | The function you want to inject. See [injected function behavior](#injected-function-behavior) for more details. |
+| before | boolean | Optional, default `false`. Whether the injection should run before Discord's original code or not. |
 
- - **`id`**: `string`<br>
-   The injection ID. Must be unique within your plugin, can be used to [uninject](#uninject) and will show up in logs.
-   Make sure to use a descriptive one, as this will also show up in logs.
- - **`targetModule`**: `object`<br>
-   The module containing the function you want to inject into.
- - **`targetMethod`**: `object`<br>
-   The name of the function you want to inject into. Must be a member of the module you passed.
- - **`injectFunction`**: `object`<br>
-   The function you want to inject. See [injected function behavior](#injected-function-behavior) for more details.
- - **`before`**: `boolean` (optional, default `false`)<br>
-   Whether the injection should run before Discord's original code or not. This will completely change how the
-   injected function will work, as documented [here](#injecting-before-discord)
-
->note
+>info
 > Powercord will automatically cleanup the injections you've done when unloading your plugin, so you don't need to
-> manually uninject.
+> manually uninject. It's still possible to do it at runtime, if you need to.
 
 ### Injected function behavior
 <!-- todo: write stuff -->
