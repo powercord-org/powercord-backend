@@ -21,11 +21,11 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import type { Document } from './markdown.js'
+import type { Document } from './parser.js'
 import { URL } from 'url'
 import { readdir, readFile } from 'fs/promises'
 import fetch from 'node-fetch'
-import markdown from './markdown.js'
+import markdown from './parser.js'
 
 type GetDocParams = { category: string, document: string }
 type Category = { name: string, docs: Map<string, Document> }

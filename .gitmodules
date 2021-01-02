@@ -1,0 +1,3 @@
+[submodule "api/src/api/docs/spoonfeed"]
+	path = api/src/api/docs/spoonfeed
+	url = https://github.com/borkenware/spoonfeed

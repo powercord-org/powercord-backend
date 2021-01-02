@@ -20,6 +20,40 @@
  * SOFTWARE.
  */
 
+/*
+  Extracted from spoonfeed
+
+  Heading = 'heading',
+  Paragraph = 'paragraph',
+  Quote = 'quote',
+  Note = 'note',
+  CodeBlock = 'code-block',
+  List = 'list',
+  ListItem = 'list-item',
+  Http = 'http',
+  Table = 'table',
+  Ruler = 'ruler',
+
+  // Inline
+  Text = 'text',
+  Bold = 'bold',
+  Italic = 'italic',
+  Underline = 'underline',
+  StrikeThrough = 'strike-through',
+  Code = 'code',
+  Link = 'link',
+  Email = 'email',
+  Anchor = 'anchor',
+  Document = 'document',
+  Image = 'image',
+  Video = 'video',
+
+  // Specifics
+  LineBreak = 'line-break',
+  HttpMethod = 'http-method',
+  HttpParam = 'http-param'
+*/
+
 import { createElement, memo, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 

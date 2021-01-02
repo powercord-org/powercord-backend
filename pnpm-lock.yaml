@@ -16,7 +16,6 @@ dependencies:
   react-helmet: 6.1.0_react@17.0.1
   react-router: 5.2.0_react@17.0.1
   react-router-dom: 5.2.0_react@17.0.1
-  shiki: 0.2.7
 devDependencies:
   '@babel/core': 7.12.10
   '@babel/plugin-proposal-object-rest-spread': 7.12.1_@babel+core@7.12.10
@@ -5385,6 +5384,7 @@ packages:
   /json5/2.1.3:
     dependencies:
       minimist: 1.2.5
+    dev: true
     engines:
       node: '>=6'
     hasBin: true
@@ -5666,12 +5666,6 @@ packages:
     optional: true
     resolution:
       integrity: sha512-sWZlbEP2OsHNkXrMl5GYk/jKk70MBng6UU4YI/qGDYbgf6YbP4EvmqISbXCoJiRKs+1bSpFHVgQxvJ17F2li5g==
-  /lru-cache/5.1.1:
-    dependencies:
-      yallist: 3.1.1
-    dev: false
-    resolution:
-      integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==
   /lru-cache/6.0.0:
     dependencies:
       yallist: 4.0.0
@@ -5897,6 +5891,7 @@ packages:
     resolution:
       integrity: sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==
   /minimist/1.2.5:
+    dev: true
     resolution:
       integrity: sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
   /minipass-collect/1.0.2:
@@ -6390,12 +6385,6 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==
-  /onigasm/2.2.5:
-    dependencies:
-      lru-cache: 5.1.1
-    dev: false
-    resolution:
-      integrity: sha512-F+th54mPc0l1lp1ZcFMyL/jTs2Tlq4SqIHKIXGZOR/VkHkF9A7Fr5rRr5+ZG/lWeRsyrClLYRq7s/yFQ/XhWCA==
   /opencollective-postinstall/2.0.3:
     dev: false
     hasBin: true
@@ -8206,28 +8195,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
-  /shiki-languages/0.2.7:
-    dependencies:
-      vscode-textmate: 5.2.0
-    dev: false
-    resolution:
-      integrity: sha512-REmakh7pn2jCn9GDMRSK36oDgqhh+rSvJPo77sdWTOmk44C5b0XlYPwJZcFOMJWUZJE0c7FCbKclw4FLwUKLRw==
-  /shiki-themes/0.2.7:
-    dependencies:
-      json5: 2.1.3
-      vscode-textmate: 5.2.0
-    dev: false
-    resolution:
-      integrity: sha512-ZMmboDYw5+SEpugM8KGUq3tkZ0vXg+k60XX6NngDK7gc1Sv6YLUlanpvG3evm57uKJvfXsky/S5MzSOTtYKLjA==
-  /shiki/0.2.7:
-    dependencies:
-      onigasm: 2.2.5
-      shiki-languages: 0.2.7
-      shiki-themes: 0.2.7
-      vscode-textmate: 5.2.0
-    dev: false
-    resolution:
-      integrity: sha512-bwVc7cdtYYHEO9O+XJ8aNOskKRfaQd5Y4ovLRfbQkmiLSUaR+bdlssbZUUhbQ0JAFMYcTcJ5tjG5KtnufttDHQ==
   /side-channel/1.0.2:
     dependencies:
       es-abstract: 1.17.7
@@ -9282,10 +9249,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-aLEIZKv/oxuCDZ8lkJGhuhztf/BW4M+iHdCwglA/eWc+vtuRFJj8EtgceYFX4LRjOhCAAiNHsKGssC6onJ+jbA==
-  /vscode-textmate/5.2.0:
-    dev: false
-    resolution:
-      integrity: sha512-Uw5ooOQxRASHgu6C7GVvUxisKXfSgW4oFlO+aa+PAkgmH89O3CXxEEzNRNtHSqtXFTl0nAC1uYj0GMSH27uwtQ==
   /watchpack/2.0.0:
     dependencies:
       glob-to-regexp: 0.4.1
@@ -9617,10 +9580,6 @@ packages:
     optional: true
     resolution:
       integrity: sha1-HBH5IY8HYImkfdUS+TxmmaaoHVI=
-  /yallist/3.1.1:
-    dev: false
-    resolution:
-      integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==
   /yallist/4.0.0:
     resolution:
       integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
@@ -9719,7 +9678,6 @@ specifiers:
   react-router-dom: ^5.2.0
   sass: ^1.30.0
   sass-loader: ^10.1.0
-  shiki: ^0.2.6
   style-loader: ^2.0.0
   tsc-watch: ^4.2.9
   typescript: ^4.1.3

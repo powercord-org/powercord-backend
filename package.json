@@ -24,7 +24,6 @@
     "build": "rm -rf dist && pnpm run web:build && pnpm run api:build && pnpm run bot:build"
   },
   "dependencies": {
-    "@borkenware/spoonfeed": "borkenware/spoonfeed#55b9ec6aa3072d35532ad2c4d312a1f8cc526c92",
     "eris": "^0.14.0",
     "fastify": "^3.9.2",
     "fastify-auth": "^1.0.1",

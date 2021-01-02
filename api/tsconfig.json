@@ -23,5 +23,11 @@
     "moduleResolution": "node",
     "outDir": "../dist/api"
   },
-  "include": [ "src/**/*" ]
+  "include": [
+    "src/**/*",
+    "src/api/docs/spoonfeed/src/markdown/**/*"
+  ],
+  "exclude": [
+    "src/api/docs/spoonfeed/**/*",
+  ]
 }
