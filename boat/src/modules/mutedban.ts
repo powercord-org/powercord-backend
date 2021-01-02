@@ -31,7 +31,7 @@ async function memberRemove(this: CommandClient, guild: Guild, member: Member | 
   if (!('roles' in member)) return
   if (!member.roles.includes(config.discord.ids.roleMuted)) return
 
-  const bans = (await guild.getBans()).map(ban => ban.user.id)
+  const bans = await guild.getBans().then((bans) => bans.map((ban) => ban.user.id))
   if (bans.includes(member.id)) return
 
   await this.mongo.collection('enforce').insertOne({
