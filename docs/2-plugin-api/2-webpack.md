@@ -69,8 +69,8 @@ const RemoteAuthWrapper = fetchBySignature('handshake complete awaiting remote a
 
 ### Using a predicate
 This is the last method you can use to fetch modules, and the worst in terms of performances, as the query can only
-be optimized through hinting and will not make use of any internal index. Only use when all other methods were unable
-to find the module you're aiming at.
+be optimized through [hinting](#hinting) and will not make use of any internal index. Only use when all other methods
+were unable to find the module you're aiming at.
 
 ###### Fetching a module using a predicate
 ```js
@@ -97,7 +97,7 @@ you can hint the module fetcher as of what you're looking for, so it'll be able 
 dataset, further increasing the performance of your query.
 
 >warn
-> Hinted requests may affect the results of your query, as Powercord will use this hint to exclude chunks of the
+> Hinted queries may affect the results of your query, as Powercord will use this hint to exclude chunks of the
 > module store. Be careful to really target what you're looking for!
 
 Here's the list of all available hints:
