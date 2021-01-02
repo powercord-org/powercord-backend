@@ -29,7 +29,7 @@ const MAX_INFRACTIONS = 4
 async function memberRemove(this: CommandClient, guild: Guild, member: Member | MemberPartial) {
   if (guild.id !== config.discord.ids.serverId || !('roles' in member) || !member.roles.includes(config.discord.ids.roleMuted)) return
 
-  const bans = (await guild.getBans()).map(ban => ban.user.id)
+  const bans = await guild.getBans().then((bans) => bans.map((ban) => ban.user.id))
   if (bans.includes(member.id)) return
 
   await this.mongo.collection('enforce').insertOne({
