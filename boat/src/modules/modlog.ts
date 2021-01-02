@@ -46,7 +46,7 @@ function extractEntryData (entry: GuildAuditLogEntry): [ string, string, string 
   let modName: string = ''
   let reason: string = ''
 
-  if (entry.user.id === entry._client.user.id && entry.reason) {
+  if (entry.user.id === config.discord.clientID && entry.reason) {
     const splittedReason = entry.reason.split(' ')
     modName = splittedReason.shift()!.replace('[', '').replace(']', '')
     reason = splittedReason.join(' ')
@@ -118,6 +118,7 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
 
   const logs = await guild.getAuditLogs(5, void 0, Constants.AuditLogActions.MEMBER_ROLE_UPDATE)
   const entry = logs.entries.find(entry => (entry.targetID = user.id))
+
   if (entry && entry.after && Date.now() - Number((BigInt(entry.id) >> BigInt(22)) + BigInt(1420070400000)) < 5000) {
     let muted: boolean | null = null
     const added = entry.after.$add as Role[] | void

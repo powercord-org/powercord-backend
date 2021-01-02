@@ -33,8 +33,23 @@ declare module 'eris' {
     height: number
   }
 
-  interface Base {
-    // todo: I'm not supposed to fuck up with this, but it's god damn handy at times
+  interface Guild {
+    _client: CommandClient
+  }
+
+  interface User {
+    _client: CommandClient
+  }
+
+  interface Message {
+    _client: CommandClient
+  }
+
+  interface GuildPreview {
+    _client: CommandClient
+  }
+
+  interface Command {
     _client: CommandClient
   }
 }
