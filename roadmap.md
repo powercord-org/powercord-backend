@@ -5,7 +5,7 @@
  - [x] Port Powercord bot
  - [x] Publish new website
  - [ ] Translator languages in API payload
-    - Maybe let users define it themselves if they have the translator badge?
+       - Maybe let users define it themselves if they have the translator badge?
  - [ ] Patreon API integration
        - [x] Webhooks (**needs testing**)
        - [ ] Manual sync
@@ -17,6 +17,7 @@
  - [ ] Backoffice
  - [ ] Integrate in Powercord
  - [ ] Browser-accessible store (powercord.dev/store)
+       - [ ] Allow non-PC users to submit themes through website
        - Will make use of RPC to open up Powercord
        - Fallback for /l/store stuff
 
@@ -24,4 +25,6 @@
  - [x] Cool graphs because joakim likes graphs
  - [x] Browser-accessible documentation (powercord.dev/docs)
  - [ ] Internationalize the website (why not?)
- - [ ] Mod commands + temporary sanctions through the bot (tempmute, tempban)
+ - [x] Mod commands + temporary sanctions through the bot (tempmute, tempban)
+ - [ ] Migrate website to TypeScript + Preact + hoofd
+ - [ ] Migrate commands to some Saturated Liquid of Anhydrous Software Honey (SLASH) commands

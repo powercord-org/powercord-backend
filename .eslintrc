@@ -57,7 +57,6 @@
     "react/jsx-uses-vars": "error",
     "react/no-this-in-sfc": "error",
     "react/prefer-stateless-function": "error",
-    "react/react-in-jsx-scope": "error",
     "react/style-prop-object": "error",
     "react/void-dom-elements-no-children": "error",
     "react/jsx-fragments": "error",

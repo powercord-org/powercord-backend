@@ -2,13 +2,15 @@
   "apps": [
     {
       "name": "backend",
-      "script": "./http/index.js",
-      "args": "-p"
+      "script": "node",
+      "args": [ "./dist/api/index.js" ],
+      "env": { "NODE_ENV": "production" }
     },
     {
       "name": "boat",
-      "script": "./boat/index.js",
-      "args": "-p"
+      "script": "node",
+      "args": [ "./dist/boat/index.js" ],
+      "env": { "NODE_ENV": "production" }
     }
   ]
 }
