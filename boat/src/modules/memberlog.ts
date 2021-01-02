@@ -110,10 +110,9 @@ function memberUpdate (this: CommandClient, guild: Guild, newMember: Member, old
 
 function memberRemove (this: CommandClient, guild: Guild, member: Member | MemberPartial) {
   if (guild.id !== config.discord.ids.serverId) return
-  if (!('joinedAt' in member)) return
 
   const fields = []
-  if (member.roles?.length > 0) {
+  if ('roles' in member && member.roles.length > 0) {
     fields.push({
       name: 'Roles',
       value: member.roles.map(id => guild.roles.get(id)!.mention).join(' ')
@@ -123,7 +122,7 @@ function memberRemove (this: CommandClient, guild: Guild, member: Member | Membe
   this.createMessage(config.discord.ids.channelMemberLogs, {
     embed: {
       title: `${member.user.username}#${member.user.discriminator} just left`,
-      description: member.joinedAt
+      description: 'joinedAt' in member
         ? `<@${member.id}> was here for ${prettyPrintTimeSpan(Date.now() - member.joinedAt)}`
         : `<@${member.id}> was not in the cache when they left`,
       fields: fields,
