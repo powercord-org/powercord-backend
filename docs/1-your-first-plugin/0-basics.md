@@ -90,7 +90,7 @@ This will for example result in the following load order:
 ### `nsfw` key
 Quote from the Powercord Community Guidelines, #8:
 > If your plugin's main purpose is providing NSFW content, you must specify this through the `nsfw` manifest key.<br>
-> -- https://powercord.dev/guidelines
+> \-- https://powercord.dev/guidelines
 
 This key is a simple boolean.
 

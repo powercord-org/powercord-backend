@@ -15,3 +15,5 @@ If you need support with Powercord ~~or simply want to hang out with the communi
 [here](https://discord.gg/gs4ZMbBfCh).
 
 Happy hacking!
+
+cynthia@cynthia.dev

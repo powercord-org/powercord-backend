@@ -122,6 +122,10 @@
   border-style: solid;
   border-radius: 5px;
 
+  p {
+    margin: 0;
+  }
+
   &.info {
     border-color: #202020;
     background-color: rgba(0, 0, 0, .2);

@@ -26,7 +26,8 @@ be careful and make sure to wrap things properly to not cause conflicts with exi
 documented the most common tricks in the [injector API](##plugin-api/injector#injecting).
 
 ## I'm curious, how does Powercord actually inject?
-If you are that curious, you are welcome to check our [injector source code](<!-- todo: link -->), however here's the
+<!-- todo: link -->
+If you are that curious, you are welcome to check our [injector source code](https://cynthia.dev), however here's the
 very basic logic:
 
 Our injector receives a module and a the target to patch, and the custom logic to run. Since everything goes through

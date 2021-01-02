@@ -36,6 +36,7 @@ const COMMIT_HASH = require('child_process').execSync('git rev-parse HEAD').toSt
 const IS_DEV = process.env.NODE_ENV === 'development'
 const SRC = join(__dirname, 'src')
 const OUT = join(__dirname, '..', 'dist', 'web')
+const SPOONFEED = join(__dirname, '..', 'api', 'src', 'api', 'docs', 'spoonfeed')
 
 const baseConfig = {
   mode: IS_DEV ? 'development' : 'production',
@@ -50,13 +51,20 @@ const baseConfig = {
     publicPath: '/dist/'
   },
   resolve: {
-    extensions: [ '.js', '.jsx' ],
+    extensions: [ '.js', '.ts', '.jsx', '.tsx' ],
     alias: {
       '@components': join(SRC, 'components'),
       '@styles': join(SRC, 'styles'),
       '@assets': join(SRC, 'assets'),
-      '@constants': join(SRC, 'constants.js'),
-      '@util': join(SRC, 'util.js')
+      '@constants': join(SRC, 'constants.ts'),
+      '@util': join(SRC, 'util.js'),
+      [join(SPOONFEED, 'src', 'util.js')]: join(SPOONFEED, 'src', 'util.ts'),
+      [join(SPOONFEED, 'src', 'markdown', 'types.js')]: join(SPOONFEED, 'src', 'markdown', 'types.ts')
+    },
+    fallback: {
+      path: false,
+      fs: false,
+      'fs/promises': false
     }
   },
   module: {
@@ -65,7 +73,7 @@ const baseConfig = {
       {
         test: /\.(ts|js)x?/,
         type: 'javascript/auto',
-        include: SRC,
+        include: [ SRC, SPOONFEED ],
         use: [
           {
             loader: 'babel-loader',
