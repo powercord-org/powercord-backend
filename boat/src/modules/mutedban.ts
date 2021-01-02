@@ -24,12 +24,10 @@ import type { CommandClient, Guild, Member, MemberPartial } from 'eris'
 import config from '../config.js'
 import { ban } from '../mod.js';
 
-const maxInfractions = 4
+const MAX_INFRACTIONS = 4
 
 async function memberRemove(this: CommandClient, guild: Guild, member: Member | MemberPartial) {
-  if (guild.id !== config.discord.ids.serverId) return
-  if (!('roles' in member)) return
-  if (!member.roles.includes(config.discord.ids.roleMuted)) return
+  if (guild.id !== config.discord.ids.serverId || !('roles' in member) || !member.roles.includes(config.discord.ids.roleMuted)) return
 
   const bans = (await guild.getBans()).map(ban => ban.user.id)
   if (bans.includes(member.id)) return
@@ -41,8 +39,8 @@ async function memberRemove(this: CommandClient, guild: Guild, member: Member | 
   })
 
   const infractionCount = await this.mongo.collection('enforce').countDocuments({ userID: member.id })
-  if (infractionCount > maxInfractions) {
-    ban(guild, member.id, this.user, '[AUTOMATIC] Left while muted one too many times.')
+  if (infractionCount > MAX_INFRACTIONS){
+    ban(guild, member.id, this.user, 'Left while muted one too many times.')
   }
 }
 
