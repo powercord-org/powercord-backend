@@ -42,7 +42,7 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
   const start = Date.now()
 
   let js = `const bot = msg._client; const mongo = bot.mongo; ${script}`
-  if (js.includes('await')) js = `(async () => { ${script} })()`
+  if (script.includes('await')) js = `(async () => { ${js} })()`
   let result
   try {
     // eslint-disable-next-line no-eval
