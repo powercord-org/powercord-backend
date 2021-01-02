@@ -18,8 +18,8 @@
     "api:build": "tsc --build api/tsconfig.json",
     "api:start": "cross-env NODE_ENV=production node dist/api/index.js",
     "api:debug-prod": "cross-env NODE_ENV=production node --inspect-brk dist/api/index.js",
-    "bot:dev": "tsc-watch --project boat/tsconfig.json --onSuccess \"node dist/boat/index.js\"",
-    "bot:build": "tsc --build boat/tsconfig.json",
+    "bot:dev": "rm -rf dist && tsc-watch --project boat/tsconfig.json --onSuccess \"node dist/boat/index.js\"",
+    "bot:build": "rm -rf dist && tsc --build boat/tsconfig.json",
     "bot:start": "cross-env NODE_ENV=production node dist/boat/index.js",
     "build": "rm -rf dist && pnpm run web:build && pnpm run api:build && pnpm run bot:build"
   },
