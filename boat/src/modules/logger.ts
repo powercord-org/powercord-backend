@@ -21,8 +21,8 @@
  */
 
 import type { CommandClient, GuildTextableChannel, Message } from 'eris'
-import { prettyPrintTimeSpan, stringifyDiscordMessage } from '../util.js'
 import fetch from 'node-fetch'
+import { prettyPrintTimeSpan, stringifyDiscordMessage } from '../util.js'
 import config from '../config.js'
 
 type MessagePartial = { id: string, channel: GuildTextableChannel }
@@ -60,11 +60,10 @@ async function messageDelete(this: CommandClient, msg: Message<GuildTextableChan
   })
 }
 
-async function messageDeleteBulk(this: CommandClient, msgs: (Message<GuildTextableChannel> | MessagePartial)[]) {
-  let list = ''
-  msgs.forEach(msg => {
+async function messageDeleteBulk(this: CommandClient, msgs: Array<Message<GuildTextableChannel> | MessagePartial>) {
+  const list = msgs.map(msg => {
     if ('author' in msg) {
-      list += `${LIST_TEMPLATE
+      return `${LIST_TEMPLATE
         .replace('$channel', msg.channel.name)
         .replace('$username', msg.author.username.replace(/`/g, `\`${ZWS}`))
         .replace('$userId', msg.author.id)
@@ -73,11 +72,11 @@ async function messageDeleteBulk(this: CommandClient, msgs: (Message<GuildTextab
         .replace('$duration', prettyPrintTimeSpan(Date.now() - msg.timestamp))
         .replace('$message', stringifyDiscordMessage(msg).replace(/`/g, `\`${ZWS}`) || '*No contents*')}\n${msg.attachments.length > 0 ?
           `Attachments:\n${msg.attachments.map(attachment => attachment.filename).join(', ')}` :
-          ''}\n\n`
+          ''}`
     } else {
-      list += `A message in #${msg.channel.name} that was not cached\n\n`
+      return `A message in #${msg.channel.name} that was not cached`
     }
-  })
+  }).join('\n\n')
 
   const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: list.trim() }).then(r => r.json())
   this.createMessage(config.discord.ids.channelMessageLogs, `${msgs.length} messages deleted:\n<https://haste.powercord.dev/${res.key}.txt>`)
