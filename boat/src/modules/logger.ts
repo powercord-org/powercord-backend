@@ -40,7 +40,7 @@ Timestamp: $time ($duration ago)
 Message contents:
 $message`
 
-async function messageDelete(this: CommandClient, msg: Message<GuildTextableChannel>) {
+async function messageDelete (this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
     return // Message not cached; let's just ignore
   }
@@ -60,7 +60,7 @@ async function messageDelete(this: CommandClient, msg: Message<GuildTextableChan
   })
 }
 
-async function messageDeleteBulk(this: CommandClient, msgs: Array<Message<GuildTextableChannel> | MessagePartial>) {
+async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<GuildTextableChannel> | MessagePartial>) {
   const list = msgs.map(msg => {
     if ('author' in msg) {
       return `${LIST_TEMPLATE
