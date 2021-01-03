@@ -21,8 +21,8 @@
  */
 
 import type { CommandClient, Guild, Member, MemberPartial } from 'eris'
+import { ban } from '../mod.js'
 import config from '../config.js'
-import { ban } from '../mod.js';
 
 const MAX_INFRACTIONS = 4
 
