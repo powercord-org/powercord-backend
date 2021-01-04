@@ -22,7 +22,8 @@ you need to perform the action you want, or the module you want to patch, for ex
 > task!
 
 ## Fetch modules
-Unlike in previous versions, module fetching is a synchronous operation.
+Unlike in previous versions, module fetching is a synchronous operation. If no modules is matching, the result will be
+`null`.
 
 ### By their props
 This is the most classic way of fetching modules. Specify the methods and/or properties of the module you're looking
@@ -43,7 +44,8 @@ This is React-specific; Most React components are assigned a display name, which
 descriptive name of their purpose.
 
 >info
-> This query cannot be [hinted](#hinting), as it's already only targeting React components.
+> This query cannot be [hinted](#hinting), as it's already only targeting React components. Attempting to will simply
+> be ignored.
 
 ###### Fetching a module by its display name
 ```js
@@ -72,6 +74,9 @@ This is the last method you can use to fetch modules, and the worst in terms of 
 be optimized through [hinting](#hinting) and will not make use of any internal index. Only use when all other methods
 were unable to find the module you're aiming at.
 
+It works just like using JS's filter method: the predicate function will receive the module, and should return `true`
+if the module is what you want, `false` otherwise.
+
 ###### Fetching a module using a predicate
 ```js
 import { fetchByPredicate } from '@powercord/webpack'
@@ -89,7 +94,7 @@ argument.
 | all | boolean | If `true`, Powercord will return an array with all modules matching the query. | `false` |
 
 ## Hinting
-As we mentioned, Discord has so many modules that going through the whole list everytime might become a performance
+As we mentioned, Discord has so many modules that going through the whole list every time might become a performance
 hazard and cause slight slowdowns which may add up.
 
 To help with performances, we build indexes we use to query modules more efficiently. Just like your average database,

@@ -87,6 +87,10 @@ This will for example result in the following load order:
   2. [the plugin]
   3. heygirl
 
+>warn
+> For the time being, you cannot mark plugins are required dependencies, if a plugin you listed is not installed, it
+> will be ignored.
+
 ### `nsfw` key
 Quote from the Powercord Community Guidelines, #8:
 > If your plugin's main purpose is providing NSFW content, you must specify this through the `nsfw` manifest key.<br>

@@ -28,8 +28,9 @@ This is where you'll put all of the logic that makes your plugin more than a dea
 This method is called when the plugin is about to be unloaded. During this phase, the plugin must clean all injections
 it did, event listeners, timeouts, etc etc.
 
-Note that Powercord will take care of removing React components injected by the plugin, so no need to care too much
-about that side of things. That is, provided you properly cleanup injections done.
+Note that Powercord will take care of removing injections you've done and their side effects (like React components
+injected), so you don't need to care too much about that side of things. However, if your injection is a bit too
+complex for Powercord, manually cleaning up side effects may help.
 
 ## `pluginDidInstall`
 Called when the plugin is ran for the first time after being installed.
