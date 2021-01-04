@@ -77,7 +77,7 @@ export function stringifyDiscordMessage (message: Message<GuildTextableChannel>)
     .replace(/<a?(:\w+:)[0-9]+>/g, '$1')
     .replace(/<@!?([0-9]+)>/g, (_, id ) => `@${message.channel.guild.members.get(id)?.nick ?? message._client.users.get(id)?.username ?? 'invalid-user'}`)
     .replace(/<@&([0-9]+)>/g, (_, id ) => `@${message.channel.guild.roles.get(id)?.name ?? 'invalid-role'}`)
-    .replace(/<#([0-9]+)>/g, (_, id ) => `@${message.channel.guild.channels.get(id)?.name ?? 'deleted-channel'}`)
+    .replace(/<#([0-9]+)>/g, (_, id ) => `#${message.channel.guild.channels.get(id)?.name ?? 'deleted-channel'}`)
 }
 
 export function parseDuration (duration: string): number | null {
