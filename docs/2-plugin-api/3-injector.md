@@ -16,7 +16,7 @@ plugins need, mask the function signature, and you won't benefit from our built-
 ## Module
 ```js
 import { inject, uninject } from '@powercord/injector'
-// In DevTools: PowercordInjector.inject, PowercordInjector.uninject
+// In DevTools: $pc.injector.inject, $pc.injector.uninject
 ```
 
 ## Injecting

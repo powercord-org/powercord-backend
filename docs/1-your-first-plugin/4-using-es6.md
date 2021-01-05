@@ -18,9 +18,8 @@ There's great documentation on MDN Web Docs that we recommend checking out:
 [`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import),
 [`export`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export)
 
-## How to debug/test in DevTools?
+## How to import in DevTools?
 Since you can't import directly within DevTools, quickly testing things out is way more limited than what it used to be
-in v2. However, we expose some globals that can be used in DevTools, so it's not completely lost. You'll just end up
-needing a plugin quicker than in other cases.
+in v2. However, we expose a `$pc` variable, which can be used to query all of what plugins can access.
 
-The DevTools equivalent to exports is documented for individual components in their relevant documentation section.
+The `$pc` equivalents of modules you can import will be documented in their relevant documentation section.

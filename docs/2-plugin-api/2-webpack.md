@@ -32,6 +32,7 @@ for and get it delivered instantly. Faster than with Amazon Prime!
 ###### Fetching a module by its props
 ```js
 import { fetchByProps } from '@powercord/webpack'
+// In DevTools: $pc.webpack.fetchByProps
 
 const userFetcher = fetchByProps([ 'getUser' ])
 
@@ -50,6 +51,7 @@ descriptive name of their purpose.
 ###### Fetching a module by its display name
 ```js
 import { fetchByDisplayName } from '@powercord/webpack'
+// In DevTools: $pc.webpack.fetchByDisplayName
 
 const GuildContextMenu = fetchByDisplayName('GuildContextMenu')
 ```
@@ -65,6 +67,7 @@ regexp.
 ###### Fetching a module by its signature
 ```js
 import { fetchBySignature } from '@powercord/webpack'
+// In DevTools: $pc.webpack.fetchBySignature
 
 const RemoteAuthWrapper = fetchBySignature('handshake complete awaiting remote auth')
 ```
@@ -80,6 +83,7 @@ if the module is what you want, `false` otherwise.
 ###### Fetching a module using a predicate
 ```js
 import { fetchByPredicate } from '@powercord/webpack'
+// In DevTools: $pc.webpack.fetchByPredicate
 
 const randomSymbol = fetchByPredicate((mdl) => typeof mdl === 'symbol')
 ```
