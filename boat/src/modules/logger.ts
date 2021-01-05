@@ -21,36 +21,68 @@
  */
 
 import type { CommandClient, GuildTextableChannel, Message } from 'eris'
+import fetch from 'node-fetch'
 import { prettyPrintTimeSpan, stringifyDiscordMessage } from '../util.js'
 import config from '../config.js'
 
+type MessagePartial = { id: string, channel: GuildTextableChannel }
+
 const ZWS = '\u200B'
-const TEMPLATE = `Message deleted in <#$channelId>
+const SINGLE_TEMPLATE = `Message deleted in <#$channelId>
 Author: $username#$discrim ($userId; <@$userId>)
 Timestamp: $time ($duration ago)
 Message contents: \`\`\`
 $message
 \`\`\``
+const LIST_TEMPLATE = `Message deleted in #$channel
+Author: $username#$discrim ($userId)
+Timestamp: $time ($duration ago)
+Message contents:
+$message`
 
-async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
+async function messageDelete (this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
     return // Message not cached; let's just ignore
   }
 
-  // todo: log attachments
   this.createMessage(config.discord.ids.channelMessageLogs, {
-    content: TEMPLATE
+    content: `${SINGLE_TEMPLATE
       .replace('$channelId', msg.channel.id)
       .replace('$username', msg.author.username.replace(/`/g, `\`${ZWS}`))
       .replace('$discrim', msg.author.discriminator)
       .replace(/\$userId/g, msg.author.id)
       .replace('$time', new Date(msg.timestamp).toUTCString())
       .replace('$duration', prettyPrintTimeSpan(Date.now() - msg.timestamp))
-      .replace('$message', stringifyDiscordMessage(msg).replace(/`/g, `\`${ZWS}`) || '*No contents*'),
+      .replace('$message', stringifyDiscordMessage(msg).replace(/`/g, `\`${ZWS}`) || '*No contents*')}${msg.attachments.length > 0 ?
+        `Attachments:\n\`${msg.attachments.map(attachment => attachment.filename).join('`, `')}\`` :
+        ''}`.trim(),
     allowedMentions: {}
   })
 }
 
+async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<GuildTextableChannel> | MessagePartial>) {
+  const list = msgs.map(msg => {
+    if ('author' in msg) {
+      return `${LIST_TEMPLATE
+        .replace('$channel', msg.channel.name)
+        .replace('$username', msg.author.username.replace(/`/g, `\`${ZWS}`))
+        .replace('$userId', msg.author.id)
+        .replace('$discrim', msg.author.discriminator)
+        .replace('$time', new Date(msg.timestamp).toUTCString())
+        .replace('$duration', prettyPrintTimeSpan(Date.now() - msg.timestamp))
+        .replace('$message', stringifyDiscordMessage(msg).replace(/`/g, `\`${ZWS}`) || '*No contents*')}\n${msg.attachments.length > 0 ?
+          `Attachments:\n${msg.attachments.map(attachment => attachment.filename).join(', ')}` :
+          ''}`
+    } else {
+      return `A message in #${msg.channel.name} that was not cached`
+    }
+  }).join('\n\n')
+
+  const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: list.trim() }).then(r => r.json())
+  this.createMessage(config.discord.ids.channelMessageLogs, `${msgs.length} messages deleted:\n<https://haste.powercord.dev/${res.key}.txt>`)
+}
+
 export default function (bot: CommandClient) {
-  bot.on('messageDelete', process)
+  bot.on('messageDelete', messageDelete)
+  bot.on('messageDeleteBulk', messageDeleteBulk)
 }
