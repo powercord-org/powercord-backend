@@ -60,7 +60,12 @@ export type User = {
   patronTier?: 0 | 1 | 2
 }
 
-export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & { id: User['_id'] }
+export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
+  id: User['_id']
+  accounts?: {
+    spotify?: string
+  }
+}
 
 export type DiscordUser = any // todo
 

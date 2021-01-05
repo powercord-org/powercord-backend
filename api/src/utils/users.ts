@@ -48,6 +48,9 @@ export function formatUser (user: User, bypassVisibility?: boolean): RestUser {
       early: Boolean(user.badges.early),
       custom: paywallify(user.badges.custom || {}, user.patronTier || 0)
     },
-    patronTier: bypassVisibility ? user.patronTier : void 0
+    patronTier: bypassVisibility ? user.patronTier : void 0,
+    accounts: bypassVisibility
+      ? { spotify: user.accounts.spotify ? user.accounts.spotify.name : void 0 }
+      : void 0
   }
 }
