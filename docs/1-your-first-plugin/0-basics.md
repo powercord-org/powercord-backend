@@ -88,7 +88,7 @@ This will for example result in the following load order:
   3. heygirl
 
 >warn
-> For the time being, you cannot mark plugins are required dependencies, if a plugin you listed is not installed, it
+> For the time being, you cannot mark plugins are required dependencies. If a plugin you listed is not installed, it
 > will be ignored.
 
 ### `nsfw` key

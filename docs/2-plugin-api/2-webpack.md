@@ -22,8 +22,8 @@ you need to perform the action you want, or the module you want to patch, for ex
 > task!
 
 ## Fetch modules
-Unlike in previous versions, module fetching is a synchronous operation. If no modules is matching, the result will be
-`null`.
+Unlike in previous versions, module fetching is a synchronous operation. If there are no modules matching your query,
+the result will be `null`.
 
 ### By their props
 This is the most classic way of fetching modules. Specify the methods and/or properties of the module you're looking
