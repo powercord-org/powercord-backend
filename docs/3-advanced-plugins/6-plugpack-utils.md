@@ -11,6 +11,11 @@ PlugPack is the name of Powercord's internal plugin & theme compiler, powered by
 PlugPack supports dynamic imports, to allow plugins to import files in bulk without having to hardcode everything or
 without having to need filesystem access.
 
+>info
+> While you can use dynamic imports to import simple modules, this is not recommended since they will **not** be lazy
+> loaded. Instead, they'll be bundled and wrapped in `Promise.resolve`. Look below for cases where dynamic import
+> can be useful.
+
 ### Import globing
 Import globing lets you load all of the files within a folder (even recursively if you wish), and will give back an
 object which will let you know all of the available files which matched the pattern, and will let you load them.

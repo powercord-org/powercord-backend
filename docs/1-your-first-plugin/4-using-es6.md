@@ -18,6 +18,10 @@ There's great documentation on MDN Web Docs that we recommend checking out:
 [`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import),
 [`export`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export)
 
+>info
+> On MDN, you'll see the mention of [Dynamic Imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#dynamic_imports).
+> While they are supported, you should give a look on the docs about [how PlugPack handles them](##advanced-plugins/plugpack-utils#dynamic-imports).
+
 ## How to import in DevTools?
 Since you can't import directly within DevTools, quickly testing things out is way more limited than what it used to be
 in v2. However, we expose a `$pc` variable, which can be used to query all of what plugins can access.
