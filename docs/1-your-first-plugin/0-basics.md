@@ -175,7 +175,7 @@ the DevTools console. Not much, but something to be proud of :)
 The most important thing to remember here is how to form the basic plugin class structure. The more you'll look
 through docs the more you'll understand it, but that's it for now.
 
-### Can I use multiple files? And node libraries?
+### Can I use multiple files? And libraries on npm?
 Yes! That's one of the advantages Powercord plugins have compared to BetterDiscord's: developers can split their code
 in multiple files, which makes for clearer code and the ability to use syntax like JSX.
 
