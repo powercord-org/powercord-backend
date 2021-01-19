@@ -31,7 +31,7 @@ import apiModule from './api/index.js'
 import webModule from './web.js'
 import config from './config.js'
 
-const fastify = fastifyFactory({ logger: true })
+const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'production' ? 'warn' : 'info' } })
 fastify.register(fastifyAuth)
 fastify.register(fastifyCookie)
 fastify.register(fastifyRawBody, { global: false })

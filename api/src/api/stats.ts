@@ -22,6 +22,7 @@
 
 import type { FastifyInstance } from 'fastify'
 import type { Db, ObjectId } from 'mongodb'
+import mongo from 'mongodb'
 import { getOrCompute } from '../utils/cache.js'
 
 type Delta = { day: number, week: number, month: number }
@@ -144,8 +145,12 @@ async function computeUsersOverTime (db: Db) {
 }
 
 async function computeGuildStats (db: Db) {
-  const monthAgo = new Date(Date.now() - 30 * 24 * 3600e3)
-  const cursor = db.collection('guild-stats').find({ date: { $gte: monthAgo }, online: { $not: { $eq: 0 } } }).sort({ date: 1 })
+  const cursor = db.collection('guild-stats').find(
+    {
+      _id: { $gte: mongo.ObjectId.createFromTime(Math.round(Date.now() / 1000) - 30 * 24 * 3600) },
+      online: { $not: { $eq: 0 }
+    }
+  }).sort({ _id: 1 })
   const data = await cursor.toArray()
   cursor.close()
 
