@@ -143,20 +143,9 @@ key. The format is an array of strings, with a valid consent type inside. **By d
 ```
 
 ## `index.js`
-Now, we're getting to the fun part: some actual code. Before we start, we'll answer this here, once and for all:
-*no it's not possible to use something else than JavaScript*.
-
-TypeScript is completely irrelevant in the scope of a client mod with no knowledge of 99% of the modules it'll use, and
-other languages being completely not adapted to work in this scenario. For the nerds who'd like to use WebAssembly,
-it's unfortunately disabled* as per a security policy; we aren't confident enough letting WebAssembly code out there
-in the wild being ran, as it can conflict with our no-obfuscated policies and may be able to get pass some of our
-protection (which isn't only runtime).
-
-\*We may, in the future, look into enabling back WebAssembly support. For now, there is just no real use case that
-can't be achieved using pure JS and available APIs.
-
-Now that this is landed: here's what your plugin will look like. There's a lot you may not understand, but don't
-freak out yet, you'll see it's super easy.
+Now, we're getting to the fun part: some actual code. Powercord plugins are made in JavaScript, and will be ran
+as additional web scripts (meaning they cannot use NodeJS stuff like `fs`). The very basic structure of a plugin is
+fairly simple, and looks like this:
 
 ###### Example plugin
 ```js
@@ -172,8 +161,26 @@ export default class MyPlugin extends Plugin {
 And here you have it; the most basic plugin that exists - and it's working! This will just log `Hello World!` to
 the DevTools console. Not much, but something to be proud of :)
 
-The most important thing to remember here is how to form the basic plugin class structure. The more you'll look
-through docs the more you'll understand it, but that's it for now.
+### Can I use TypeScript?
+Short answer: no.
+
+Long answer: Powercord does not support TypeScript and we will not add support for it. TypeScript is in general an
+added layer of complexity in your code and requires a heavier base to get started.
+
+The fact that you are working with objects which you cannot properly type makes its use even less relevant: you
+will have to commit the sin of ruining the entire purpose of using TypeScript by introducing `any` in your codebase,
+making all of the efforts you've made worthless.
+
+### Can I use WebAssembly?
+Short answer: no.
+
+Long answer: WebAssembly is, for the time being, not available for use in plugins. This is because WebAssembly can be
+used to bypass the protections around arbitrary code execution. WASM binaries can also be opaque to the users, and
+there are no easy way of ensuring the source code availability of the binary, nor that the binary is actually running
+the available code.
+
+Maybe in the future we'll revise this decision and enable WebAssembly back with a hardened API, but for the time being
+it's not possible.
 
 ### Can I use multiple files? And libraries on npm?
 Yes! That's one of the advantages Powercord plugins have compared to BetterDiscord's: developers can split their code

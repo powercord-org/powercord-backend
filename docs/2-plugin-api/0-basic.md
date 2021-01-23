@@ -14,10 +14,11 @@ you can easily use them, and import libraries relying on React for example which
 way.
 
 Here is a list of available modules, as well as their DevTools equivalent, for debugging purposes.
- - `react` (DevTools: `$pc.modules.React`)
- - `react-dom` (DevTools: `$pc.modules.ReactDOM`)
- - `react-router` (DevTools: `$pc.modules.ReactRouter`)
- - `react-router-dom` (DevTools: `$pc.modules.ReactRouterDOM`)
- - `flux` (DevTools: `$pc.modules.Flux`)
- - `lodash` (DevTools: `window._`)
- - `pako` (DevTools: `$pc.modules.pako`)
+ - [`react`](https://npm.im/react) (DevTools: `$pc.modules.React`)
+ - [`react-dom`](https://npm.im/react-dom) (DevTools: `$pc.modules.ReactDOM`)
+ - [`react-router`](https://npm.im/react-router) (DevTools: `$pc.modules.ReactRouter`)
+ - [`react-router-dom`](https://npm.im/react-router-dom) (DevTools: `$pc.modules.ReactRouterDOM`)
+ - [`flux`](https://npm.im/flux) (DevTools: `$pc.modules.Flux`)
+ - [`lodash`](https://npm.im/lodash) (DevTools: `window._`)
+ - [`pako`](https://npm.im/pako) (DevTools: `$pc.modules.pako`)
+ - `@discord/dispatcher`: Discord's instance of FluxDispatcher (DevTools: `$pc.modules.discord.dispatcher)

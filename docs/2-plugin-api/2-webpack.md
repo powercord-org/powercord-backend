@@ -25,6 +25,11 @@ you need to perform the action you want, or the module you want to patch, for ex
 Unlike in previous versions, module fetching is a synchronous operation. If there are no modules matching your query,
 the result will be `null`.
 
+>warn
+> Be careful, Powercord will spit out the raw module as it was exported by Discord. This means you may end up with
+> an object with a `default` property which will actually contain what you're looking for. In case of doubts, don't
+> hesitate to `console.log` what you get, and see if it's what you expect!
+
 ### By their props
 This is the most classic way of fetching modules. Specify the methods and/or properties of the module you're looking
 for and get it delivered instantly. Faster than with Amazon Prime!
@@ -58,11 +63,13 @@ const GuildContextMenu = fetchByDisplayName('GuildContextMenu')
 
 ### By their signature
 Sometimes, there are no other solutions and you're required to look at the function's code to find what you're
-looking for. You should only use this when props or display name aren't things you can use.
+looking for. Be careful, this is the slowest way of fetching a module and you most likely want to avoid it.
 
-This method accepts either a string or a [RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp).
-If passed a string, it'll search for a module including it, if passed a RegExp it'll search for a module matching this
-regexp.
+This method accepts either a string or a [`RegExp`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp).
+If passed a string, it'll search for a module including it, if passed a `RegExp` it'll search for a module matching it.
+
+By default, Powercord will apply this to simple functions laying around. However, you can tell Powercord to try and
+see if a module has a function matching this signature, by passing in the options `module: true`.
 
 ###### Fetching a module by its signature
 ```js
@@ -73,12 +80,9 @@ const RemoteAuthWrapper = fetchBySignature('handshake complete awaiting remote a
 ```
 
 ### Using a predicate
-This is the last method you can use to fetch modules, and the worst in terms of performances, as the query can only
-be optimized through [hinting](#hinting) and will not make use of any internal index. Only use when all other methods
-were unable to find the module you're aiming at.
-
-It works just like using JS's filter method: the predicate function will receive the module, and should return `true`
-if the module is what you want, `false` otherwise.
+This is the last method you can use to fetch modules. It works similarly to the
+[`Array.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
+method.
 
 ###### Fetching a module using a predicate
 ```js
@@ -110,7 +114,8 @@ dataset, further increasing the performance of your query.
 > module store. Be careful to really target what you're looking for!
 
 Here's the list of all available hints:
- - `css-classes`: Generated CSS classes from a CSS module
+ - `cssClasses`: Generated CSS classes from a CSS module
  - `react`: React component
  - `flux`: Flux store
  - `module`: Generic object not fitting in previous categories (e.g. all of Discord's helpers)
+ - `other`: Mostly strings or symbols laying around, alone, in a sea of modules...

@@ -4,8 +4,52 @@
   https://creativecommons.org/licenses/by-nd/4.0
 -->
 
-# PlugPack utils
+# PlugPack
 PlugPack is the name of Powercord's internal plugin & theme compiler, powered by rollup & various css pre-processors.
+Here are some documentation on how PlugPack will bundle your code and how you can get it to perform some specific
+actions.
+
+## Workers
+>danger
+> Due to browser security policies and some implementation difficulties (because electron lacks things you'd expect
+> to be basic features, see [electron/electron#26065](https://github.com/electron/electron/pull/26065)), workers are
+> currently not available and will raise an error if you try to use them.
+>
+> The future behavior of workers is still documented below.
+
+To spawn a new `Worker`, you simply need to instantiate your worker like you'd normally do, and point to the worker
+script. The path must be relative to the file you're spawning the worker from. PlugPack will recognize the structure
+and perform the appropriated actions.
+
+###### Spawning a Worker
+```js
+// Considering:
+//   /index.js
+//   /worker.js
+const worker = new Worker('./worker.js')
+
+// Considering:
+//   /index.js
+//   /subfolder/worker.js
+const worker = new Worker('./subfolder/worker.js')
+```
+
+## Assets
+You can import some assets (like images, audio files, ...) just by `import`ing them. You will receive a string which
+will point to that resource, so you can use it easily.
+
+###### Asset import example: loading an image
+```js
+import cat from './images/cat.png'
+
+function Cat () {
+  return (
+    <img src={cat} alt='Cat!'/>
+  )
+}
+
+export default Cat
+```
 
 ## Dynamic imports
 PlugPack supports dynamic imports, to allow plugins to import files in bulk without having to hardcode everything or
@@ -35,15 +79,13 @@ const globed = import('./folder/**/*.js')
 #### Glob import object
 When doing a glob import, you get an object with 2 properties: `keys` and `load`.
 
-`keys` returns an [Iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#iterators)
+`keys` returns an [`Iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#iterators)
 which contains all of the files which matched your pattern. If you prefer an array over an iterator, you can pass the
 results to [`Array.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from).
 
 `load` lets you load a module from your glob import. It works just like require, and accepts a path (the same that
 you would have used if you directly required it). The path will be normalized: if you do `./dir/sub/../file.js`, the
-path will be resolved to `./dir/file.js`.
-
-`load` returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise),
+path will be resolved to `./dir/file.js`. It'll return a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise),
 just like a dynamic import (or raises an error if the module is not found).
 
 ###### Example glob import usage
