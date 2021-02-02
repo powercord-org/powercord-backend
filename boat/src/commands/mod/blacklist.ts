@@ -21,7 +21,7 @@
  */
 
 import { GuildTextableChannel, Message } from 'eris'
-import { getBlacklist, loadBlacklist } from '../../blacklist.js'
+import { getBlacklist, loadBlacklist } from '../../blacklistCache.js'
 import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}blacklist <show | add | remove> (word)`
@@ -44,20 +44,30 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
       break
 
     case 'add':
-      await msg._client.mongo.collection('blacklist').insertOne({ word: args.join(' ') })
+      if (args.length === 0) {
+        msg.channel.createMessage(USAGE_STR)
+        return
+      }
+
+      await msg._client.mongo.collection('blacklist').insertOne({ word: args.join(' ').toLowerCase() })
       loadBlacklist(msg._client)
-      msg.channel.createMessage(`Added \`${args.join(' ')}\` to the blacklist.`)
+      msg.channel.createMessage(`Added \`${args.join(' ').toLowerCase()}\` to the blacklist.`)
       break
 
     case 'remove':
     case 'delete':
-      msg._client.mongo.collection('blacklist').findOneAndDelete({ word: args.join(' ') })
+      if (args.length === 0) {
+        msg.channel.createMessage(USAGE_STR)
+        return
+      }
+
+      msg._client.mongo.collection('blacklist').findOneAndDelete({ word: args.join(' ').toLowerCase() })
         .then(({ value }) => {
           if (value) {
             loadBlacklist(msg._client)
-            msg.channel.createMessage(`Removed \`${args.join(' ')}\` fom the blacklist.`)
+            msg.channel.createMessage(`Removed \`${args.join(' ').toLowerCase()}\` fom the blacklist.`)
           } else {
-            msg.channel.createMessage(`\`${args.join(' ')}\` was not found in the blacklist.`)
+            msg.channel.createMessage(`\`${args.join(' ').toLowerCase()}\` was not found in the blacklist.`)
           }
         })
       break
