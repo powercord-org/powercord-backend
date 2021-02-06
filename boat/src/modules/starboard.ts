@@ -131,6 +131,9 @@ async function updateStarCount (msg: Message<GuildTextableChannel>, count: numbe
 }
 
 async function process (msg: Message<GuildTextableChannel>, emoji: PartialEmoji, user: HasId) {
+  // Only process stars & cute
+  if (emoji.name !== STARBOARD_EMOTE && emoji.name !== CUTEBOARD_EMOTE) return
+
   if (!msg.author) msg = await msg.channel.getMessage(msg.id)
 
   if (msg.author.id === user.id) {
