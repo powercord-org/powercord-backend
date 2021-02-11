@@ -40,7 +40,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
 
   switch (args.shift()) {
     case 'show':
-      msg.channel.createMessage(getBlacklist().length > 0 ? getBlacklist().join(', ') : 'The blacklist has no entries.')
+      msg.channel.createMessage(getBlacklist().length > 0 ? `\`${getBlacklist().join('`, `')}\`` : 'The blacklist has no entries.')
       break
 
     case 'add':
