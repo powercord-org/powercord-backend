@@ -25,8 +25,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import type { MarkdownNode, MarkdownItem } from '../../../api/src/api/docs/spoonfeed/src/markdown/types'
-import { MarkdownType } from '../../../api/src/api/docs/spoonfeed/src/markdown/types'
+import type { MarkdownNode } from '../../../api/src/api/docs/spoonfeed/src/types/markdown'
+import { MarkdownType } from '../../../api/src/api/docs/spoonfeed/src/types/markdown'
 import { flattenToText } from '../../../api/src/api/docs/spoonfeed/src/markdown/util'
 import { sluggify } from '../../../api/src/api/docs/spoonfeed/src/util'
 
@@ -81,56 +81,56 @@ type Document = { title: string, parts: string[], contents: MarkdownNode[] }
 
 function renderMarkdownNode (node: MarkdownNode) {
   switch (node.type) {
-    case MarkdownType.Heading:
+    case MarkdownType.HEADING:
       return h(`h${node.level}`, { id: sluggify(flattenToText(node) ?? '') }, renderMarkdown(node.content))
-    case MarkdownType.Paragraph:
+    case MarkdownType.PARAGRAPH:
       return h('p', null, renderMarkdown(node.content))
-    case MarkdownType.Quote:
+    case MarkdownType.QUOTE:
       return h('blockquote', null, renderMarkdown(node.content))
-    case MarkdownType.Note:
+    case MarkdownType.NOTE:
       return h('div', { className: `${style.note} ${style[node.kind]}`}, renderMarkdown(node.content))
-    case MarkdownType.CodeBlock:
-      return h(Prism, { language: node.language, code: node.content })
-    case MarkdownType.List:
+    case MarkdownType.CODE_BLOCK:
+      return h(Prism, { language: node.language, code: node.code })
+    case MarkdownType.LIST:
       return h(node.ordered ? 'ol' : 'ul', null, renderMarkdown(node.content))
-    case MarkdownType.ListItem:
+    case MarkdownType.LIST_ITEM:
       return h('li', null, renderMarkdown(node.content))
-    case MarkdownType.Http:
+    case MarkdownType.HTTP:
       return <mark>Http</mark> // todo
-    case MarkdownType.Table:
+    case MarkdownType.TABLE:
       return h('table', null,
         h('thead', null, h('tr', null, node.thead.map((node) => h('th', null, renderMarkdown(node))))),
         // todo: centered stuff
         h('tbody', null, node.tbody.map((nodes) => h('tr', null, nodes.map((node) => h('td', null, renderMarkdown(node))))))
       )
-    case MarkdownType.Ruler:
+    case MarkdownType.RULER:
       return h('hr')
-    case MarkdownType.Text:
+    case MarkdownType.TEXT:
       return renderMarkdown(node.content)
-    case MarkdownType.Bold:
+    case MarkdownType.BOLD:
       return h('b', null, renderMarkdown(node.content))
-    case MarkdownType.Italic:
+    case MarkdownType.ITALIC:
       return h('i', null, renderMarkdown(node.content))
-    case MarkdownType.Underline:
+    case MarkdownType.UNDERLINE:
       return h('u', null, renderMarkdown(node.content))
-    case MarkdownType.StrikeThrough:
+    case MarkdownType.STRIKE_THROUGH:
       return h('s', null, renderMarkdown(node.content))
-    case MarkdownType.Code:
+    case MarkdownType.CODE:
       return h('code', { className: style.inline }, renderMarkdown(node.content))
-    case MarkdownType.Link:
+    case MarkdownType.LINK:
       if (node.href.startsWith('https://powercord.dev')) {
         return h(Link, { to: node.href.slice(21) }, renderMarkdown(node.label))
       }
       return h('a', { href: node.href, target: '_blank', rel: 'noreferrer' }, renderMarkdown(node.label))
-    case MarkdownType.Email:
-      return h('a', { href: `mailto:${node.content}`, target: 'blank' }, node.content)
-    case MarkdownType.Anchor:
-      return h('a', { href: node.anchor }, renderMarkdown(node.label))
-    case MarkdownType.Document:
+    case MarkdownType.EMAIL:
+      return h('a', { href: `mailto:${node.email}`, target: 'blank' }, node.email)
+    case MarkdownType.ANCHOR:
+      return h('a', { href: node.href }, renderMarkdown(node.label))
+    case MarkdownType.DOCUMENT:
       return h(Link, { to: `${Routes.DOCS_ITEM(node.category!, node.document)}${node.anchor ?? ''}` }, renderMarkdown(node.label))
-    case MarkdownType.Image:
+    case MarkdownType.IMAGE:
       return h('img', { src: node.src, alt: node.alt })
-    case MarkdownType.Video:
+    case MarkdownType.VIDEO:
       if (node.kind === 'youtube') return h('iframe', {
         src: `https://www.youtube.com/embed/${node.src}`,
         allow: 'clipboard-write; encrypted-media; picture-in-picture',
@@ -138,17 +138,17 @@ function renderMarkdownNode (node: MarkdownNode) {
         frameBorder: 0,
       })
       return h('video', { src: node.src })
-    case MarkdownType.LineBreak:
+    case MarkdownType.LINE_BREAK:
       return h('br')
-    case MarkdownType.HttpMethod:
+    case MarkdownType.HTTP_METHOD:
       return <mark>HttpMethod</mark> // todo
-    case MarkdownType.HttpParam:
+    case MarkdownType.HTTP_PARAM:
       return <mark>HttpParam</mark> // todo
   }
   return null
 }
 
-function renderMarkdown (item: MarkdownItem): ReactNode | ReactNode[] {
+function renderMarkdown (item: MarkdownNode | MarkdownNode[] | string): ReactNode | ReactNode[] {
   if (typeof item === 'string') return item.replace(/\\([*-_~])/, '$1')
   if (Array.isArray(item)) return item.map(renderMarkdownNode)
   return renderMarkdownNode(item)

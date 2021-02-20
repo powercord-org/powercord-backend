@@ -22,13 +22,17 @@ import { inject, uninject } from '@powercord/injector'
 ## Injecting
 ###### `inject` signature
 ```js
-inject(id, mdl, method, fn [, before])
+type ClassicInjectionFunction = (args: any[], res: any) => any
+type PreInjectionFunction = (args: any[]) => { args: any[] } | { res: any }
+
+function inject(id: string, mdl: any, method: string, fn: ClassicInjectionFunction, before?: false): void
+function inject(id: string, mdl: any, method: string, fn: PreInjectionFunction, before: true): void
 ```
 | Parameter | Type | Description |
 |---|---|---|
 | id | string | The injection ID. Must be unique within your plugin, can be used to [uninject](#uninject) and will show up in logs. |
 | mdl | object | The module containing the function you want to inject into. |
-| method | string | The name of the function you want to inject into. Must be a member of the module you passed, otherwise a TypeError will be raised. |
+| method | string | The name of the function you want to inject into. Must be a member of the module you passed, otherwise an error will be thrown. |
 | fn | function | The function you want to inject. See [injected function behavior](#injected-function-behavior) for more details. |
 | before | boolean | Optional, default `false`. Whether the injection should run before Discord's original code or not. |
 
@@ -37,11 +41,28 @@ inject(id, mdl, method, fn [, before])
 > manually uninject. It's still possible to do it at runtime, if you need to.
 
 ### Injected function behavior
-<!-- todo: write stuff -->
+Depending if you set your injection to run before Discord's original method or not will affect how the injected function
+should behave.
 
-#### Injecting before Discord
-<!-- todo: write stuff -->
-<!-- change args, abort execution & return -->
+#### Classic injection
+For a classic injection (which runs after Discord's own stuff), the injected function will receive two arguments:
+ - The arguments passed to the function (as an array)
+ - The result of the function call
+
+The function then should return either the unaltered `res`, or the modified result. Not returning the object will
+cause the final result to be `undefined`, so be careful to actually return something!
+
+#### Pre-injections
+This type of injections behave a bit differently. Unlike the classic injection, here only the args array is received
+(there's no result to process yet, duh!), and the function is expected to return a specific structure.
+
+You should either return:
+  - `{ args: ... }` to continue the execution (with altered or unaltered args), or
+  - `{ res: ... }` to immediately abort the execution chain and return the result.
+
+**Note**: Classic injections aren't considered as part of the execution chain but the post-process chain. They will run
+even if you forced a result to be returned. You can change that behavior by adding `skipPostProcess: true` in your
+response object.
 
 ### Injecting & Async
 ES6' `async/await` makes working with asynchronous tasks a breeze, and they are super easy to use. However, just like
@@ -66,5 +87,5 @@ using an invalid ID will simply have no effect and will not raise an error.
 
 ###### `uninject` signature
 ```js
-uninject(id)
+function uninject(id: string): void
 ```

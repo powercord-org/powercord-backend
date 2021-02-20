@@ -21,16 +21,16 @@
  */
 
 // cynthia's note: this won't work ootb since it required editing the 4 files and append `.js` to imports.
-import type { MarkdownNode } from './spoonfeed/src/markdown/types.js'
-import { MarkdownType } from './spoonfeed/src/markdown/types.js'
-import { parseMarkup } from './spoonfeed/src/markdown/parser.js'
+import type { MarkdownNode } from './spoonfeed/src/types/markdown.js'
+import { MarkdownType } from './spoonfeed/src/types/markdown.js'
+import parseMarkup from './spoonfeed/src/markdown/parser.js'
 import { flattenToText } from './spoonfeed/src/markdown/util.js'
 
 export type Document = { title: string | null, parts: string[], contents: MarkdownNode[] }
 
 export default function (markdown: string): Document {
   const parsed = parseMarkup(markdown)
-  const title = flattenToText(parsed.find((node) => node.type === MarkdownType.Heading && node.level === 1)!)
-  const parts = parsed.filter((node) => node.type === MarkdownType.Heading && node.level === 2).map(flattenToText).filter(Boolean) as string[]
-  return { title, parts, contents: parsed.filter((node) => node.type !== MarkdownType.Comment && (node.type !== MarkdownType.Heading || node.level !== 1)) }
+  const title = flattenToText(parsed.find((node) => node.type === MarkdownType.HEADING && node.level === 1)!)
+  const parts = parsed.filter((node) => node.type === MarkdownType.HEADING && node.level === 2).map(flattenToText).filter(Boolean) as string[]
+  return { title, parts, contents: parsed.filter((node) => node.type !== MarkdownType.COMMENT && (node.type !== MarkdownType.HEADING || node.level !== 1)) }
 }
