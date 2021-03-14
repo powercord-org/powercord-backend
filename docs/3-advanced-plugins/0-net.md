@@ -17,6 +17,9 @@ Since those restrictions are annoying, Powercord exposes to plugins a modified [
 function to perform HTTP request. You don't need to import anything to use it (it replaces the classic `fetch`) method,
 however it has some slight implementation differences that are documented below.
 
+>note
+> In DevTools, you can use the modified `fetch` method by calling `$pc.native.net.fetch`.
+
 ### Differences
 Our `fetch` implementation differs in some ways, because unnecessary in the context of application-level http request
 compared to te more classic browser security concerns.
