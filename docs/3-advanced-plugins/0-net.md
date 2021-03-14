@@ -24,14 +24,14 @@ compared to te more classic browser security concerns.
 All of the following initialization parameters are **ignored** when calling `fetch`:
  - `mode`
  - `credentials`
- - `referrer
+ - `referrer`
  - `referrerPolicy`
  - `integrity`
  - `keepalive`
  - `cache`
  - `signal` *Support may be added in the future*
 
-The [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object follows the spec, expect:
+The returned [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object follows the spec, expect:
  - the `type` property is unset
  - the only methods available are `json()`, `text()` and `buffer()`, and they **do not return a `Promise`**.
  - the `buffer()` methods returns a [`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
