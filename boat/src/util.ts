@@ -87,7 +87,7 @@ export function parseDuration (duration: string): number | null {
   return Number(match[1]) * DURATION_MAP[match[2] as keyof typeof DURATION_MAP]
 }
 
-export function isStaff(member: Member | string, guild?: Guild) {
+export function isStaff(member: Member | string, guild?: Guild): boolean {
   if (typeof(member) !== 'string') {
     return member.permissions.has('manageMessages')
   }
