@@ -23,9 +23,10 @@
 import { CommandClient, GuildTextableChannel, Message } from 'eris'
 import { getBlacklist } from '../blacklistCache.js'
 import config from '../config.js'
+import { isStaff } from '../util.js';
 
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
-  if (msg.author.bot) return
+  if (!msg.member || msg.author.bot || isStaff(msg.member)) return
 
   const blacklist = getBlacklist();
   if (blacklist.some(word => msg.content.toLowerCase().includes(word))) {

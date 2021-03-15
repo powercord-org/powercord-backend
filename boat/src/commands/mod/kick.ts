@@ -23,12 +23,13 @@
 import type { GuildTextableChannel, Message } from 'eris'
 import { kick } from '../../mod.js'
 import config from '../../config.js'
+import { isStaff } from '../../util.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}kick <mention || id> [reason]`
 
 export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
   if (!msg.member) return // ???
-  if (!msg.member.permissions.has('kickMembers')) {
+  if (!isStaff(msg.member)) {
     msg.channel.createMessage('no')
     return
   }
@@ -42,6 +43,11 @@ export function executor (msg: Message<GuildTextableChannel>, args: string[]): v
 
   if (target === msg.author.id) {
     msg.channel.createMessage('Don\'t do that to yourself, you\'ll break your leg')
+    return
+  }
+
+  if(isStaff(target, msg.channel.guild)) {
+    msg.channel.createMessage('Sorry, they\'re wearing shin guards')
     return
   }
 

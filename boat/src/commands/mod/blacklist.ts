@@ -23,12 +23,13 @@
 import { GuildTextableChannel, Message } from 'eris'
 import { getBlacklist, loadBlacklist } from '../../blacklistCache.js'
 import config from '../../config.js'
+import { isStaff } from '../../util.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}blacklist <show | add | remove> (word)`
 
 export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (!msg.member) return // ???
-  if (!msg.member.permissions.has('manageMessages')) {
+  if (!isStaff(msg.member)) {
     msg.channel.createMessage('no')
     return
   }

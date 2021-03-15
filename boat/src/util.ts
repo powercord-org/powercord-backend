@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { GuildTextableChannel, Message } from 'eris'
+import type { Guild, GuildTextableChannel, Member, Message } from 'eris'
 import { readdir, stat } from 'fs/promises'
 import { URL } from 'url'
 
@@ -85,4 +85,14 @@ export function parseDuration (duration: string): number | null {
   if (!match) return null
 
   return Number(match[1]) * DURATION_MAP[match[2] as keyof typeof DURATION_MAP]
+}
+
+export function isStaff(member: Member | string, guild?: Guild): boolean {
+  if (typeof(member) !== 'string') {
+    return member.permissions.has('manageMessages')
+  }
+
+  if (!guild) throw new Error('Guild required when using user id.')
+
+  return guild.members.get(member)?.permissions.has('manageMessages') ?? false
 }
