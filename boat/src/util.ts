@@ -94,5 +94,5 @@ export function isStaff(member: Member | string, guild?: Guild): boolean {
 
   if (!guild) throw new Error('Guild required when using user id.')
 
-  return guild.members.get(member)?.permissions.has('manageMessages')
+  return guild.members.get(member)?.permissions.has('manageMessages') ?? false
 }
