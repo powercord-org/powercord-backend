@@ -22,12 +22,13 @@
 
 import type { GuildTextableChannel, Message } from 'eris'
 import config from '../../config.js'
+import { isStaff } from '../../util.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}edit <caseId> <newReason>`
 
 export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (!msg.member) return // ???
-  if (!msg.member.permissions.has('manageMessages')) {
+  if (!isStaff(msg.member)) {
     msg.channel.createMessage('no')
     return
   }

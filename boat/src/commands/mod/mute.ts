@@ -22,14 +22,14 @@
 
 import type { GuildTextableChannel, Message } from 'eris'
 import { mute } from '../../mod.js'
-import { parseDuration } from '../../util.js'
+import { isStaff, parseDuration } from '../../util.js'
 import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}mute <mention || id> [reason]|[duration]`
 
 export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
-  if (!msg.member) return // ???
-  if (!msg.member.permissions.has('manageMessages')) {
+  if (!msg.member || !msg.guildID) return // ???
+  if (!isStaff(msg.member)) {
     msg.channel.createMessage('no')
     return
   }
@@ -45,6 +45,11 @@ export function executor (msg: Message<GuildTextableChannel>, args: string[]): v
 
   if (target === msg.author.id) {
     msg.channel.createMessage('You cannot be silenced')
+    return
+  }
+
+  if (isStaff(target, msg.channel.guild)) {
+    msg.channel.createMessage('You couldn\'t make them be quite if you tried.')
     return
   }
 

@@ -21,14 +21,14 @@
  */
 
 import type { EmbedField, GuildTextableChannel, Message } from 'eris'
-import { prettyPrintTimeSpan, makePluralDumb } from '../../util.js'
+import { prettyPrintTimeSpan, makePluralDumb, isStaff } from '../../util.js'
 import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}lookup <mention || discord id>`
 
 export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (!msg.member) return // ???
-  if (!msg.member.permissions.has('manageMessages')) {
+  if (!isStaff(msg.member)) {
     msg.channel.createMessage('no')
     return
   }

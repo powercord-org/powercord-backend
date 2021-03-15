@@ -24,14 +24,14 @@ import type { GuildTextableChannel, Message } from 'eris'
 import type { CivilLaw } from '../../laws.js'
 import { mute, ban } from '../../mod.js'
 import { getCivilLaws } from '../../laws.js'
-import { parseDuration, prettyPrintTimeSpan } from '../../util.js'
+import { isStaff, parseDuration, prettyPrintTimeSpan } from '../../util.js'
 import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}enforce <mention> <ruleId>`
 
 export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (!msg.member) return // ???
-  if (!msg.member.permissions.has('manageMessages')) {
+  if (!isStaff(msg.member)) {
     msg.channel.createMessage('no')
     return
   }
@@ -57,6 +57,11 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
 
   if (target === msg.author.id) {
     msg.channel.createMessage('I thought you don\'t break rules')
+    return
+  }
+
+  if (isStaff(target, msg.channel.guild)) {
+    msg.channel.createMessage('https://tenor.com/qCDY.gif')
     return
   }
 
