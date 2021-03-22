@@ -105,12 +105,13 @@ The format is an object, with as key the permission requested and as value addit
 just `true`.
 
 ###### Permission types
-| Permission ID | Permission description        | Additional data           |
-|---------------|-------------------------------|---------------------------|
-| http          | Perform HTTP requests         | Array of allowed origins* |
-| net           | Connect to remote servers     | Array of allowed origins* |
-| eud           | Collect and use End User Data | None                      |
-| gkeybinds     | Register system-wide keybinds | None                      |
+| Permission ID | Permission description                              | Additional data           |
+|---------------|-----------------------------------------------------|---------------------------|
+| http          | Perform HTTP requests                               | Array of allowed origins* |
+| net           | Connect to remote servers                           | Array of allowed origins* |
+| eud           | Collect and use End User Data                       | None                      |
+| gkeybinds     | Register system-wide keybinds                       | None                      |
+| wasm          | Use [WebAssembly](##advanced-plugins/wasm) binaries | None                      |
 
 \*Refer to the [Network Library](##advanced-plugins/net#manifest-permissions) documentation for more detail.
 
