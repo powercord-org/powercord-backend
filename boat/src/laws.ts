@@ -39,7 +39,7 @@ async function loadCivilLaws (bot: CommandClient) {
   if (!guild) return
   const civilCode = await bot.getMessages(config.discord.ids.channelRules).then((l) => l.map((m) => m.content).join('\n'))
 
-  const matches = civilCode.matchAll(/\[(\d{2})]((?:[^`\n].+\n)+?)(?: +Actions: ([^\n]+))?(?:\n|`)/g)
+  const matches = civilCode.matchAll(/(\d{2})::((?:[^`\n].+\n)+?)(?: +Actions: ([^\n]+))?(?:\n|`)/g)
   const entries: [ number, CivilLaw ][] = []
   for (const match of matches) {
     const replacer = (og: string, name: string) => guild.channels.find(c => c.name === name)?.mention ?? og
