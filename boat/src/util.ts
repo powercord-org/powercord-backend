@@ -65,7 +65,7 @@ export function prettyPrintTimeSpan (time: number) {
 
   return [
     y && `${y} ${makePluralDumb('year', y)}`,
-    d && `${d} ${makePluralDumb('day', h)}`,
+    d && `${d} ${makePluralDumb('day', d)}`,
     h && `${h} ${makePluralDumb('hour', h)}`,
     m && `${m} ${makePluralDumb('minute', m)}`,
     s && `${s} ${makePluralDumb('second', s)}`,
