@@ -24,12 +24,6 @@ import type { CommandClient, Guild, GuildAuditLogEntry, Role, User } from 'eris'
 import { Constants } from 'eris'
 import config from '../config.js'
 
-// todo: Make the whole thing more robust
-// there was quite a few cases in the past of the bot catching mutes that didn't occur,
-// assign the wrong resp moderator, and some other slight glitches in audit reporting.
-// moreover, it needs to be able to handle the coming soon temporary sactions, and the
-// case id needs to be computed in a more robust way.
-
 const TEMPLATE = `**$type | Case $case**
 __User__: $user ($userid)
 __Moderator__: $moderator ($modid)
@@ -117,34 +111,36 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
   if (!channel || !('getMessages' in channel)) return
 
   const logs = await guild.getAuditLogs(5, void 0, Constants.AuditLogActions.MEMBER_ROLE_UPDATE)
-  const entry = logs.entries.find(entry => (entry.targetID = user.id))
 
-  if (entry && entry.after && Date.now() - Number((BigInt(entry.id) >> BigInt(22)) + BigInt(1420070400000)) < 5000) {
-    let muted: boolean | null = null
-    const added = entry.after.$add as Role[] | void
-    const removed = entry.after.$remove as Role[] | void
-
-    if (added && added.find((r) => r.id === config.discord.ids.roleMuted)) {
-      muted = true
-    } else if (removed && removed.find((r) => r.id === config.discord.ids.roleMuted)) {
-      muted = false
+  for (const entry of logs.entries) {
+    if (entry.targetID !== user.id || !entry.after || Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) > 5000) {
+      continue
     }
 
-    if (muted !== null) {
-      const [ modId, modName, reason ] = extractEntryData(entry)
-      // todo: unsafe non-null assertion
-      const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1]) + 1
+    const added = entry.after.$add as Role[] | null
+    const removed = entry.after.$remove as Role[] | null
 
-      this.createMessage(config.discord.ids.channelModLogs, TEMPLATE
-        .replace('$type', muted ? 'Mute' : 'Unmute')
-        .replace('$case', String(caseId))
-        .replace('$user', `${user.username}#${user.discriminator}`)
-        .replace('$userid', user.id)
-        .replace('$moderator', modName)
-        .replace('$modid', modId)
-        .replace('$reason', reason)
-      )
+    const wasAdded = Boolean(added?.find((r) => r.id === config.discord.ids.roleMuted))
+    const wasRemoved = Boolean(removed?.find((r) => r.id === config.discord.ids.roleMuted))
+
+    if (wasAdded === wasRemoved) {
+      continue
     }
+
+    const [ modId, modName, reason ] = extractEntryData(entry)
+    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1]) + 1
+
+    this.createMessage(config.discord.ids.channelModLogs, TEMPLATE
+      .replace('$type', wasAdded ? 'Mute' : 'Unmute')
+      .replace('$case', String(caseId))
+      .replace('$user', `${user.username}#${user.discriminator}`)
+      .replace('$userid', user.id)
+      .replace('$moderator', modName)
+      .replace('$modid', modId)
+      .replace('$reason', reason)
+    )
+
+    break
   }
 }
 
