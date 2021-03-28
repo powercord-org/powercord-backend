@@ -28,6 +28,7 @@ type PreInjectionFunction = (args: any[]) => { args: any[] } | { res: any }
 function inject(id: string, mdl: any, method: string, fn: ClassicInjectionFunction, before?: false): void
 function inject(id: string, mdl: any, method: string, fn: PreInjectionFunction, before: true): void
 ```
+
 | Parameter | Type | Description |
 |---|---|---|
 | id | string | The injection ID. Must be unique within your plugin, can be used to [uninject](#uninject) and will show up in logs. |

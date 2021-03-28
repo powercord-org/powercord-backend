@@ -173,15 +173,10 @@ will have to commit the sin of ruining the entire purpose of using TypeScript by
 making all of the efforts you've made worthless.
 
 ### Can I use WebAssembly?
-Short answer: no.
+Yes, with some minor restrictions. You must enable the `wasm` permission so the end users know you are using it, and
+binaries must be loaded from disk (you cannot fetch a remote wasm blob and run it).
 
-Long answer: WebAssembly is, for the time being, not available for use in plugins. This is because WebAssembly can be
-used to bypass the protections around arbitrary code execution. WASM binaries can also be opaque to the users, and
-there are no easy way of ensuring the source code availability of the binary, nor that the binary is actually running
-the available code.
-
-Maybe in the future we'll revise this decision and enable WebAssembly back with a hardened API, but for the time being
-it's not possible.
+You can see the [WebAssembly](##advanced-plugins/wasm) section for more information.
 
 ### Can I use multiple files? And libraries on npm?
 Yes! That's one of the advantages Powercord plugins have compared to BetterDiscord's: developers can split their code
@@ -193,13 +188,16 @@ but if you import libraries, this will quickly add up and slow down the plugin s
 
 ### Wait, but how can I use CSS in my plugin?
 It's super simple: you simply import it. No questions added. You can import plain css, scss, less or stylus files and
-Powercord will take care of them for you. Note that we recommend using plain css for small needs, for performance
-reasons.
+Powercord will take care of them for you.
 
 ###### Importing a stylesheet
 ```js
 import 'style.css' // As easy as that!
 ```
+
+Since importing CSS files is done directly in JS, we recommend splitting your CSS files when applicable (e.g. each
+component get its own CSS file). We also recommend using plain CSS for small needs, as passing styles through a
+preprocessor can slow down plugin startup a bit.
 
 #### And how to un-import?
 You can't. If you need to remove a stylesheet at runtime, you mostly did something wrong or are attempting to do

@@ -18,11 +18,12 @@ function to perform HTTP request. You don't need to import anything to use it (i
 however it has some slight implementation differences that are documented below.
 
 >note
-> In DevTools, you can use the modified `fetch` method by calling `$pc.native.net.fetch`.
+> In DevTools, you can use the modified `fetch` method by calling `$pc.native.net.fetch`. The classic `fetch` remains
+> untouched.
 
 ### Differences
 Our `fetch` implementation differs in some ways, because unnecessary in the context of application-level http request
-compared to te more classic browser security concerns.
+compared to the more classic browser security concerns.
 
 All of the following initialization parameters are **ignored** when calling `fetch`:
  - `mode`
@@ -36,8 +37,8 @@ All of the following initialization parameters are **ignored** when calling `fet
 
 The returned [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object follows the spec, expect:
  - the `type` property is unset
- - the only methods available are `json()`, `text()` and `buffer()`, and they **do not return a `Promise`**.
- - the `buffer()` methods returns a [`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
+ - the only methods available are `json()`, `text()` and `buffer()`, and they **do not return a `Promise`**
+ - the `buffer()` method returns a [`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
 
 ## TCP Sockets
 <!-- todo: draft something; I kinda want an api similar to WebSocket -->

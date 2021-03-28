@@ -6,6 +6,9 @@
 
 # Settings
 
+>info
+> Settings storage is limited to 10MB per plugin.
+
 ## Basic usage
 
 ## Advanced usage
