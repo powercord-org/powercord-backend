@@ -24,6 +24,7 @@ services:
       context: .
     command: npm run bot:dev -- --noClear
     working_dir: /usr/src/porkord
+    tmpfs: /usr/src/porkord/dist
     volumes: 
       - .:/usr/src/porkord
     profiles:
@@ -33,6 +34,7 @@ services:
       context: .
     command: npm run api:dev -- --noClear
     working_dir: /usr/src/porkord
+    tmpfs: /usr/src/porkord/dist
     volumes: 
       - .:/usr/src/porkord
     profiles:
@@ -42,6 +44,7 @@ services:
       context: .
     command: npm run web:dev
     working_dir: /usr/src/porkord
+    tmpfs: /usr/src/porkord/dist
     volumes: 
       - .:/usr/src/porkord
     profiles:
@@ -49,4 +52,6 @@ services:
 
 volumes:
   db-data:
+    driver: local
+  dist:
     driver: local
