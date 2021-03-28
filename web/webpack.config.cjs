@@ -32,7 +32,6 @@ const { WebpackManifestPlugin: Manifest } = require('webpack-manifest-plugin')
 const { DefinePlugin, HotModuleReplacementPlugin, optimize: { LimitChunkCountPlugin } } = require('webpack')
 
 // Env vars
-const COMMIT_HASH = require('child_process').execSync('git rev-parse HEAD').toString().trim()
 const IS_DEV = process.env.NODE_ENV === 'development'
 const SRC = join(__dirname, 'src')
 const OUT = join(__dirname, '..', 'dist', 'web')
@@ -176,8 +175,7 @@ const baseConfig = {
           const file = join(__dirname, '..', 'dist', 'api', 'integrity.webpack.json')
           writeFileSync(file, JSON.stringify(integrity, null, 2), 'utf8')
         })
-    },
-    new DefinePlugin({ GIT_REVISION: JSON.stringify(COMMIT_HASH) })
+    }
   ].filter(Boolean),
   optimization: {
     minimize: !IS_DEV,

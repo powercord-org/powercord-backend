@@ -17,16 +17,20 @@ services:
     profiles:
       - website
       - bot
-  
+
   # Our shitcode
   bot:
     build:
       context: .
     command: npm run bot:dev -- --noClear
     working_dir: /usr/src/porkord
-    tmpfs: /usr/src/porkord/dist
-    volumes: 
-      - .:/usr/src/porkord
+    volumes:
+      - ./config.json:/usr/src/porkord/config.json
+      - ./package.json:/usr/src/porkord/package.json
+      - ./pnpm-lock.yaml:/usr/src/porkord/pnpm-lock.yaml
+      - ./node_modules:/usr/src/porkord/node_modules
+      - ./boat:/usr/src/porkord/boat
+      - dist:/usr/src/dist
     profiles:
       - bot
   api:
@@ -34,9 +38,14 @@ services:
       context: .
     command: npm run api:dev -- --noClear
     working_dir: /usr/src/porkord
-    tmpfs: /usr/src/porkord/dist
-    volumes: 
-      - .:/usr/src/porkord
+    volumes:
+      - ./config.json:/usr/src/porkord/config.json
+      - ./package.json:/usr/src/porkord/package.json
+      - ./pnpm-lock.yaml:/usr/src/porkord/pnpm-lock.yaml
+      - ./node_modules:/usr/src/porkord/node_modules
+      - ./docs:/usr/src/porkord/docs
+      - ./api:/usr/src/porkord/api
+      - dist:/usr/src/dist
     profiles:
       - website
   webpack:
@@ -44,12 +53,18 @@ services:
       context: .
     command: npm run web:dev
     working_dir: /usr/src/porkord
-    tmpfs: /usr/src/porkord/dist
-    volumes: 
-      - .:/usr/src/porkord
+    volumes:
+      - ./config.json:/usr/src/porkord/config.json
+      - ./package.json:/usr/src/porkord/package.json
+      - ./pnpm-lock.yaml:/usr/src/porkord/pnpm-lock.yaml
+      - ./node_modules:/usr/src/porkord/node_modules
+      - ./web:/usr/src/porkord/web
+      - dist:/usr/src/dist
     profiles:
       - website
 
 volumes:
   db-data:
+    driver: local
+  dist:
     driver: local
