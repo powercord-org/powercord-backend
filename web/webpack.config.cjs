@@ -194,12 +194,14 @@ const baseConfig = {
     }
   },
   devServer: {
-    port: 8080,
+    host: '0.0.0.0',
+    port: 80,
+    sockPort: 8080,
     hot: true,
     quiet: true,
     publicPath: '/dist/',
     historyApiFallback: true,
-    proxy: { '/': `http://localhost:${require('../config.json').port}` }
+    disableHostCheck: true
   }
 }
 

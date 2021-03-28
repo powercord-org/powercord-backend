@@ -1,0 +1,52 @@
+services:
+  # Services
+  web:
+    image: nginx:alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    profiles:
+      - website
+  mongo:
+    image: mongo:4-bionic
+    ports:
+      - 9042:9042
+    volumes:
+      - db-data:/var/lib/mongodb
+    profiles:
+      - website
+      - bot
+  
+  # Our shitcode
+  bot:
+    build:
+      context: .
+    command: npm run bot:dev -- --noClear
+    working_dir: /usr/src/porkord
+    volumes: 
+      - .:/usr/src/porkord
+    profiles:
+      - bot
+  api:
+    build:
+      context: .
+    command: npm run api:dev -- --noClear
+    working_dir: /usr/src/porkord
+    volumes: 
+      - .:/usr/src/porkord
+    profiles:
+      - website
+  webpack:
+    build:
+      context: .
+    command: npm run web:dev
+    working_dir: /usr/src/porkord
+    volumes: 
+      - .:/usr/src/porkord
+    profiles:
+      - website
+
+volumes:
+  db-data:
+    driver: local

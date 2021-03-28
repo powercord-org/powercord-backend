@@ -52,7 +52,7 @@ fastify.register(webModule)
 
 fastify.ready()
   .then(
-    () => fastify.listen(config.port),
+    () => fastify.listen(config.port, config.bind),
     (e) => {
       fastify.log.error(e)
       process.exit(1)
