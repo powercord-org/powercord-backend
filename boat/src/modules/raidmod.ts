@@ -21,32 +21,71 @@
  */
 
 import { createHash } from 'crypto'
-import { CommandClient, GuildTextableChannel, Message } from 'eris'
+import { Collection, CommandClient, GuildTextableChannel, Message } from 'eris'
 import config from '../config.js';
 import { ban, kick } from '../mod.js';
 
+class RaidMessage {
+  userId: string
+  channelId: string
+  id: string
+
+  constructor(msg: Message) {
+    this.id = msg.id
+    this.userId = msg.author.id
+    this.channelId = msg.channel.id
+  }
+}
+
 // Any new members who send more than THRESHOLD messages with the same content, will be kicked
 const THRESHOLD = 2
-const buffer = new Map<string, number>()
+const raiderBuffer = new Map<string, number>()
+const messageBuffer = new Collection(RaidMessage)
 
 async function process(this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (msg.guildID !== config.discord.ids.serverId || !msg.member || msg.member.joinedAt < Date.now() - 60e3) return;
+
+  addRaidMessage(msg)
+
   if (isRaider(msg.author.id, msg.content)) {
     if (await this.mongo.collection('raiders').countDocuments({ userId: msg.author.id }) > 0) {
+      deleteRaiderMessages(this, msg.author.id)
       ban(msg.channel.guild, msg.author.id, this.user, 'Repeat raider')
     } else {
+      deleteRaiderMessages(this, msg.author.id)
       kick(msg.channel.guild, msg.author.id, this.user, 'Detected raid spam')
       this.mongo.collection('raiders').insertOne({ userId: msg.author.id })
     }
   }
 }
 
+function addRaidMessage(msg: Message) {
+  messageBuffer.add(new RaidMessage(msg))
+  setTimeout(() => messageBuffer.remove({ id: msg.id }), 60e3);
+}
+
+function deleteRaiderMessages(bot: CommandClient, userId: string) {
+  const userMsgs = messageBuffer.filter(rm => rm.userId === userId)
+  const channels = new Map<string, Array<string>>()
+
+  userMsgs.forEach(rm => {
+    if (channels.has(rm.channelId)) {
+      channels.get(rm.channelId)?.push(rm.id)
+    } else {
+      channels.set(rm.channelId, [rm.id])
+    }
+  })
+
+  channels.forEach((messages, channel) => bot.deleteMessages(channel, messages, 'Detected raid spam'))
+
+}
+
 function isRaider(user: string, message: string): boolean {
   const raiderHash = createHash('sha256').update(`${user}${message}`).digest('base64').toString()
-  let count = buffer.get(raiderHash)
+  let count = raiderBuffer.get(raiderHash)
 
   if (count === undefined) {
-    buffer.set(raiderHash, 1)
+    raiderBuffer.set(raiderHash, 1)
     setTimeout(() => removeRaider(raiderHash), 10e3);
     return false;
   }
@@ -54,22 +93,22 @@ function isRaider(user: string, message: string): boolean {
   if (count >= THRESHOLD) return true;
 
   count++
-  buffer.set(raiderHash, count)
+  raiderBuffer.set(raiderHash, count)
   setTimeout(() => removeRaider(raiderHash), 10e3);
   return false;
 }
 
 function removeRaider(hash: string) {
-  let count = buffer.get(hash)
+  let count = raiderBuffer.get(hash)
 
   if (count === undefined) return;
 
   count--
 
   if (count === 0) {
-    buffer.delete(hash)
+    raiderBuffer.delete(hash)
   } else {
-    buffer.set(hash, count)
+    raiderBuffer.set(hash, count)
   }
 }
 
