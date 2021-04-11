@@ -44,8 +44,8 @@ export function kick (guild: Guild, userId: string, mod: User, reason?: string) 
   guild.kickMember(userId, formatReason(mod, reason))
 }
 
-export function ban (guild: Guild, userId: string, mod: User, reason?: string, duration?: number) {
-  guild.banMember(userId, 0, formatReason(mod, reason, duration))
+export function ban (guild: Guild, userId: string, mod: User, reason?: string, duration?: number, deleteDays : number = 0) {
+  guild.banMember(userId, deleteDays, formatReason(mod, reason, duration))
   if (duration) schedule('unban', guild, userId, mod, duration)
 }
 
