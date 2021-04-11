@@ -46,7 +46,7 @@ const DAY_MS = 24 * 36e5
 async function process(this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (msg.guildID !== config.discord.ids.serverId || !msg.member
       || msg.member.joinedAt < Date.now() - DAY_MS
-      || msg.member.createdAt < Date.now() - 5 * DAY_MS) return
+      || msg.member.createdAt > Date.now() - 5 * DAY_MS) return
 
   addRaidMessage(msg)
 
