@@ -25,8 +25,8 @@ import { schedule } from './modules/modtasks.js'
 import { prettyPrintTimeSpan } from './util.js'
 import config from './config.js'
 
-function formatReason (mod: User, reason?: string, duration?: number) {
-  let formatted = `[${mod.username}#${mod.discriminator}] ${reason ?? 'No reason specified.'}`
+function formatReason (mod: User, reason?: string, duration?: number, soft: boolean = false) {
+  let formatted = `[${mod.username}#${mod.discriminator}] ${soft ? '[soft] ' : ''}${reason ?? 'No reason specified.'}`
   if (duration) formatted += ` (duration: ${prettyPrintTimeSpan(duration)})`
   return formatted
 }
@@ -44,11 +44,19 @@ export function kick (guild: Guild, userId: string, mod: User, reason?: string) 
   guild.kickMember(userId, formatReason(mod, reason))
 }
 
-export function ban (guild: Guild, userId: string, mod: User, reason?: string, duration?: number, deleteDays : number = 0) {
+export function ban (guild: Guild, userId: string, mod: User, reason?: string, duration?: number, deleteDays: number = 0) {
   guild.banMember(userId, deleteDays, formatReason(mod, reason, duration))
   if (duration) schedule('unban', guild, userId, mod, duration)
 }
 
 export function unban (guild: Guild, userId: string, mod: User, reason?: string) {
   guild.unbanMember(userId, formatReason(mod, reason))
+}
+
+/**
+ * Ban then unban a user. This is effectively a kick which deletes a users messages.
+ */
+export function softBan (guild: Guild, userId: string, mod: User, reason?: string, deleteDays: number = 0) {
+  guild.banMember(userId, deleteDays, formatReason(mod, reason, 0, true))
+    .then(() => guild.unbanMember(userId, formatReason(mod, reason, 0, true)))
 }
