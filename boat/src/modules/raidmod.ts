@@ -22,8 +22,8 @@
 
 import { createHash } from 'crypto'
 import { Collection, CommandClient, GuildTextableChannel, Message } from 'eris'
-import config from '../config.js';
-import { ban, kick } from '../mod.js';
+import config from '../config.js'
+import { ban, kick } from '../mod.js'
 
 class RaidMessage {
   userId: string
@@ -41,9 +41,12 @@ class RaidMessage {
 const THRESHOLD = 2
 const raiderBuffer = new Map<string, number>()
 const messageBuffer = new Collection(RaidMessage)
+const DAY_MS = 24 * 36e5
 
 async function process(this: CommandClient, msg: Message<GuildTextableChannel>) {
-  if (msg.guildID !== config.discord.ids.serverId || !msg.member || msg.member.joinedAt < Date.now() - 60e3) return;
+  if (msg.guildID !== config.discord.ids.serverId || !msg.member
+      || msg.member.joinedAt < Date.now() - DAY_MS
+      || msg.member.createdAt < Date.now() - 5 * DAY_MS) return
 
   addRaidMessage(msg)
 
@@ -61,7 +64,7 @@ async function process(this: CommandClient, msg: Message<GuildTextableChannel>) 
 
 function addRaidMessage(msg: Message) {
   messageBuffer.add(new RaidMessage(msg))
-  setTimeout(() => messageBuffer.remove({ id: msg.id }), 60e3);
+  setTimeout(() => messageBuffer.remove({ id: msg.id }), 60e3)
 }
 
 function deleteRaiderMessages(bot: CommandClient, userId: string) {
@@ -86,22 +89,22 @@ function isRaider(user: string, message: string): boolean {
 
   if (count === undefined) {
     raiderBuffer.set(raiderHash, 1)
-    setTimeout(() => removeRaider(raiderHash), 10e3);
-    return false;
+    setTimeout(() => removeRaider(raiderHash), 10e3)
+    return false
   }
 
-  if (count >= THRESHOLD) return true;
+  if (count >= THRESHOLD) return true
 
   count++
   raiderBuffer.set(raiderHash, count)
-  setTimeout(() => removeRaider(raiderHash), 10e3);
-  return false;
+  setTimeout(() => removeRaider(raiderHash), 10e3)
+  return false
 }
 
 function removeRaider(hash: string) {
   let count = raiderBuffer.get(hash)
 
-  if (count === undefined) return;
+  if (count === undefined) return
 
   count--
 
