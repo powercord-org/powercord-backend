@@ -84,13 +84,7 @@ function deleteRaiderMessages(bot: CommandClient, userId: string) {
 
 function isRaider(user: string, message: string): boolean {
   const raiderHash = createHash('sha256').update(`${user}${message}`).digest('base64').toString()
-  let count = raiderBuffer.get(raiderHash)
-
-  if (count === undefined) {
-    raiderBuffer.set(raiderHash, 1)
-    setTimeout(() => removeRaider(raiderHash), 10e3)
-    return false
-  }
+  let count = raiderBuffer.get(raiderHash) ?? 0
 
   if (count >= THRESHOLD) return true
 
