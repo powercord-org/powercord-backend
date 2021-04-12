@@ -3,7 +3,7 @@ import { softBan } from '../../mod.js'
 import { isStaff } from '../../util.js'
 import config from '../../config.js'
 
-const USAGE_STR = `Usage: ${config.discord.prefix}ban <mention || id> [reason]`
+const USAGE_STR = `Usage: ${config.discord.prefix}softban <mention || id> [reason]`
 
 export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
   if (!msg.member) return // ???
