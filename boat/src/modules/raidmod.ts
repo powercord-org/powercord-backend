@@ -70,16 +70,13 @@ function isRaider(user: string, message: string): boolean {
 }
 
 function removeRaider(hash: string) {
-  let count = raiderBuffer.get(hash)
+  const count = raiderBuffer.get(hash)
+  if (!count) return
 
-  if (count === undefined) return
-
-  count--
-
-  if (count === 0) {
+  if (count === 1) {
     raiderBuffer.delete(hash)
   } else {
-    raiderBuffer.set(hash, count)
+    raiderBuffer.set(hash, count - 1)
   }
 }
 

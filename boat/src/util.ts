@@ -109,7 +109,7 @@ export function stringifyDiscordMessage (message: Message<GuildTextableChannel>)
 /**
  * Convert a human readable duration to its numerical representation.
  * @param duration - the human readable duration string
- * @returns the numerical representation of `duration`
+ * @returns the numerical representation of `duration` in ms
  */
 export function parseDuration (duration: string): number | null {
   const match = duration.match(/^(\d+)([mhd])$/)

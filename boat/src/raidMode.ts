@@ -45,7 +45,7 @@ export function getRaidStatus(): boolean {
 /**
  * Raise a guilds verification level for a set amount of time.
  * @param guild - the guild that will have its verification level raised
- * @param mod - the moderator responsible for rasing the verification level
+ * @param mod - the moderator responsible for raising the verification level
  * @param duration - the amount of time in ms the verification level will be raised for
  */
 export async function enterRaidMode (guild: Guild, mod: User, duration: number) {
@@ -66,7 +66,7 @@ export async function enterRaidMode (guild: Guild, mod: User, duration: number) 
 /**
  * Return a guild to the normal verification level.
  * @param guild - the guild to have its verification level lowered
- * @param mod - the moderator responsible fro lowering the verification level
+ * @param mod - the moderator responsible for lowering the verification level
  */
 export async function exitRaidMode (guild: Guild, mod: User) {
   if (!raidMode) return

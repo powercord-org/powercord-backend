@@ -57,7 +57,7 @@ function processTasks (bot: CommandClient) {
  * Schedule a task
  * @param task - the task type
  * @param guild - the guild the task will be operating in
- * @param userId - the user the task will be operation on
+ * @param userId - the user the task will be operated on
  * @param mod - the moderator scheduling the task
  * @param time - how long in ms until the task runs
  */

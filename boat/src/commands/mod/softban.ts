@@ -53,6 +53,6 @@ export function executor (msg: Message<GuildTextableChannel>, args: string[]): v
   }
 
   softBan(msg.channel.guild, target, msg.author, reason, 1)
-  msg.channel.createMessage('yeeted')
+  msg.channel.createMessage('yeeted & censored')
   return
 }
