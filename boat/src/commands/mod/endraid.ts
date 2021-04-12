@@ -32,7 +32,8 @@ export function executor (msg: Message<GuildTextableChannel>): void {
   }
 
   if (!getRaidStatus()) {
-    return msg.channel.createMessage('Raid mode is not currently active.')
+    msg.channel.createMessage('Raid mode is not currently active.')
+    return
   }
 
   exitRaidMode(msg.channel.guild, msg.author)
