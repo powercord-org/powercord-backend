@@ -24,11 +24,14 @@ import { createHash } from 'crypto'
 import { CommandClient, GuildTextableChannel, Message } from 'eris'
 import config from '../config.js'
 import { ban, softBan } from '../mod.js'
+import { enterRaidMode } from '../raidMode.js'
 
 // Any new members who send more than THRESHOLD messages with the same content, will be kicked
 const THRESHOLD = 2
 const raiderBuffer = new Map<string, number>()
 const DAY_MS = 24 * 36e5
+
+let activeRaiders = 0;
 
 async function process(this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (msg.guildID !== config.discord.ids.serverId || !msg.member
@@ -41,6 +44,15 @@ async function process(this: CommandClient, msg: Message<GuildTextableChannel>) 
     } else {
       softBan(msg.channel.guild, msg.author.id, this.user, 'Detected raid spam', 1)
       this.mongo.collection('raiders').insertOne({ userId: msg.author.id })
+    }
+
+    activeRaiders++
+    setTimeout(() => {
+      if (activeRaiders > 0) activeRaiders--
+    }, 5 * 60e3)
+
+    if (activeRaiders >= 5) {
+      enterRaidMode(msg.channel.guild, this.user, 60 * 60e3)
     }
   }
 }
