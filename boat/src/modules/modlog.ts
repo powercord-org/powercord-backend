@@ -72,7 +72,7 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
     const soft = reason.startsWith('[soft]')
     if (soft) {
       if (type === 'remove') return
-      reason = reason.replace('[soft]', '')
+      reason = reason.replace('[soft] ', '')
     }
 
     // todo: unsafe non-null assertion
