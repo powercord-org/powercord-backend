@@ -24,7 +24,7 @@ import { Message, GuildTextableChannel } from 'eris'
 import { exitRaidMode, getRaidStatus } from '../../raidMode.js'
 import { isStaff, } from '../../util.js'
 
-export async function executor (msg: Message<GuildTextableChannel>,): Promise<Message | void> {
+export function executor (msg: Message<GuildTextableChannel>): void {
   if (!msg.member) return // ???
   if (!isStaff(msg.member)) {
     return msg.channel.createMessage('no')
