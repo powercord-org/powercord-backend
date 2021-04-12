@@ -35,7 +35,8 @@ export function executor (msg: Message<GuildTextableChannel>, [ rawDuration ]: [
   }
 
   if (getRaidStatus()) {
-    return msg.channel.createMessage('Raid mode is currently active.')
+    msg.channel.createMessage('Raid mode is currently active.')
+    return
   }
 
   if (!rawDuration) {
