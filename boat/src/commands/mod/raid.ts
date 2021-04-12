@@ -51,6 +51,5 @@ export function executor (msg: Message<GuildTextableChannel>, [ rawDuration ]: [
   }
 
   enterRaidMode(msg.channel.guild, msg.author, duration)
-
-  return msg.channel.createMessage('Raid mode activated.')
+  msg.channel.createMessage('Raid mode activated.')
 }
