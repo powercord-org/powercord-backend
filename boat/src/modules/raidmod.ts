@@ -31,7 +31,7 @@ const THRESHOLD = 2
 const raiderBuffer = new Map<string, number>()
 const DAY_MS = 24 * 36e5
 
-let activeRaiders = 0;
+let activeRaiders = 0
 
 async function process(this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (msg.guildID !== config.discord.ids.serverId || !msg.member
