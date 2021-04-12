@@ -30,7 +30,8 @@ const USAGE_STR = `Usage: ${config.discord.prefix}raid <duration>`
 export function executor (msg: Message<GuildTextableChannel>, [ rawDuration ]: [ string ]): void {
   if (!msg.member) return // ???
   if (!isStaff(msg.member)) {
-    return msg.channel.createMessage('no')
+    msg.channel.createMessage('no')
+    return
   }
 
   if (getRaidStatus()) {
