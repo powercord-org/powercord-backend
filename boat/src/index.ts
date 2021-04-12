@@ -28,8 +28,8 @@ import MongoClient from 'mongodb'
 import { readdirRecursive } from './util.js'
 import { loadLaws } from './laws.js'
 import { loadBlacklist } from './blacklistCache.js'
-import config from './config.js'
 import { initRaidMode } from './raidMode.js'
+import config from './config.js'
 
 const bot = new CommandClient(config.discord.botToken, {
   intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildPresences', 'guildMessages', 'guildMessageReactions' ]

@@ -21,9 +21,9 @@
  */
 
 import { Message, GuildTextableChannel } from 'eris'
-import config from '../../config.js'
 import { enterRaidMode, getRaidStatus } from '../../raidMode.js'
 import { isStaff, parseDuration } from '../../util.js'
+import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}raid <duration>`
 

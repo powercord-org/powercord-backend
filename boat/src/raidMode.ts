@@ -21,9 +21,9 @@
  */
 
 import { CommandClient, Guild, TextChannel, User } from 'eris'
-import config from './config.js'
 import { schedule } from './modules/modtasks.js'
 import { prettyPrintTimeSpan } from './util.js'
+import config from './config.js'
 
 const RAID_LEVEL = 3
 const NORMAL_LEVEL = 1
