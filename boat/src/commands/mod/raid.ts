@@ -40,7 +40,8 @@ export function executor (msg: Message<GuildTextableChannel>, [ rawDuration ]: [
   }
 
   if (!rawDuration) {
-    return msg.channel.createMessage(USAGE_STR)
+    msg.channel.createMessage(USAGE_STR)
+    return
   }
 
   const duration = parseDuration(rawDuration)
