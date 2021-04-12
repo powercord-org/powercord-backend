@@ -27,7 +27,8 @@ import { isStaff, } from '../../util.js'
 export function executor (msg: Message<GuildTextableChannel>): void {
   if (!msg.member) return // ???
   if (!isStaff(msg.member)) {
-    return msg.channel.createMessage('no')
+    msg.channel.createMessage('no')
+    return
   }
 
   if (!getRaidStatus()) {
