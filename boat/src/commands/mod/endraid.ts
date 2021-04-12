@@ -37,6 +37,5 @@ export function executor (msg: Message<GuildTextableChannel>): void {
   }
 
   exitRaidMode(msg.channel.guild, msg.author)
-
-  return msg.channel.createMessage('Raid mode disabled.')
+  msg.channel.createMessage('Raid mode disabled.')
 }
