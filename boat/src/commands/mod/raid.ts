@@ -46,7 +46,8 @@ export function executor (msg: Message<GuildTextableChannel>, [ rawDuration ]: [
 
   const duration = parseDuration(rawDuration)
   if (!duration) {
-    return msg.channel.createMessage('Invalid duration')
+    msg.channel.createMessage('Invalid duration')
+    return
   }
 
   enterRaidMode(msg.channel.guild, msg.author, duration)
