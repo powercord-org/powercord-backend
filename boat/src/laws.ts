@@ -22,7 +22,6 @@
 
 import type { CommandClient } from 'eris'
 import fetch from 'node-fetch'
-import { sleep } from './util.js'
 import config from './config.js'
 
 export type CivilLaw = { law: string, penalties?: string[] }
@@ -34,11 +33,14 @@ let commerceLaws: Map<number, CommerceLaw> = new Map()
 let commerceDefinitions: CommerceDefinition[] = []
 
 async function loadCivilLaws (bot: CommandClient) {
-  await sleep(3e3)
   const guild = bot.guilds.get(config.discord.ids.serverId)
-  if (!guild) return
-  const civilCode = await bot.getMessages(config.discord.ids.channelRules).then((l) => l.map((m) => m.content).join('\n'))
+  if (!guild) {
+    // Try again in a bit, bot not ready or guild unavailable
+    setTimeout(() => loadCivilLaws(bot), 5e3)
+    return
+  }
 
+  const civilCode = await bot.getMessages(config.discord.ids.channelRules).then((l) => l.map((m) => m.content).join('\n'))
   const matches = civilCode.matchAll(/(\d{2})::((?:[^`\n].+\n)+?)(?: +Actions: ([^\n]+))?(?:\n|`)/g)
   const entries: [ number, CivilLaw ][] = []
   for (const match of matches) {
