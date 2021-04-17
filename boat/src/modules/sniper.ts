@@ -35,7 +35,7 @@ const ZWS = '\u200B'
 const buffer = new Map<number, SnipeRecord>()
 
 function isPrivate (channel: TextChannel) {
-  return Boolean((channel.permissionOverwrites.get(channel.guild.id)?.deny ?? 0) & 1024)
+  return Boolean((channel.permissionOverwrites.get(channel.guild.id)?.deny ?? 0n) & 1024n)
 }
 
 function containsBlacklist (content: string) : boolean {

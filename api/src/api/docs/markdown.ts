@@ -93,11 +93,9 @@ export default function (markdown: string): Document {
         })
         break
       }
-      // @ts-expect-error -- prolly smth I fixed in docs rewrtie
       case 'list':
         contents.push({
           type: 'LIST',
-          // @ts-expect-error -- prolly smth I fixed in docs rewrtie
           ordered: node.ordered,
           items: processListNode(node)
         })

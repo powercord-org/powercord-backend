@@ -232,7 +232,7 @@ if (IS_DEV) {
       publicPath: '/dist/'
     },
     plugins: [
-      ...baseConfig.plugins.slice(4), // Slice manifest, build side, sri
+      ...baseConfig.plugins.slice(3), // Slice manifest, build side, sri
       new LimitChunkCountPlugin({ maxChunks: 1 }),
       new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('server') })
     ],
