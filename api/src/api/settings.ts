@@ -22,6 +22,7 @@
 
 import type { FastifyInstance } from 'fastify'
 
+/* eslint-disable */
 // @ts-expect-error -- not implemented
 export default async function (fastify: FastifyInstance): Promise<void> {
 

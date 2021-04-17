@@ -41,8 +41,8 @@ function memberAdd (this: CommandClient, guild: Guild, member: Member) {
       timestamp: new Date().toISOString(),
       color: 0x7289da,
       thumbnail: { url: member.avatarURL },
-      footer: { text: `Discord ID: ${member.id}` }
-    }
+      footer: { text: `Discord ID: ${member.id}` },
+    },
   })
 }
 
@@ -58,16 +58,16 @@ function memberUpdate (this: CommandClient, guild: Guild, newMember: Member, old
           {
             name: 'New nickname',
             value: newMember.nick ? newMember.nick : newMember.username,
-            inline: true
+            inline: true,
           }, {
             name: 'Old nickname',
             value: oldMember.nick || newMember.username,
-            inline: true
-          }
+            inline: true,
+          },
         ],
         thumbnail: { url: newMember.avatarURL },
-        footer: { text: `Discord ID: ${newMember.id}` }
-      }
+        footer: { text: `Discord ID: ${newMember.id}` },
+      },
     })
   }
 
@@ -85,14 +85,14 @@ function memberUpdate (this: CommandClient, guild: Guild, newMember: Member, old
       fields.push({
         name: 'Roles added',
         value: addedRoles.join('\n'),
-        inline: true
+        inline: true,
       })
     }
     if (removedRoles.length > 0) {
       fields.push({
         name: 'Roles removed',
         value: removedRoles.join('\n'),
-        inline: true
+        inline: true,
       })
     }
 
@@ -102,8 +102,8 @@ function memberUpdate (this: CommandClient, guild: Guild, newMember: Member, old
         color: 0xdf799d,
         fields: fields,
         thumbnail: { url: newMember.avatarURL },
-        footer: { text: `Discord ID: ${newMember.id}` }
-      }
+        footer: { text: `Discord ID: ${newMember.id}` },
+      },
     })
   }
 }
@@ -115,7 +115,7 @@ function memberRemove (this: CommandClient, guild: Guild, member: Member | Membe
   if ('roles' in member && member.roles.length > 0) {
     fields.push({
       name: 'Roles',
-      value: member.roles.map(id => guild.roles.get(id)!.mention).join(' ')
+      value: member.roles.map((id) => guild.roles.get(id)!.mention).join(' '),
     })
   }
 
@@ -129,8 +129,8 @@ function memberRemove (this: CommandClient, guild: Guild, member: Member | Membe
       color: 0xdac372,
       thumbnail: { url: member.user.avatarURL },
       timestamp: new Date().toISOString(),
-      footer: { text: `Discord ID: ${member.user.id}` }
-    }
+      footer: { text: `Discord ID: ${member.user.id}` },
+    },
   })
 }
 

@@ -44,7 +44,7 @@ async function loadJson (file: string): Promise<Record<string, string>> {
 let App = { default: { default: () => null } }
 let manifest: Record<string, string> = {}
 let integrity: Record<string, string> = {}
-const robots = `User-agent: nsa\nDisallow: /`
+const robots = 'User-agent: nsa\nDisallow: /'
 
 function renderResource (file: string): string {
   let html = ''
@@ -91,7 +91,13 @@ function renderHtml (request: FastifyRequest<{ TokenizeUser: User }>, reply: Fas
   const context: Record<string, string> = {}
   const nonce = randomBytes(16).toString('hex')
   // todo: move this to a component
-  const rendered = ReactDomServer.renderToString(h(StaticRouter, { location: request.raw.url, context }, h(App.default.default)))
+  const rendered = ReactDomServer.renderToString(
+    h(
+      StaticRouter,
+      { location: request.raw.url, context: context },
+      h(App.default.default)
+    )
+  )
   if ('url' in context) {
     reply.redirect(context.url)
     return
@@ -122,7 +128,7 @@ function renderHtml (request: FastifyRequest<{ TokenizeUser: User }>, reply: Fas
   reply.type('text/html')
     .header('x-frame-options', 'DENY')
     .header('content-security-policy', `default-src 'self'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' https://cdn.discordapp.com https://discord.com http://127.0.0.1:6462; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net;`)
-    .send(html.split('\n').map(l => l.trim()).join(''))
+    .send(html.split('\n').map((l) => l.trim()).join(''))
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {

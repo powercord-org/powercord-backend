@@ -35,10 +35,12 @@ class Discord extends OAuth<DiscordUser> {
     )
   }
 
+  // eslint-disable-next-line class-methods-use-this
   get scopes () {
     return [ 'identify' ]
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async getCurrentUser (token: string) {
     return fetchCurrentUser(token)
   }

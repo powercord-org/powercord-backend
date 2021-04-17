@@ -67,12 +67,12 @@ async function discord (this: FastifyInstance, request: FastifyRequest<OAuth>, r
           discord: {
             accessToken: codes.access_token,
             refreshToken: codes.refresh_token,
-            expiryDate: Date.now() + (codes.expires_in * 1000)
-          }
+            expiryDate: Date.now() + (codes.expires_in * 1000),
+          },
         },
         badges: {},
         createdAt: new Date(),
-        patronTier: 0
+        patronTier: 0,
       })
     } else {
       await collection.updateOne({ _id: user.id }, {
@@ -83,9 +83,9 @@ async function discord (this: FastifyInstance, request: FastifyRequest<OAuth>, r
           'accounts.discord': {
             accessToken: codes.access_token,
             refreshToken: codes.refresh_token,
-            expiryDate: Date.now() + (codes.expires_in * 1000)
-          }
-        }
+            expiryDate: Date.now() + (codes.expires_in * 1000),
+          },
+        },
       })
     }
     const token = this.tokenize.generate(user.id)
@@ -94,7 +94,7 @@ async function discord (this: FastifyInstance, request: FastifyRequest<OAuth>, r
       sameSite: 'lax',
       path: '/',
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 3600
+      maxAge: 24 * 3600,
     })
 
     if (request.cookies.redirect) {
@@ -114,7 +114,7 @@ async function discord (this: FastifyInstance, request: FastifyRequest<OAuth>, r
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 3600
+      maxAge: 3600,
     })
   }
 
@@ -143,9 +143,9 @@ async function spotify (this: FastifyInstance, request: FastifyRequest<{ Tokeniz
           refreshToken: codes.refresh_token,
           expiryDate: Date.now() + (codes.expires_in * 1000),
           name: user.display_name,
-          scopes: spotifyAuth.scopes
-        }
-      }
+          scopes: spotifyAuth.scopes,
+        },
+      },
     })
     reply.redirect('/me')
     return
@@ -160,7 +160,7 @@ async function unlinkDiscord (this: FastifyInstance, request: FastifyRequest<Aut
       config.discord.ids.roleUser,
       config.discord.ids.roleHunter,
       config.discord.ids.roleTranslator,
-      config.discord.ids.roleContributor
+      config.discord.ids.roleContributor,
     ]
 
     const member = await fetchMember(request.user!._id)

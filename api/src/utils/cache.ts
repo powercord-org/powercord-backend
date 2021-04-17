@@ -44,7 +44,7 @@ export async function remoteFile (url: URL): Promise<CacheResult> {
   if (existsSync(cacheFile)) {
     return {
       success: true,
-      data: await readFile(cacheFile)
+      data: await readFile(cacheFile),
     }
   }
 
@@ -54,7 +54,7 @@ export async function remoteFile (url: URL): Promise<CacheResult> {
   await writeFile(cacheFile, buffer)
   return {
     success: true,
-    data: buffer
+    data: buffer,
   }
 }
 

@@ -35,22 +35,22 @@ const docsStore: DocsStore = []
 const remoteCache = new Map<string, Document>()
 
 function listCategories (this: FastifyInstance, _: FastifyRequest, reply: FastifyReply): void {
-  reply.send(docsStore.map(c => ({ ...c, docs: c.docs.map(d => ({ ...d, contents: void 0 })) })))
+  reply.send(docsStore.map((c) => ({ ...c, docs: c.docs.map((d) => ({ ...d, contents: void 0 })) })))
 }
 
 function getDocument (this: FastifyInstance, request: FastifyRequest<{ Params: GetDocParams }>, reply: FastifyReply): void {
   const { category, document } = request.params
-  const cat = docsStore.find(c => c.id === category)
+  const cat = docsStore.find((c) => c.id === category)
   if (!cat) return void reply.callNotFound()
   // @ts-expect-error -- smth I prolly fixed in rewrite; cba
-  const doc = cat.find(d => d.id === document)
+  const doc = cat.find((d) => d.id === document)
   if (!doc) return void reply.callNotFound()
   reply.send(document)
 }
 
 async function getRemoteDocument (url: string): Promise<unknown> { // todo
   if (!remoteCache.has(url)) {
-    const md = await fetch(url).then(r => r.text())
+    const md = await fetch(url).then((r) => r.text())
     remoteCache.set(url, markdown(md))
     setTimeout(() => remoteCache.delete(url), 300e3)
   }
@@ -71,8 +71,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
 
     docsStore.push({
       id: catId,
-      name: catId.split('_').map(s => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
-      docs
+      name: catId.split('_').map((s) => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
+      docs: docs,
     })
   }
 

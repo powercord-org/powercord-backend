@@ -42,13 +42,13 @@ export function executor (msg: Message<GuildTextableChannel>, args: string[]): v
       embed: {
         title: 'Definitions',
         description: INFO_STR,
-        fields: getCommerceDefinitions()
-      }
+        fields: getCommerceDefinitions(),
+      },
     })
     return
   }
 
-  const id = parseInt(args[0])
+  const id = parseInt(args[0], 10)
   const law = getCommerceLaws().get(id)
   if (!law) {
     msg.channel.createMessage(`This guideline doesn't exist.\n${USAGE_STR}\n\n${INFO_STR}`)
@@ -62,9 +62,9 @@ export function executor (msg: Message<GuildTextableChannel>, args: string[]): v
       fields: [
         {
           name: 'Read all the guidelines',
-          value: 'https://powercord.dev/guidelines'
-        }
-      ]
-    }
+          value: 'https://powercord.dev/guidelines',
+        },
+      ],
+    },
   })
 }

@@ -37,7 +37,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
     return
   }
 
-  const id = parseInt(args[0])
+  const id = parseInt(args[0], 10)
   if (id === -1) {
     msg.channel.createMessage(`**Rule #-1**: we ban/kick/mute when we want\n\n${INFO_STR}`)
     return

@@ -56,7 +56,7 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
       const codes = await spotifyAuth.refreshToken(spotify.refreshToken)
       const upd: Record<string, unknown> = {
         'accounts.spotify.accessToken': codes.access_token,
-        'accounts.spotify.expiryDate': Date.now() + (codes.expires_in * 1000)
+        'accounts.spotify.expiryDate': Date.now() + (codes.expires_in * 1000),
       }
       if (codes.refresh_token) {
         upd['accounts.spotify.refreshToken'] = codes.refresh_token

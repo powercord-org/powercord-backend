@@ -35,10 +35,10 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
   const { guild } = msg.channel
   const users = await msg._client.mongo.collection('users').find({}).toArray()
   await guild.fetchAllMembers()
-  const filteredUsers = users.map(user => ({
+  const filteredUsers = users.map((user) => ({
     ...user,
-    member: guild.members.find(member => member.id === user._id)
-  })).filter(m => m.member)
+    member: guild.members.find((member) => member.id === user._id),
+  })).filter((m) => m.member)
 
   for (const user of filteredUsers) {
     const originalRoles = user.member.roles
@@ -48,11 +48,11 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
       newRoles.push(config.discord.ids.roleUser)
     }
 
-    [ 'Hunter', 'Contributor', 'Translator' ].forEach(type => {
+    [ 'Hunter', 'Contributor', 'Translator' ].forEach((type) => {
       if (config.discord.ids[`role${type}`] && user.badges[type.toLowerCase()] && !user.member.roles.includes(config.discord.ids[`role${type}`])) {
         newRoles.push(config.discord.ids[`role${type}`])
       } else if (!user.badges[type.toLowerCase()] && user.member.roles.includes(config.discord.ids[`role${type}`])) {
-        newRoles = newRoles.filter(r => r !== config.discord.ids[`role${type}`])
+        newRoles = newRoles.filter((r) => r !== config.discord.ids[`role${type}`])
       }
     })
 

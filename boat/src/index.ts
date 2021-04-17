@@ -31,9 +31,11 @@ import { loadBlacklist } from './blacklistCache.js'
 import { initRaidMode } from './raidMode.js'
 import config from './config.js'
 
-const bot = new CommandClient(config.discord.botToken, {
-  intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildPresences', 'guildMessages', 'guildMessageReactions' ]
-}, { defaultHelpCommand: false, prefix: config.discord.prefix })
+const bot = new CommandClient(
+  config.discord.botToken,
+  { intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildPresences', 'guildMessages', 'guildMessageReactions' ] },
+  { defaultHelpCommand: false, prefix: config.discord.prefix }
+)
 
 async function loadModule (module: string) {
   const mdl = await import(module)
@@ -49,14 +51,14 @@ async function loadCommand (command: string) {
 
 Promise.resolve()
   .then(() => MongoClient.connect(config.mango, { useUnifiedTopology: true }))
-  .then((client) => bot.mongo = client.db('powercord'))
+  .then((client) => (bot.mongo = client.db('powercord')))
   .then(() => readdirRecursive(new URL('./modules/', import.meta.url)))
-  .then((modules) => Promise.all(modules.map(loadModule)))
+  .then((modules: string[]) => Promise.all(modules.map(loadModule)))
   .then(() => readdirRecursive(new URL('./commands/', import.meta.url)))
-  .then((commands) => Promise.all(commands.map(loadCommand)))
+  .then((commands: string[]) => Promise.all(commands.map(loadCommand)))
   .then(() => bot.connect())
   .then(() => console.log('Bot logged in'))
   .then(() => loadLaws(bot))
   .then(() => loadBlacklist(bot))
   .then(() => initRaidMode(bot))
-  .catch((e) => console.error('An error occurred during startup', e))
+  .catch((e: Error) => console.error('An error occurred during startup', e))

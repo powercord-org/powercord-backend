@@ -34,13 +34,15 @@ class Spotify extends OAuth {
     )
   }
 
+  // eslint-disable-next-line class-methods-use-this
   get scopes () {
     return config.spotify.scopes
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async getCurrentUser (token: string) {
     return fetch('https://api.spotify.com/v1/me', { headers: { authorization: `Bearer ${token}` } })
-      .then(r => r.json())
+      .then((r) => r.json())
   }
 }
 

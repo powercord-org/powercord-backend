@@ -39,7 +39,7 @@ function isPrivate (channel: TextChannel) {
 }
 
 function containsBlacklist (content: string) : boolean {
-  return getBlacklist().some(word => content.toLowerCase().includes(word))
+  return getBlacklist().some((word) => content.toLowerCase().includes(word))
 }
 
 async function store (msg: MessageLike, type: 'edit' | 'delete') {
@@ -48,7 +48,7 @@ async function store (msg: MessageLike, type: 'edit' | 'delete') {
     author: `${msg.author.username}#${msg.author.discriminator}`,
     msg: msg.content ? msg.content.replace(/\(/g, `${ZWS}(`) : 'This message had no text content.',
     channel: msg.channel.name,
-    type
+    type: type,
   })
 
   setTimeout(() => buffer.delete(id), SNIPE_LIFETIME * 1e3)

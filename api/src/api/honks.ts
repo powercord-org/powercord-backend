@@ -34,13 +34,13 @@ const TIER_EMOJIS = Object.freeze([
   '<a:crii:530146779396833290>',
   '<:blobkiss:723562862840119412>',
   '<:blobsmilehearts:723562904950931584>',
-  '<:blobhug:723562944964591706>'
+  '<:blobhug:723562944964591706>',
 ])
 
 const ACTION_TYPES = Object.freeze([
   'members:pledge:create',
   'members:pledge:update',
-  'members:pledge:delete'
+  'members:pledge:delete',
 ])
 
 async function patreon (this: FastifyInstance, request: FastifyRequest<{ Headers: PatreonHeaders }>, reply: FastifyReply) {
@@ -58,9 +58,9 @@ async function patreon (this: FastifyInstance, request: FastifyRequest<{ Headers
   // @ts-expect-error -- todo: schema & typing
   const pledged = request.body.data.attributes.currently_entitled_amount_cents / 100
   // @ts-expect-error -- todo: schema & typing
-  const user = request.body.included.find(resource => resource.type === 'user').attributes
+  const user = request.body.included.find((resource) => resource.type === 'user').attributes
   const discordId = user.social_connections.discord && user.social_connections.discord.user_id
-  const tier = TIERS_REVERSE.findIndex(t => t < pledged)
+  const tier = TIERS_REVERSE.findIndex((t) => t < pledged)
 
   if (discordId) {
     discordUser = await fetchUser(discordId)
@@ -83,27 +83,29 @@ async function patreon (this: FastifyInstance, request: FastifyRequest<{ Headers
   }
 
   dispatchHonk(config.honks.staff, {
-    embeds: [ {
-      title: `Pledge ${request.headers['x-patreon-event'].split(':').pop()}d`,
-      color: 0x7289da,
-      timestamp: new Date(),
-      fields: [
-        {
-          name: 'Tier',
-          value: `$${TIERS[tier]} ${TIER_EMOJIS[tier]} ($${pledged.toFixed(2)})`
-        },
-        {
-          name: 'Discord User',
-          value: discordUser
-            ? `${discordUser.username}#${discordUser.discriminator} (<@${discordUser.id}>)`
-            : 'Unknown (Account not linked on Patreon)'
-        },
-        banned && {
-          name: 'Pledge Banned',
-          value: 'This user has been previously banned from receiving perks and did not receive them.'
-        }
-      ].filter(Boolean)
-    } ]
+    embeds: [
+      {
+        title: `Pledge ${request.headers['x-patreon-event'].split(':').pop()}d`,
+        color: 0x7289da,
+        timestamp: new Date(),
+        fields: [
+          {
+            name: 'Tier',
+            value: `$${TIERS[tier]} ${TIER_EMOJIS[tier]} ($${pledged.toFixed(2)})`,
+          },
+          {
+            name: 'Discord User',
+            value: discordUser
+              ? `${discordUser.username}#${discordUser.discriminator} (<@${discordUser.id}>)`
+              : 'Unknown (Account not linked on Patreon)',
+          },
+          banned && {
+            name: 'Pledge Banned',
+            value: 'This user has been previously banned from receiving perks and did not receive them.',
+          },
+        ].filter(Boolean),
+      },
+    ],
   })
   reply.send()
 }

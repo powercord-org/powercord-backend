@@ -45,7 +45,7 @@ function extractEntryData (entry: GuildAuditLogEntry): [ string, string, string 
     modName = splittedReason.shift()!.replace('[', '').replace(']', '')
     reason = splittedReason.join(' ')
     const [ username, discrim ] = modName.split('#')
-    const mod = entry.guild.members.find(m => m.username === username && m.discriminator === discrim)
+    const mod = entry.guild.members.find((m) => m.username === username && m.discriminator === discrim)
     modId = mod ? mod.id : '<unknown>' // Should not happen
   } else {
     modId = entry.user.id
@@ -64,7 +64,7 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
     const logs = await guild.getAuditLogs(10, void 0, type === 'add'
       ? Constants.AuditLogActions.MEMBER_BAN_ADD
       : Constants.AuditLogActions.MEMBER_BAN_REMOVE)
-    const entry = logs.entries.find(entry => (entry.targetID = user.id))
+    const entry = logs.entries.find((auditEntry) => (auditEntry.targetID = user.id))
     if (!entry) return
 
     let [ modId, modName, reason ] = extractEntryData(entry)
@@ -76,16 +76,18 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
     }
 
     // todo: unsafe non-null assertion
-    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1]) + 1
+    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
 
-    this.createMessage(config.discord.ids.channelModLogs, TEMPLATE
-      .replace('$type', type === 'add' ? soft ? 'Kick' : 'Ban' : 'Unban')
-      .replace('$case', String(caseId))
-      .replace('$user', `${user.username}#${user.discriminator}`)
-      .replace('$userid', user.id)
-      .replace('$moderator', modName)
-      .replace('$modid', modId)
-      .replace('$reason', reason)
+    this.createMessage(
+      config.discord.ids.channelModLogs,
+      TEMPLATE
+        .replace('$type', type === 'add' ? soft ? 'Kick' : 'Ban' : 'Unban')
+        .replace('$case', String(caseId))
+        .replace('$user', `${user.username}#${user.discriminator}`)
+        .replace('$userid', user.id)
+        .replace('$moderator', modName)
+        .replace('$modid', modId)
+        .replace('$reason', reason)
     )
   }
 }
@@ -95,20 +97,22 @@ async function processMemberLeave (this: CommandClient, guild: Guild, user: User
   if (!channel || !('getMessages' in channel)) return
 
   const logs = await guild.getAuditLogs(5, void 0, Constants.AuditLogActions.MEMBER_KICK)
-  const entry = logs.entries.find(entry => (entry.targetID = user.id))
+  const entry = logs.entries.find((auditEntry) => (auditEntry.targetID = user.id))
   if (entry && Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) < 5000) {
     const [ modId, modName, reason ] = extractEntryData(entry)
     // todo: unsafe non-null assertion
-    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1]) + 1
+    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
 
-    this.createMessage(config.discord.ids.channelModLogs, TEMPLATE
-      .replace('$type', 'Kick')
-      .replace('$case', String(caseId))
-      .replace('$user', `${user.username}#${user.discriminator}`)
-      .replace('$userid', user.id)
-      .replace('$moderator', modName)
-      .replace('$modid', modId)
-      .replace('$reason', reason)
+    this.createMessage(
+      config.discord.ids.channelModLogs,
+      TEMPLATE
+        .replace('$type', 'Kick')
+        .replace('$case', String(caseId))
+        .replace('$user', `${user.username}#${user.discriminator}`)
+        .replace('$userid', user.id)
+        .replace('$moderator', modName)
+        .replace('$modid', modId)
+        .replace('$reason', reason)
     )
   }
 }
@@ -135,16 +139,18 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
     }
 
     const [ modId, modName, reason ] = extractEntryData(entry)
-    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1]) + 1
+    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
 
-    this.createMessage(config.discord.ids.channelModLogs, TEMPLATE
-      .replace('$type', wasAdded ? 'Mute' : 'Unmute')
-      .replace('$case', String(caseId))
-      .replace('$user', `${user.username}#${user.discriminator}`)
-      .replace('$userid', user.id)
-      .replace('$moderator', modName)
-      .replace('$modid', modId)
-      .replace('$reason', reason)
+    this.createMessage(
+      config.discord.ids.channelModLogs,
+      TEMPLATE
+        .replace('$type', wasAdded ? 'Mute' : 'Unmute')
+        .replace('$case', String(caseId))
+        .replace('$user', `${user.username}#${user.discriminator}`)
+        .replace('$userid', user.id)
+        .replace('$moderator', modName)
+        .replace('$modid', modId)
+        .replace('$reason', reason)
     )
 
     break

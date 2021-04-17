@@ -20,7 +20,8 @@
     "bot:dev": "rm -rf dist/boat && tsc-watch --project boat/tsconfig.json --onSuccess \"node dist/boat/index.js\"",
     "bot:build": "rm -rf dist/boat && tsc --build boat/tsconfig.json",
     "bot:start": "cross-env NODE_ENV=production node dist/boat/index.js",
-    "build": "rm -rf dist && pnpm run web:build && pnpm run api:build && pnpm run bot:build"
+    "build": "rm -rf dist && pnpm run web:build && pnpm run api:build && pnpm run bot:build",
+    "lint": "eslint --ext ts --ext tsx boat api"
   },
   "dependencies": {
     "eris": "^0.15.0",
@@ -65,12 +66,6 @@
     "css-loader": "^5.2.2",
     "css-minimizer-webpack-plugin": "^2.0.0",
     "eslint": "^7.24.0",
-    "eslint-config-standard": "^16.0.2",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-react": "^7.23.2",
-    "eslint-plugin-standard": "^4.1.0",
     "file-loader": "^6.2.0",
     "friendly-errors-webpack-plugin": "^1.7.0",
     "image-webpack-loader": "^7.0.1",

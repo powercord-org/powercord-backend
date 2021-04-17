@@ -49,7 +49,7 @@ export default abstract class OAuth<TUser = Record<string, string>> { // todo: r
       scope: this.scopes.join(' '),
       response_type: 'code',
       client_id: this.clientId,
-      redirect_uri: `${config.domain}/api/v2/oauth/${this.constructor.name.toLowerCase()}`
+      redirect_uri: `${config.domain}/api/v2/oauth/${this.constructor.name.toLowerCase()}`,
     })
 
     return `${this.authorizeUrl}?${data}`
@@ -66,9 +66,9 @@ export default abstract class OAuth<TUser = Record<string, string>> { // todo: r
         client_secret: this.clientSecret,
         redirect_uri: `${config.domain}/api/v2/oauth/${this.constructor.name.toLowerCase()}`,
         grant_type: type,
-        [type === 'authorization_code' ? 'code' : 'refresh_token']: token
-      })
-    }).then(r => r.json())
+        [type === 'authorization_code' ? 'code' : 'refresh_token']: token,
+      }),
+    }).then((r) => r.json())
   }
 }
 

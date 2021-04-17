@@ -22,8 +22,8 @@
 
 import type { GuildTextableChannel, Message } from 'eris'
 import { kick } from '../../mod.js'
-import config from '../../config.js'
 import { isStaff } from '../../util.js'
+import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}kick <mention || id> [reason]`
 
@@ -46,7 +46,7 @@ export function executor (msg: Message<GuildTextableChannel>, args: string[]): v
     return
   }
 
-  if(isStaff(target, msg.channel.guild)) {
+  if (isStaff(target, msg.channel.guild)) {
     msg.channel.createMessage('Sorry, they\'re wearing shin guards')
     return
   }

@@ -22,7 +22,7 @@
 
 import { Message, GuildTextableChannel } from 'eris'
 import { exitRaidMode, getRaidStatus } from '../../raidMode.js'
-import { isStaff, } from '../../util.js'
+import { isStaff } from '../../util.js'
 
 export function executor (msg: Message<GuildTextableChannel>): void {
   if (!msg.member) return // ???

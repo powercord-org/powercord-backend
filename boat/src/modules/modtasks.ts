@@ -67,7 +67,7 @@ export async function schedule (task: Schedulable, guild: Guild, userId: string,
     guild: guild.id,
     target: userId,
     mod: mod.id,
-    time: Date.now() + time
+    time: Date.now() + time,
   })
 }
 

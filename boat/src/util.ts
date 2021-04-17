@@ -124,8 +124,8 @@ export function parseDuration (duration: string): number | null {
  * @param guild - the guild `member` belongs to **only required if `member` is a user id**
  * @returns true if `member` has the `manageMessage` permission, false otherwise
  */
-export function isStaff(member: Member | string, guild?: Guild): boolean {
-  if (typeof(member) !== 'string') {
+export function isStaff (member: Member | string, guild?: Guild): boolean {
+  if (typeof member !== 'string') {
     return member.permissions.has('manageMessages')
   }
 

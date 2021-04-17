@@ -40,45 +40,41 @@ Timestamp: $time ($duration ago)
 Message contents:
 $message`
 
+function format (template: string, message: Message<GuildTextableChannel>): string {
+  const attachments = message.attachments.length > 0
+    ? `Attachments:\n${message.attachments.map((attachment) => attachment.filename).join(', ')}`
+    : ''
+
+  return `${template
+    .replace('$channel', message.channel.name)
+    .replace('$username', message.author.username.replace(/`/g, `\`${ZWS}`))
+    .replace('$userId', message.author.id)
+    .replace('$discrim', message.author.discriminator)
+    .replace('$time', new Date(message.timestamp).toUTCString())
+    .replace('$duration', prettyPrintTimeSpan(Date.now() - message.timestamp))
+    .replace('$message', stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`) || '*No contents*')}\n${attachments}`
+}
+
 async function messageDelete (this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
     return // Message not cached; let's just ignore
   }
 
   this.createMessage(config.discord.ids.channelMessageLogs, {
-    content: `${SINGLE_TEMPLATE
-      .replace('$channelId', msg.channel.id)
-      .replace('$username', msg.author.username.replace(/`/g, `\`${ZWS}`))
-      .replace('$discrim', msg.author.discriminator)
-      .replace(/\$userId/g, msg.author.id)
-      .replace('$time', new Date(msg.timestamp).toUTCString())
-      .replace('$duration', prettyPrintTimeSpan(Date.now() - msg.timestamp))
-      .replace('$message', stringifyDiscordMessage(msg).replace(/`/g, `\`${ZWS}`) || '*No contents*')}${msg.attachments.length > 0 ?
-        `Attachments:\n\`${msg.attachments.map(attachment => attachment.filename).join('`, `')}\`` :
-        ''}`.trim(),
-    allowedMentions: {}
+    content: format(SINGLE_TEMPLATE, msg),
+    allowedMentions: {},
   })
 }
 
 async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<GuildTextableChannel> | MessagePartial>) {
-  const list = msgs.map(msg => {
-    if ('author' in msg) {
-      return `${LIST_TEMPLATE
-        .replace('$channel', msg.channel.name)
-        .replace('$username', msg.author.username.replace(/`/g, `\`${ZWS}`))
-        .replace('$userId', msg.author.id)
-        .replace('$discrim', msg.author.discriminator)
-        .replace('$time', new Date(msg.timestamp).toUTCString())
-        .replace('$duration', prettyPrintTimeSpan(Date.now() - msg.timestamp))
-        .replace('$message', stringifyDiscordMessage(msg).replace(/`/g, `\`${ZWS}`) || '*No contents*')}\n${msg.attachments.length > 0 ?
-          `Attachments:\n${msg.attachments.map(attachment => attachment.filename).join(', ')}` :
-          ''}`
-    } else {
-      return `A message in #${msg.channel.name} that was not cached`
-    }
-  }).join('\n\n')
+  const list = msgs.map(
+    (msg) =>
+      'author' in msg
+        ? format(LIST_TEMPLATE, msg)
+        : `A message in #${msg.channel.name} that was not cached`
+  ).join('\n\n')
 
-  const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: list.trim() }).then(r => r.json())
+  const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: list.trim() }).then((r) => r.json())
   this.createMessage(config.discord.ids.channelMessageLogs, `${msgs.length} messages deleted:\n<https://haste.powercord.dev/${res.key}.txt>`)
 }
 

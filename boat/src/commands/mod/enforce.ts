@@ -29,6 +29,26 @@ import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}enforce <mention> <ruleId>`
 
+async function punish (msg: Message<GuildTextableChannel>, target: string, sentence: string, rule: CivilLaw, ruleId: number) { // punish me dadd- *ahem*
+  const duration = (sentence.match(/^\d/) && parseDuration(sentence.split(' ')[0])) || void 0
+  switch (true) {
+    case sentence.includes('warning'):
+      msg.channel.createMessage(`<@${target}>, you have broken rule #${ruleId}. This is a simple warning, but more serious actions will be taken next time.\n\n**Rule #${ruleId}**\n${rule.law}`)
+      break
+    case sentence.includes('mute') && !sentence.includes('ban'):
+      mute(msg.channel.guild, target, msg.author, `Breaking rule #${ruleId}`, duration)
+      msg.channel.createMessage(`<@${target}>, you have broken rule ${ruleId} and have been muted ${duration ? `for ${prettyPrintTimeSpan(duration)}` : ''}`)
+      break
+    case sentence.includes('ban') && !sentence.includes('mute'):
+      ban(msg.channel.guild, target, msg.author, `Breaking rule #${ruleId}`, duration)
+      msg.channel.createMessage({ content: `<@${target}> broke rule #${ruleId} and will not be able to see this message due to technical difficulties imposed by the practice of the yeeting, how unfortunate...`, allowedMentions: {} })
+      break
+    default:
+      msg.channel.createMessage(`Unable to process \`${sentence}\`, please mod manually.`)
+      break
+  }
+}
+
 export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (!msg.member) return // ???
   if (!isStaff(msg.member)) {
@@ -42,7 +62,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
   }
 
   const target = args.shift()!.replace(/<@!?(\d+)>/, '$1')
-  const ruleId = parseInt(args[0])
+  const ruleId = parseInt(args[0], 10)
   const rules = getCivilLaws().get(ruleId)
 
   if (!rules) {
@@ -51,7 +71,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
   }
 
   if (!rules.penalties) {
-    msg.channel.createMessage(`This rule doesn't have actions tied to it.`)
+    msg.channel.createMessage('This rule doesn \'t have actions tied to it.')
     return
   }
 
@@ -76,26 +96,6 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
   msg._client.mongo.collection('enforce').insertOne({
     userID: target, // todo: userID -> userId
     rule: ruleId,
-    mod: `${msg.author.username}#${msg.author.discriminator}` // todo: store id instead
+    mod: `${msg.author.username}#${msg.author.discriminator}`, // todo: store id instead
   })
-}
-
-async function punish (msg: Message<GuildTextableChannel>, target: string, sentence: string, rule: CivilLaw, ruleId: number) { // punish me dadd- *ahem*
-  const duration = (sentence.match(/^\d/) && parseDuration(sentence.split(' ')[0])) || void 0
-  switch (true) {
-    case sentence.includes('warning'):
-      msg.channel.createMessage(`<@${target}>, you have broken rule #${ruleId}. This is a simple warning, but more serious actions will be taken next time.\n\n**Rule #${ruleId}**\n${rule.law}`)
-      break
-    case sentence.includes('mute') && !sentence.includes('ban'):
-      mute(msg.channel.guild, target, msg.author, `Breaking rule #${ruleId}`, duration)
-      msg.channel.createMessage(`<@${target}>, you have broken rule ${ruleId} and have been muted ${duration ? `for ${prettyPrintTimeSpan(duration)}` : ''}`)
-      break
-    case sentence.includes('ban') && !sentence.includes('mute'):
-      ban(msg.channel.guild, target, msg.author, `Breaking rule #${ruleId}`, duration)
-      msg.channel.createMessage({ content: `<@${target}> broke rule #${ruleId} and will not be able to see this message due to technical difficulties imposed by the practice of the yeeting, how unfortunate...`, allowedMentions: {} })
-      break
-    default:
-      msg.channel.createMessage(`Unable to process \`${sentence}\`, please mod manually.`)
-      break
-  }
 }

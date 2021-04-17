@@ -26,20 +26,20 @@ import config from '../config.js'
 
 const MAX_INFRACTIONS = 4
 
-async function memberRemove(this: CommandClient, guild: Guild, member: Member | MemberPartial) {
+async function memberRemove (this: CommandClient, guild: Guild, member: Member | MemberPartial) {
   if (guild.id !== config.discord.ids.serverId || !('roles' in member) || !member.roles.includes(config.discord.ids.roleMuted)) return
 
-  const bans = await guild.getBans().then((bans) => bans.map((ban) => ban.user.id))
+  const bans = await guild.getBans().then((guildBans) => guildBans.map((guildBan) => guildBan.user.id))
   if (bans.includes(member.id)) return
 
   await this.mongo.collection('enforce').insertOne({
     userID: member.id, // todo: userID -> userId
     rule: -1,
-    mod: `${this.user.username}#${this.user.discriminator}` // todo: store id instead
+    mod: `${this.user.username}#${this.user.discriminator}`, // todo: store id instead
   })
 
   const infractionCount = await this.mongo.collection('enforce').countDocuments({ userID: member.id })
-  if (infractionCount > MAX_INFRACTIONS){
+  if (infractionCount > MAX_INFRACTIONS) {
     ban(guild, member.id, this.user, 'Left while muted one too many times.')
   }
 }

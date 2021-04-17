@@ -22,8 +22,8 @@
 
 import type { GuildTextableChannel, Message } from 'eris'
 import { unban } from '../../mod.js'
-import config from '../../config.js'
 import { isStaff } from '../../util.js'
+import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}unban <mention || id> [reason]`
 

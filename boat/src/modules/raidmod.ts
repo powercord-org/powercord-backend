@@ -33,10 +33,33 @@ const DAY_MS = 24 * 36e5
 
 let activeRaiders = 0
 
-async function process(this: CommandClient, msg: Message<GuildTextableChannel>) {
+function removeRaider (hash: string): void {
+  const count = raiderBuffer.get(hash)
+  if (!count) return
+
+  if (count === 1) {
+    raiderBuffer.delete(hash)
+  } else {
+    raiderBuffer.set(hash, count - 1)
+  }
+}
+
+function isRaider (user: string, message: string): boolean {
+  const raiderHash = createHash('sha1').update(`${user}${message}`).digest('base64').toString()
+  let count = raiderBuffer.get(raiderHash) ?? 0
+
+  if (count >= THRESHOLD) return true
+
+  count++
+  raiderBuffer.set(raiderHash, count)
+  setTimeout(() => removeRaider(raiderHash), 10e3)
+  return false
+}
+
+async function process (this: CommandClient, msg: Message<GuildTextableChannel>): Promise<void> {
   if (msg.guildID !== config.discord.ids.serverId || !msg.member
       || msg.member.joinedAt < Date.now() - DAY_MS
-      || msg.member.createdAt > Date.now() - 5 * DAY_MS) return
+      || msg.member.createdAt > Date.now() - (5 * DAY_MS)) return
 
   if (isRaider(msg.author.id, msg.content)) {
     if (await this.mongo.collection('raiders').countDocuments({ userId: msg.author.id }) > 0) {
@@ -54,29 +77,6 @@ async function process(this: CommandClient, msg: Message<GuildTextableChannel>) 
     if (activeRaiders >= 5) {
       enterRaidMode(msg.channel.guild, this.user, 60 * 60e3)
     }
-  }
-}
-
-function isRaider(user: string, message: string): boolean {
-  const raiderHash = createHash('sha1').update(`${user}${message}`).digest('base64').toString()
-  let count = raiderBuffer.get(raiderHash) ?? 0
-
-  if (count >= THRESHOLD) return true
-
-  count++
-  raiderBuffer.set(raiderHash, count)
-  setTimeout(() => removeRaider(raiderHash), 10e3)
-  return false
-}
-
-function removeRaider(hash: string) {
-  const count = raiderBuffer.get(hash)
-  if (!count) return
-
-  if (count === 1) {
-    raiderBuffer.delete(hash)
-  } else {
-    raiderBuffer.set(hash, count - 1)
   }
 }
 

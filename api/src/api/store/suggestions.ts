@@ -62,7 +62,7 @@ async function fetchAll (): Promise<GithubIssue[]> {
     const res = await fetch('https://api.github.com/graphql', {
       method: 'POST',
       headers: { authorization: `Bearer ${config.ghToken}` },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({ query: query }),
     })
 
     payload = await res.json()
@@ -72,19 +72,17 @@ async function fetchAll (): Promise<GithubIssue[]> {
 }
 
 export async function fetchSuggestions (): Promise<Suggestion[]> {
-  return getOrCompute('gh_suggestions', async function () {
+  return getOrCompute('gh_suggestions', async () => {
     const all = await fetchAll()
     return all.sort((a, b) => a.reactions.totalCount > b.reactions.totalCount ? -1 : a.reactions.totalCount < b.reactions.totalCount ? 1 : 0)
-      .filter(i => i.body.includes('###') && i.body.includes('----'))
-      .map(issue => {
-        return {
-          id: issue.number,
-          title: issue.title,
-          author: issue.author,
-          description: issue.body.split('###')[1].substring(12).split('----')[0].replace(/\r/g, '').replace(/(^\n+)|(\n+$)/g, ''),
-          upvotes: issue.reactions.totalCount,
-          wip: !!issue.labels.nodes.find(l => l.name === 'work in progress')
-        }
-      })
+      .filter((i) => i.body.includes('###') && i.body.includes('----'))
+      .map((issue) => ({
+        id: issue.number,
+        title: issue.title,
+        author: issue.author,
+        description: issue.body.split('###')[1].substring(12).split('----')[0].replace(/\r/g, '').replace(/(^\n+)|(\n+$)/g, ''),
+        upvotes: issue.reactions.totalCount,
+        wip: Boolean(issue.labels.nodes.find((l) => l.name === 'work in progress')),
+      }))
   }, true)
 }

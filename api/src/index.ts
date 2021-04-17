@@ -44,7 +44,7 @@ fastify.register(fastifyTokenize, {
     const user = await fastify.mongo.db!.collection('users').findOne({ _id: id })
     if (user) user.lastTokenReset = 0
     return user
-  }
+  },
 })
 
 fastify.register(apiModule, { prefix: '/api' })

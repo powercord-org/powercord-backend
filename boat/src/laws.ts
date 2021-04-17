@@ -42,7 +42,7 @@ async function loadCivilLaws (bot: CommandClient) {
   const matches = civilCode.matchAll(/(\d{2})::((?:[^`\n].+\n)+?)(?: +Actions: ([^\n]+))?(?:\n|`)/g)
   const entries: [ number, CivilLaw ][] = []
   for (const match of matches) {
-    const replacer = (og: string, name: string) => guild.channels.find(c => c.name === name)?.mention ?? og
+    const replacer = (og: string, name: string) => guild.channels.find((c) => c.name === name)?.mention ?? og
     const law = match[2].trim().replace(/\n */g, ' ').replace(/\[#[^a-z0-9-_]?([a-z0-9-_]+)\]/ig, replacer)
     entries.push([ Number(match[1]), { law: law, penalties: match[3]?.split(' -> ') } ])
   }

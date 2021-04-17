@@ -49,13 +49,14 @@ function plug (request: FastifyRequest<{ Params: { color: string } }>, reply: Fa
 
 async function getDiscordAvatar (user: User, update: (avatar: string) => void): Promise<Buffer> {
   if (!user.avatar) {
-    return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 5}.png`).then(r => r.buffer())
+    return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 5}.png`).then((r) => r.buffer())
   }
 
   const file = await remoteFile(new URL(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`))
   if (!file.success) {
     const discordUser = await fetchUser(user._id)
     update(discordUser.avatar)
+    // eslint-disable-next-line require-atomic-updates
     user.avatar = discordUser.avatar
     return getDiscordAvatar(user, update)
   }
@@ -77,7 +78,7 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<{ Params: 
   }
 
   reply.type('image/png')
-  return getDiscordAvatar(user, (avatar) => this.mongo.db!.collection('users').updateOne({ _id: request.params.id }, { $set: { avatar } }))
+  return getDiscordAvatar(user, (newAvatar) => this.mongo.db!.collection('users').updateOne({ _id: request.params.id }, { $set: { avatar: newAvatar } }))
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {

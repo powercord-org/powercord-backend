@@ -27,10 +27,10 @@ export type Document = { title: string | null, parts: string[], contents: unknow
 
 function processListNode (node: Tokens.List): unknown[] {
   const list: unknown[] = []
-  node.items.forEach(item => {
+  node.items.forEach((item) => {
     let str = ''
     // @ts-expect-error -- prolly smth I fixed in docs rewrtie
-    item.tokens.forEach(tok => {
+    item.tokens.forEach((tok) => {
       switch (tok.type) {
         case 'text':
           str += `${tok.text}\n`
@@ -66,21 +66,21 @@ export default function (markdown: string): Document {
           contents.push({
             type: 'TITLE',
             depth: node.depth,
-            content: node.text
+            content: node.text,
           })
         }
         break
       case 'paragraph':
         contents.push({
           type: 'TEXT',
-          content: node.text
+          content: node.text,
         })
         break
       case 'code':
         contents.push({
           type: 'CODEBLOCK',
           lang: node.lang,
-          code: node.text
+          code: node.text,
         })
         break
       case 'blockquote': {
@@ -89,7 +89,7 @@ export default function (markdown: string): Document {
           type: 'NOTE',
           quote: node.raw.startsWith('> '),
           color: !node.raw.startsWith('> ') && blockquote.shift()!.toUpperCase(),
-          content: blockquote.join(' ').replace(/[ \n]*<br\/?>[ \n]*/ig, '\n')
+          content: blockquote.join(' ').replace(/[ \n]*<br\/?>[ \n]*/ig, '\n'),
         })
         break
       }
@@ -97,7 +97,7 @@ export default function (markdown: string): Document {
         contents.push({
           type: 'LIST',
           ordered: node.ordered,
-          items: processListNode(node)
+          items: processListNode(node),
         })
         break
       case 'table':
@@ -105,9 +105,14 @@ export default function (markdown: string): Document {
           type: 'TABLE',
           thead: node.header,
           tbody: node.cells,
-          center: node.align.map(a => a === 'center')
+          center: node.align.map((a) => a === 'center'),
         })
     }
   }
-  return { title, parts, contents }
+
+  return {
+    title: title,
+    parts: parts,
+    contents: contents,
+  }
 }

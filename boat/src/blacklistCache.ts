@@ -25,7 +25,7 @@ import { CommandClient } from 'eris'
 let blacklist: Array<string>
 
 export async function loadBlacklist (bot: CommandClient): Promise<Array<string>> {
-  blacklist = (await bot.mongo.collection('blacklist').find().toArray()).map(entry => entry.word)
+  blacklist = (await bot.mongo.collection('blacklist').find().toArray()).map((entry) => entry.word)
   return blacklist
 }
 

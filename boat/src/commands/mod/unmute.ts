@@ -22,8 +22,8 @@
 
 import type { GuildTextableChannel, Message } from 'eris'
 import { unmute } from '../../mod.js'
-import config from '../../config.js'
 import { isStaff } from '../../util.js'
+import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}unmute <mention || id> [reason]`
 

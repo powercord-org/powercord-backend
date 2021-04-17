@@ -33,7 +33,7 @@ async function collectStats (bot: CommandClient) {
 
   const counts = { total: 0, online: 0, idle: 0, dnd: 0 }
   const members = await guild.fetchMembers({ presences: true })
-  members.forEach(member => {
+  members.forEach((member) => {
     counts.total++
     if (member.status && member.status !== 'offline') {
       counts[member.status]++
@@ -45,12 +45,16 @@ async function collectStats (bot: CommandClient) {
   sentCounter = 0
   deletedCounter = 0
 
-  bot.mongo.collection('guild-stats').insertOne({ sentMessages, deletedMessages, ...counts })
+  bot.mongo.collection('guild-stats').insertOne({
+    sentMessages: sentMessages,
+    deletedMessages: deletedMessages,
+    ...counts,
+  })
 }
 
 export default function (bot: CommandClient) {
-  bot.on('messageCreate', () => (sentCounter++))
-  bot.on('messageDelete', () => (deletedCounter++))
+  bot.on('messageCreate', () => sentCounter++)
+  bot.on('messageDelete', () => deletedCounter++)
   bot.on('messageDeleteBulk', (messages) => (deletedCounter += messages.length)) // Bans, mostly
 
   cron.schedule('*/30 * * * *', () => collectStats(bot))

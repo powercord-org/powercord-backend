@@ -46,7 +46,7 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
 
     const processing = ((Date.now() - start) / 1000).toFixed(2)
     if (result.length > 1900) {
-      const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: result }).then(r => r.json())
+      const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: result }).then((r) => r.json())
       m.edit(`Result too long for Discord: <https://haste.powercord.dev/${res.key}.txt>\nTook ${processing} seconds.`)
     } else {
       m.edit(`\`\`\`\n${result}\n\`\`\`\nTook ${processing} seconds.`)

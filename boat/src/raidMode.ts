@@ -38,7 +38,7 @@ export function initRaidMode (bot: CommandClient) {
 /**
  * @returns true if raid mode is active, false otherwise
  */
-export function getRaidStatus(): boolean {
+export function getRaidStatus (): boolean {
   return raidMode
 }
 
@@ -54,12 +54,13 @@ export async function enterRaidMode (guild: Guild, mod: User, duration: number) 
   await guild.edit({ verificationLevel: RAID_LEVEL })
   schedule('endRaid', guild, '', mod, duration)
 
+  // eslint-disable-next-line require-atomic-updates -- this is fine
   raidMode = true
 
   const staffChannel = guild.channels.get(config.discord.ids.channelStaff) as TextChannel
   if (staffChannel) {
-    staffChannel.createMessage(`Raid mode activated by ${mod.username}#${mod.discriminator}.` +
-      ` Raid mode will be ended automatically in ${prettyPrintTimeSpan(duration)}.`)
+    staffChannel.createMessage(`Raid mode activated by ${mod.username}#${mod.discriminator}.`
+      + ` Raid mode will be ended automatically in ${prettyPrintTimeSpan(duration)}.`)
   }
 }
 
@@ -72,9 +73,9 @@ export async function exitRaidMode (guild: Guild, mod: User) {
   if (!raidMode) return
 
   await guild.edit({ verificationLevel: NORMAL_LEVEL })
-
   guild._client.mongo.collection('tasks').deleteMany({ type: 'endRaid' })
 
+  // eslint-disable-next-line require-atomic-updates -- this is fine
   raidMode = false
 
   const staffChannel = guild.channels.get(config.discord.ids.channelStaff) as TextChannel

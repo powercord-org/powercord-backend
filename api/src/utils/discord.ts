@@ -26,19 +26,19 @@ import config from '../config.js'
 
 export async function fetchUser (userId: string): Promise<DiscordUser> {
   return fetch(`https://discord.com/api/v8/users/${userId}`, { headers: { authorization: `Bot ${config.discord.botToken}` } })
-    .then(r => r.json())
+    .then((r) => r.json())
 }
 
 export async function fetchCurrentUser (token: string): Promise<DiscordUser> {
   return fetch('https://discord.com/api/v8/users/@me', { headers: { authorization: `Bearer ${token}` } })
-    .then(r => r.json())
+    .then((r) => r.json())
 }
 
 export async function dispatchHonk (honk: string, payload: unknown): Promise<unknown> {
   return fetch(`https://discord.com/api/v8/webhooks/${honk}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   })
 }
 
@@ -50,7 +50,7 @@ export async function fetchAllMembers (): Promise<DiscordMember[]> {
     const res = await fetch(
       `https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members?limit=1000&after=${after}`,
       { headers: { authorization: `Bot ${config.discord.botToken}` } }
-    ).then(r => r.json())
+    ).then((r) => r.json())
 
     users.concat(res)
     halt = res.length !== 1000
@@ -62,9 +62,10 @@ export async function fetchAllMembers (): Promise<DiscordMember[]> {
 }
 
 export async function fetchMember (memberId: string): Promise<DiscordMember> {
-  return fetch(`https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members/${memberId}`, {
-    headers: { authorization: `Bot ${config.discord.botToken}` }
-  }).then(r => r.json())
+  return fetch(
+    `https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members/${memberId}`,
+    { headers: { authorization: `Bot ${config.discord.botToken}` } }
+  ).then((r) => r.json())
 }
 
 export async function setRoles (memberId: string, roleIds: string[], auditLogReason?: string): Promise<unknown> {
@@ -75,7 +76,7 @@ export async function setRoles (memberId: string, roleIds: string[], auditLogRea
   return fetch(`https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members/${memberId}`, {
     headers: headers,
     method: 'PATCH',
-    body: JSON.stringify({ roles: roleIds })
+    body: JSON.stringify({ roles: roleIds }),
   })
 }
 
@@ -86,7 +87,7 @@ export async function addRole (memberId: string, roleId: string, auditLogReason?
   }
   return fetch(`https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
     headers: headers,
-    method: 'PUT'
+    method: 'PUT',
   })
 }
 
@@ -97,6 +98,6 @@ export async function removeRole (memberId: string, roleId: string, auditLogReas
   }
   return fetch(`https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
     headers: headers,
-    method: 'DELETE'
+    method: 'DELETE',
   })
 }

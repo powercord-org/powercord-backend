@@ -21,8 +21,8 @@
  */
 
 import type { GuildTextableChannel, Message } from 'eris'
-import config from '../../config.js'
 import { isStaff } from '../../util.js'
+import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}edit <caseId> <newReason>`
 
@@ -33,7 +33,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
     return
   }
 
-  const caseId = parseInt(args.shift()!)
+  const caseId = parseInt(args.shift()!, 10)
   let newReason = args.join(' ')
   if (!caseId || !newReason) {
     msg.channel.createMessage(USAGE_STR)

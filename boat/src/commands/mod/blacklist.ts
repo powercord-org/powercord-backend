@@ -22,8 +22,8 @@
 
 import { GuildTextableChannel, Message } from 'eris'
 import { getBlacklist, loadBlacklist } from '../../blacklistCache.js'
-import config from '../../config.js'
 import { isStaff } from '../../util.js'
+import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}blacklist <show | add | remove> (word)`
 
