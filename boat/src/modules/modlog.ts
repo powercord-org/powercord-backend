@@ -67,12 +67,19 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
     const entry = logs.entries.find(entry => (entry.targetID = user.id))
     if (!entry) return
 
-    const [ modId, modName, reason ] = extractEntryData(entry)
+    let [ modId, modName, reason ] = extractEntryData(entry)
+
+    const soft = reason.startsWith('[soft]')
+    if (soft) {
+      if (type === 'remove') return
+      reason = reason.replace('[soft] ', '')
+    }
+
     // todo: unsafe non-null assertion
     const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1]) + 1
 
     this.createMessage(config.discord.ids.channelModLogs, TEMPLATE
-      .replace('$type', type === 'add' ? 'Ban' : 'Unban')
+      .replace('$type', type === 'add' ? soft ? 'Kick' : 'Ban' : 'Unban')
       .replace('$case', String(caseId))
       .replace('$user', `${user.username}#${user.discriminator}`)
       .replace('$userid', user.id)

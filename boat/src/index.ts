@@ -28,6 +28,7 @@ import MongoClient from 'mongodb'
 import { readdirRecursive } from './util.js'
 import { loadLaws } from './laws.js'
 import { loadBlacklist } from './blacklistCache.js'
+import { initRaidMode } from './raidMode.js'
 import config from './config.js'
 
 const bot = new CommandClient(config.discord.botToken, {
@@ -57,4 +58,5 @@ Promise.resolve()
   .then(() => console.log('Bot logged in'))
   .then(() => loadLaws(bot))
   .then(() => loadBlacklist(bot))
+  .then(() => initRaidMode(bot))
   .catch((e) => console.error('An error occurred during startup', e))

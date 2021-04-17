@@ -25,30 +25,79 @@ import { schedule } from './modules/modtasks.js'
 import { prettyPrintTimeSpan } from './util.js'
 import config from './config.js'
 
-function formatReason (mod: User, reason?: string, duration?: number) {
-  let formatted = `[${mod.username}#${mod.discriminator}] ${reason ?? 'No reason specified.'}`
+function formatReason (mod: User, reason?: string, duration?: number, soft: boolean = false) {
+  let formatted = `[${mod.username}#${mod.discriminator}] ${soft ? '[soft] ' : ''}${reason ?? 'No reason specified.'}`
   if (duration) formatted += ` (duration: ${prettyPrintTimeSpan(duration)})`
   return formatted
 }
 
+/**
+ * Mute a member.
+ * @param guild - the guild the user is to be muted in
+ * @param userId - the ID of the user to be muted
+ * @param mod - the moderator preforming the mute
+ * @param reason - the reason the mute is occurring
+ */
 export function mute (guild: Guild, userId: string, mod: User, reason?: string, duration?: number) {
   guild.addMemberRole(userId, config.discord.ids.roleMuted, formatReason(mod, reason, duration))
   if (duration) schedule('unmute', guild, userId, mod, duration)
 }
 
+/**
+ * Unmute a member.
+ * @param guild - the guild the user is to be unmuted in
+ * @param userId - the ID of the user to be unmuted
+ * @param mod - the moderator preforming the unmute
+ * @param reason - the reason the unmute is occurring
+ */
 export function unmute (guild: Guild, userId: string, mod: User, reason?: string) {
   guild.removeMemberRole(userId, config.discord.ids.roleMuted, formatReason(mod, reason))
 }
 
+/**
+ * Kick a member from a guild.
+ * @param guild - the guild the user is to be kicked from
+ * @param userId - the ID of the user to be kicked
+ * @param mod - the moderator preforming the kick
+ * @param reason - the reason the kick is occurring
+ */
 export function kick (guild: Guild, userId: string, mod: User, reason?: string) {
   guild.kickMember(userId, formatReason(mod, reason))
 }
 
-export function ban (guild: Guild, userId: string, mod: User, reason?: string, duration?: number) {
-  guild.banMember(userId, 0, formatReason(mod, reason, duration))
+/**
+ * Ban a member from a guild.
+ * @param guild - the guild the user is to be banned from
+ * @param userId - the ID of the user to be banned
+ * @param mod - the moderator preforming the ban
+ * @param reason - the reason the ban is occurring
+ * @param deleteDays - `default = 0` the number of days worth of messages to delete
+ */
+export function ban (guild: Guild, userId: string, mod: User, reason?: string, duration?: number, deleteDays: number = 0) {
+  guild.banMember(userId, deleteDays, formatReason(mod, reason, duration))
   if (duration) schedule('unban', guild, userId, mod, duration)
 }
 
+/**
+ * Unban a member from a guild.
+ * @param guild - the guild the user is to be unbanned from
+ * @param userId - the ID of the user to be unbanned
+ * @param mod - the moderator preforming the unban
+ * @param reason - the reason the unban is occurring
+ */
 export function unban (guild: Guild, userId: string, mod: User, reason?: string) {
   guild.unbanMember(userId, formatReason(mod, reason))
+}
+
+/**
+ * Ban then unban a user. This is effectively a kick which deletes a users messages.
+ * @param guild - the guild the user is to be soft banned from
+ * @param userId - the ID of the user to be soft banned
+ * @param mod - the moderator preforming the soft ban
+ * @param reason - the reason the soft ban is occurring
+ * @param deleteDays - `default = 0` the number of days worth of messages to delete
+ */
+export function softBan (guild: Guild, userId: string, mod: User, reason?: string, deleteDays: number = 0) {
+  guild.banMember(userId, deleteDays, formatReason(mod, reason, 0, true))
+    .then(() => guild.unbanMember(userId, formatReason(mod, reason, 0, true)))
 }
