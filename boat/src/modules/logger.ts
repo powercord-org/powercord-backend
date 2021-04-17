@@ -46,13 +46,14 @@ function format (template: string, message: Message<GuildTextableChannel>): stri
     : ''
 
   return `${template
-    .replace('$channel', message.channel.name)
-    .replace('$username', message.author.username.replace(/`/g, `\`${ZWS}`))
-    .replace('$userId', message.author.id)
-    .replace('$discrim', message.author.discriminator)
-    .replace('$time', new Date(message.timestamp).toUTCString())
-    .replace('$duration', prettyPrintTimeSpan(Date.now() - message.timestamp))
-    .replace('$message', stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`) || '*No contents*')}\n${attachments}`
+    .replace(/\$userId/g, message.author.id)
+    .replace(/\$channelId/g, message.channel.id)
+    .replace(/\$channel/g, message.channel.name)
+    .replace(/\$username/g, message.author.username.replace(/`/g, `\`${ZWS}`))
+    .replace(/\$discrim/g, message.author.discriminator)
+    .replace(/\$time/g, new Date(message.timestamp).toUTCString())
+    .replace(/\$duration/g, prettyPrintTimeSpan(Date.now() - message.timestamp))
+    .replace(/\$message/g, stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`) || '*No contents*')}\n${attachments}`
 }
 
 async function messageDelete (this: CommandClient, msg: Message<GuildTextableChannel>) {
