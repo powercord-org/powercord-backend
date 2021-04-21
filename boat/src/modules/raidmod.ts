@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
+import type { CommandClient, GuildTextableChannel, Message } from 'eris'
 import { createHash } from 'crypto'
-import { CommandClient, GuildTextableChannel, Message } from 'eris'
 import { ban, softBan } from '../mod.js'
 import { enterRaidMode } from '../raidMode.js'
 import config from '../config.js'

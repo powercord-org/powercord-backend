@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import { CommandClient, GuildTextableChannel, Message } from 'eris'
+import type { CommandClient, GuildTextableChannel, Message } from 'eris'
 import { getBlacklist } from '../blacklistCache.js'
 import { isStaff } from '../util.js'
 import config from '../config.js'
