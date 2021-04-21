@@ -21,7 +21,6 @@
  */
 
 import type { CommandClient, Message, GuildTextableChannel, TextableChannel, TextChannel, OldMessage, User } from 'eris'
-import { getBlacklist } from '../blacklistCache.js'
 import config from '../config.js'
 
 // Thanks eris typings for sucking ass
@@ -30,16 +29,14 @@ type MessageLike = { id: string, author: User, channel: { name: string }, conten
 
 type SnipeRecord = { author: string, msg: string, channel: string, type: 'edit' | 'delete' }
 
+export const skipSnipe = new Set<string>()
+
 export const SNIPE_LIFETIME = 20
 const ZWS = '\u200B'
 const buffer = new Map<number, SnipeRecord>()
 
 function isPrivate (channel: TextChannel) {
   return Boolean((channel.permissionOverwrites.get(channel.guild.id)?.deny ?? 0n) & 1024n)
-}
-
-function containsBlacklist (content: string) : boolean {
-  return getBlacklist().some((word) => content.toLowerCase().includes(word))
 }
 
 async function store (msg: MessageLike, type: 'edit' | 'delete') {
@@ -63,10 +60,11 @@ function processEdit (msg: Message<GuildTextableChannel>, old: OldMessage | null
 }
 
 function processDelete (msg: PossiblyUncachedMessage) {
-  if (!('author' in msg) || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || isPrivate(msg.channel) || containsBlacklist(msg.content)) {
+  if (!('author' in msg) || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || isPrivate(msg.channel) || skipSnipe.has(msg.id)) {
     return // Ignore
   }
 
+  skipSnipe.delete(msg.id)
   store(msg, 'delete')
 }
 

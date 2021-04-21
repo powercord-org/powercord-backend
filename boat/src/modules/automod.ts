@@ -22,6 +22,7 @@
 
 import type { CommandClient, Message, GuildTextableChannel } from 'eris'
 import { deleteMeta } from './logger.js'
+import { skipSnipe } from './sniper.js'
 import config from '../config.js'
 
 const INVITE_RE_SRC = '(?:https?:\\/\\/)?(?:www\\.)?(discord\\.(?:gg|io|me|li|link|list|media)|(?:discord(?:app)?|watchanimeattheoffice)\\.com\\/invite)\\/(.+[a-zA-Z0-9])'
@@ -52,12 +53,13 @@ export default function (bot: CommandClient) {
           if (inv && inv.guild?.id === config.discord.ids.serverId) continue
         }
 
+        skipSnipe.add(msg.id)
         deleteMeta.set(msg.id, 'Advertisement')
         msg.delete('Message contained advertisement')
         msg.channel.createMessage({
           content: `<@${msg.author.id}> **Rule #02**: Advertising of any kind is prohibited.`,
           allowedMentions: { users: [ msg.author.id ] },
-        })
+        }).then((m) => setTimeout(() => m.delete(), 10e3))
 
         return
       }
@@ -69,12 +71,13 @@ export default function (bot: CommandClient) {
       const words = msg.content.replace(EMOJI_RE, '').split(/\s+/g).filter(Boolean).length
       const max = Math.floor(words * MAX_EMOJI_THRESHOLD_MULTIPLIER)
       if (emojis > max) {
+        skipSnipe.add(msg.id)
         deleteMeta.set(msg.id, 'Emoji spam')
         msg.delete('Message contained too many emojis')
         msg.channel.createMessage({
           content: `<@${msg.author.id}> **Rule #03**: Spam of any kind is prohibited.\nConsider reducing the amount of emojis in your message.`,
           allowedMentions: { users: [ msg.author.id ] },
-        })
+        }).then((m) => setTimeout(() => m.delete(), 10e3))
 
         return
       }
