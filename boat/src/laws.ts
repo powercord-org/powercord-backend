@@ -33,6 +33,11 @@ let commerceLaws: Map<number, CommerceLaw> = new Map()
 let commerceDefinitions: CommerceDefinition[] = []
 
 async function loadCivilLaws (bot: CommandClient) {
+  if (!config.discord.ids.channelRules) {
+    console.log('no channel ids provided for server rules. skipping rules loading.')
+    return
+  }
+
   const guild = bot.guilds.get(config.discord.ids.serverId)
   if (!guild) {
     // Try again in a bit, bot not ready or guild unavailable

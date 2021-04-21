@@ -135,6 +135,11 @@ function memberRemove (this: CommandClient, guild: Guild, member: Member | Membe
 }
 
 export default function (bot: CommandClient) {
+  if (!config.discord.ids.channelMemberLogs) {
+    console.log('no channel ids provided for member logs. module will be disabled.')
+    return
+  }
+
   bot.on('guildMemberAdd', memberAdd)
   bot.on('guildMemberUpdate', memberUpdate)
   bot.on('guildMemberRemove', memberRemove)

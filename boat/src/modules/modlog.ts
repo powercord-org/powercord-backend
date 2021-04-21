@@ -158,6 +158,11 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
 }
 
 export default function (bot: CommandClient) {
+  if (!config.discord.ids.channelModLogs) {
+    console.log('no channel ids provided for mod logs. module will be disabled.')
+    return
+  }
+
   bot.on('guildBanAdd', delayedFunction(processBanFactory('add')))
   bot.on('guildBanRemove', delayedFunction(processBanFactory('remove')))
   bot.on('guildMemberRemove', delayedFunction(processMemberLeave))

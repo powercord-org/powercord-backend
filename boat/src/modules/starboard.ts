@@ -156,6 +156,11 @@ async function process (msg: Message<GuildTextableChannel>, emoji: PartialEmoji,
 }
 
 export default function (bot: CommandClient) {
+  if (!config.discord.ids.channelCuteboard || !config.discord.ids.channelStarboard) {
+    console.log('no channel ids provided for starboard. module will be disabled.')
+    return
+  }
+
   bot.on('messageReactionAdd', (msg, emoji, user) => process(msg as Message<GuildTextableChannel>, emoji, user))
   bot.on('messageReactionRemove', (msg, emoji, user) => process(msg as Message<GuildTextableChannel>, emoji, { id: user }))
   bot.on('messageReactionRemoveAll', (msg) => updateStarCount(msg as Message<GuildTextableChannel>, 0, false))

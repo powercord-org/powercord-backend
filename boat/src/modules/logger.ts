@@ -80,6 +80,11 @@ async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<Guild
 }
 
 export default function (bot: CommandClient) {
+  if (!config.discord.ids.channelMessageLogs) {
+    console.log('no channel ids provided for message logs. module will be disabled.')
+    return
+  }
+
   bot.on('messageDelete', messageDelete)
   bot.on('messageDeleteBulk', messageDeleteBulk)
 }
