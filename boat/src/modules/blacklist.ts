@@ -41,4 +41,5 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
 
 export default function (bot: CommandClient) {
   bot.on('messageCreate', process)
+  bot.on('messageUpdate', process)
 }
