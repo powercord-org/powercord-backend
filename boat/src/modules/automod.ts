@@ -21,6 +21,7 @@
  */
 
 import type { CommandClient, Message, GuildTextableChannel } from 'eris'
+import { deleteMeta } from './logger.js'
 import config from '../config.js'
 
 const INVITE_RE_SRC = '(?:https?:\\/\\/)?(?:www\\.)?(discord\\.(?:gg|io|me|li|link|list|media)|(?:discord(?:app)?|watchanimeattheoffice)\\.com\\/invite)\\/(.+[a-zA-Z0-9])'
@@ -39,7 +40,7 @@ const MAX_EMOJI_THRESHOLD_MULTIPLIER = 0.3 // Amount of words * mult (floored) =
 
 export default function (bot: CommandClient) {
   bot.on('messageCreate', async (msg: Message<GuildTextableChannel>) => {
-    if (msg.guildID !== config.discord.ids.serverId) return null
+    if (msg.guildID !== config.discord.ids.serverId || msg.author.bot) return null
 
     // Filter ads
     const invites = msg.content.match(INVITE_RE_G)
@@ -51,6 +52,7 @@ export default function (bot: CommandClient) {
           if (inv && inv.guild?.id === config.discord.ids.serverId) continue
         }
 
+        deleteMeta.set(msg.id, 'Advertisement')
         msg.delete('Message contained advertisement')
         msg.channel.createMessage({
           content: `<@${msg.author.id}> **Rule #02**: Advertising of any kind is prohibited.`,
@@ -67,6 +69,7 @@ export default function (bot: CommandClient) {
       const words = msg.content.replace(EMOJI_RE, '').split(/\s+/g).filter(Boolean).length
       const max = Math.floor(words * MAX_EMOJI_THRESHOLD_MULTIPLIER)
       if (emojis > max) {
+        deleteMeta.set(msg.id, 'Emoji spam')
         msg.delete('Message contained too many emojis')
         msg.channel.createMessage({
           content: `<@${msg.author.id}> **Rule #03**: Spam of any kind is prohibited.\nConsider reducing the amount of emojis in your message.`,

@@ -27,14 +27,16 @@ import config from '../config.js'
 
 type MessagePartial = { id: string, channel: GuildTextableChannel }
 
+export const deleteMeta = new Map<string, string>()
+
 const ZWS = '\u200B'
-const SINGLE_TEMPLATE = `Message deleted in <#$channelId>
+const SINGLE_TEMPLATE = `Message deleted in <#$channelId> $meta
 Author: $username#$discrim ($userId; <@$userId>)
 Timestamp: $time ($duration ago)
 Message contents: \`\`\`
 $message
 \`\`\``
-const LIST_TEMPLATE = `Message deleted in #$channel
+const LIST_TEMPLATE = `Message deleted in #$channel $meta
 Author: $username#$discrim ($userId)
 Timestamp: $time ($duration ago)
 Message contents:
@@ -45,7 +47,13 @@ function format (template: string, message: Message<GuildTextableChannel>): stri
     ? `Attachments:\n${message.attachments.map((attachment) => attachment.filename).join(', ')}`
     : ''
 
+  const meta = deleteMeta.has(message.id)
+    ? `\nReason: ${deleteMeta.get(message.id)}`
+    : ''
+
+  deleteMeta.delete(message.id)
   return `${template
+    .replace(/\$meta/g, meta)
     .replace(/\$userId/g, message.author.id)
     .replace(/\$channelId/g, message.channel.id)
     .replace(/\$channel/g, message.channel.name)

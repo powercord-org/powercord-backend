@@ -21,17 +21,17 @@
  */
 
 import type { CommandClient, GuildTextableChannel, Message } from 'eris'
+import { deleteMeta } from './logger.js'
 import { getBlacklist } from '../blacklistCache.js'
 import { isStaff } from '../util.js'
-import config from '../config.js'
 
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (!msg.member || msg.author.bot || isStaff(msg.member)) return
 
   const blacklist = getBlacklist()
   if (blacklist.some((word) => msg.content.toLowerCase().includes(word))) {
+    deleteMeta.set(msg.id, 'Contained a blacklisted word')
     msg.delete('Message contained a blacklisted word.')
-    this.createMessage(config.discord.ids.channelMessageLogs, 'The below message was automatically deleted for containing a blacklisted word.')
     const warnMsg = await msg.channel.createMessage(`${msg.author.mention}, you used a word on the blacklist so I deleted your message.`)
     setTimeout(() => warnMsg.delete(), 10e3)
   }
