@@ -61,10 +61,10 @@ function processEdit (msg: Message<GuildTextableChannel>, old: OldMessage | null
 
 function processDelete (msg: PossiblyUncachedMessage) {
   if (!('author' in msg) || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || isPrivate(msg.channel) || skipSnipe.has(msg.id)) {
+    skipSnipe.delete(msg.id)
     return // Ignore
   }
 
-  skipSnipe.delete(msg.id)
   store(msg, 'delete')
 }
 
