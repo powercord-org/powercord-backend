@@ -23,6 +23,7 @@
 import type { CommandClient, Message, GuildTextableChannel } from 'eris'
 import { deleteMeta } from './logger.js'
 import { skipSnipe } from './sniper.js'
+import { isStaff } from '../util.js'
 import config from '../config.js'
 
 const INVITE_RE_SRC = '(?:https?:\\/\\/)?(?:www\\.)?(discord\\.(?:gg|io|me|li|link|list|media)|(?:discord(?:app)?|watchanimeattheoffice)\\.com\\/invite)\\/(.+[a-zA-Z0-9])'
@@ -40,7 +41,7 @@ const EMOJI_RE = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff
 const MAX_EMOJI_THRESHOLD_MULTIPLIER = 0.3 // Amount of words * mult (floored) = max amount of emojis allowed
 
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
-  if (msg.guildID !== config.discord.ids.serverId || msg.author.bot) return null
+  if (msg.guildID !== config.discord.ids.serverId || msg.author.bot || isStaff(msg.member)) return null
 
   // Filter ads
   const invites = msg.content.match(INVITE_RE_G)
