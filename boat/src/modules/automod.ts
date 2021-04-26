@@ -66,7 +66,7 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
   }
 
   // Filter emoji spam
-  const emojis = msg.content.match(EMOJI_RE)!.length
+  const emojis = msg.content.match(EMOJI_RE)?.length || 0
   if (emojis > 5) {
     const words = msg.content.replace(EMOJI_RE, '').split(/\s+/g).filter(Boolean).length
     const max = Math.floor(words * MAX_EMOJI_THRESHOLD_MULTIPLIER)
