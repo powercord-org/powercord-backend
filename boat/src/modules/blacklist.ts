@@ -26,11 +26,13 @@ import { skipSnipe } from './sniper.js'
 import { getBlacklist } from '../blacklistCache.js'
 import { isStaff } from '../util.js'
 
+const CLEANER = /\s|[^\u00-\u7F]/g
+
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (!msg.member || msg.author.bot || isStaff(msg.member)) return
 
   const blacklist = getBlacklist()
-  if (blacklist.some((word) => msg.content.toLowerCase().includes(word))) {
+  if (blacklist.some((word) => msg.content.replace(CLEANER, '').toLowerCase().includes(word))) {
     skipSnipe.add(msg.id)
     deleteMeta.set(msg.id, 'Contained a blacklisted word')
     msg.delete('Message contained a blacklisted word.')
