@@ -23,7 +23,7 @@
 import type { CommandClient, Message, GuildTextableChannel } from 'eris'
 import { deleteMeta } from './logger.js'
 import { skipSnipe } from './sniper.js'
-// import { isStaff } from '../util.js'
+import { isStaff } from '../util.js'
 import config from '../config.js'
 
 const INVITE_RE_SRC = '(?:https?:\\/\\/)?(?:www\\.)?(discord\\.(?:gg|io|me|li|link|list|media)|(?:discord(?:app)?|watchanimeattheoffice)\\.com\\/invite)\\/(.+[a-zA-Z0-9])'
@@ -44,7 +44,7 @@ const MAX_EMOJI_THRESHOLD_MULTIPLIER = 0.3 // Amount of words * mult (floored) =
 export const BLACKLIST_CACHE: string[] = []
 
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
-  if (msg.guildID !== config.discord.ids.serverId || msg.author.bot /* || isStaff(msg.member) */) return null
+  if (msg.guildID !== config.discord.ids.serverId || msg.author.bot || isStaff(msg.member)) return null
 
   // Filter bad words
   if (!BLACKLIST_CACHE.length) {
