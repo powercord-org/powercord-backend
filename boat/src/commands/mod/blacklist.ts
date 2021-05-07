@@ -21,7 +21,7 @@
  */
 
 import { GuildTextableChannel, Message } from 'eris'
-import { getBlacklist, loadBlacklist } from '../../blacklistCache.js'
+import { BLACKLIST_CACHE } from '../../modules/automod.js'
 import { isStaff } from '../../util.js'
 import config from '../../config.js'
 
@@ -40,9 +40,11 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
   }
 
   switch (args.shift()) {
-    case 'show':
-      msg.channel.createMessage(getBlacklist().length > 0 ? `\`${getBlacklist().join('`, `')}\`` : 'The blacklist has no entries.')
+    case 'show': {
+      const list = await msg._client.mongo.collection('blacklist').find().toArray()
+      msg.channel.createMessage(list.length > 0 ? `\`${list.map((e) => e.word).join('`, `')}\`` : 'The blacklist has no entries.')
       break
+    }
 
     case 'add':
       if (args.length === 0) {
@@ -51,8 +53,8 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
       }
 
       await msg._client.mongo.collection('blacklist').insertOne({ word: args.join(' ').toLowerCase() })
-      loadBlacklist(msg._client)
       msg.channel.createMessage(`Added \`${args.join(' ').toLowerCase()}\` to the blacklist.`)
+      while (BLACKLIST_CACHE.length) BLACKLIST_CACHE.pop()
       break
 
     case 'remove':
@@ -65,7 +67,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
       msg._client.mongo.collection('blacklist').findOneAndDelete({ word: args.join(' ').toLowerCase() })
         .then(({ value }) => {
           if (value) {
-            loadBlacklist(msg._client)
+            while (BLACKLIST_CACHE.length) BLACKLIST_CACHE.pop()
             msg.channel.createMessage(`Removed \`${args.join(' ').toLowerCase()}\` fom the blacklist.`)
           } else {
             msg.channel.createMessage(`\`${args.join(' ').toLowerCase()}\` was not found in the blacklist.`)
