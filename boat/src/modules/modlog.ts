@@ -22,12 +22,24 @@
 
 import type { CommandClient, Guild, GuildAuditLogEntry, Role, User } from 'eris'
 import { Constants } from 'eris'
+import { sanitizeMarkdown } from '../util.js'
 import config from '../config.js'
 
 const TEMPLATE = `**$type | Case $case**
 __User__: $user ($userid)
 __Moderator__: $moderator ($modid)
 __Reason__: $reason`
+
+function format (type: string, caseId: string, user: User, modName: string, modId: string, reason: string) {
+  return TEMPLATE
+    .replace('$type', type)
+    .replace('$case', caseId)
+    .replace('$user', `${sanitizeMarkdown(user.username)}#${user.discriminator}`)
+    .replace('$userid', user.id)
+    .replace('$moderator', sanitizeMarkdown(modName))
+    .replace('$modid', modId)
+    .replace('$reason', reason)
+}
 
 function delayedFunction (fn: Function): () => void {
   return function (this: CommandClient, ...args: unknown[]) {
@@ -77,18 +89,12 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
 
     // todo: unsafe non-null assertion
     const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
+    const realType = type === 'add' ? soft ? 'Kick' : 'Ban' : 'Unban'
 
-    this.createMessage(
-      config.discord.ids.channelModLogs,
-      TEMPLATE
-        .replace('$type', type === 'add' ? soft ? 'Kick' : 'Ban' : 'Unban')
-        .replace('$case', String(caseId))
-        .replace('$user', `${user.username}#${user.discriminator}`)
-        .replace('$userid', user.id)
-        .replace('$moderator', modName)
-        .replace('$modid', modId)
-        .replace('$reason', reason)
-    )
+    this.createMessage(config.discord.ids.channelModLogs, {
+      content: format(realType, String(caseId), user, modName, modId, reason),
+      allowedMentions: {}
+    })
   }
 }
 
@@ -103,17 +109,10 @@ async function processMemberLeave (this: CommandClient, guild: Guild, user: User
     // todo: unsafe non-null assertion
     const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
 
-    this.createMessage(
-      config.discord.ids.channelModLogs,
-      TEMPLATE
-        .replace('$type', 'Kick')
-        .replace('$case', String(caseId))
-        .replace('$user', `${user.username}#${user.discriminator}`)
-        .replace('$userid', user.id)
-        .replace('$moderator', modName)
-        .replace('$modid', modId)
-        .replace('$reason', reason)
-    )
+    this.createMessage(config.discord.ids.channelModLogs, {
+      content: format('Kick', String(caseId), user, modName, modId, reason),
+      allowedMentions: {}
+    })
   }
 }
 
@@ -141,17 +140,10 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
     const [ modId, modName, reason ] = extractEntryData(entry)
     const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
 
-    this.createMessage(
-      config.discord.ids.channelModLogs,
-      TEMPLATE
-        .replace('$type', wasAdded ? 'Mute' : 'Unmute')
-        .replace('$case', String(caseId))
-        .replace('$user', `${user.username}#${user.discriminator}`)
-        .replace('$userid', user.id)
-        .replace('$moderator', modName)
-        .replace('$modid', modId)
-        .replace('$reason', reason)
-    )
+    this.createMessage(config.discord.ids.channelModLogs, {
+      content: format(wasAdded ? 'Mute' : 'Unmute', String(caseId), user, modName, modId, reason),
+      allowedMentions: {}
+    })
 
     break
   }
@@ -163,6 +155,8 @@ export default function (bot: CommandClient) {
     return
   }
 
+  // [Cynthia] delay is added so we can deal with Discord's eventual consistency.
+  // Audit log entries may not be available immediately.
   bot.on('guildBanAdd', delayedFunction(processBanFactory('add')))
   bot.on('guildBanRemove', delayedFunction(processBanFactory('remove')))
   bot.on('guildMemberRemove', delayedFunction(processMemberLeave))

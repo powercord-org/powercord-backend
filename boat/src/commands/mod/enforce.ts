@@ -71,7 +71,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
   }
 
   if (!rules.penalties) {
-    msg.channel.createMessage('This rule doesn \'t have actions tied to it.')
+    msg.channel.createMessage('This rule doesn\'t have actions tied to it.')
     return
   }
 

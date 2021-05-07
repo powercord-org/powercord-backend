@@ -129,7 +129,17 @@ export function isStaff (member: Member | string, guild?: Guild): boolean {
     return member.permissions.has('manageMessages')
   }
 
-  if (!guild) throw new Error('Guild required when using user id.')
+  if (!guild) throw new TypeError('Guild required when using user id.')
 
   return guild.members.get(member)?.permissions.has('manageMessages') ?? false
+}
+
+/**
+ * Sanitizes a markdown string to prevent them from being parsed (for example by the Discord client)
+ *
+ * @param md Markdown string to sanitize
+ * @returns The sanitized string
+ */
+export function sanitizeMarkdown (md: string): string {
+  return md.replace(/[*_~`>\\]/g, '\\$1')
 }

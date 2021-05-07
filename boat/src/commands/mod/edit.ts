@@ -21,7 +21,7 @@
  */
 
 import type { GuildTextableChannel, Message } from 'eris'
-import { isStaff } from '../../util.js'
+import { isStaff, sanitizeMarkdown } from '../../util.js'
 import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}edit <caseId> <newReason>`
@@ -58,7 +58,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
 
   const content = message.content.match(/([^]+)\n__Reason__/)![1]
   if (modId !== msg.author.id) {
-    newReason += ` *(edited by ${msg.author.username}#${msg.author.discriminator})*`
+    newReason += ` *(edited by ${sanitizeMarkdown(msg.author.username)}#${msg.author.discriminator})*`
   }
 
   await message.edit(`${content}\n__Reason__: ${newReason}`)
