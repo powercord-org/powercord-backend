@@ -22,10 +22,10 @@ import { inject, uninject } from '@powercord/injector'
 ## Injecting
 ###### `inject` signature
 ```js
-type ClassicInjectionFunction = (args: any[], res: any) => any
+type InjectionFunction = (args: any[], res: any) => any
 type PreInjectionFunction = (args: any[]) => { args: any[] } | { res: any }
 
-function inject(id: string, mdl: any, method: string, fn: ClassicInjectionFunction, before?: false): void
+function inject(id: string, mdl: any, method: string, fn: InjectionFunction, before?: false): void
 function inject(id: string, mdl: any, method: string, fn: PreInjectionFunction, before: true): void
 ```
 

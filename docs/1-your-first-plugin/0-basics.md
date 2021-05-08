@@ -29,13 +29,13 @@ Here's an example of the bare-minimum manifest, with only the required keys. Mos
 
 ###### Example manifest
 ```json
-{ 
+{
   "name": "Heygirl", // Plugin name.
   // We recommend to put a relatively short, but detailed description
   "description": "Replaces all images currently on screen by a random picture of Ryan Gosling",
   "author": "Powercord Team", // Plugin author.
   "version": "1.0.0", // Plugin version; 0.xxx or xxx-beta will show up as "Beta".
-  "license": "BSD-3-Clause" // Plugin license, must be a valid SPDX identifier.
+  "license": "BSD-3-Clause" // Plugin license, should be a valid SPDX identifier.
 }
 ```
 
