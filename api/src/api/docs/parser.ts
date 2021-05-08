@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-// cynthia's note: this won't work ootb since it required editing the 4 files and append `.js` to imports.
 import type { MarkdownNode } from './spoonfeed/src/types/markdown.js'
 import { MarkdownType } from './spoonfeed/src/types/markdown.js'
 import parseMarkup from './spoonfeed/src/markdown/parser.js'
