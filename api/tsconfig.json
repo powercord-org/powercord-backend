@@ -4,10 +4,10 @@
     "alwaysStrict": true,
     "strictNullChecks": true,
     "strictBindCallApply": true,
-    "strictFunctionTypes": true, 
+    "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
     "incremental": true,
-  
+
     "noEmitOnError": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
@@ -23,5 +23,11 @@
     "moduleResolution": "node",
     "outDir": "../dist/api"
   },
-  "include": [ "src/**/*" ]
+  "include": [
+    "src/**/*",
+    "src/api/docs/spoonfeed/src/markdown/**/*"
+  ],
+  "exclude": [
+    "src/api/docs/spoonfeed/**/*",
+  ]
 }

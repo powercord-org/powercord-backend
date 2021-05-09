@@ -21,58 +21,66 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import type { Document } from './markdown.js'
+import type { Document } from './parser.js'
 import { URL } from 'url'
 import { readdir, readFile } from 'fs/promises'
 import fetch from 'node-fetch'
-import markdown from './markdown.js'
+import markdown from './parser.js'
 
 type GetDocParams = { category: string, document: string }
-type DocsStore = Array<{ id: string, name: string, docs: Array<Document & { id: string }> }>
-
-// todo: use maps instead
-const docsStore: DocsStore = []
+type Category = { name: string, docs: Map<string, Document> }
+const docsStore = new Map<string, Category>()
 const remoteCache = new Map<string, Document>()
 
 function listCategories (this: FastifyInstance, _: FastifyRequest, reply: FastifyReply): void {
-  reply.send(docsStore.map((c) => ({ ...c, docs: c.docs.map((d) => ({ ...d, contents: void 0 })) })))
+  reply.send(
+    Array.from(docsStore.entries()).map(([ id, category ]) => ({
+      id: id,
+      name: category.name,
+      docs: Array.from(category.docs.entries()).map(([ id, doc ]) => ({
+        id: id,
+        title: doc.title,
+        parts: doc.parts
+      }))
+    }))
+  )
 }
 
 function getDocument (this: FastifyInstance, request: FastifyRequest<{ Params: GetDocParams }>, reply: FastifyReply): void {
   const { category, document } = request.params
-  const cat = docsStore.find((c) => c.id === category)
-  if (!cat) return void reply.callNotFound()
-  // @ts-expect-error -- smth I prolly fixed in rewrite; cba
-  const doc = cat.find((d) => d.id === document)
-  if (!doc) return void reply.callNotFound()
-  reply.send(document)
+  if (!docsStore.has(category)) return void reply.callNotFound()
+  const cat = docsStore.get(category)!
+  if (!cat.docs.has(document)) return void reply.callNotFound()
+  reply.send(cat.docs.get(document))
 }
 
-async function getRemoteDocument (url: string): Promise<unknown> { // todo
+async function getRemoteDocument (url: string): Promise<Document> {
   if (!remoteCache.has(url)) {
     const md = await fetch(url).then((r) => r.text())
     remoteCache.set(url, markdown(md))
     setTimeout(() => remoteCache.delete(url), 300e3)
   }
-  return remoteCache.get(url)
+
+  return remoteCache.get(url)!
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
-  const docsUrl = new URL('../../../../docs/', import.meta.url)
+  const docsUrl = new URL('../../../../documentation/', import.meta.url)
   for (const cat of await readdir(docsUrl)) {
-    const catId = cat.split('-')[1]
-    const docs = []
+    if (cat === 'LICENSE' || cat === 'README.md' || cat === '.git' || cat === '.DS_Store') continue
+
+    const catId = cat.replace(/^\d+-/, '')
+    const docs = new Map<string, Document>()
     const catUrl = new URL(`${cat}/`, docsUrl)
     for (const document of await readdir(catUrl)) {
       const docUrl = new URL(document, catUrl)
       const md = await readFile(docUrl, 'utf8')
-      docs.push({ id: document.split('.')[0], ...markdown(md) })
+      docs.set(document.split('.')[0].replace(/^\d+-/, ''), markdown(md))
     }
 
-    docsStore.push({
-      id: catId,
-      name: catId.split('_').map((s) => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
-      docs: docs,
+    docsStore.set(catId, {
+      name: catId.split('-').map(s => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
+      docs
     })
   }
 

@@ -15,19 +15,26 @@
     "allowUnreachableCode": false,
     // "allowJs": false,
 
-    "lib": [ "es2020.string", "es2020.bigint" ],
+    "lib": [ "dom", "es2020.string", "es2020.bigint" ],
     "jsx": "preserve",
     "baseUrl": "src",
     "paths": {
       "@components/*": [ "components/*" ],
       "@styles/*": [ "styles/*" ],
       "@assets/*": [ "assets/*" ],
-      "@constants": [ "constants.js" ],
+      "@constants": [ "constants.ts" ],
       "@util": [ "util.js" ]
     },
 
     "target": "es6",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   },
-  "include": [ "./src/**/*" ]
+  "include": [
+    "src/**/*",
+    "../api/src/api/docs/spoonfeed/src/markdown/**/*"
+  ],
+  "exclude": [
+    "../api/src/api/docs/spoonfeed/**/*",
+  ]
 }

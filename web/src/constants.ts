@@ -24,15 +24,16 @@ export const Endpoints = Object.freeze({
   LOGIN: '/api/v2/login',
   LOGOUT: '/api/v2/logout',
   ADVISORIES: '/api/v2/advisories',
-  ADVISORY: (id) => `/api/v2/advisories/${id}`,
+  ADVISORY: (id: string) => `/api/v2/advisories/${id}`,
   LINK_SPOTIFY: '/api/v2/oauth/spotify',
   UNLINK_SPOTIFY: '/api/v2/oauth/spotify/unlink',
   YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
   CONTRIBUTORS: '/api/v2/stats/contributors',
   STATS: '/api/v2/stats/numbers',
   DOCS_CATEGORIES: '/api/v2/docs/categories',
-  DOCS_DOCUMENT: (doc) => `/api/v2/docs/${doc}`,
-  USER_AVATAR: (id) => `/api/v2/avatar/${id}.png`
+  DOCS_DOCUMENT: (doc: string) => `/api/v2/docs/${doc}`,
+  DOCS_CATEGORIZED: (cat: string, doc: string) => `/api/v2/docs/${cat}/${doc}`,
+  USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`
 })
 
 export const Routes = Object.freeze({
@@ -44,10 +45,11 @@ export const Routes = Object.freeze({
   FAQ: '/faq',
   STORE: '/store',
   DOCS: '/docs',
+  DOCS_ITEM: (cat: string, doc: string) => `/docs/${cat}/${doc}`,
   GUIDELINES: '/guidelines',
   INSTALLATION: '/installation',
   ADVISORIES: '/advisories',
-  ADVISORY: (id) => `/advisories/${id}`,
+  ADVISORY: (id: string) => `/advisories/${id}`,
   LISTING_AGREEMENT: '/listing-agreement',
   PORKORD_LICENSE: '/porkord-license',
   TERMS: '/legal/tos',

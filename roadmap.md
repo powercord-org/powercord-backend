@@ -10,7 +10,7 @@
        - [x] Webhooks (**needs testing**)
        - [ ] Manual sync
  - [ ] Deeplinks
-       - See [this](https://github.com/powercord-org/powercord/blob/v2-dev/src/Powercord/plugins/pc-moduleManager/deeplinks.js)
+       - See [this](https://github.com/powercord-org/powercord/blob/c3ede4b623f5dc785da07babac2ffa78abb2d4e5/src/Powercord/plugins/pc-moduleManager/deeplinks.js)
 
 ## Powercord Store
  - [ ] Public APIs
@@ -23,7 +23,7 @@
 
 ## And then
  - [x] Cool graphs because joakim likes graphs
- - [ ] Browser-accessible documentation (powercord.dev/docs)
+ - [x] Browser-accessible documentation (powercord.dev/docs)
  - [ ] Internationalize the website (why not?)
  - [x] Mod commands + temporary sanctions through the bot (tempmute, tempban)
  - [ ] Migrate website to TypeScript + Preact + hoofd

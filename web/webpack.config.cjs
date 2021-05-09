@@ -35,6 +35,7 @@ const { DefinePlugin, HotModuleReplacementPlugin, optimize: { LimitChunkCountPlu
 const IS_DEV = process.env.NODE_ENV === 'development'
 const SRC = join(__dirname, 'src')
 const OUT = join(__dirname, '..', 'dist', 'web')
+const SPOONFEED = join(__dirname, '..', 'api', 'src', 'api', 'docs', 'spoonfeed')
 
 const baseConfig = {
   mode: IS_DEV ? 'development' : 'production',
@@ -49,13 +50,20 @@ const baseConfig = {
     publicPath: '/dist/'
   },
   resolve: {
-    extensions: [ '.js', '.jsx' ],
+    extensions: [ '.js', '.ts', '.jsx', '.tsx' ],
     alias: {
       '@components': join(SRC, 'components'),
       '@styles': join(SRC, 'styles'),
       '@assets': join(SRC, 'assets'),
-      '@constants': join(SRC, 'constants.js'),
-      '@util': join(SRC, 'util.js')
+      '@constants': join(SRC, 'constants.ts'),
+      '@util': join(SRC, 'util.js'),
+      [join(SPOONFEED, 'src', 'util.js')]: join(SPOONFEED, 'src', 'util.ts'),
+      [join(SPOONFEED, 'src', 'types', 'markdown.js')]: join(SPOONFEED, 'src', 'types', 'markdown.ts')
+    },
+    fallback: {
+      path: false,
+      fs: false,
+      'fs/promises': false
     }
   },
   module: {
@@ -64,7 +72,7 @@ const baseConfig = {
       {
         test: /\.(ts|js)x?/,
         type: 'javascript/auto',
-        include: SRC,
+        include: [ SRC, SPOONFEED ],
         use: [
           {
             loader: 'babel-loader',
@@ -76,7 +84,13 @@ const baseConfig = {
               plugins: [
                 '@babel/syntax-dynamic-import',
                 '@babel/proposal-object-rest-spread',
-                IS_DEV ? 'react-refresh/babel' : null
+                IS_DEV ? 'react-refresh/babel' : null,
+                [ 'prismjs', {
+                  languages: [ 'javascript', 'css', 'scss', 'json' ],
+                  plugins: [ 'line-numbers' ],
+                  theme: 'tomorrow',
+                  css: true
+                } ]
               ].filter(Boolean)
             }
           }
@@ -106,7 +120,7 @@ const baseConfig = {
       {
         test: /\.s?css$/,
         use: [
-          MiniCSS.loader,
+          IS_DEV ? 'style-loader' : MiniCSS.loader,
           'css-loader',
           {
             loader: 'postcss-loader',
@@ -221,6 +235,7 @@ if (IS_DEV) {
     }
   )
 
+  const baseUse = baseConfig.module.rules[0].use[baseConfig.module.rules[0].use.length - 1]
   const nodeCfg = {
     ...baseConfig,
     entry: './components/App.jsx',
@@ -230,6 +245,25 @@ if (IS_DEV) {
       libraryTarget: 'commonjs',
       path: join(__dirname, '..', 'dist', 'api', 'web'),
       publicPath: '/dist/'
+    },
+    module: {
+      ...baseConfig.module,
+      rules: [
+        {
+          ...baseConfig.module.rules[0],
+          use: [
+            ...baseConfig.module.rules[0].use.slice(0, baseConfig.module.rules[0].use.length - 2),
+            {
+              ...baseUse,
+              options: {
+                ...baseUse.options,
+                plugins: baseUse.options.plugins.slice(0, baseUse.options.plugins.length - 2)
+              }
+            }
+          ]
+        },
+        ...baseConfig.module.rules.slice(1)
+      ]
     },
     plugins: [
       ...baseConfig.plugins.slice(3), // Slice manifest, build side, sri

@@ -32,6 +32,7 @@ import Account from './Account'
 import Contributors from './Contributors'
 import Stats from './Stats'
 import Branding from './Branding'
+import Documentation from './Documentation'
 import Advisories from './Advisories/List'
 import Advisory from './Advisories/Advisory'
 import MarkdownDocument from './MarkdownDocument'
@@ -93,8 +94,8 @@ function Router () {
         {process.env.NODE_ENV === 'development' ? <BackofficeWrapper/> : <Soon/>}
       </Route>
       {/* Documents */}
-      <Route path={Routes.DOCS} exact>
-        <main>todo</main>
+      <Route path={[ Routes.DOCS, Routes.DOCS_ITEM(':category', ':document') ]} exact>
+        {process.env.NODE_ENV === 'development' ? <Documentation/> : <Soon/>}
       </Route>
       <Route path={Routes.FAQ} exact>
         <Helmet>

@@ -1,0 +1,253 @@
+/*
+ * Copyright (c) 2018-2021 aetheryx & Cynthia K. Rey
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+.container {
+  display: flex;
+  overflow: hidden;
+  border-top: 2px #202020 solid;
+  position: relative;
+}
+
+.sidebar {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  z-index: 1;
+
+  &::before {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    content: '';
+    background-color: rgba(0, 0, 0, .6);
+    pointer-events: none;
+    transition: opacity .3s;
+    opacity: 0;
+    flex: 1;
+  }
+}
+
+.title {
+  width: 100%;
+  height: 38px;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  background-color: #202020;
+  pointer-events: all;
+  position: relative;
+  z-index: 2;
+  top: 0;
+}
+
+.burgerking {
+  width: 16px;
+  height: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-right: 8px;
+  cursor: pointer;
+
+  span {
+    width: 100%;
+    height: 2px;
+    background-color: #efefef;
+    transform-origin: 0 50%;
+    transition: opacity .3s, transform .3s;
+  }
+}
+
+.inner {
+  z-index: 2;
+  height: 100%;
+  position: relative;
+  transform: translateX(-100%);
+  transition: transform .3s;
+  background-color: #252525;
+  flex-direction: column;
+  align-items: flex-end;
+  overflow-y: scroll;
+  padding: 20px;
+  display: flex;
+  width: 275px;
+  z-index: 1;
+  top: 0;
+
+  h3, a {
+    width: 205px;
+  }
+
+  h3 {
+    margin: 0;
+    margin-top: 8px;
+    font-size: 16px;
+    margin-bottom: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #000;
+
+    &:first-of-type {
+      padding: 0;
+      border-top-width: 0;
+    }
+  }
+
+  a {
+    padding: 6px 12px;
+    margin-bottom: 2px;
+    border-radius: 3px;
+    margin-bottom: 4px;
+    color: inherit;
+
+    &:hover {
+      background-color: #272727;
+      text-decoration: none;
+    }
+
+    &.active {
+      background-color: #303030;
+    }
+  }
+}
+
+.sidebar.opened {
+  pointer-events: all;
+
+  &::before {
+    pointer-events: initial;
+    opacity: 1;
+  }
+
+  .burgerking {
+    pointer-events: none;
+
+    span:nth-child(1) {
+      transform: rotate(47deg);
+    }
+
+    span:nth-child(2) {
+      display: none;
+    }
+
+    span:nth-child(3) {
+      transform: rotate(-47deg);
+    }
+  }
+
+  .inner {
+    transform: translateX(0);
+  }
+}
+
+.contents {
+  flex: 1;
+  position: relative;
+  padding: 24px;
+  width: 100%;
+  max-width: 1024px;
+  overflow-y: auto;
+  margin-top: 36px;
+
+  h1 {
+    display: none;
+  }
+
+  main {
+    margin-top: -24px;
+  }
+}
+
+/* Scrollbar */
+.container::-webkit-scrollbar, .container ::-webkit-scrollbar {
+  border-left-width: 0;
+}
+
+.inner {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb, &::-webkit-scrollbar-track {
+    border-width: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #151515;
+    min-height: 40px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #252525;
+    margin-bottom: 4px;
+  }
+}
+
+
+@media screen and (min-width: 1010px) {
+  .container {
+    overflow-y: scroll;
+    margin-top: 0;
+  }
+
+  .title {
+    display: none;
+  }
+
+  .sidebar {
+    top: 0;
+    position: sticky;
+    pointer-events: all;
+    width: 25%;
+
+    &::before {
+      content: none;
+    }
+  }
+
+  .inner {
+    width: 100%;
+    position: initial;
+    transform: none;
+  }
+
+  .contents {
+    margin-top: 0;
+    overflow-y: initial;
+
+    h1 {
+      display: block;
+    }
+
+    main {
+      margin-top: 0;
+    }
+  }
+}

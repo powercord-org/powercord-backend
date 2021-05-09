@@ -20,6 +20,37 @@
  * SOFTWARE.
  */
 
-.container {
+import React from 'react'
+import Prism from 'prismjs'
 
+import style from '@styles/markdown.scss'
+
+function PrismComponent ({ language, code }) {
+  let lines = []
+  if (Prism.languages[language]) {
+    lines = Prism.highlight(code, Prism.languages[language], language)
+      .replace(
+        /<span class="([a-z ]+)">([^<]*)<\/span>/g,
+        (_, className, code) => code.split('\n').map(l => `<span class="${className}">${l}</span>`).join('\n')
+      )
+      .split('\n')
+  } else {
+    lines = code.replace(/</g, '&lt;').replace(/>/g, '&gt;').split('\n')
+  }
+
+  return (
+    <pre className={style.codeblock}>
+      <code>
+        {lines.map((line, i) => (
+          <div className={style.line}>
+            <div className={style.lineNumber}>{i + 1}</div>
+            <div dangerouslySetInnerHTML={{ __html: line }}/>
+          </div>
+        ))}
+      </code>
+    </pre>
+  )
 }
+
+PrismComponent.displayName = 'Prism'
+export default React.memo(PrismComponent)

@@ -21,6 +21,7 @@
  */
 
 import { memo, useContext } from 'react'
+import { Redirect } from 'react-router'
 
 import { Routes, Endpoints } from '@constants'
 import Container from './Container'
@@ -35,6 +36,12 @@ function AuthBoundary ({ children, staff }) {
         <h1>You must be authenticated to see this</h1>
         <a href={Endpoints.LOGIN}>Login</a>
       </Container>
+    )
+  }
+
+  if (staff && !user?.badges?.staff) {
+    return (
+      <Redirect to='/'/>
     )
   }
 
