@@ -25,44 +25,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* Ugly imports, but they do the trick for now */
 import type { MarkdownNode } from '../../../api/src/api/docs/spoonfeed/src/types/markdown'
 import { MarkdownType } from '../../../api/src/api/docs/spoonfeed/src/types/markdown'
 import { flattenToText } from '../../../api/src/api/docs/spoonfeed/src/markdown/util'
 import { sluggify } from '../../../api/src/api/docs/spoonfeed/src/util'
-
-/*
-  Extracted from spoonfeed
-
-  Heading = 'heading',
-  Paragraph = 'paragraph',
-  Quote = 'quote',
-  Note = 'note',
-  CodeBlock = 'code-block',
-  List = 'list',
-  ListItem = 'list-item',
-  Http = 'http',
-  Table = 'table',
-  Ruler = 'ruler',
-
-  // Inline
-  Text = 'text',
-  Bold = 'bold',
-  Italic = 'italic',
-  Underline = 'underline',
-  StrikeThrough = 'strike-through',
-  Code = 'code',
-  Link = 'link',
-  Email = 'email',
-  Anchor = 'anchor',
-  Document = 'document',
-  Image = 'image',
-  Video = 'video',
-
-  // Specifics
-  LineBreak = 'line-break',
-  HttpMethod = 'http-method',
-  HttpParam = 'http-param'
-*/
 
 import type { ReactNode } from 'react'
 import { createElement as h, memo, useEffect, useState } from 'react'
@@ -141,9 +108,9 @@ function renderMarkdownNode (node: MarkdownNode) {
     case MarkdownType.LINE_BREAK:
       return h('br')
     case MarkdownType.HTTP_METHOD:
-      return <mark>HttpMethod</mark> // todo
+      return <mark>HttpMethod</mark> // todo, currently unused
     case MarkdownType.HTTP_PARAM:
-      return <mark>HttpParam</mark> // todo
+      return <mark>HttpParam</mark> // todo, currently unused
   }
   return null
 }
@@ -173,14 +140,8 @@ const MarkdownDocument = ({ document: mdDocument }: { document: string }) => {
     if (!cached) {
       fetch(Endpoints.DOCS_DOCUMENT(mdDocument))
         .then(r => r.json())
-        .then(d => {
-          cache[mdDocument] = d
-          setDoc(d)
-        })
-        .catch(() => {
-          cache[mdDocument] = false
-          setDoc(false)
-        })
+        .then(d => setDoc(cache[mdDocument] = d))
+        .catch(() => setDoc(cache[mdDocument] = false))
     }
   }, [ mdDocument ])
 
@@ -207,7 +168,7 @@ const MarkdownDocument = ({ document: mdDocument }: { document: string }) => {
             <h1>{doc.title}</h1>
             {renderMarkdown(doc.contents)}
           </div>
-          )}
+        )}
     </Container>
   )
 }

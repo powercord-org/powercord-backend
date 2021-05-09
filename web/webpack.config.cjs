@@ -36,7 +36,7 @@ const COMMIT_HASH = require('child_process').execSync('git rev-parse HEAD').toSt
 const IS_DEV = process.env.NODE_ENV === 'development'
 const SRC = join(__dirname, 'src')
 const OUT = join(__dirname, '..', 'dist', 'web')
-const SPOONFEED = '/home/bowser/files/projects/borkenware/spoonfeed' // join(__dirname, '..', 'api', 'src', 'api', 'docs', 'spoonfeed')
+const SPOONFEED = join(__dirname, '..', 'api', 'src', 'api', 'docs', 'spoonfeed')
 
 const baseConfig = {
   mode: IS_DEV ? 'development' : 'production',

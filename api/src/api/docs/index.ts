@@ -65,9 +65,9 @@ async function getRemoteDocument (url: string): Promise<Document> {
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
-  const docsUrl = new URL('../../../../docs/', import.meta.url)
+  const docsUrl = new URL('../../../../documentation/', import.meta.url)
   for (const cat of await readdir(docsUrl)) {
-    if (cat === 'LICENSE' || cat === 'README.md') continue
+    if (cat === 'LICENSE' || cat === 'README.md' || cat === '.git' || cat === '.DS_Store') continue
 
     const catId = cat.replace(/^\d+-/, '')
     const docs = new Map<string, Document>()
