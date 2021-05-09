@@ -24,56 +24,10 @@ import type { GuildTextableChannel, Message } from 'eris'
 import type { CivilLaw } from '../../laws.js'
 import { mute, ban } from '../../mod.js'
 import { getCivilLaws } from '../../laws.js'
-import { parseDuration, prettyPrintTimeSpan } from '../../util.js'
+import { isStaff, parseDuration, prettyPrintTimeSpan } from '../../util.js'
 import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}enforce <mention> <ruleId>`
-
-export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
-  if (!msg.member) return // ???
-  if (!msg.member.permissions.has('manageMessages')) {
-    msg.channel.createMessage('no')
-    return
-  }
-
-  if (args.length < 2) {
-    msg.channel.createMessage(USAGE_STR)
-    return
-  }
-
-  const target = args.shift()!.replace(/<@!?(\d+)>/, '$1')
-  const ruleId = parseInt(args[0])
-  const rules = getCivilLaws().get(ruleId)
-
-  if (!rules) {
-    msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}`)
-    return
-  }
-
-  if (!rules.penalties) {
-    msg.channel.createMessage(`This rule doesn't have actions tied to it.`)
-    return
-  }
-
-  if (target === msg.author.id) {
-    msg.channel.createMessage('I thought you don\'t break rules')
-    return
-  }
-
-  // todo: userID -> userId
-  const cases = await msg._client.mongo.collection('enforce').countDocuments({ userID: target, rule: ruleId })
-  if (!rules.penalties[cases]) {
-    msg.channel.createMessage(`The maximum punishment has already been applied for rule #${ruleId}`)
-    return
-  }
-
-  await punish(msg, target, rules.penalties[cases], rules, ruleId)
-  msg._client.mongo.collection('enforce').insertOne({
-    userID: target, // todo: userID -> userId
-    rule: ruleId,
-    mod: `${msg.author.username}#${msg.author.discriminator}` // todo: store id instead
-  })
-}
 
 async function punish (msg: Message<GuildTextableChannel>, target: string, sentence: string, rule: CivilLaw, ruleId: number) { // punish me dadd- *ahem*
   const duration = (sentence.match(/^\d/) && parseDuration(sentence.split(' ')[0])) || void 0
@@ -93,4 +47,55 @@ async function punish (msg: Message<GuildTextableChannel>, target: string, sente
       msg.channel.createMessage(`Unable to process \`${sentence}\`, please mod manually.`)
       break
   }
+}
+
+export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
+  if (!msg.member) return // ???
+  if (!isStaff(msg.member)) {
+    msg.channel.createMessage('no')
+    return
+  }
+
+  if (args.length < 2) {
+    msg.channel.createMessage(USAGE_STR)
+    return
+  }
+
+  const target = args.shift()!.replace(/<@!?(\d+)>/, '$1')
+  const ruleId = parseInt(args[0], 10)
+  const rules = getCivilLaws().get(ruleId)
+
+  if (!rules) {
+    msg.channel.createMessage(`This rule doesn't exist.\n${USAGE_STR}`)
+    return
+  }
+
+  if (!rules.penalties) {
+    msg.channel.createMessage('This rule doesn\'t have actions tied to it.')
+    return
+  }
+
+  if (target === msg.author.id) {
+    msg.channel.createMessage('I thought you don\'t break rules')
+    return
+  }
+
+  if (isStaff(target, msg.channel.guild)) {
+    msg.channel.createMessage('https://tenor.com/qCDY.gif')
+    return
+  }
+
+  // todo: userID -> userId
+  const cases = await msg._client.mongo.collection('enforce').countDocuments({ userID: target, rule: ruleId })
+  if (!rules.penalties[cases]) {
+    msg.channel.createMessage(`The maximum punishment has already been applied for rule #${ruleId}`)
+    return
+  }
+
+  await punish(msg, target, rules.penalties[cases], rules, ruleId)
+  msg._client.mongo.collection('enforce').insertOne({
+    userID: target, // todo: userID -> userId
+    rule: ruleId,
+    mod: `${msg.author.username}#${msg.author.discriminator}`, // todo: store id instead
+  })
 }

@@ -20,30 +20,22 @@
  * SOFTWARE.
  */
 
-import fetch from 'node-fetch'
-import OAuth from './oauth.js'
-import config from '../config.js'
+import { Message, GuildTextableChannel } from 'eris'
+import { exitRaidMode, getRaidStatus } from '../../raidMode.js'
+import { isStaff } from '../../util.js'
 
-class Spotify extends OAuth {
-  constructor () {
-    super(
-      config.spotify.clientID,
-      config.spotify.clientSecret,
-      'https://accounts.spotify.com/authorize',
-      'https://accounts.spotify.com/api/token'
-    )
+export function executor (msg: Message<GuildTextableChannel>): void {
+  if (!msg.member) return // ???
+  if (!isStaff(msg.member)) {
+    msg.channel.createMessage('no')
+    return
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  get scopes () {
-    return config.spotify.scopes
+  if (!getRaidStatus()) {
+    msg.channel.createMessage('Raid mode is not currently active.')
+    return
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  async getCurrentUser (token: string) {
-    return fetch('https://api.spotify.com/v1/me', { headers: { authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-  }
+  exitRaidMode(msg.channel.guild, msg.author)
+  msg.channel.createMessage('Raid mode disabled.')
 }
-
-export default new Spotify()

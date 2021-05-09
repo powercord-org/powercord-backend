@@ -22,6 +22,7 @@
 
 import type { FastifyInstance } from 'fastify'
 import type { Db, ObjectId } from 'mongodb'
+import mongo from 'mongodb'
 import { getOrCompute } from '../utils/cache.js'
 
 type Delta = { day: number, week: number, month: number }
@@ -35,7 +36,7 @@ function getDelta (pointsCount: number): DeltaAll {
     day: (24 / pointsCount) * 3600e3,
     week: ((24 * 7) / pointsCount) * 3600e3,
     month: ((24 * 30) / pointsCount) * 3600e3,
-    allTime: (Date.now() - 1546732800000) / pointsCount
+    allTime: (Date.now() - 1546732800000) / pointsCount,
   }
 }
 
@@ -96,18 +97,18 @@ function formatPeriodicData (data: PeriodicData[], pointsCount = 50): GraphPerio
   if (data.length === 0) return null
   const delta = getDelta(pointsCount)
   const ago: Delta = {
-    month: Date.now() - 30 * 24 * 3600e3,
-    week: Date.now() - 7 * 24 * 3600e3,
-    day: Date.now() - 24 * 3600e3
+    month: Date.now() - (30 * 24 * 3600e3),
+    week: Date.now() - (7 * 24 * 3600e3),
+    day: Date.now() - (24 * 3600e3),
   }
 
-  const dataKeys = Object.keys(data[0]).filter(k => ![ '_id', 'date' ].includes(k))
+  const dataKeys = Object.keys(data[0]).filter((k) => ![ '_id', 'date' ].includes(k))
   const graph: GraphPeriodic = { month: [], week: [], day: [] }
   for (const scale of [ 'month', 'week', 'day' ] as Array<'month' | 'week' | 'day'>) {
-    const interval = data.filter(d => d._id.getTimestamp().getTime() > (ago[scale] - ago.day))
+    const interval = data.filter((d) => d._id.getTimestamp().getTime() > (ago[scale] - ago.day))
     for (let i = 0; i < pointsCount; i++) {
       const target = ago[scale] + (delta[scale] * (i + 1))
-      const data1 = interval.find(d => d._id.getTimestamp().getTime() > target)!
+      const data1 = interval.find((d) => d._id.getTimestamp().getTime() > target)!
       const data0 = interval[interval.indexOf(data1) - 1]
 
       if (data1 && !data0) { // We're lacking data; Fill with 0
@@ -117,7 +118,7 @@ function formatPeriodicData (data: PeriodicData[], pointsCount = 50): GraphPerio
 
       if (!data1) { // We reached the end
         const d = interval[interval.length - 1]
-        const values = dataKeys.map(k => d[k])
+        const values = dataKeys.map((k) => d[k])
         graph[scale].push(toObject(dataKeys, values))
         continue
       }
@@ -126,8 +127,8 @@ function formatPeriodicData (data: PeriodicData[], pointsCount = 50): GraphPerio
       const time1 = data1._id.getTimestamp().getTime()
       const posInInterval = (target - time0) / (time1 - time0)
 
-      // Remember: f(x) = (x1 - x0) * x + x0
-      const values = dataKeys.map(key => Math.round((data1[key] - data0[key]) * posInInterval + data0[key]))
+      // Remember: f(x) = ((x1 - x0) * x) + x0
+      const values = dataKeys.map((key) => Math.round(((data1[key] - data0[key]) * posInInterval) + data0[key]))
       graph[scale].push(toObject(dataKeys, values))
     }
   }
@@ -137,15 +138,17 @@ function formatPeriodicData (data: PeriodicData[], pointsCount = 50): GraphPerio
 
 async function computeUsersOverTime (db: Db) {
   const cursor = db.collection('users').find<{ createdAt: Date }>({}, { projection: { createdAt: true } }).sort({ createdAt: -1 })
-  const dates = (await cursor.toArray()).map(doc => doc.createdAt.getTime())
+  const dates = (await cursor.toArray()).map((doc) => doc.createdAt.getTime())
   cursor.close()
 
   return datesOverTime(dates)
 }
 
 async function computeGuildStats (db: Db) {
-  const monthAgo = new Date(Date.now() - 30 * 24 * 3600e3)
-  const cursor = db.collection('guild-stats').find({ date: { $gte: monthAgo }, online: { $not: { $eq: 0 } } }).sort({ date: 1 })
+  const cursor = db.collection('guild-stats').find({
+    _id: { $gte: mongo.ObjectId.createFromTime(Math.round(Date.now() / 1000) - (30 * 24 * 3600)) },
+    online: { $not: { $eq: 0 } },
+  }).sort({ _id: 1 })
   const data = await cursor.toArray()
   cursor.close()
 
@@ -158,14 +161,14 @@ async function contributors (this: FastifyInstance): Promise<unknown> {
       projection: {
         _id: true,
         username: true,
-        discriminator: true
-      }
+        discriminator: true,
+      },
     }).toArray()
 
   return {
     developers: await findUsers({ 'badges.developer': true }),
     staff: await findUsers({ $or: [ { 'badges.staff': true }, { 'badges.support': true } ], 'badges.developer': false }),
-    contributors: await findUsers({ 'badges.contributor': true })
+    contributors: await findUsers({ 'badges.contributor': true }),
   }
 }
 
@@ -177,11 +180,11 @@ async function numbers (this: FastifyInstance): Promise<unknown> {
       $or: [
         { 'badges.contributor': true },
         { 'badges.hunter': true },
-        { 'badges.translator': true }
-      ]
+        { 'badges.translator': true },
+      ],
     }),
     plugins: 0,
-    themes: 0
+    themes: 0,
   }
 }
 

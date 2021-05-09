@@ -21,6 +21,7 @@
  */
 
 import { URL } from 'url'
+import { tmpdir } from 'os'
 import { existsSync, mkdirSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
 import { basename } from 'path'
@@ -28,10 +29,8 @@ import fetch from 'node-fetch'
 
 export type CacheResult = { success: false } | { success: true, data: Buffer }
 
-const CACHE_PATH = new URL('../../../.cache/', import.meta.url)
+const CACHE_PATH = new URL('./powercord', new URL(`${tmpdir()}/`, 'file:'))
 if (!existsSync(CACHE_PATH)) mkdirSync(CACHE_PATH)
-
-// todo: Schedule cache cleanup
 
 function generateKey (hourly?: boolean) {
   const today = new Date()
@@ -45,7 +44,7 @@ export async function remoteFile (url: URL): Promise<CacheResult> {
   if (existsSync(cacheFile)) {
     return {
       success: true,
-      data: await readFile(cacheFile)
+      data: await readFile(cacheFile),
     }
   }
 
@@ -55,7 +54,7 @@ export async function remoteFile (url: URL): Promise<CacheResult> {
   await writeFile(cacheFile, buffer)
   return {
     success: true,
-    data: buffer
+    data: buffer,
   }
 }
 

@@ -27,14 +27,23 @@ declare module 'eris' {
     mongo: Db
   }
 
-  interface Attachment {
-    // todo: if it's not there there's most likely a reason kek, I'll deal with this later
-    width: number
-    height: number
+  interface Guild {
+    _client: CommandClient
   }
 
-  interface Base {
-    // todo: I'm not supposed to fuck up with this, but it's god damn handy at times
+  interface User {
+    _client: CommandClient
+  }
+
+  interface Message {
+    _client: CommandClient
+  }
+
+  interface GuildPreview {
+    _client: CommandClient
+  }
+
+  interface Command {
     _client: CommandClient
   }
 }

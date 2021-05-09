@@ -26,7 +26,7 @@ export const description = 'Pong'
 
 export function executor (msg: Message<GuildTextableChannel>): void {
   const startTime = Date.now()
-  msg.channel.createMessage('🏓 Pong!').then(m => {
+  msg.channel.createMessage('🏓 Pong!').then((m) => {
     const restLatency = Date.now() - startTime
     m.edit(`🏓 Pong! | REST: ${restLatency}ms - Gateway: ${msg._client.shards.get(0)!.latency}ms`)
   })

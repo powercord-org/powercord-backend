@@ -22,7 +22,6 @@
 
 import type { CommandClient } from 'eris'
 import fetch from 'node-fetch'
-import { sleep } from './util.js'
 import config from './config.js'
 
 export type CivilLaw = { law: string, penalties?: string[] }
@@ -34,15 +33,23 @@ let commerceLaws: Map<number, CommerceLaw> = new Map()
 let commerceDefinitions: CommerceDefinition[] = []
 
 async function loadCivilLaws (bot: CommandClient) {
-  await sleep(3e3)
-  const guild = bot.guilds.get(config.discord.ids.serverId)
-  if (!guild) return
-  const civilCode = await bot.getMessages(config.discord.ids.channelRules).then((l) => l.map((m) => m.content).join('\n'))
+  if (!config.discord.ids.channelRules) {
+    console.log('no channel ids provided for server rules. skipping rules loading.')
+    return
+  }
 
-  const matches = civilCode.matchAll(/\[(\d{2})]((?:[^`\n].+\n)+?)(?: +Actions: ([^\n]+))?(?:\n|`)/g)
+  const guild = bot.guilds.get(config.discord.ids.serverId)
+  if (!guild) {
+    // Try again in a bit, bot not ready or guild unavailable
+    setTimeout(() => loadCivilLaws(bot), 5e3)
+    return
+  }
+
+  const civilCode = await bot.getMessages(config.discord.ids.channelRules).then((l) => l.map((m) => m.content).join('\n'))
+  const matches = civilCode.matchAll(/(\d{2})::((?:[^`\n].+\n)+?)(?: +Actions: ([^\n]+))?(?:\n|`)/g)
   const entries: [ number, CivilLaw ][] = []
   for (const match of matches) {
-    const replacer = (og: string, name: string) => guild.channels.find(c => c.name === name)?.mention ?? og
+    const replacer = (og: string, name: string) => guild.channels.find((c) => c.name === name)?.mention ?? og
     const law = match[2].trim().replace(/\n */g, ' ').replace(/\[#[^a-z0-9-_]?([a-z0-9-_]+)\]/ig, replacer)
     entries.push([ Number(match[1]), { law: law, penalties: match[3]?.split(' -> ') } ])
   }

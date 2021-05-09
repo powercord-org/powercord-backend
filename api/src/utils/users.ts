@@ -28,7 +28,7 @@ function paywallify (customBadges: User['badges']['custom'], tier: number): User
     color: tier < 1 ? null : customBadges.color || null,
     icon: tier < 2 ? null : customBadges.icon || null,
     white: tier < 2 ? null : customBadges.white || null,
-    name: tier < 2 ? null : customBadges.name || null
+    name: tier < 2 ? null : customBadges.name || null,
   }
 }
 
@@ -46,8 +46,11 @@ export function formatUser (user: User, bypassVisibility?: boolean): RestUser {
       translator: user.badges.translator || false, // Array of langs or false
       hunter: Boolean(user.badges.hunter),
       early: Boolean(user.badges.early),
-      custom: paywallify(user.badges.custom || {}, user.patronTier || 0)
+      custom: paywallify(user.badges.custom || {}, user.patronTier || 0),
     },
-    patronTier: bypassVisibility ? user.patronTier : void 0
+    patronTier: bypassVisibility ? user.patronTier : void 0,
+    accounts: bypassVisibility
+      ? { spotify: user.accounts.spotify ? user.accounts.spotify.name : void 0 }
+      : void 0,
   }
 }

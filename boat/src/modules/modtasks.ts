@@ -24,8 +24,9 @@ import type { CommandClient, Guild, User } from 'eris'
 import type { InsertOneWriteOpResult, ObjectId } from 'mongodb'
 import cron from 'node-cron'
 import { unmute, unban } from '../mod.js'
+import { exitRaidMode } from '../raidMode.js'
 
-export type Schedulable = 'unmute' | 'unban'
+export type Schedulable = 'unmute' | 'unban' | 'endRaid'
 type Scheduled = { _id: ObjectId, type: Schedulable, guild: string, target: string, mod: string, time: number }
 
 function processTasks (bot: CommandClient) {
@@ -42,6 +43,9 @@ function processTasks (bot: CommandClient) {
         case 'unban':
           unban(guild, task.target, mod, 'Automatically unbanned')
           break
+        case 'endRaid':
+          exitRaidMode(guild, mod)
+          break
       }
 
       bot.mongo.collection('tasks').deleteOne({ _id: task._id })
@@ -49,13 +53,21 @@ function processTasks (bot: CommandClient) {
   })
 }
 
+/**
+ * Schedule a task
+ * @param task - the task type
+ * @param guild - the guild the task will be operating in
+ * @param userId - the user the task will be operated on
+ * @param mod - the moderator scheduling the task
+ * @param time - how long in ms until the task runs
+ */
 export async function schedule (task: Schedulable, guild: Guild, userId: string, mod: User, time: number): Promise<InsertOneWriteOpResult<Scheduled>> {
   return mod._client.mongo.collection<Scheduled>('tasks').insertOne({
     type: task,
     guild: guild.id,
     target: userId,
     mod: mod.id,
-    time: Date.now() + time
+    time: Date.now() + time,
   })
 }
 

@@ -32,7 +32,6 @@ const { WebpackManifestPlugin: Manifest } = require('webpack-manifest-plugin')
 const { DefinePlugin, HotModuleReplacementPlugin, optimize: { LimitChunkCountPlugin } } = require('webpack')
 
 // Env vars
-const COMMIT_HASH = require('child_process').execSync('git rev-parse HEAD').toString().trim()
 const IS_DEV = process.env.NODE_ENV === 'development'
 const SRC = join(__dirname, 'src')
 const OUT = join(__dirname, '..', 'dist', 'web')
@@ -190,8 +189,7 @@ const baseConfig = {
           const file = join(__dirname, '..', 'dist', 'api', 'integrity.webpack.json')
           writeFileSync(file, JSON.stringify(integrity, null, 2), 'utf8')
         })
-    },
-    new DefinePlugin({ GIT_REVISION: JSON.stringify(COMMIT_HASH) })
+    }
   ].filter(Boolean),
   optimization: {
     minimize: !IS_DEV,
@@ -208,12 +206,14 @@ const baseConfig = {
     }
   },
   devServer: {
-    port: 8080,
+    host: '0.0.0.0',
+    port: 80,
+    sockPort: 8080,
     hot: true,
     quiet: true,
     publicPath: '/dist/',
     historyApiFallback: true,
-    proxy: { '/': `http://localhost:${require('../config.json').port}` }
+    disableHostCheck: true
   }
 }
 
@@ -266,7 +266,7 @@ if (IS_DEV) {
       ]
     },
     plugins: [
-      ...baseConfig.plugins.slice(4), // Slice manifest, build side, sri
+      ...baseConfig.plugins.slice(3), // Slice manifest, build side, sri
       new LimitChunkCountPlugin({ maxChunks: 1 }),
       new DefinePlugin({ 'process.env.BUILD_SIDE': JSON.stringify('server') })
     ],

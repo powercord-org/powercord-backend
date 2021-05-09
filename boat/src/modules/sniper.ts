@@ -29,12 +29,14 @@ type MessageLike = { id: string, author: User, channel: { name: string }, conten
 
 type SnipeRecord = { author: string, msg: string, channel: string, type: 'edit' | 'delete' }
 
+export const skipSnipe = new Set<string>()
+
 export const SNIPE_LIFETIME = 20
 const ZWS = '\u200B'
 const buffer = new Map<number, SnipeRecord>()
 
 function isPrivate (channel: TextChannel) {
-  return Boolean((channel.permissionOverwrites.get(channel.guild.id)?.deny ?? 0) & 1024)
+  return Boolean((channel.permissionOverwrites.get(channel.guild.id)?.deny ?? 0n) & 1024n)
 }
 
 async function store (msg: MessageLike, type: 'edit' | 'delete') {
@@ -43,7 +45,7 @@ async function store (msg: MessageLike, type: 'edit' | 'delete') {
     author: `${msg.author.username}#${msg.author.discriminator}`,
     msg: msg.content ? msg.content.replace(/\(/g, `${ZWS}(`) : 'This message had no text content.',
     channel: msg.channel.name,
-    type
+    type: type,
   })
 
   setTimeout(() => buffer.delete(id), SNIPE_LIFETIME * 1e3)
@@ -58,7 +60,8 @@ function processEdit (msg: Message<GuildTextableChannel>, old: OldMessage | null
 }
 
 function processDelete (msg: PossiblyUncachedMessage) {
-  if (!('author' in msg) || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || isPrivate(msg.channel)) {
+  if (!('author' in msg) || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot || isPrivate(msg.channel) || skipSnipe.has(msg.id)) {
+    skipSnipe.delete(msg.id)
     return // Ignore
   }
 

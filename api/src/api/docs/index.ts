@@ -56,7 +56,7 @@ function getDocument (this: FastifyInstance, request: FastifyRequest<{ Params: G
 
 async function getRemoteDocument (url: string): Promise<Document> {
   if (!remoteCache.has(url)) {
-    const md = await fetch(url).then(r => r.text())
+    const md = await fetch(url).then((r) => r.text())
     remoteCache.set(url, markdown(md))
     setTimeout(() => remoteCache.delete(url), 300e3)
   }

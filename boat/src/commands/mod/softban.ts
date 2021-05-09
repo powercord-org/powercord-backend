@@ -21,14 +21,14 @@
  */
 
 import type { GuildTextableChannel, Message } from 'eris'
-import { mute } from '../../mod.js'
-import { isStaff, parseDuration } from '../../util.js'
+import { softBan } from '../../mod.js'
+import { isStaff } from '../../util.js'
 import config from '../../config.js'
 
-const USAGE_STR = `Usage: ${config.discord.prefix}mute <mention || id> [reason]|[duration]`
+const USAGE_STR = `Usage: ${config.discord.prefix}softban <mention || id> [reason]`
 
 export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
-  if (!msg.member || !msg.guildID) return // ???
+  if (!msg.member) return // ???
   if (!isStaff(msg.member)) {
     msg.channel.createMessage('no')
     return
@@ -41,28 +41,18 @@ export function executor (msg: Message<GuildTextableChannel>, args: string[]): v
 
   const target = args.shift()!.replace(/<@!?(\d+)>/, '$1')
   const reason = args.join(' ').split('|')[0] || void 0
-  const rawDuration = msg.content.includes('|') ? msg.content.split('|')[1].trim().toLowerCase().match(/\d+(m|h|d)/) : null
 
   if (target === msg.author.id) {
-    msg.channel.createMessage('You cannot be silenced')
+    msg.channel.createMessage('Don\'t do that to yourself')
     return
   }
 
   if (isStaff(target, msg.channel.guild)) {
-    msg.channel.createMessage('You couldn\'t make them be quite if you tried.')
+    msg.channel.createMessage('Maybe you two should talk this one out')
     return
   }
 
-  let duration
-  if (rawDuration) {
-    duration = parseDuration(rawDuration[0])
-    if (!duration) {
-      msg.channel.createMessage('Invalid duration')
-      return
-    }
-  }
-
-  mute(msg.channel.guild, target, msg.author, reason, duration)
-  msg.channel.createMessage('Shut')
+  softBan(msg.channel.guild, target, msg.author, reason, 1)
+  msg.channel.createMessage('yeeted & censored')
   return
 }

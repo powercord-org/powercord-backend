@@ -35,22 +35,23 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
   }
 
   const message = await msg.channel.createMessage('<a:loading:660094837437104138> Processing...')
-  const faq = await fetch(FAQ_DOCUMENT).then(r => r.text()).then(f =>
-    // This is super janky but gets the job done lol
-    f.replace(/\[(Discord server)]\([^)]+\)/ig, '$1') // Drop discord.gg link
-      .replace(/\[([^\]]+)]\(([^)]+)\)/ig, '$1: $2') // Make links plain
-      .split('\n\n## ') // Split in sections
-      .slice(1) // Drop title
-      .map(f => {
-        f = `**${f.replace('\n', '**\n\n')}` // Bold title
-        f = f.replace(/(.)\n([^\n#])/g, '$1 $2').replace(/<br\/?>/g, '\n') // Linebreak fixes
-        f = f.replace('**\n\n', '**\n') // Title fix
-        f = f.replace(/(^|\n) 1\./g, '$1  1.') // List spacing fix
-        return f.replace(/#[^a-z0-9-_]?([a-z0-9-_]+)/ig, (og, name) => { // Channels
-          const channel = msg.channel.guild.channels.find(c => c.name === name)
-          return channel ? `<#${channel.id}>` : og
+  const faq = await fetch(FAQ_DOCUMENT).then((r) => r.text()).then(
+    (faqMd) =>
+      // This is super janky but gets the job done lol
+      faqMd.replace(/\[(Discord server)]\([^)]+\)/ig, '$1') // Drop discord.gg link
+        .replace(/\[([^\]]+)]\(([^)]+)\)/ig, '$1: $2') // Make links plain
+        .split('\n\n## ') // Split in sections
+        .slice(1) // Drop title
+        .map((f) => {
+          f = `**${f.replace('\n', '**\n\n')}` // Bold title
+          f = f.replace(/(.)\n([^\n#])/g, '$1 $2').replace(/<br\/?>/g, '\n') // Linebreak fixes
+          f = f.replace('**\n\n', '**\n') // Title fix
+          f = f.replace(/(^|\n) 1\./g, '$1  1.') // List spacing fix
+          return f.replace(/#[^a-z0-9-_]?([a-z0-9-_]+)/ig, (og, name) => { // Channels
+            const channel = msg.channel.guild.channels.find((c) => c.name === name)
+            return channel ? `<#${channel.id}>` : og
+          })
         })
-      })
   )
 
   // Purge channel

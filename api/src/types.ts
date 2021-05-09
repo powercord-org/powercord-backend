@@ -60,13 +60,18 @@ export type User = {
   patronTier?: 0 | 1 | 2
 }
 
-export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & { id: User['_id'] }
+export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
+  id: User['_id']
+  accounts?: {
+    spotify?: string
+  }
+}
 
 export type DiscordUser = any // todo
 
 export type DiscordMember = any // todo
 
-export type ConfiguredReply<TReply extends FastifyReply, TConfig> =
-  TReply extends FastifyReply<infer TServer, infer TRequest, infer TReply, infer TGeneric> 
+export type ConfiguredReply<TFReply extends FastifyReply, TConfig> =
+  TFReply extends FastifyReply<infer TServer, infer TRequest, infer TReply, infer TGeneric>
     ? FastifyReply<TServer, TRequest, TReply, TGeneric, TConfig>
     : never

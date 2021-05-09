@@ -34,24 +34,24 @@ const CUTE: BoardDecoration = [
   [ 0, CUTEBOARD_EMOTE, 0xffffff ],
   [ 5, CUTEBOARD_EMOTE, 0xfc32dc ],
   [ 10, CUTEBOARD_EMOTE, 0xf865ba ],
-  [ 20, CUTEBOARD_EMOTE, 0xf49898 ]
+  [ 20, CUTEBOARD_EMOTE, 0xf49898 ],
 ]
 const EMOTES: BoardDecoration = [
   [ 0, '⭐', 0xffffff ],
   [ 5, '🌟', 0xffffaa ],
   [ 10, '💫', 0xffff66 ],
-  [ 20, '✨', 0xffff00 ]
+  [ 20, '✨', 0xffff00 ],
 ]
 
 function isProcessable (msg: Message<GuildTextableChannel>, stargazer: HasId) {
-  return !msg.channel.nsfw &&
-    msg.channel.id !== config.discord.ids.channelCuteboard &&
-    msg.channel.id !== config.discord.ids.channelStarboard &&
-    !config.discord.ids.shitstars.channels.includes(msg.channel.id) &&
-    !config.discord.ids.shitstars.users.includes(msg.author.id) &&
-    !config.discord.ids.shitstars.users.includes(stargazer.id) &&
+  return !msg.channel.nsfw
+    && msg.channel.id !== config.discord.ids.channelCuteboard
+    && msg.channel.id !== config.discord.ids.channelStarboard
+    && !config.discord.ids.shitstars.channels.includes(msg.channel.id)
+    && !config.discord.ids.shitstars.users.includes(msg.author.id)
+    && !config.discord.ids.shitstars.users.includes(stargazer.id)
     // todo: videos
-    !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'))
+    && !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'))
 }
 
 async function getAllReactions (msg: Message<GuildTextableChannel>, reaction: string): Promise<User[]> {
@@ -60,7 +60,7 @@ async function getAllReactions (msg: Message<GuildTextableChannel>, reaction: st
   do {
     batch = await msg.getReaction(reaction, 100, void 0, batch[0]?.id)
     reactions.push(...batch)
-  } while(batch.length === 100)
+  } while (batch.length === 100)
 
   return reactions
 }
@@ -77,7 +77,7 @@ function extractMedia (msg: Message<GuildTextableChannel>): { image?: EmbedImage
 }
 
 function generateMessage (stars: number, msg: Message<GuildTextableChannel>, cute: boolean) {
-  const [ , star, color ] = (cute ? CUTE : EMOTES).filter(e => e[0] < stars).pop()!
+  const [ , star, color ] = (cute ? CUTE : EMOTES).filter((e) => e[0] < stars).pop()!
   return {
     content: `${star} **${stars}** - <#${msg.channel.id}>`,
     embed: {
@@ -85,16 +85,16 @@ function generateMessage (stars: number, msg: Message<GuildTextableChannel>, cut
       color: color,
       author: {
         name: `${msg.author.username}#${msg.author.discriminator}`,
-        icon_url: msg.author.avatarURL
+        icon_url: msg.author.avatarURL,
       },
       description: msg.content,
       fields: [
         {
           name: 'Jump to message',
-          value: `[Click here](https://discord.com/channels/${msg.channel.guild.id}/${msg.channel.id}/${msg.id})`
-        }
-      ]
-    }
+          value: `[Click here](https://discord.com/channels/${msg.channel.guild.id}/${msg.channel.id}/${msg.id})`,
+        },
+      ],
+    },
   }
 }
 
@@ -104,7 +104,7 @@ async function updateStarCount (msg: Message<GuildTextableChannel>, count: numbe
   const channel = cute ? config.discord.ids.channelCuteboard : config.discord.ids.channelStarboard
   const entry = await msg._client.mongo.collection('starboard').findOne({ _id: msg.id }) || {
     ...GENERIC_STAR_OBJ,
-    cute
+    cute: cute,
   }
   entry.stars = count
 
@@ -131,6 +131,10 @@ async function updateStarCount (msg: Message<GuildTextableChannel>, count: numbe
 }
 
 async function process (msg: Message<GuildTextableChannel>, emoji: PartialEmoji, user: HasId) {
+  // Only process stars & cute
+  if (emoji.name !== STARBOARD_EMOTE && emoji.name !== CUTEBOARD_EMOTE) return
+
+  // eslint-disable-next-line require-atomic-updates
   if (!msg.author) msg = await msg.channel.getMessage(msg.id)
 
   if (msg.author.id === user.id) {
@@ -152,6 +156,11 @@ async function process (msg: Message<GuildTextableChannel>, emoji: PartialEmoji,
 }
 
 export default function (bot: CommandClient) {
+  if (!config.discord.ids.channelCuteboard || !config.discord.ids.channelStarboard) {
+    console.log('no channel ids provided for starboard. module will be disabled.')
+    return
+  }
+
   bot.on('messageReactionAdd', (msg, emoji, user) => process(msg as Message<GuildTextableChannel>, emoji, user))
   bot.on('messageReactionRemove', (msg, emoji, user) => process(msg as Message<GuildTextableChannel>, emoji, { id: user }))
   bot.on('messageReactionRemoveAll', (msg) => updateStarCount(msg as Message<GuildTextableChannel>, 0, false))

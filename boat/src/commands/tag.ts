@@ -25,7 +25,7 @@ import config from '../config.js'
 
 async function listTags (msg: Message<GuildTextableChannel>): Promise<void> {
   const tags = await msg._client.mongo.collection('tags').find({}).toArray()
-  msg.channel.createMessage(`Available tags: ${tags.map(t => t._id).join(', ')}`)
+  msg.channel.createMessage(`Available tags: ${tags.map((t) => t._id).join(', ')}`)
 }
 
 async function addTag (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
@@ -83,7 +83,7 @@ export function executor (msg: Message<GuildTextableChannel>, args: string[]): v
     const parts = [
       'Usage:',
       ` - ${config.discord.prefix}tag [tag]`,
-      ` - ${config.discord.prefix}tag list`
+      ` - ${config.discord.prefix}tag list`,
     ]
 
     if (elevated) {

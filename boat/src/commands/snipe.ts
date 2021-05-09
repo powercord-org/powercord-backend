@@ -26,7 +26,7 @@ import { getLastMessages, SNIPE_LIFETIME } from '../modules/sniper.js'
 const ANIMALS = [
   '🦅', '🐦', '🦄', '🐙', '🐢', '🐌', '🐬', '🐠', '🦈', '🦏',
   '🐖', '🦒', '🦘', '🐘', '🐳', '🐕', '🐑', '🐓', '🦜', '🦥',
-  '🐿️', '🦔', '🦩', '🦢'
+  '🐿️', '🦔', '🦩', '🦢',
 ]
 
 export const description = `Sends a copy of messages deleted or edited in the last ${SNIPE_LIFETIME} seconds.`
@@ -44,7 +44,7 @@ export function executor (msg: Message<GuildTextableChannel>): void {
   let length = 0
   for (const snipe of last) {
     const name = `${snipe.author} (${snipe.type})`
-    if (fields[cursor].length === 25 || length + name.length + Math.floor(snipe.msg.length / 1024) * 3 + snipe.msg.length >= 5900) {
+    if (fields[cursor].length === 25 || length + name.length + (Math.floor(snipe.msg.length / 1024) * 3) + snipe.msg.length >= 5900) {
       fields.push([])
       length = 0
       cursor++
@@ -53,13 +53,13 @@ export function executor (msg: Message<GuildTextableChannel>): void {
     length += name.length + snipe.msg.length
     fields[cursor].push({
       name: `${snipe.author} (${snipe.type}) in #${snipe.channel}`,
-      value: snipe.msg.slice(0, 1024)
+      value: snipe.msg.slice(0, 1024),
     })
 
     if (snipe.msg.length > 1024) {
       fields[cursor].push({
         name: '...',
-        value: snipe.msg.slice(1024)
+        value: snipe.msg.slice(1024),
       })
     }
   }
@@ -69,6 +69,6 @@ export function executor (msg: Message<GuildTextableChannel>): void {
     if (i === 0) embed.description = `Edits and deletes for the last ${SNIPE_LIFETIME} seconds`
     if (i === fields.length - 1) embed.footer = { text: `Sniped by ${msg.author.username}#${msg.author.discriminator}` }
 
-    msg.channel.createMessage({ embed })
+    msg.channel.createMessage({ embed: embed })
   })
 }

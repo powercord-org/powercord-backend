@@ -21,14 +21,14 @@
  */
 
 import type { EmbedField, GuildTextableChannel, Message } from 'eris'
-import { prettyPrintTimeSpan, makePluralDumb } from '../../util.js'
+import { prettyPrintTimeSpan, makePluralDumb, isStaff } from '../../util.js'
 import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}lookup <mention || discord id>`
 
 export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (!msg.member) return // ???
-  if (!msg.member.permissions.has('manageMessages')) {
+  if (!isStaff(msg.member)) {
     msg.channel.createMessage('no')
     return
   }
@@ -51,8 +51,8 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
 
   const infractions: Array<{ rule: string, count: number, occurrences: string[] }> = []
   // todo: userID -> userId
-  await msg._client.mongo.collection('enforce').find({ userID: member.id }).forEach(function (doc) {
-    const infraction = infractions.find(inf => inf.rule === doc.rule)
+  await msg._client.mongo.collection('enforce').find({ userID: member.id }).forEach((doc) => {
+    const infraction = infractions.find((inf) => inf.rule === doc.rule)
 
     if (infraction) {
       infractions[infractions.indexOf(infraction)].count++
@@ -61,19 +61,19 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
       infractions.push({
         rule: doc.rule,
         count: 1,
-        occurrences: [ `• ${doc._id.getTimestamp().toUTCString()}` ]
+        occurrences: [ `• ${doc._id.getTimestamp().toUTCString()}` ],
       })
     }
   })
 
-  const roles = member.roles.map(id => msg.channel.guild.roles.get(id)!.mention)
+  const roles = member.roles.map((id) => msg.channel.guild.roles.get(id)!.mention)
   const fields: EmbedField[] = [ { name: 'Roles', value: roles.length > 0 ? roles.join(' ') : 'None' } ]
 
   infractions.forEach(({ rule, count, occurrences: occurences }) => {
     fields.push({
       name: `Rule ${rule} broken ${count} ${makePluralDumb('time', count)}`,
       value: occurences.join('\n'),
-      inline: true
+      inline: true,
     })
   })
 
@@ -81,12 +81,12 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
     embed: {
       author: {
         name: `${member.username}#${member.discriminator}`,
-        icon_url: member.avatarURL
+        icon_url: member.avatarURL,
       },
       description: `**Account created:** ${createdAt.toUTCString()} (${prettyPrintTimeSpan(Date.now() - member.createdAt)} ago)\n\n**Joined:** ${joinedAt.toUTCString()} (${prettyPrintTimeSpan(Date.now() - member.joinedAt)}`,
       timestamp: new Date().toISOString(),
-      fields,
-      footer: { text: `Discord ID: ${member.id}` }
-    }
+      fields: fields,
+      footer: { text: `Discord ID: ${member.id}` },
+    },
   })
 }

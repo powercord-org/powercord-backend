@@ -22,18 +22,24 @@
 
 import type { CommandClient, Guild, GuildAuditLogEntry, Role, User } from 'eris'
 import { Constants } from 'eris'
+import { sanitizeMarkdown } from '../util.js'
 import config from '../config.js'
-
-// todo: Make the whole thing more robust
-// there was quite a few cases in the past of the bot catching mutes that didn't occur,
-// assign the wrong resp moderator, and some other slight glitches in audit reporting.
-// moreover, it needs to be able to handle the coming soon temporary sactions, and the
-// case id needs to be computed in a more robust way.
 
 const TEMPLATE = `**$type | Case $case**
 __User__: $user ($userid)
 __Moderator__: $moderator ($modid)
 __Reason__: $reason`
+
+function format (type: string, caseId: string, user: User, modName: string, modId: string, reason: string) {
+  return TEMPLATE
+    .replace('$type', type)
+    .replace('$case', caseId)
+    .replace('$user', `${sanitizeMarkdown(user.username)}#${user.discriminator}`)
+    .replace('$userid', user.id)
+    .replace('$moderator', sanitizeMarkdown(modName))
+    .replace('$modid', modId)
+    .replace('$reason', reason)
+}
 
 function delayedFunction (fn: Function): () => void {
   return function (this: CommandClient, ...args: unknown[]) {
@@ -46,12 +52,12 @@ function extractEntryData (entry: GuildAuditLogEntry): [ string, string, string 
   let modName: string = ''
   let reason: string = ''
 
-  if (entry.user.id === entry._client.user.id && entry.reason) {
+  if (entry.user.id === config.discord.clientID && entry.reason) {
     const splittedReason = entry.reason.split(' ')
     modName = splittedReason.shift()!.replace('[', '').replace(']', '')
     reason = splittedReason.join(' ')
     const [ username, discrim ] = modName.split('#')
-    const mod = entry.guild.members.find(m => m.username === username && m.discriminator === discrim)
+    const mod = entry.guild.members.find((m) => m.username === username && m.discriminator === discrim)
     modId = mod ? mod.id : '<unknown>' // Should not happen
   } else {
     modId = entry.user.id
@@ -70,22 +76,25 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
     const logs = await guild.getAuditLogs(10, void 0, type === 'add'
       ? Constants.AuditLogActions.MEMBER_BAN_ADD
       : Constants.AuditLogActions.MEMBER_BAN_REMOVE)
-    const entry = logs.entries.find(entry => (entry.targetID = user.id))
+    const entry = logs.entries.find((auditEntry) => (auditEntry.targetID = user.id))
     if (!entry) return
 
-    const [ modId, modName, reason ] = extractEntryData(entry)
-    // todo: unsafe non-null assertion
-    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1]) + 1
+    let [ modId, modName, reason ] = extractEntryData(entry)
 
-    this.createMessage(config.discord.ids.channelModLogs, TEMPLATE
-      .replace('$type', type === 'add' ? 'Ban' : 'Unban')
-      .replace('$case', String(caseId))
-      .replace('$user', `${user.username}#${user.discriminator}`)
-      .replace('$userid', user.id)
-      .replace('$moderator', modName)
-      .replace('$modid', modId)
-      .replace('$reason', reason)
-    )
+    const soft = reason.startsWith('[soft]')
+    if (soft) {
+      if (type === 'remove') return
+      reason = reason.replace('[soft] ', '')
+    }
+
+    // todo: unsafe non-null assertion
+    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
+    const realType = type === 'add' ? soft ? 'Kick' : 'Ban' : 'Unban'
+
+    this.createMessage(config.discord.ids.channelModLogs, {
+      content: format(realType, String(caseId), user, modName, modId, reason),
+      allowedMentions: {}
+    })
   }
 }
 
@@ -94,21 +103,16 @@ async function processMemberLeave (this: CommandClient, guild: Guild, user: User
   if (!channel || !('getMessages' in channel)) return
 
   const logs = await guild.getAuditLogs(5, void 0, Constants.AuditLogActions.MEMBER_KICK)
-  const entry = logs.entries.find(entry => (entry.targetID = user.id))
+  const entry = logs.entries.find((auditEntry) => (auditEntry.targetID = user.id))
   if (entry && Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) < 5000) {
     const [ modId, modName, reason ] = extractEntryData(entry)
     // todo: unsafe non-null assertion
-    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1]) + 1
+    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
 
-    this.createMessage(config.discord.ids.channelModLogs, TEMPLATE
-      .replace('$type', 'Kick')
-      .replace('$case', String(caseId))
-      .replace('$user', `${user.username}#${user.discriminator}`)
-      .replace('$userid', user.id)
-      .replace('$moderator', modName)
-      .replace('$modid', modId)
-      .replace('$reason', reason)
-    )
+    this.createMessage(config.discord.ids.channelModLogs, {
+      content: format('Kick', String(caseId), user, modName, modId, reason),
+      allowedMentions: {}
+    })
   }
 }
 
@@ -117,37 +121,42 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
   if (!channel || !('getMessages' in channel)) return
 
   const logs = await guild.getAuditLogs(5, void 0, Constants.AuditLogActions.MEMBER_ROLE_UPDATE)
-  const entry = logs.entries.find(entry => (entry.targetID = user.id))
-  if (entry && entry.after && Date.now() - Number((BigInt(entry.id) >> BigInt(22)) + BigInt(1420070400000)) < 5000) {
-    let muted: boolean | null = null
-    const added = entry.after.$add as Role[] | void
-    const removed = entry.after.$remove as Role[] | void
 
-    if (added && added.find((r) => r.id === config.discord.ids.roleMuted)) {
-      muted = true
-    } else if (removed && removed.find((r) => r.id === config.discord.ids.roleMuted)) {
-      muted = false
+  for (const entry of logs.entries) {
+    if (entry.targetID !== user.id || !entry.after || Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) > 5000) {
+      continue
     }
 
-    if (muted !== null) {
-      const [ modId, modName, reason ] = extractEntryData(entry)
-      // todo: unsafe non-null assertion
-      const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1]) + 1
+    const added = entry.after.$add as Role[] | null
+    const removed = entry.after.$remove as Role[] | null
 
-      this.createMessage(config.discord.ids.channelModLogs, TEMPLATE
-        .replace('$type', muted ? 'Mute' : 'Unmute')
-        .replace('$case', String(caseId))
-        .replace('$user', `${user.username}#${user.discriminator}`)
-        .replace('$userid', user.id)
-        .replace('$moderator', modName)
-        .replace('$modid', modId)
-        .replace('$reason', reason)
-      )
+    const wasAdded = Boolean(added?.find((r) => r.id === config.discord.ids.roleMuted))
+    const wasRemoved = Boolean(removed?.find((r) => r.id === config.discord.ids.roleMuted))
+
+    if (wasAdded === wasRemoved) {
+      continue
     }
+
+    const [ modId, modName, reason ] = extractEntryData(entry)
+    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
+
+    this.createMessage(config.discord.ids.channelModLogs, {
+      content: format(wasAdded ? 'Mute' : 'Unmute', String(caseId), user, modName, modId, reason),
+      allowedMentions: {}
+    })
+
+    break
   }
 }
 
 export default function (bot: CommandClient) {
+  if (!config.discord.ids.channelModLogs) {
+    console.log('no channel ids provided for mod logs. module will be disabled.')
+    return
+  }
+
+  // [Cynthia] delay is added so we can deal with Discord's eventual consistency.
+  // Audit log entries may not be available immediately.
   bot.on('guildBanAdd', delayedFunction(processBanFactory('add')))
   bot.on('guildBanRemove', delayedFunction(processBanFactory('remove')))
   bot.on('guildMemberRemove', delayedFunction(processMemberLeave))

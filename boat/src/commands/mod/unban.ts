@@ -22,13 +22,14 @@
 
 import type { GuildTextableChannel, Message } from 'eris'
 import { unban } from '../../mod.js'
+import { isStaff } from '../../util.js'
 import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}unban <mention || id> [reason]`
 
 export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
   if (!msg.member) return // ???
-  if (!msg.member.permissions.has('banMembers')) {
+  if (!isStaff(msg.member)) {
     msg.channel.createMessage('no')
     return
   }

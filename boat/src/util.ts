@@ -20,16 +20,26 @@
  * SOFTWARE.
  */
 
-import type { GuildTextableChannel, Message } from 'eris'
+import type { Guild, GuildTextableChannel, Member, Message } from 'eris'
 import { readdir, stat } from 'fs/promises'
 import { URL } from 'url'
 
 const DURATION_MAP = { m: 60e3, h: 3600e3, d: 86400e3 }
 
+/**
+ * Await this to wait for `time` ms.
+ * @param time - The amount of time to wait in ms
+ * @returns a promise that will resolve in `time` ms
+ */
 export async function sleep (time: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, time))
 }
 
+/**
+ * Recursively find all files in a given path.
+ * @param path - The starting path.
+ * @returns an array of all non-directory files in `path` and all subdirectories
+ */
 export async function readdirRecursive (path: URL): Promise<string[]> {
   const entries = await readdir(path)
   const pending: Array<Promise<string[]>> = []
@@ -48,10 +58,21 @@ export async function readdirRecursive (path: URL): Promise<string[]> {
   return Promise.all(pending).then((found) => files.concat(...found))
 }
 
+/**
+ * Append `s` to a string to pluralize it if `count` dictates it.
+ * @param string - The string to maybe append `s` to
+ * @param count - Appends `s` to `string` if `count` is not one
+ * @returns The pluralized string
+ */
 export function makePluralDumb (string: string, count: number) {
   return count === 1 ? string : `${string}s`
 }
 
+/**
+ * Convert a timespan in ms to a human readable representation of that timespan.
+ * @param time - a timespan in ms
+ * @returns a string that is a human friendly representation of `time`
+ */
 export function prettyPrintTimeSpan (time: number) {
   const y = Math.floor(time / 31536000e3)
   time -= y * 31536000e3
@@ -65,24 +86,60 @@ export function prettyPrintTimeSpan (time: number) {
 
   return [
     y && `${y} ${makePluralDumb('year', y)}`,
-    d && `${d} ${makePluralDumb('day', h)}`,
+    d && `${d} ${makePluralDumb('day', d)}`,
     h && `${h} ${makePluralDumb('hour', h)}`,
     m && `${m} ${makePluralDumb('minute', m)}`,
     s && `${s} ${makePluralDumb('second', s)}`,
   ].filter(Boolean).join(', ') || 'under a second'
 }
 
+/**
+ * Convert a message object into a string with mentions replaced by the name of whatever they are mentioning.
+ * @param message - the message to convert
+ * @returns a string with the contents of `message` but with mentions parsed
+ */
 export function stringifyDiscordMessage (message: Message<GuildTextableChannel>) {
   return message.content
     .replace(/<a?(:\w+:)[0-9]+>/g, '$1')
-    .replace(/<@!?([0-9]+)>/g, ([ , id ]) => `@${message.channel.guild.members.get(id)?.nick ?? message._client.users.get(id)?.username ?? 'invalid-user'}`)
-    .replace(/<@&([0-9]+)>/g, ([ , id ]) => `@${message.channel.guild.roles.get(id)?.name ?? 'invalid-role'}`)
-    .replace(/<#([0-9]+)>/g, ([ , id ]) => `@${message.channel.guild.channels.get(id)?.name ?? 'deleted-channel'}`)
+    .replace(/<@!?([0-9]+)>/g, (_, id) => `@${message.channel.guild.members.get(id)?.nick ?? message._client.users.get(id)?.username ?? 'invalid-user'}`)
+    .replace(/<@&([0-9]+)>/g, (_, id) => `@${message.channel.guild.roles.get(id)?.name ?? 'invalid-role'}`)
+    .replace(/<#([0-9]+)>/g, (_, id) => `#${message.channel.guild.channels.get(id)?.name ?? 'deleted-channel'}`)
 }
 
+/**
+ * Convert a human readable duration to its numerical representation.
+ * @param duration - the human readable duration string
+ * @returns the numerical representation of `duration` in ms
+ */
 export function parseDuration (duration: string): number | null {
   const match = duration.match(/^(\d+)([mhd])$/)
   if (!match) return null
 
   return Number(match[1]) * DURATION_MAP[match[2] as keyof typeof DURATION_MAP]
+}
+
+/**
+ * Determine if a user is a staff member.
+ * @param member - the user id or member object to check
+ * @param guild - the guild `member` belongs to **only required if `member` is a user id**
+ * @returns true if `member` has the `manageMessage` permission, false otherwise
+ */
+export function isStaff (member: Member | string, guild?: Guild): boolean {
+  if (typeof member !== 'string') {
+    return member.permissions.has('manageMessages')
+  }
+
+  if (!guild) throw new TypeError('Guild required when using user id.')
+
+  return guild.members.get(member)?.permissions.has('manageMessages') ?? false
+}
+
+/**
+ * Sanitizes a markdown string to prevent them from being parsed (for example by the Discord client)
+ *
+ * @param md Markdown string to sanitize
+ * @returns The sanitized string
+ */
+export function sanitizeMarkdown (md: string): string {
+  return md.replace(/[*_~`>\\]/g, '\\$1')
 }

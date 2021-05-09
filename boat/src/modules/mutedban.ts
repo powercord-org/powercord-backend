@@ -20,30 +20,30 @@
  * SOFTWARE.
  */
 
-import fetch from 'node-fetch'
-import OAuth from './oauth.js'
+import type { CommandClient, Guild, Member, MemberPartial } from 'eris'
+import { ban } from '../mod.js'
 import config from '../config.js'
 
-class Spotify extends OAuth {
-  constructor () {
-    super(
-      config.spotify.clientID,
-      config.spotify.clientSecret,
-      'https://accounts.spotify.com/authorize',
-      'https://accounts.spotify.com/api/token'
-    )
-  }
+const MAX_INFRACTIONS = 4
 
-  // eslint-disable-next-line class-methods-use-this
-  get scopes () {
-    return config.spotify.scopes
-  }
+async function memberRemove (this: CommandClient, guild: Guild, member: Member | MemberPartial) {
+  if (guild.id !== config.discord.ids.serverId || !('roles' in member) || !member.roles.includes(config.discord.ids.roleMuted)) return
 
-  // eslint-disable-next-line class-methods-use-this
-  async getCurrentUser (token: string) {
-    return fetch('https://api.spotify.com/v1/me', { headers: { authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
+  const bans = await guild.getBans().then((guildBans) => guildBans.map((guildBan) => guildBan.user.id))
+  if (bans.includes(member.id)) return
+
+  await this.mongo.collection('enforce').insertOne({
+    userID: member.id, // todo: userID -> userId
+    rule: -1,
+    mod: `${this.user.username}#${this.user.discriminator}`, // todo: store id instead
+  })
+
+  const infractionCount = await this.mongo.collection('enforce').countDocuments({ userID: member.id })
+  if (infractionCount > MAX_INFRACTIONS) {
+    ban(guild, member.id, this.user, 'Left while muted one too many times.')
   }
 }
 
-export default new Spotify()
+export default function (bot: CommandClient) {
+  bot.on('guildMemberRemove', memberRemove)
+}

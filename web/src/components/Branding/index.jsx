@@ -76,7 +76,7 @@ function Branding () {
         <Asset
           name='Spinning Plug'
           copyrightYear={2019}
-          copyrightHolder='Bowser65'
+          copyrightHolder='Cynthia K. Rey'
           links={[
             { name: 'spinning.gif', url: require('@assets/branding/spinning.gif').default }
           ]}
@@ -92,7 +92,7 @@ function Branding () {
         <Asset
           name='Powercast Logo'
           copyrightYear={2019}
-          copyrightHolder='Bowser65'
+          copyrightHolder='Cynthia K. Rey'
           links={[
             { name: 'powercast.png', url: require('@assets/branding/powercast.png').default },
             { name: 'powercast.svg', url: require('@assets/branding/powercast.svg').default }

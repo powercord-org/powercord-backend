@@ -32,18 +32,18 @@ const fakeAdv = (lvl: number) =>
     date: '2020-11-13T10:55:32.490Z',
     target: {
       name: 'Fake plugin',
-      developer: 'Fake developer'
+      developer: 'Fake developer',
     },
     publisher: lvl === 2
-      ? ({
-          name: 'Fake publisher',
-          avatar: 'https://cdn.discordapp.com/avatars/94762492923748352/ad72202b231eb0d8404dd0db15a5edd4.png?size=128',
-          low: 1 + Math.floor(Math.random() * 5),
-          moderate: 1 + Math.floor(Math.random() * 5),
-          high: 1 + Math.floor(Math.random() * 5),
-          critical: 1 + Math.floor(Math.random() * 5)
-        })
-      : null
+      ? {
+        name: 'Fake publisher',
+        avatar: 'https://cdn.discordapp.com/avatars/94762492923748352/ad72202b231eb0d8404dd0db15a5edd4.png?size=128',
+        low: 1 + Math.floor(Math.random() * 5),
+        moderate: 1 + Math.floor(Math.random() * 5),
+        high: 1 + Math.floor(Math.random() * 5),
+        critical: 1 + Math.floor(Math.random() * 5),
+      }
+      : null,
   })
 
 const adv = { // this is already real data tho
@@ -53,20 +53,20 @@ const adv = { // this is already real data tho
   date: '2020-11-13T10:55:32.490Z',
   target: {
     name: 'Fake plugin',
-    developer: 'Fake developer'
+    developer: 'Fake developer',
   },
   publisher: 'Powercord Team',
   vulnerability: 'Unexpected Cat Disappearance',
   description: 'Powercord ate my cat lol wtf?',
-  resolution: 'Do not touch buttons you aren\'t supposed to.'
+  resolution: 'Do not touch buttons you aren\'t supposed to.',
 }
 
 const advisories = [ fakeAdv(0), fakeAdv(1), fakeAdv(2), fakeAdv(3) ]
 
 async function getAdvisories () {
   return {
-    advisories,
-    pages: 1
+    advisories: advisories,
+    pages: 1,
   }
 }
 

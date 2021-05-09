@@ -31,7 +31,7 @@ import apiModule from './api/index.js'
 import webModule from './web.js'
 import config from './config.js'
 
-const fastify = fastifyFactory({ logger: true })
+const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'production' ? 'warn' : 'info' } })
 fastify.register(fastifyAuth)
 fastify.register(fastifyCookie)
 fastify.register(fastifyRawBody, { global: false })
@@ -44,7 +44,7 @@ fastify.register(fastifyTokenize, {
     const user = await fastify.mongo.db!.collection('users').findOne({ _id: id })
     if (user) user.lastTokenReset = 0
     return user
-  }
+  },
 })
 
 fastify.register(apiModule, { prefix: '/api' })
@@ -52,7 +52,7 @@ fastify.register(webModule)
 
 fastify.ready()
   .then(
-    () => fastify.listen(config.port),
+    () => fastify.listen(config.port, config.bind),
     (e) => {
       fastify.log.error(e)
       process.exit(1)

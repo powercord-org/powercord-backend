@@ -29,7 +29,7 @@ async function getEligibility (this: FastifyInstance, request: FastifyRequest<{ 
     publish: !banStatus.publish,
     verification: !banStatus.verification,
     hosting: !banStatus.hosting,
-    reporting: !banStatus.reporting
+    reporting: !banStatus.reporting,
   }
 }
 
