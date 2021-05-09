@@ -22,7 +22,7 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import crypto from 'crypto'
-import { fetchUser, removeRole, dispatchHonk } from '../utils/discord.js'
+import { fetchUser, removeRole, dispatchHonk, addRole } from '../utils/discord.js'
 import config from '../config.js'
 
 type PatreonHeaders = { 'x-patreon-event': string, 'x-patreon-signature': string }
@@ -69,15 +69,15 @@ async function patreon (this: FastifyInstance, request: FastifyRequest<{ Headers
       banned = true
     } else {
       await this.mongo.db!.collection('users').updateOne({ _id: discordId }, { $set: { patreonTier: tier } })
-      if (tier === 0) {
-        try {
-          await removeRole(discordId, config.discord.ids.rolePatreonMommy, 'No longer pledging on Patreon')
-          await removeRole(discordId, config.discord.ids.rolePatreonParent, 'No longer pledging on Patreon')
-          await removeRole(discordId, config.discord.ids.rolePatreonDaddy, 'No longer pledging on Patreon')
-        } catch (e) {
-          // Let the request silently fail; Probably unknown member
-          // todo: analyze the error? schedule retrying (429)?
+      try {
+        if (tier === 0) {
+          await removeRole(discordId, config.discord.ids.roleDonator, 'No longer pledging on Patreon')
+        } else {
+          await addRole(discordId, config.discord.ids.roleDonator, 'Pledged on Patreon!')
         }
+      } catch {
+        // Let the request silently fail; Probably unknown member
+        // todo: analyze the error? schedule retrying (429)?
       }
     }
   }
