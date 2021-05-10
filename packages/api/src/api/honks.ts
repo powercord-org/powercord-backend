@@ -82,7 +82,7 @@ async function patreon (this: FastifyInstance, request: FastifyRequest<{ Headers
     }
   }
 
-  dispatchHonk(config.honks.staff, {
+  dispatchHonk(config.honks.staffChannel, {
     embeds: [
       {
         title: `Pledge ${request.headers['x-patreon-event'].split(':').pop()}d`,

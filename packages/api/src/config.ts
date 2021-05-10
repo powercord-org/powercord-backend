@@ -20,8 +20,18 @@
  * SOFTWARE.
  */
 
+import type RawConfig from '../../../config.example.json'
 import { URL } from 'url'
 import { existsSync, readFileSync } from 'fs'
+
+type Config<TConfig = typeof RawConfig> = {
+  [TProperty in keyof TConfig]:
+  TConfig[TProperty] extends Record<PropertyKey, unknown>
+    ? Config<TConfig[TProperty]>
+    : TConfig[TProperty] extends never[]
+      ? string[] // We only have arrays of strings
+      : TConfig[TProperty]
+}
 
 let path = new URL('../', import.meta.url)
 let cfgFile: URL | null = null
@@ -40,4 +50,4 @@ if (!cfgFile) {
 }
 
 const blob = readFileSync(cfgFile, 'utf8')
-export default JSON.parse(blob)
+export default JSON.parse(blob) as Config
