@@ -21,7 +21,23 @@
  */
 
 import { URL } from 'url'
-import { readFileSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 
-const blob = readFileSync(new URL('../../config.json', import.meta.url), 'utf8')
+let path = new URL('../', import.meta.url)
+let cfgFile: URL | null = null
+while (!cfgFile && path.pathname !== '/') {
+  const attempt = new URL('config.json', path)
+  if (existsSync(attempt)) {
+    cfgFile = attempt
+  } else {
+    path = new URL('../', path)
+  }
+}
+
+if (!cfgFile) {
+  console.log('Unable to locate config file! Exiting.')
+  process.exit(1)
+}
+
+const blob = readFileSync(cfgFile, 'utf8')
 export default JSON.parse(blob)

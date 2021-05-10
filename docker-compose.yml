@@ -1,6 +1,6 @@
 services:
   # Services
-  web:
+  webserver:
     image: nginx:alpine
     ports:
       - 8080:80
@@ -22,49 +22,46 @@ services:
   bot:
     build:
       context: .
-    command: npm run bot:dev -- --noClear
-    working_dir: /usr/src/porkord
+      dockerfile: Dockerfile.dev
+      args:
+        PACKAGE_NAME: boat
+    image: powercord-boat
+    working_dir: /opt/porkord/packages/boat
+    command: pnpm run dev -- --noClear
     volumes:
-      - ./config.json:/usr/src/porkord/config.json
-      - ./package.json:/usr/src/porkord/package.json
-      - ./pnpm-lock.yaml:/usr/src/porkord/pnpm-lock.yaml
-      - ./node_modules:/usr/src/porkord/node_modules
-      - ./boat:/usr/src/porkord/boat
-      - dist:/usr/src/dist
+      - ./packages/boat:/opt/porkord/packages/boat
+      - ./config.json:/opt/porkord/config.json
     profiles:
       - bot
   api:
     build:
       context: .
-    command: npm run api:dev -- --noClear
-    working_dir: /usr/src/porkord
+      dockerfile: Dockerfile.dev
+      args:
+        PACKAGE_NAME: api
+    image: powercord-api
+    working_dir: /opt/porkord/packages/api
+    command: pnpm run dev -- --noClear
     volumes:
-      - ./config.json:/usr/src/porkord/config.json
-      - ./package.json:/usr/src/porkord/package.json
-      - ./pnpm-lock.yaml:/usr/src/porkord/pnpm-lock.yaml
-      - ./node_modules:/usr/src/porkord/node_modules
-      - ./docs:/usr/src/porkord/docs
-      - ./api:/usr/src/porkord/api
-      - dist:/usr/src/dist
+      - ./packages/api:/opt/porkord/packages/api
+      - ./documentation:/opt/porkord/documentation
+      - ./config.json:/opt/porkord/config.json
     profiles:
       - website
-  webpack:
+  web:
     build:
       context: .
-    command: npm run web:dev
-    working_dir: /usr/src/porkord
+      dockerfile: Dockerfile.dev
+      args:
+        PACKAGE_NAME: web
+    image: powercord-web
+    command: pnpm run dev
+    working_dir: /opt/porkord/packages/web
     volumes:
-      - ./config.json:/usr/src/porkord/config.json
-      - ./package.json:/usr/src/porkord/package.json
-      - ./pnpm-lock.yaml:/usr/src/porkord/pnpm-lock.yaml
-      - ./node_modules:/usr/src/porkord/node_modules
-      - ./web:/usr/src/porkord/web
-      - dist:/usr/src/dist
+      - ./packages/web:/opt/porkord/packages/web
     profiles:
       - website
 
 volumes:
   db-data:
-    driver: local
-  dist:
     driver: local

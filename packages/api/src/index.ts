@@ -28,7 +28,6 @@ import fastifyMongodb from 'fastify-mongodb'
 import fastifyTokenize from 'fastify-tokenize'
 
 import apiModule from './api/index.js'
-import webModule from './web.js'
 import config from './config.js'
 
 const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'production' ? 'warn' : 'info' } })
@@ -47,12 +46,11 @@ fastify.register(fastifyTokenize, {
   },
 })
 
-fastify.register(apiModule, { prefix: '/api' })
-fastify.register(webModule)
+fastify.register(apiModule)
 
 fastify.ready()
   .then(
-    () => fastify.listen(config.port, config.bind),
+    () => fastify.listen(process.env.PORT || 8000, config.bind),
     (e) => {
       fastify.log.error(e)
       process.exit(1)

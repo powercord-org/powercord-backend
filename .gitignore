@@ -6,7 +6,6 @@
 node_modules
 
 # yes
-.cache
 boat/.canary.cache.json
 manifest.webpack.json
 integrity.webpack.json

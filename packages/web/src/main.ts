@@ -20,16 +20,12 @@
  * SOFTWARE.
  */
 
-import type { MarkdownNode } from './spoonfeed/src/types/markdown.js'
-import { MarkdownType } from './spoonfeed/src/types/markdown.js'
-import parseMarkup from './spoonfeed/src/markdown/parser.js'
-import { flattenToText } from './spoonfeed/src/markdown/util.js'
+import { h, render, hydrate } from 'preact'
+import App from './components/App'
+import './main.css'
 
-export type Document = { title: string | null, parts: string[], contents: MarkdownNode[] }
-
-export default function (markdown: string): Document {
-  const parsed = parseMarkup(markdown)
-  const title = flattenToText(parsed.find((node) => node.type === MarkdownType.HEADING && node.level === 1)!)
-  const parts = parsed.filter((node) => node.type === MarkdownType.HEADING && node.level === 2).map(flattenToText).filter(Boolean) as string[]
-  return { title, parts, contents: parsed.filter((node) => node.type !== MarkdownType.COMMENT && (node.type !== MarkdownType.HEADING || node.level !== 1)) }
+if (import.meta.env.PROD) {
+  hydrate(h(App, null), document.querySelector('#app')!)
+} else {
+  render(h(App, null), document.querySelector('#app')!)
 }

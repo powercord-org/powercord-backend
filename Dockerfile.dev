@@ -1,0 +1,15 @@
+FROM node:lts-alpine AS pnpm
+ENV NPM_CONFIG_LOGLEVEL error
+ARG PACKAGE_NAME
+
+# Get pnpm
+RUN wget -qO - https://get.pnpm.io/v6.js | node - add --global pnpm
+
+# Setup
+WORKDIR /opt/porkord
+COPY pnpm-lock.yaml .
+COPY pnpm-workspace.yaml .
+COPY packages/ packages/
+
+# Install
+RUN pnpm install -r --reporter=append-only --filter @powercord/${PACKAGE_NAME}

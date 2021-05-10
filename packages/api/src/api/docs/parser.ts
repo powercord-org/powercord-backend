@@ -20,8 +20,16 @@
  * SOFTWARE.
  */
 
-// dumb esm
-declare module 'react-dom/server.js' {
-  import * as ReactDomServer from 'react-dom/server'
-  export = ReactDomServer
+import type { MarkdownNode } from '@borkenware/spoonfeed/src/types/markdown.js'
+import { MarkdownType } from '@borkenware/spoonfeed/src/types/markdown.js'
+import parseMarkup from '@borkenware/spoonfeed/src/markdown/parser.js'
+import { flattenToText } from '@borkenware/spoonfeed/src/markdown/util.js'
+
+export type Document = { title: string | null, parts: string[], contents: MarkdownNode[] }
+
+export default function (markdown: string): Document {
+  const parsed = parseMarkup(markdown)
+  const title = flattenToText(parsed.find((node) => node.type === MarkdownType.HEADING && node.level === 1)!)
+  const parts = parsed.filter((node) => node.type === MarkdownType.HEADING && node.level === 2).map(flattenToText).filter(Boolean) as string[]
+  return { title, parts, contents: parsed.filter((node) => node.type !== MarkdownType.COMMENT && (node.type !== MarkdownType.HEADING || node.level !== 1)) }
 }
