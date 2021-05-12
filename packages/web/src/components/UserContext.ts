@@ -20,46 +20,32 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+import { createContext } from 'preact'
 
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
-
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
-  }
-}
-
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
-  }
-}
-
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
+export type User = {
+  id: string
+  username: string
+  discriminator: string
+  avatar: string
+  patronTier?: 0 | 1 | 2 | 3
+  badges: {
+    developer: boolean
+    staff: boolean
+    support: boolean
+    contributor: boolean
+    translator: boolean
+    hunter: boolean
+    early: boolean
+    custom: {
+      color: string
+      icon: string
+      white: string
+      name: string
     }
   },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})
+  accounts: {
+    spotify: string
+  }
+}
+
+export default createContext<User | null | void>(void 0)

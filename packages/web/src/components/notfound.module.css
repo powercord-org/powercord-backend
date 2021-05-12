@@ -20,46 +20,39 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+.container {
+  height: calc(100% - 162px);
+  padding-bottom: 0;
+}
 
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
+.pawa {
+  height: 0;
+  flex: 1;
+  min-width: 100%;
+  display: flex;
+  margin: 40px -1.5em 0;
+}
 
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
+.pawa img {
+  max-height: 100%;
+  max-width: 100%;
+  margin-top: auto;
+}
+
+@media screen and (min-width: 520px) {
+  .pawa {
+    margin: 40px 0 0;
   }
 }
 
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
+@media screen and (min-width: 890px) {
+  .container {
+    height: calc(100% - 143px);
   }
 }
 
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})
+@media screen and (min-width: 1440px) {
+  .container {
+    height: calc(100% - 107px);
+  }
+}

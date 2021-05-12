@@ -20,46 +20,57 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+.container {
+  display: flex;
+  padding: 8px 16px;
+  flex-shrink: 0;
+  align-items: flex-start;
+  background-color: var(--background-secondary);
+  font-size: .85rem;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
 
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
+.section {
+  display: flex;
+  column-gap: 16px;
+}
 
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
+.section:first-child {
+  flex-direction: column;
+}
+
+.section:last-child {
+  display: flex;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--background-tertiary);
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.link {
+  color: var(--text-color);
+}
+
+@media screen and (min-width: 890px) {
+  .container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .section:first-child {
+    flex-direction: row;
   }
 }
 
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
+@media screen and (min-width: 1440px) {
+  .container .section {
+    flex-direction: row;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
   }
 }
-
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})

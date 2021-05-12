@@ -20,46 +20,44 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+import type { JSX } from 'preact'
+import { h } from 'preact'
+import { useContext } from 'preact/hooks'
+import { route } from 'preact-router'
+import { useTitleTemplate } from 'hoofd'
 
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
+import Spinner from './Spinner'
+import UserContext from '../UserContext'
+import { Endpoints } from '../../constants'
 
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
+type AuthBoundaryProps = { children: JSX.Element, staff?: boolean } & Record<string, unknown>
+
+export default function AuthBoundary ({ children, staff }: AuthBoundaryProps) {
+  const user = useContext(UserContext)
+  if (user === void 0) {
+    useTitleTemplate('Powercord')
+    return (
+      <main>
+        <Spinner/>
+      </main>
+    )
   }
-}
 
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
+  if (!user) {
+    return (
+      <main>
+        <h1>You must be authenticated to see this</h1>
+        <p>
+          <a href={Endpoints.LOGIN}>Login</a>
+        </p>
+      </main>
+    )
   }
-}
 
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})
+  if (staff && !user?.badges?.staff) {
+    route('/')
+    return null
+  }
+
+  return children
+}

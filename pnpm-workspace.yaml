@@ -1,3 +1,5 @@
 packages:
-  - 'packages/**'
-  - '!**/test/**'
+  - 'packages/api'
+  - 'packages/boat'
+  - 'packages/spoonfeed'
+  - 'packages/web'

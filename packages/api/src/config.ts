@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type RawConfig from '../../../config.example.json'
+import type RawConfig from './config.example.json'
 import { URL } from 'url'
 import { existsSync, readFileSync } from 'fs'
 

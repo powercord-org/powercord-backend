@@ -20,46 +20,33 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+import type { RoutableProps } from 'preact-router'
+import { h } from 'preact'
+import { useTitle } from 'hoofd/preact'
 
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
+import { Routes } from '../constants'
 
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
-  }
+import pawa404 from '../assets/pawa-404.png'
+
+import style from './notfound.module.css'
+
+type NotFoundProps = { ctx?: Record<string, any> } & RoutableProps
+
+export default function NotFound ({ ctx }: NotFoundProps) {
+  if (import.meta.env.SSR && ctx) ctx.notFound = true
+
+  useTitle('404')
+
+  return (
+    <main className={style.container}>
+      <h1>Seems like you're lost...</h1>
+      <p>Pawa looked far and wide, but couldn't find what you're looking for... Maybe she can bring you back home?</p>
+      <p>
+        <a href={Routes.HOME}>Go back home</a>
+      </p>
+      <div className={style.pawa}>
+        <img src={pawa404} alt=''/>
+      </div>
+    </main>
+  )
 }
-
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
-  }
-}
-
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})

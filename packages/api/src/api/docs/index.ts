@@ -23,6 +23,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { Document } from './parser.js'
 import { URL } from 'url'
+import { existsSync } from 'fs'
 import { readdir, readFile } from 'fs/promises'
 import fetch from 'node-fetch'
 import markdown from './parser.js'
@@ -64,8 +65,22 @@ async function getRemoteDocument (url: string): Promise<Document> {
   return remoteCache.get(url)!
 }
 
+function findDocsFolder (): URL | void {
+  let path = new URL('../', import.meta.url)
+  while (path.pathname !== '/') {
+    const attempt = new URL('documentation/', path)
+    if (existsSync(attempt)) {
+      return attempt
+    } else {
+      path = new URL('../', path)
+    }
+  }
+}
+
 export default async function (fastify: FastifyInstance): Promise<void> {
-  const docsUrl = new URL('../../../../documentation/', import.meta.url)
+  const docsUrl = findDocsFolder()
+  if (!docsUrl) return
+
   for (const cat of await readdir(docsUrl)) {
     if (cat === 'LICENSE' || cat === 'README.md' || cat === '.git' || cat === '.DS_Store') continue
 

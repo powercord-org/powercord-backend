@@ -20,46 +20,51 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+.assets {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
 
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
+.asset-container {
+  width: 100%;
+  margin: 0 .66% .66%;
+  background-color: var(--background-secondary);
+  display: flex;
+  flex-direction: column;
+}
 
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
+.asset-name, .asset-footer {
+  padding: 8px 16px;
+  margin: 0;
+}
+
+.asset {
+  width: 100%;
+  padding: 8px;
+  flex: 1;
+  object-fit: contain;
+  background-color: #fff;
+}
+
+.copyright {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.links a {
+  margin-right: 8px;
+}
+
+@media screen and (min-width: 580px) {
+  .asset-container {
+    width: 48%;
   }
 }
 
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
+
+@media screen and (min-width: 1180px) {
+  .asset-container {
+    width: 32%;
   }
 }
-
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})

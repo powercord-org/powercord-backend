@@ -20,46 +20,79 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+.title {
+  text-align: center;
+  margin-bottom: 24px;
+}
 
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
+.feature {
+  background-color: var(--background-secondary);
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  grid-template-rows: 32px 1fr;
+  column-gap: 16px;
+  position: relative;
+  margin-bottom: 24px;
+}
 
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
+.feature-icon {
+  grid-row: 1/2;
+}
+
+.feature-name {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 32px;
+  height: 32px;
+}
+
+.feature-description {
+  margin-top: 8px;
+  grid-column: 2;
+  flex: 1;
+}
+
+.soon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #666;
+  padding: 1px 6px;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.performance {
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
+
+.install {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.install p {
+  margin-top: 8px;
+}
+
+@media screen and (min-width: 860px) {
+  .features {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .feature {
+    margin-bottom: 0;
   }
 }
 
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
+@media screen and (min-width: 1240px) {
+  .features {
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
-
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})

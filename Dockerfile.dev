@@ -7,6 +7,8 @@ RUN wget -qO - https://get.pnpm.io/v6.js | node - add --global pnpm
 
 # Setup
 WORKDIR /opt/porkord
+COPY tsconfig.json .
+COPY config.example.json .
 COPY pnpm-lock.yaml .
 COPY pnpm-workspace.yaml .
 COPY packages/ packages/

@@ -20,12 +20,36 @@
  * SOFTWARE.
  */
 
+import type { User } from './components/UserContext'
 import { h, render, hydrate } from 'preact'
+import { useState, useEffect } from 'preact/hooks'
 import App from './components/App'
+import { Endpoints } from './constants'
 import './main.css'
 
-if (import.meta.env.PROD) {
-  hydrate(h(App, null), document.querySelector('#app')!)
+if (import.meta.env.DEV) {
+  function Wrapper () {
+    const [ user, setUser ] = useState<void | null | User>(void 0)
+    useEffect(() => {
+      if (document.cookie.includes('token=')) {
+        fetch(Endpoints.USER_SELF)
+          .then((r) => r.json())
+          .then((u) => setUser(u.id ? u : null))
+      } else {
+        setUser(null)
+      }
+    }, [])
+
+    return h(App, { user })
+  }
+
+  render(h(Wrapper, null), document.querySelector('#app')!)
 } else {
-  render(h(App, null), document.querySelector('#app')!)
+  (async function () {
+    const user = document.cookie.includes('token=')
+      ? await fetch(Endpoints.USER_SELF).then((r) => r.json()).then((u) => u.id ? u : null)
+      : null
+
+    hydrate(h(App, { user }), document.querySelector('#app')!)
+  }())
 }

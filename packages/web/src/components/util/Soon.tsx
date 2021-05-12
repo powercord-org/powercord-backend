@@ -20,46 +20,24 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+import type { RoutableProps } from 'preact-router'
+import type { ComponentChildren } from 'preact'
+import { h } from 'preact'
 
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
-
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
+export function SoonRoute ({ children }: RoutableProps & { children: ComponentChildren }) {
+  if (import.meta.env.PROD) {
+    return <Soon/>
   }
+
+  return children
 }
 
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
-  }
+export default function Soon (_: any) {
+  return (
+    <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 64, paddingBottom: 64 }}>
+      <img style={{ width: 400 }} src='https://discord.com/assets/ccf4c733929efd9762ab02cd65175377.svg' alt=''/>
+      <div style={{ fontSize: 32 }}>Coming soon, come back later!</div>
+      <div style={{ fontSize: 8, opacity: 0.4 }}>u cute uwu</div>
+    </main>
+  )
 }
-
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})

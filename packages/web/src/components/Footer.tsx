@@ -20,46 +20,29 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+import { h } from 'preact'
 
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
+import { Routes } from '../constants'
 
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
-  }
+import style from './footer.module.css'
+
+export default function Footer () {
+  return (
+    <footer className={style.container}>
+      <div className={style.section}>
+        <span>Copyright &copy; 2018-{new Date().getFullYear()} Powercord</span>
+        <span>Powercord is not affiliated or endorsed by Discord. Discord is a trademark of Discord Inc.</span>
+      </div>
+      <div className={style.section}>
+        <a className={style.link} href={Routes.PATREON} target='_blank' rel='noreferrer'>Patreon</a>
+        <a className={style.link} href={Routes.STATS}>Stats</a>
+        <a className={style.link} href={Routes.BRANDING}>Branding</a>
+        <a className={style.link} href={Routes.GITHUB} target='_blank' rel='noreferrer'>GitHub</a>
+        <a className={style.link} href={Routes.GUIDELINES}>Guidelines</a>
+        <a className={style.link} href={Routes.LISTING_AGREEMENT}>Listing Agreement</a>
+        <a className={style.link} href={Routes.TERMS}>Terms</a>
+        <a className={style.link} href={Routes.PRIVACY}>Privacy</a>
+      </div>
+    </footer>
+  )
 }
-
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
-  }
-}
-
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})

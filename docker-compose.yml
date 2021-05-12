@@ -29,7 +29,9 @@ services:
     working_dir: /opt/porkord/packages/boat
     command: pnpm run dev -- --noClear
     volumes:
-      - ./packages/boat:/opt/porkord/packages/boat
+      - ./packages/boat/src:/opt/porkord/packages/boat/src
+      - ./packages/boat/package.json:/opt/porkord/packages/boat/package.json
+      - ./packages/boat/tsconfig.json:/opt/porkord/packages/boat/tsconfig.json
       - ./config.json:/opt/porkord/config.json
     profiles:
       - bot
@@ -43,7 +45,9 @@ services:
     working_dir: /opt/porkord/packages/api
     command: pnpm run dev -- --noClear
     volumes:
-      - ./packages/api:/opt/porkord/packages/api
+      - ./packages/api/src:/opt/porkord/packages/api/src
+      - ./packages/api/package.json:/opt/porkord/packages/api/package.json
+      - ./packages/api/tsconfig.json:/opt/porkord/packages/api/tsconfig.json
       - ./documentation:/opt/porkord/documentation
       - ./config.json:/opt/porkord/config.json
     profiles:

@@ -20,46 +20,47 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
-
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
-
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
-  }
+.wrapper {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
-  }
+.container {
+  display: flex;
+  background-color: var(--background-secondary);
+  border: 1px var(--background-tertiary) solid;
 }
 
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})
+.button, .pages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px var(--background-tertiary) solid;
+}
+
+.button:first-child {
+  border-left-width: 0;
+}
+
+.button {
+  padding: 4px;
+}
+
+.button:not(:disabled):hover {
+  background-color: rgba(0, 0, 0, .2);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+.button svg {
+  opacity: 0.4;
+}
+
+.pages {
+  padding: 4px 8px;
+}

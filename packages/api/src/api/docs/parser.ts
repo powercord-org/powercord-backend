@@ -20,10 +20,10 @@
  * SOFTWARE.
  */
 
-import type { MarkdownNode } from '@borkenware/spoonfeed/src/types/markdown.js'
-import { MarkdownType } from '@borkenware/spoonfeed/src/types/markdown.js'
-import parseMarkup from '@borkenware/spoonfeed/src/markdown/parser.js'
-import { flattenToText } from '@borkenware/spoonfeed/src/markdown/util.js'
+import type { MarkdownNode } from './spoonfeed/src/types/markdown.js'
+import { MarkdownType } from './spoonfeed/src/types/markdown.js'
+import parseMarkup from './spoonfeed/src/markdown/parser.js'
+import { flattenToText } from './spoonfeed/src/markdown/util.js'
 
 export type Document = { title: string | null, parts: string[], contents: MarkdownNode[] }
 

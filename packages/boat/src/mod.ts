@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import { Guild, User } from 'eris'
+import type { Guild, User } from 'eris'
 import { schedule } from './modules/modtasks.js'
 import { prettyPrintTimeSpan } from './util.js'
 import config from './config.js'

@@ -21,16 +21,22 @@
  */
 
 /* @import './fonts/include.css'; */
+@import 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&family=JetBrains+Mono&display=swap';
+/* Amaranth */
+@font-face {
+  font-family: Discord;
+  src: url(/src/assets/discord-font.otf)
+}
 
 :root {
   --background-light: #353535;
   --background-primary: #303030;
-  --background-secondary: #222;
-  --background-tertiary: #171717;
+  --background-secondary: #252525;
+  --background-tertiary: #151515;
 
-  --text-color: #ddd;
-  --link-color: #43a0fd;
+  --text-color: #efefef;
   --blurple: #7289da;
+  --red: #f04747;
 }
 
 * { box-sizing: border-box; }
@@ -46,7 +52,7 @@ html, body, #app {
   color: var(--text-color);
 
   text-rendering: optimizeLegibility;
-  /* font-family: Quicksand, sans-serif; */
+  font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 500;
 }
@@ -61,14 +67,14 @@ main {
   flex-direction: column;
 
   margin: 0 auto;
-  max-width: 1360px;
-  padding: 2em;
+  max-width: 1300px;
+  padding: 1em 2em;
   width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  font-family: 'Crete Round', serif;
+  font-family: 'Open Sans', serif;
 }
 
 h1 { font-size: 2.25rem; }
@@ -78,7 +84,7 @@ h4 { font-size: 1rem; }
 p { margin: 16px 0 0; }
 
 a {
-  color: var(--link-color);
+  color: var(--blurple);
   text-decoration: none;
 }
 
@@ -92,4 +98,8 @@ hr {
   border-bottom-width: 1px;
   margin-top: 16px;
   margin-bottom: 16px;
+}
+
+.serious * {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
 }

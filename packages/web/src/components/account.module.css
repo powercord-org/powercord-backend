@@ -20,46 +20,40 @@
  * SOFTWARE.
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
-
-import { defineConfig } from 'vite'
-import { rename } from 'fs/promises'
-import { join } from 'path'
-import preact from '@preact/preset-vite'
-import magicalSvg from 'vite-plugin-magical-svg'
-
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
-  }
+.cutie, .header {
+  margin-top: 24px;
 }
 
-function moveIndex (): Plugin {
-  return {
-    name: 'move-index',
-    async closeBundle () {
-      if (process.argv.includes('--ssr')) {
-        await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
-      }
-    }
-  }
+.cutie {
+  display: flex;
+  height: 96px;
+  border-radius: 8px;
+  align-items: center;
+  background: linear-gradient(90deg, #b473f5, #e292aa);
+  padding: 16px 32px;
 }
 
-export default defineConfig({
-  css: { modules: { localsConvention: 'camelCase' } },
-  publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
-  server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
-  plugins: [
-    preact(),
-    noJsxInject(),
-    magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
-})
+.cutie-logo {
+  height: 80%;
+  margin-right: 32px;
+}
+
+.cutie-contents {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.cutie-contents span:first-child {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.cutie-contents span:last-child {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.danger {
+  color: var(--red);
+}
