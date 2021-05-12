@@ -42,7 +42,7 @@ fastify.register(fastifyTokenize, {
   fetchAccount: async (id: string) => {
     const user = await fastify.mongo.db!.collection('users').findOne({ _id: id })
     if (user) user.lastTokenReset = 0
-    return user
+    return user ?? {}
   },
 })
 
