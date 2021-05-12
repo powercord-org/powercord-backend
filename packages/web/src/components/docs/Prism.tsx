@@ -34,7 +34,6 @@ type PrismProps = { language?: string | null, code: string }
 
 export default function PrismComponent ({ language, code }: PrismProps) {
   let lines = []
-  console.log(Prism)
   if (language && Prism.languages[language]) {
     lines = Prism.highlight(code, Prism.languages[language], language)
       .replace(
