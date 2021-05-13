@@ -21,15 +21,15 @@
  */
 
 import type { RoutableProps } from 'preact-router'
-import type { ComponentChildren } from 'preact'
-import { h } from 'preact'
+import type { JSX } from 'preact'
+import { h, cloneElement } from 'preact'
 
-export function SoonRoute ({ children }: RoutableProps & { children: ComponentChildren }) {
+export function SoonRoute ({ children, ...props }: RoutableProps & { children: JSX.Element }) {
   if (import.meta.env.PROD) {
     return <Soon/>
   }
 
-  return children
+  return cloneElement(children, props)
 }
 
 export default function Soon (_: any) {

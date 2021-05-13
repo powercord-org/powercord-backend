@@ -70,7 +70,6 @@ async function getDiscordAvatar (user: User, update: (avatar: string) => void): 
 // Only avatar of people shown on /contributors & authenticated user can be fetched.
 async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequest>, reply: FastifyReply): Promise<Buffer | void> {
   let user = request.user!
-  console.log(request.params.id, request.user)
   if (request.params.id !== request.user?._id.toString()) {
     user = await this.mongo.db!.collection('users').findOne({
       _id: request.params.id,

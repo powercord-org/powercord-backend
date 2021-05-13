@@ -167,7 +167,7 @@ async function contributors (this: FastifyInstance): Promise<unknown> {
 
   return {
     developers: await findUsers({ 'badges.developer': true }),
-    staff: await findUsers({ $or: [ { 'badges.staff': true }, { 'badges.support': true } ], 'badges.developer': false }),
+    staff: await findUsers({ $or: [ { 'badges.staff': true }, { 'badges.support': true } ], 'badges.developer': { $not: { $eq: true } } }),
     contributors: await findUsers({ 'badges.contributor': true }),
   }
 }

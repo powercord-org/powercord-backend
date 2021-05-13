@@ -33,7 +33,7 @@
 }
 
 .markdown h2 {
-  font-size: 1.75em;
+  font-size: 1.85em;
 }
 
 .markdown h3 {
@@ -46,6 +46,10 @@
   font-weight: 600;
   background-color: var(--background-tertiary);
   padding: 8px 16px;
+}
+
+.markdown h6 + :is(table, .codeblock) {
+  margin-top: 0;
 }
 
 .markdown :is(ul, ol) {
@@ -103,11 +107,11 @@
 }
 
 .markdown table tbody tr {
-  background-color: darken(#303030, 3);
+  background-color: #00000015;
 }
 
 .markdown table tbody tr:nth-child(2n) {
-  background-color: darken(#303030, 1);
+  background-color: #00000005;
 }
 
 .markdown table :is(td, th) {
@@ -129,7 +133,7 @@
 
 .note {
   padding: 16px;
-  margin-bottom: 20px;
+  margin-top: 24px;
   border-width: 1px;
   border-style: solid;
   border-radius: 5px;
@@ -140,18 +144,18 @@
 }
 
 .note.info {
-  border-color: var(--background-secondary);
-  background-color: rgba(0, 0, 0, .2);
+  border-color: var(--background-tertiary);
+  background-color: #00000030;
 }
 
 .note.warn {
-  border-color: #e19517;
-  background-color: rgba(#e19517, .2);
+  border-color: var(--orange);
+  background-color: var(--orange-t);
 }
 
 .note.danger {
   border-color: var(--red);
-  background-color: rgba(var(--red), .2);
+  background-color: var(--red-t);
 }
 
 .codeblock {

@@ -31,12 +31,14 @@ import Header from './Header'
 import Footer from './Footer'
 
 import AuthBoundary from './util/AuthBoundary'
+import { SoonRoute } from './util/Soon'
 
 import Homepage from './Homepage'
 import Account from './Account'
 import Contributors from './Contributors'
 import Stats from './stats/Community'
 import Branding from './Branding'
+import Documentation from './docs/Documentation'
 // Documentation
 // Advisories
 // Advisory
@@ -78,6 +80,9 @@ export default function App (props: null | AppProps) {
         <Markdown document='guidelines' path={Routes.GUIDELINES}/>
         <Markdown document='listing-agreement' path={Routes.LISTING_AGREEMENT}/>
 
+        <SoonRoute path={Routes.DOCS_ITEM(':categoryId?', ':documentId?')}>
+          <Documentation/>
+        </SoonRoute>
         <PorkordLicense path={Routes.PORKORD_LICENSE}/>
         <Terms path={Routes.TERMS}/>
         <Privacy path={Routes.PRIVACY}/>

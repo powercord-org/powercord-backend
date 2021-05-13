@@ -56,6 +56,8 @@ export default defineConfig({
       '../types/markdown.js': '../types/markdown.ts'
     }
   },
+  // @ts-expect-error -- Vite's kinda dumb
+  ssr: { noExternal: [ '@borkenware/spoonfeed' ] },
   plugins: [
     preact(),
     noJsxInject(),
