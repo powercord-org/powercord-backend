@@ -1,0 +1,202 @@
+/*
+ * Copyright (c) 2018-2021 aetheryx & Cynthia K. Rey
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+.markdown :is(h1, h2, h3, h4, h5, h6) code {
+  font-size: 100%;
+}
+
+.markdown :is(h1, h2, h3):not(:first-child) {
+  margin-top: 24px;
+}
+
+.markdown :is(h4, h5, h6):not(:first-child) {
+  margin-top: 16px;
+}
+
+.markdown h2 {
+  font-size: 1.85em;
+}
+
+.markdown h3 {
+  font-size: 1.5em;
+}
+
+.markdown h6 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: var(--background-tertiary);
+  padding: 8px 16px;
+}
+
+.markdown h6 + :is(table, .codeblock) {
+  margin-top: 0;
+}
+
+.markdown :is(ul, ol) {
+  margin-bottom: 0;
+}
+
+.markdown li {
+  margin-bottom: 4px;
+}
+
+.markdown img {
+  margin: 16px 0;
+  max-width: 100%;
+}
+
+.markdown blockquote {
+  white-space: pre-wrap;
+  margin: 8px 0 8px 16px;
+  position: relative;
+}
+
+.markdown blockquote::before {
+  content: '';
+  width: 4px;
+  height: 100%;
+  border-radius: 2px;
+  position: absolute;
+  top: 0;
+  left: -16px;
+  right: 0;
+  background-color: var(--background-secondary);
+}
+
+.markdown blockquote p {
+  margin: 0;
+}
+
+.markdown code.inline {
+  padding: .2em;
+  margin: -.2em 0;
+  border-radius: 3px;
+  background-color: var(--background-secondary);
+  font-family: 'JetBrains Mono', sans-serif;
+  font-size: 85%;
+}
+
+.markdown table {
+  margin-bottom: 15px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.markdown table thead {
+  background-color: var(--background-secondary);
+}
+
+.markdown table tbody tr {
+  background-color: #00000015;
+}
+
+.markdown table tbody tr:nth-child(2n) {
+  background-color: #00000005;
+}
+
+.markdown table :is(td, th) {
+  text-align: left;
+  border: 1px var(--background-secondary) solid;
+  font-size: 13px;
+  opacity: .8;
+  padding: 8px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.markdown table td {
+  opacity: 1;
+  text-transform: none;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+.note {
+  padding: 16px;
+  margin-top: 24px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+}
+
+.note p {
+  margin: 0;
+}
+
+.note.info {
+  border-color: var(--background-tertiary);
+  background-color: #00000030;
+}
+
+.note.warn {
+  border-color: var(--orange);
+  background-color: var(--orange-t);
+}
+
+.note.danger {
+  border-color: var(--red);
+  background-color: var(--red-t);
+}
+
+.codeblock {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: var(--background-secondary);
+  font-size: 14px;
+  padding: 8px 16px;
+  margin: 16px 0;
+}
+
+.codeblock + .codeblock {
+  margin-top: 0;
+}
+
+.codeblock code {
+  font: inherit;
+}
+
+.line {
+  display: flex;
+}
+
+.line-number {
+  width: 26px;
+  border-right: 1px solid var(--background-primary);
+  margin-right: 12px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.line-content {
+  max-width: calc(100% - 36px);
+  flex-wrap: wrap;
+  white-space: pre;
+}
+
+.line-content span {
+  max-width: 100%;
+  white-space: pre-wrap;
+}
+
+.center {
+  text-align: center;
+}

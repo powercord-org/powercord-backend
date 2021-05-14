@@ -1,0 +1,133 @@
+/*
+ * Copyright (c) 2018-2021 aetheryx & Cynthia K. Rey
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+.chart {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  background-color: var(--background-secondary);
+}
+
+.chart-header {
+  height: 65px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.chart-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.button {
+  height: 24px;
+  margin-left: 0 8px 0 0;
+  border-radius: 4px;
+  padding: 0 8px;
+
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+}
+
+.button.selected {
+  background-color: var(--background-light);
+  cursor: initial;
+}
+
+.grid-line {
+  fill: none;
+  stroke: var(--text-color);
+  stroke-opacity: .06;
+}
+
+.grid-text {
+  fill: var(--text-color);
+  cursor: default;
+  font-size: 12px;
+  user-select: none;
+}
+
+.legend {
+  display: flex;
+  padding: 0 32px 16px;
+}
+
+.legend-entry {
+  display: flex;
+  align-items: center;
+  margin-right: 32px;
+}
+
+.legend-entry svg {
+  margin-right: 8px;
+}
+
+.group h3 {
+  font-size: 18px;
+}
+
+.group + .group {
+  margin-top: 24px;
+}
+
+.group span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+}
+
+.section-title {
+  margin-top: 24px;
+}
+
+@media screen and (min-width: 1180px) {
+  .chart-header {
+    height: 40px;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .buttons {
+    justify-content: flex-end;
+  }
+
+  .group {
+    display: flex;
+  }
+
+  .group div {
+    width: 33%;
+  }
+}

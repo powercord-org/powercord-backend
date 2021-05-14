@@ -26,5 +26,5 @@
  - [x] Browser-accessible documentation (powercord.dev/docs)
  - [ ] Internationalize the website (why not?)
  - [x] Mod commands + temporary sanctions through the bot (tempmute, tempban)
- - [ ] Migrate website to TypeScript + Preact + hoofd
+ - [x] Migrate website to TypeScript + Preact + hoofd
  - [ ] Migrate commands to some Saturated Liquid of Anhydrous Software Honey (SLASH) commands

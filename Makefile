@@ -9,3 +9,9 @@ boat:
 .PHONY: down
 down:
 	docker-compose down
+
+.PHONY: rm-images
+rm-images:
+	docker image rm powercord-web || true
+	docker image rm powercord-api || true
+	docker image rm powercord-boat || true

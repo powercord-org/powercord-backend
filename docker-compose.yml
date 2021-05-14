@@ -1,17 +1,17 @@
 services:
   # Services
-  web:
+  webserver:
     image: nginx:alpine
     ports:
       - 8080:80
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./conf/nginx.dev.conf:/etc/nginx/conf.d/default.conf
     profiles:
       - website
   mongo:
     image: mongo:4-bionic
     ports:
-      - 9042:9042
+      - 27017:27017
     volumes:
       - db-data:/var/lib/mongodb
     profiles:
@@ -22,49 +22,50 @@ services:
   bot:
     build:
       context: .
-    command: npm run bot:dev -- --noClear
-    working_dir: /usr/src/porkord
+      dockerfile: Dockerfile.dev
+      args:
+        PACKAGE_NAME: boat
+    image: powercord-boat
+    working_dir: /opt/porkord/packages/boat
+    command: pnpm run dev -- --noClear
     volumes:
-      - ./config.json:/usr/src/porkord/config.json
-      - ./package.json:/usr/src/porkord/package.json
-      - ./pnpm-lock.yaml:/usr/src/porkord/pnpm-lock.yaml
-      - ./node_modules:/usr/src/porkord/node_modules
-      - ./boat:/usr/src/porkord/boat
-      - dist:/usr/src/dist
+      - ./packages/boat/src:/opt/porkord/packages/boat/src
+      - ./packages/boat/package.json:/opt/porkord/packages/boat/package.json
+      - ./packages/boat/tsconfig.json:/opt/porkord/packages/boat/tsconfig.json
+      - ./config.json:/opt/porkord/config.json
     profiles:
       - bot
   api:
     build:
       context: .
-    command: npm run api:dev -- --noClear
-    working_dir: /usr/src/porkord
+      dockerfile: Dockerfile.dev
+      args:
+        PACKAGE_NAME: api
+    image: powercord-api
+    working_dir: /opt/porkord/packages/api
+    command: pnpm run dev -- --noClear
     volumes:
-      - ./config.json:/usr/src/porkord/config.json
-      - ./package.json:/usr/src/porkord/package.json
-      - ./pnpm-lock.yaml:/usr/src/porkord/pnpm-lock.yaml
-      - ./node_modules:/usr/src/porkord/node_modules
-      - ./docs:/usr/src/porkord/docs
-      - ./api:/usr/src/porkord/api
-      - dist:/usr/src/dist
+      - ./packages/api/src:/opt/porkord/packages/api/src
+      - ./packages/api/package.json:/opt/porkord/packages/api/package.json
+      - ./packages/api/tsconfig.json:/opt/porkord/packages/api/tsconfig.json
+      - ./documentation:/opt/porkord/documentation
+      - ./config.json:/opt/porkord/config.json
     profiles:
       - website
-  webpack:
+  web:
     build:
       context: .
-    command: npm run web:dev
-    working_dir: /usr/src/porkord
+      dockerfile: Dockerfile.dev
+      args:
+        PACKAGE_NAME: web
+    image: powercord-web
+    command: pnpm run dev
+    working_dir: /opt/porkord/packages/web
     volumes:
-      - ./config.json:/usr/src/porkord/config.json
-      - ./package.json:/usr/src/porkord/package.json
-      - ./pnpm-lock.yaml:/usr/src/porkord/pnpm-lock.yaml
-      - ./node_modules:/usr/src/porkord/node_modules
-      - ./web:/usr/src/porkord/web
-      - dist:/usr/src/dist
+      - ./packages/web:/opt/porkord/packages/web
     profiles:
       - website
 
 volumes:
   db-data:
-    driver: local
-  dist:
     driver: local

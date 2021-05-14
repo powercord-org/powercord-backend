@@ -1,5 +1,4 @@
 {
-  "port": 80,
   "bind": "127.0.0.1",
   "honks": {
     "patreonSecret": "",
@@ -13,9 +12,7 @@
     "prefix": "pc/",
     "ids": {
       "serverId": "",
-      "rolePatreonMommy": "",
-      "rolePatreonParent": "",
-      "rolePatreonDaddy": "",
+      "roleDonator": "",
       "roleContributor": "",
       "roleTranslator": "",
       "roleHunter": "",
