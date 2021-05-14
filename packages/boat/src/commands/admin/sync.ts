@@ -49,9 +49,13 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
     }
 
     [ 'Hunter', 'Contributor', 'Translator' ].forEach((type) => {
+      // @ts-ignore - Pain
       if (config.discord.ids[`role${type}`] && user.badges[type.toLowerCase()] && !user.member.roles.includes(config.discord.ids[`role${type}`])) {
+        // @ts-ignore - Pain
         newRoles.push(config.discord.ids[`role${type}`])
+      // @ts-ignore - Pain
       } else if (!user.badges[type.toLowerCase()] && user.member.roles.includes(config.discord.ids[`role${type}`])) {
+        // @ts-ignore - Pain
         newRoles = newRoles.filter((r) => r !== config.discord.ids[`role${type}`])
       }
     })

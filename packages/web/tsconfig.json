@@ -5,7 +5,8 @@
     "outDir": "./dist",
     "jsx": "preserve",
     "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment"
+    "jsxFragmentFactory": "Fragment",
+    "typeRoots": [ "./node_modules/@types" ]
   },
   "include": [ "./src/**/*" ]
 }
