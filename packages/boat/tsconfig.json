@@ -3,4 +3,3 @@
   "compilerOptions": { "outDir": "./dist" },
   "include": [ "./src/**/*" ]
 }
-
