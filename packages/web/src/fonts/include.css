@@ -21,6 +21,12 @@
  */
 
 @font-face {
+  font-family: 'Discord';
+  font-display: swap;
+  src: url(./discord-font.otf);
+}
+
+@font-face {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;

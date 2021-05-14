@@ -29,7 +29,7 @@ import fetch from 'node-fetch'
 
 export type CacheResult = { success: false } | { success: true, data: Buffer }
 
-const CACHE_PATH = new URL('./powercord', new URL(`${tmpdir()}/`, 'file:'))
+const CACHE_PATH = new URL(`${tmpdir()}/powercord/`, 'file:')
 if (!existsSync(CACHE_PATH)) mkdirSync(CACHE_PATH)
 
 function generateKey (hourly?: boolean) {

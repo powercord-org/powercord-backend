@@ -21,21 +21,43 @@
  */
 
 import type { Attributes } from 'preact'
-import { h } from 'preact'
+import { h, Fragment } from 'preact'
 import { useState, useEffect, useMemo } from 'preact/hooks'
 import { route } from 'preact-router'
+import { Link } from 'preact-router/match'
 
-import Sidebar from './Sidebar'
 import Markdown from './Markdown'
 import Spinner from '../util/Spinner'
+import LayoutWithSidebar from '../util/LayoutWithSidebar'
 
 import { Endpoints, Routes } from '../../constants'
 
 import style from './documentation.module.css'
 
 type DocProps = { categoryId?: string, documentId?: string } & Attributes
+type SidebarProps = { categories: Category[] }
 export type Document = { id: string, title: string, parts: string[] }
 export type Category = { id: string, name: string, docs: Document[] }
+
+function Sidebar ({ categories }: SidebarProps) {
+  return <>
+    {categories.map((category) => (
+      <Fragment key={category.id}>
+        <h3 className={style.categoryName}>{category.name}</h3>
+        {category.docs.map((doc) => (
+          <Link
+            key={`${category.id}-${doc.id}`}
+            href={Routes.DOCS_ITEM(category.id, doc.id)}
+            className={style.item}
+            activeClassName={style.active}
+          >
+            {doc.title}
+          </Link>
+        ))}
+      </Fragment>
+    ))}
+  </>
+}
 
 let cache: Category[] | null = null
 export default function Documentation ({ categoryId, documentId }: DocProps) {
@@ -71,11 +93,9 @@ export default function Documentation ({ categoryId, documentId }: DocProps) {
   }
 
   return (
-    <div className={style.container}>
-      <Sidebar categories={categories} title={doc?.title}/>
-      <div className={style.contents}>
-        <Markdown document={docKey}/>
-      </div>
-    </div>
+    <LayoutWithSidebar title={doc?.title || 'Loading...'}>
+      <Sidebar categories={categories}/>
+      <Markdown document={docKey}/>
+    </LayoutWithSidebar>
   )
 }

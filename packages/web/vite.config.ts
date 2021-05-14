@@ -49,7 +49,10 @@ function moveIndex (): Plugin {
 export default defineConfig({
   css: { modules: { localsConvention: 'camelCase' } },
   publicDir: process.argv.includes('--ssr') ? '_' : 'public',
-  build: { outDir: process.argv.includes('--ssr') ? 'server' : 'dist' },
+  build: {
+    assetsInlineLimit: 0,
+    outDir: process.argv.includes('--ssr') ? 'server' : 'dist'
+  },
   server: { hmr: { port: 8080 } },
   resolve: {
     alias: {

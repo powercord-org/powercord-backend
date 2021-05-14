@@ -1,0 +1,191 @@
+/*
+ * Copyright (c) 2018-2021 aetheryx & Cynthia K. Rey
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+.container {
+  display: flex;
+  overflow: hidden;
+  border-top: 2px var(--background-tertiary) solid;
+  position: relative;
+  flex: 1;
+}
+
+.sidebar {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sidebar::before {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  content: '';
+  background-color: rgba(0, 0, 0, .6);
+  pointer-events: none;
+  transition: opacity .3s;
+  opacity: 0;
+  flex: 1;
+}
+
+.title {
+  width: 100%;
+  height: 38px;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  background-color: var(--background-tertiary);
+  pointer-events: all;
+  position: relative;
+  z-index: 2;
+  top: 0;
+}
+
+.inner {
+  z-index: 2;
+  height: 100%;
+  position: relative;
+  transform: translateX(-100%);
+  transition: transform .3s;
+  background-color: var(--background-secondary);
+  flex-direction: column;
+  align-items: flex-end;
+  overflow-y: scroll;
+  padding: 20px;
+  display: flex;
+  width: 275px;
+  z-index: 1;
+  top: 0;
+}
+
+.sidebar.opened {
+  pointer-events: all;
+}
+
+.sidebar.opened::before {
+  pointer-events: initial;
+  opacity: 1;
+}
+
+.sidebar.opened .inner {
+  transform: translateX(0);
+}
+
+.contents {
+  flex: 1;
+  position: relative;
+  padding: 24px;
+  width: 100%;
+  max-width: 1024px;
+  overflow-y: auto;
+  margin-top: 36px;
+}
+
+.contents h1 {
+  display: none;
+}
+
+.contents main {
+  margin-top: -24px;
+}
+
+.b {
+  margin-right: 16px;
+}
+
+/* Scrollbar */
+.container::-webkit-scrollbar, .container ::-webkit-scrollbar {
+  border-left-width: 0;
+}
+
+.inner::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.inner::-webkit-scrollbar-thumb, .inner::-webkit-scrollbar-track {
+  border-width: 2px;
+}
+
+.inner::-webkit-scrollbar-thumb {
+  background-color: #151515;
+  min-height: 40px;
+}
+
+.inner::-webkit-scrollbar-track {
+  background-color: var(--background-secondary);
+  margin-bottom: 4px;
+}
+
+
+@media screen and (min-width: 1010px) {
+  .container {
+    overflow-y: scroll;
+    margin-top: 0;
+  }
+
+  .title {
+    display: none;
+  }
+
+  .sidebar {
+    top: 0;
+    position: sticky;
+    pointer-events: all;
+    width: 25%;
+  }
+
+  .sidebar::before {
+    content: none;
+  }
+
+  .inner {
+    width: 100%;
+    position: initial;
+    transform: none;
+  }
+
+  .contents {
+    margin-top: 0;
+    overflow-y: initial;
+  }
+
+  .contents h1 {
+    display: block;
+  }
+
+  .contents main {
+    margin-top: 0;
+  }
+
+  .b {
+    display: none;
+  }
+}

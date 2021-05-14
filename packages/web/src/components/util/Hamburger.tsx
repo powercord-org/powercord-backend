@@ -20,37 +20,27 @@
  * SOFTWARE.
  */
 
-.category-name, .item {
-  width: 205px;
-}
+import { useEffect, useCallback } from 'preact/hooks'
+import { h } from 'preact'
 
-.category-name {
-  margin: 0;
-  margin-top: 8px;
-  font-size: 16px;
-  margin-bottom: 8px;
-  padding-top: 16px;
-  border-top: 1px solid var(--background-tertiary);
-}
+import style from './hamburger.module.css'
 
-.category-name:first-of-type {
-  padding: 0;
-  border-top-width: 0;
-}
+type HamburgerProps = { opened: boolean, setOpened: (o: boolean) => void, className?: string }
 
-.item {
-  padding: 6px 12px;
-  margin-bottom: 2px;
-  border-radius: 3px;
-  margin-bottom: 4px;
-  color: inherit;
-}
+export default function Hamburger ({ opened, setOpened, className }: HamburgerProps) {
+  const toggle = useCallback(() => setOpened(!opened), [ opened ])
+  useEffect(() => {
+    if (opened) {
+      window.addEventListener('click', toggle, true)
+      return () => window.removeEventListener('click', toggle, true)
+    }
+  }, [ opened ])
 
-.item:hover {
-  background-color: #272727;
-  text-decoration: none;
-}
-
-.item.active {
-  background-color: var(--background-primary);
+  return (
+    <div className={[ style.burgerking, opened && style.opened, className ].filter(Boolean).join(' ')} onClick={toggle}>
+      <span/>
+      <span/>
+      <span/>
+    </div>
+  )
 }

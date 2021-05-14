@@ -22,11 +22,6 @@
 
 @import './fonts/include.css';
 
-@font-face {
-  font-family: Discord;
-  src: url(/src/assets/discord-font.otf)
-}
-
 :root {
   --background-light: #353535;
   --background-primary: #303030;

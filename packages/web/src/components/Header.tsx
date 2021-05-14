@@ -24,6 +24,7 @@ import { h } from 'preact'
 import { useMemo, useState, useCallback, useEffect, useContext } from 'preact/hooks'
 
 import UserContext from './UserContext'
+import Hamburger from './util/Hamburger'
 import { Endpoints, Routes } from '../constants'
 
 import powercordPlug from '../assets/powercord.svg?file'
@@ -64,13 +65,6 @@ function User () {
 export default function Header () {
   const isOctober = useMemo(() => (new Date().getUTCMonth()) === 9, [])
   const [ opened, setOpened ] = useState(false)
-  const toggle = useCallback(() => setOpened(!opened), [ opened ])
-  useEffect(() => {
-    if (opened) {
-      window.addEventListener('click', toggle)
-      return () => window.removeEventListener('click', toggle)
-    }
-  }, [ opened ])
 
   return (
     <header className={`${style.container}${opened ? ` ${style.opened}` : ''}`}>
@@ -90,11 +84,7 @@ export default function Header () {
         <User/>
       </div>
 
-      <div className={style.burgerking} onClick={toggle}>
-        <span/>
-        <span/>
-        <span/>
-      </div>
+      <Hamburger opened={opened} setOpened={setOpened} className={style.b}/>
     </header>
   )
 }

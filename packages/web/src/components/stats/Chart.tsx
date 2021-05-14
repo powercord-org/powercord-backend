@@ -69,7 +69,7 @@ function ChartLegend ({ legend, dataset: { dataset } }: LegendProps) {
       {Object.entries(legend).map(([ key, value ]) => (
         <div className={style.legendEntry} key={key}>
           <svg xmlns='http://www.w3.org/2000/svg' width={16} height={8} viewBox='0 0 16 8'>
-            <line x1={0} x2={16} y1={4} y2={4} strokeWidth='2' stroke={dataset[key].color}/>
+            <line x1={0} x2={16} y1={4} y2={4} stroke-width='2' stroke={dataset[key].color}/>
             <circle cx={8} cy={4} r={4} fill={dataset[key].color}/>
           </svg>
           <span>{value}</span>
@@ -95,7 +95,7 @@ function ChartSide ({ width, height, dataset }: ChartSideProps) {
     <g>
       {lines.map((l, i) => (
         <g key={`${l}-${i}`}>
-          <text className={style.gridText} x={40} y={4 + topMargin + (delta * i)} textAnchor='end'>{l}</text>
+          <text className={style.gridText} x={40} y={4 + topMargin + (delta * i)} text-anchor='end'>{l}</text>
           <line className={style.gridLine} x1={50} x2={width - 10} y1={topMargin + (delta * i)} y2={topMargin + (delta * i)}/>
         </g>
       ))}
@@ -156,7 +156,7 @@ function ChartBottom ({ reduced, mode, width, height }: ChartBottomProps) {
         const x = Math.round(50 + (delta * (i + 0.5)))
         return (
           <g key={d}>
-            <text className={style.gridText} x={x} y={baseHeight + 25} textAnchor='middle'>{d}</text>
+            <text className={style.gridText} x={x} y={baseHeight + 25} text-anchor='middle'>{d}</text>
             <line className={style.gridLine} x1={x} x2={x} y1={baseHeight} y2={baseHeight + 10}/>
           </g>
         )
@@ -193,7 +193,7 @@ function ChartLine ({ reduced, width, height, set, color, points }: ChartLinePro
 
   return (
     <g data-dataset={set}>
-      <polyline fill='none' stroke={color} strokeWidth='2' points={linePath}/>
+      <polyline fill='none' stroke={color} stroke-width='2' points={linePath}/>
       {mappedPoints.map(({ x, y }) => (
         <circle key={`${x},${y}`} cx={x} cy={y} r={4} fill={color}/>
       ))}
