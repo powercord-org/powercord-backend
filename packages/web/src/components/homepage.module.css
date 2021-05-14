@@ -30,7 +30,7 @@
   padding: 20px 24px;
   display: grid;
   grid-template-columns: 32px 1fr;
-  grid-template-rows: 32px 1fr;
+  grid-template-rows: auto 1fr;
   column-gap: 16px;
   position: relative;
   margin-bottom: 24px;
@@ -38,13 +38,14 @@
 
 .feature-icon {
   grid-row: 1/2;
+  width: 32px;
+  height: 32px;
 }
 
 .feature-name {
   font-size: 1.6rem;
   font-weight: 600;
   line-height: 32px;
-  height: 32px;
 }
 
 .feature-description {

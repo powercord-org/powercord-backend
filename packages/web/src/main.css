@@ -106,6 +106,14 @@ hr {
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
 }
 
+.no-js {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--red);
+  color: #fff;
+}
 
 ::-webkit-scrollbar {
   width: 16px;
