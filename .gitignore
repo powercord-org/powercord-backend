@@ -7,8 +7,6 @@ node_modules
 
 # yes
 boat/.canary.cache.json
-manifest.webpack.json
-integrity.webpack.json
 dist
 
 # random shit
@@ -17,3 +15,4 @@ config.json
 *.nogit.*
 *.nogit/
 package-lock.json
+conf/nginx.custom.conf

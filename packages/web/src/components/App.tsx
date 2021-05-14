@@ -25,6 +25,7 @@ import { h } from 'preact'
 import { useCallback } from 'preact/hooks'
 import { useTitleTemplate, useMeta } from 'hoofd/preact'
 import Router from 'preact-router'
+import { Match } from 'preact-router/match'
 
 import UserContext from './UserContext'
 import Header from './Header'
@@ -39,14 +40,11 @@ import Contributors from './Contributors'
 import Stats from './stats/Community'
 import Branding from './Branding'
 import Documentation from './docs/Documentation'
-// Documentation
-// Advisories
-// Advisory
-// MarkdownDocument
 import Markdown from './docs/Markdown'
 import PorkordLicense from './legal/PorkordLicense'
 import Terms from './legal/Terms'
 import Privacy from './legal/Privacy'
+// Backoffice
 import NotFound from './NotFound'
 
 import { Routes } from '../constants'
@@ -67,29 +65,35 @@ export default function App (props: null | AppProps) {
 
   return (
     <UserContext.Provider value={props?.user}>
-      <Header/>
+      <Match>{({ path }: { path: string }) => !path.startsWith('/backoffice') && <Header/>}</Match>
       <Router url={props?.url} onChange={change}>
         <Homepage path={Routes.HOME}/>
         <AuthBoundary path={Routes.ME}><Account/></AuthBoundary>
         <Contributors path={Routes.CONTRIBUTORS}/>
         <Stats path={Routes.STATS}/>
         <Branding path={Routes.BRANDING}/>
+        <SoonRoute path={Routes.STORE}>
+          <main>todo</main>
+        </SoonRoute>
 
+        <SoonRoute path={Routes.DOCS_ITEM(':categoryId?', ':documentId?')}>
+          <Documentation/>
+        </SoonRoute>
         <Markdown document='faq' path={Routes.FAQ}/>
         <Markdown document='installation' path={Routes.INSTALLATION}/>
         <Markdown document='guidelines' path={Routes.GUIDELINES}/>
         <Markdown document='listing-agreement' path={Routes.LISTING_AGREEMENT}/>
 
-        <SoonRoute path={Routes.DOCS_ITEM(':categoryId?', ':documentId?')}>
-          <Documentation/>
-        </SoonRoute>
         <PorkordLicense path={Routes.PORKORD_LICENSE}/>
         <Terms path={Routes.TERMS}/>
         <Privacy path={Routes.PRIVACY}/>
 
+        <SoonRoute path={Routes.BACKOFFICE}>
+          <main>todo</main>
+        </SoonRoute>
         <NotFound ctx={props?.ctx} default/>
       </Router>
-      <Footer/>
+      <Match>{({ path }: { path: string }) => !path.startsWith('/backoffice') && <Footer/>}</Match>
     </UserContext.Provider>
   )
 }

@@ -57,4 +57,4 @@ function handler (req: IncomingMessage, res: ServerResponse) {
   res.write(template.replace('<!--ssr-head-->', head).replace('<!--ssr-body-->', body), () => res.end())
 }
 
-createServer(handler).listen(process.env.PORT ?? 5000)
+createServer(handler).listen(process.env.PORT ?? 8000)

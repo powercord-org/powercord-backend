@@ -5,13 +5,13 @@ services:
     ports:
       - 8080:80
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./conf/nginx.dev.conf:/etc/nginx/conf.d/default.conf
     profiles:
       - website
   mongo:
     image: mongo:4-bionic
     ports:
-      - 9042:9042
+      - 27017:27017
     volumes:
       - db-data:/var/lib/mongodb
     profiles:

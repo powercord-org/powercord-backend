@@ -20,9 +20,8 @@
  * SOFTWARE.
  */
 
-/* @import './fonts/include.css'; */
-@import 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&family=JetBrains+Mono&display=swap';
-/* Amaranth */
+@import './fonts/include.css';
+
 @font-face {
   font-family: Discord;
   src: url(/src/assets/discord-font.otf)
