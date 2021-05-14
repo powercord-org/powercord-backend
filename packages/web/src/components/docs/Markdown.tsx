@@ -160,7 +160,7 @@ export default function MarkdownDocument ({ document: mdDocument }: { document: 
         return void 0
       }
     }
-  }, [ doc, window.location.hash ])
+  }, [ doc, typeof window !== 'undefined' ? window.location.hash : null ])
 
   if (doc === false) {
     return (

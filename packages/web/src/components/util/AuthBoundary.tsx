@@ -24,7 +24,7 @@ import type { JSX } from 'preact'
 import { h } from 'preact'
 import { useContext } from 'preact/hooks'
 import { route } from 'preact-router'
-import { useTitleTemplate } from 'hoofd'
+import { useTitleTemplate } from 'hoofd/preact'
 
 import Spinner from './Spinner'
 import UserContext from '../UserContext'

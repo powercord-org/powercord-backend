@@ -59,5 +59,7 @@ export default function PrismComponent ({ language, code }: PrismProps) {
   )
 }
 
-// @ts-ignore -- Cleanup
-delete window.Prism
+if (!import.meta.env.SSR) {
+  // @ts-ignore -- Cleanup
+  delete window.Prism
+}
