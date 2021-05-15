@@ -15,3 +15,11 @@ rm-images:
 	docker image rm powercord-web || true
 	docker image rm powercord-api || true
 	docker image rm powercord-boat || true
+
+.PHONY: lint
+lint:
+	pnpm run lint -r --filter "@powercord/*"
+
+.PHONY: build
+build:
+	pnpm run build -r --filter "@powercord/*"

@@ -1,0 +1,14 @@
+{
+  "folders": [
+    { "name": "backend", "path": ".." },
+    { "name": "boat", "path": "../packages/boat" },
+    { "name": "api", "path": "../packages/api" },
+    { "name": "web", "path": "../packages/web" }
+  ],
+  "settings": {
+    "files.exclude": {
+      "node_modules/": true,
+      "packages/": true
+    },
+  }
+}

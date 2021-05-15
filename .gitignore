@@ -1,6 +1,7 @@
 # Editors
 .idea
-.vscode
+.vscode/*
+!.vscode/powercord.code-workspace
 
 # Le petabyte
 node_modules
