@@ -21,7 +21,7 @@
  */
 
 import { h } from 'preact'
-import { useMemo, useState, useCallback, useEffect, useContext } from 'preact/hooks'
+import { useMemo, useState, useContext } from 'preact/hooks'
 
 import UserContext from './UserContext'
 import Hamburger from './util/Hamburger'

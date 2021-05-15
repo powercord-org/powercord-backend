@@ -26,7 +26,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 16px;
   cursor: pointer;
 }
 

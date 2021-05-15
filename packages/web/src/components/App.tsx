@@ -39,6 +39,7 @@ import Account from './Account'
 import Contributors from './Contributors'
 import Stats from './stats/Community'
 import Branding from './Branding'
+import Storefront from './store/Storefront'
 import Documentation from './docs/Documentation'
 import Markdown from './docs/Markdown'
 import PorkordLicense from './legal/PorkordLicense'
@@ -72,8 +73,8 @@ export default function App (props: null | AppProps) {
         <Contributors path={Routes.CONTRIBUTORS}/>
         <Stats path={Routes.STATS}/>
         <Branding path={Routes.BRANDING}/>
-        <SoonRoute path={Routes.STORE}>
-          <main>todo</main>
+        <SoonRoute path={`${Routes.STORE}/:path*`}>
+          <Storefront url={props?.url}/>
         </SoonRoute>
 
         <SoonRoute path={Routes.DOCS_ITEM(':categoryId?', ':documentId?')}>

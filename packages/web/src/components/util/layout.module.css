@@ -78,9 +78,9 @@
   flex-direction: column;
   align-items: flex-end;
   overflow-y: scroll;
-  padding: 20px;
+  padding: 24px 16px;
   display: flex;
-  width: 275px;
+  width: 256px;
   z-index: 1;
   top: 0;
 }

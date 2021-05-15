@@ -145,6 +145,10 @@
   height: 16px;
 }
 
+.b {
+  margin-left: 16px;
+}
+
 @media screen and (min-width: 560px) {
   .title {
     display: block;

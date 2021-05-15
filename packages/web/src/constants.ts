@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-export const Endpoints = Object.freeze({
+export const Endpoints = {
   LOGIN: '/api/v2/login',
   LOGOUT: '/api/v2/logout',
   USER_SELF: '/api/v2/users/@me',
@@ -35,28 +35,40 @@ export const Endpoints = Object.freeze({
   DOCS_DOCUMENT: (doc: string) => `/api/v2/docs/${doc}`,
   DOCS_CATEGORIZED: (cat: string, doc: string) => `/api/v2/docs/${cat}/${doc}`,
   USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`
-})
+}
 
-export const Routes = Object.freeze({
+export const Routes = {
   HOME: '/',
   ME: '/me',
   CONTRIBUTORS: '/contributors',
   STATS: '/stats',
   BRANDING: '/branding',
   FAQ: '/faq',
+
   STORE: '/store',
+  STORE_PLUGINS: '/store/plugins',
+  STORE_THEMES: '/store/themes',
+  STORE_SUGGESTIONS: 'https://github.com/powercord-community/suggestions/issues?q=is%3Aissue+is%3Aopen+label%3A%22up+for+grabs%22',
+  STORE_FORMS: '/store/forms',
+  STORE_PUBLISH: '/store/forms/publish',
+  STORE_VERIFICATION: '/store/forms/verification',
+  STORE_HOSTING: '/store/forms/hosting',
+
   DOCS: '/docs',
   DOCS_ITEM: (cat: string, doc: string) => `/docs/${cat}/${doc}`,
   GUIDELINES: '/guidelines',
   INSTALLATION: '/installation',
-  ADVISORIES: '/advisories',
-  ADVISORY: (id: string) => `/advisories/${id}`,
   LISTING_AGREEMENT: '/listing-agreement',
   PORKORD_LICENSE: '/porkord-license',
   TERMS: '/legal/tos',
   PRIVACY: '/legal/privacy',
+
   BACKOFFICE: '/backoffice',
+
   DICKSWORD: 'https://discord.gg/gs4ZMbBfCh',
   PATREON: 'https://patreon.com/aetheryx',
-  GITHUB: 'https://github.com/powercord-org'
-})
+  GITHUB: 'https://github.com/powercord-org',
+
+  ADVISORIES: '/advisories',
+  ADVISORY: (id: string) => `/advisories/${id}`,
+}

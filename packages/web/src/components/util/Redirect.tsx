@@ -20,43 +20,12 @@
  * SOFTWARE.
  */
 
-import type { JSX } from 'preact'
-import { h } from 'preact'
-import { useContext } from 'preact/hooks'
-import { useTitleTemplate } from 'hoofd/preact'
+import type { Attributes } from 'preact'
+import { route } from 'preact-router'
 
-import Spinner from './Spinner'
-import Redirect from './Redirect'
-import UserContext from '../UserContext'
-import { Endpoints } from '../../constants'
+type RedirectProps = Attributes & { to: string }
 
-type AuthBoundaryProps = { children: JSX.Element, staff?: boolean } & Record<string, unknown>
-
-export default function AuthBoundary ({ children, staff }: AuthBoundaryProps) {
-  const user = useContext(UserContext)
-  if (user === void 0) {
-    useTitleTemplate('Powercord')
-    return (
-      <main>
-        <Spinner/>
-      </main>
-    )
-  }
-
-  if (!user) {
-    return (
-      <main>
-        <h1>You must be authenticated to see this</h1>
-        <p>
-          <a href={Endpoints.LOGIN}>Login</a>
-        </p>
-      </main>
-    )
-  }
-
-  if (staff && !user?.badges?.staff) {
-    return <Redirect to='/'/>
-  }
-
-  return children
+export default function Redirect ({ to }: RedirectProps) {
+  route(to)
+  return null
 }

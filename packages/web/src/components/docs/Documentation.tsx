@@ -23,11 +23,11 @@
 import type { Attributes } from 'preact'
 import { h, Fragment } from 'preact'
 import { useState, useEffect, useMemo } from 'preact/hooks'
-import { route } from 'preact-router'
 import { Link } from 'preact-router/match'
 
 import Markdown from './Markdown'
 import Spinner from '../util/Spinner'
+import Redirect from '../util/Redirect'
 import LayoutWithSidebar from '../util/LayoutWithSidebar'
 
 import { Endpoints, Routes } from '../../constants'
@@ -83,13 +83,11 @@ export default function Documentation ({ categoryId, documentId }: DocProps) {
   }
 
   if (!category) {
-    route(Routes.DOCS_ITEM(categories[0].id, categories[0].docs[0].id))
-    return null
+    return <Redirect to={Routes.DOCS_ITEM(categories[0].id, categories[0].docs[0].id)}/>
   }
 
   if (!documentId) {
-    route(Routes.DOCS_ITEM(categoryId!, category.docs[0].id))
-    return null
+    return <Redirect to={Routes.DOCS_ITEM(categoryId!, category.docs[0].id)}/>
   }
 
   return (
