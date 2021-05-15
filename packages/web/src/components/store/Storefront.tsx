@@ -20,9 +20,8 @@
  * SOFTWARE.
  */
 
-import type { Attributes, JSX } from 'preact'
-import { h, Fragment } from 'preact'
-import { useState, useEffect, useMemo } from 'preact/hooks'
+import type { Attributes } from 'preact'
+import { h } from 'preact'
 import { useTitle, useTitleTemplate } from 'hoofd/preact'
 import { Router } from 'preact-router'
 import { Link } from 'preact-router/match'
