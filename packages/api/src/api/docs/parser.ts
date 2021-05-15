@@ -31,5 +31,9 @@ export default function (markdown: string): Document {
   const parsed = parseMarkup(markdown)
   const title = flattenToText(parsed.find((node) => node.type === MarkdownType.HEADING && node.level === 1)!)
   const parts = parsed.filter((node) => node.type === MarkdownType.HEADING && node.level === 2).map(flattenToText).filter(Boolean) as string[]
-  return { title, parts, contents: parsed.filter((node) => node.type !== MarkdownType.COMMENT && (node.type !== MarkdownType.HEADING || node.level !== 1)) }
+  return {
+    title: title,
+    parts: parts,
+    contents: parsed.filter((node) => node.type !== MarkdownType.COMMENT && (node.type !== MarkdownType.HEADING || node.level !== 1)),
+  }
 }

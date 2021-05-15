@@ -43,7 +43,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
   const channel = msg._client.getChannel(config.discord.ids.channelModLogs)
   if (!channel || !('rateLimitPerUser' in channel)) return // ???
 
-  const messages = await channel.getMessages(100)
+  const messages = await channel.getMessages({ limit: 100 })
   const message = messages.find((m) => m.content.includes(`Case ${caseId}`))
   if (!message) {
     msg.channel.createMessage('This case doesn\'t exist or is too old.')

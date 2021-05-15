@@ -77,8 +77,8 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
         { 'badges.developer': true },
         { 'badges.staff': true },
         { 'badges.support': true },
-        { 'badges.contributor': true }
-      ]
+        { 'badges.contributor': true },
+      ],
     })
 
     if (!user) {

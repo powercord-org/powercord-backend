@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { RoutableProps } from 'preact-router'
+import type { Attributes } from 'preact'
 import { h } from 'preact'
 import { useTitleTemplate } from 'hoofd/preact'
 
@@ -48,7 +48,7 @@ function Feature ({ icon, title, desc, soon }: FeatureProps) {
   )
 }
 
-export default function Homepage (_: RoutableProps) {
+export default function Homepage (_: Attributes) {
   useTitleTemplate('Powercord')
 
   return (

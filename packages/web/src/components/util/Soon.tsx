@@ -24,14 +24,6 @@ import type { RoutableProps } from 'preact-router'
 import type { JSX } from 'preact'
 import { h, cloneElement } from 'preact'
 
-export function SoonRoute ({ children, ...props }: RoutableProps & { children: JSX.Element }) {
-  if (import.meta.env.PROD) {
-    return <Soon/>
-  }
-
-  return cloneElement(children, props)
-}
-
 export default function Soon (_: any) {
   return (
     <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 64, paddingBottom: 64 }}>
@@ -40,4 +32,12 @@ export default function Soon (_: any) {
       <div style={{ fontSize: 8, opacity: 0.4 }}>u cute uwu</div>
     </main>
   )
+}
+
+export function SoonRoute ({ children, ...props }: RoutableProps & { children: JSX.Element }) {
+  if (import.meta.env.PROD) {
+    return <Soon/>
+  }
+
+  return cloneElement(children, props)
 }

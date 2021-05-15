@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { RoutableProps } from 'preact-router'
+import type { Attributes } from 'preact'
 import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
@@ -30,14 +30,14 @@ import { Endpoints } from '../constants'
 
 import style from './contributors.module.css'
 
-type Contributor = { _id: string, username: string, discriminator: string }
+type RestContributor = { _id: string, username: string, discriminator: string }
 type AllContributors = {
-  developers: Contributor[]
-  staff: Contributor[]
-  contributors: Contributor[]
+  developers: RestContributor[]
+  staff: RestContributor[]
+  contributors: RestContributor[]
 }
 
-function Contributor ({ _id, username, discriminator }: Contributor) {
+function Contributor ({ _id, username, discriminator }: RestContributor) {
   return (
     <div className={style.container}>
       <img className={style.avatar} src={Endpoints.USER_AVATAR(_id)} alt={`${username}'s avatar`}/>
@@ -48,15 +48,15 @@ function Contributor ({ _id, username, discriminator }: Contributor) {
   )
 }
 
-export default function Contributors (_: RoutableProps) {
+export default function Contributors (_: Attributes) {
   useTitle('Contributors')
 
   const [ contributors, setContributors ] = useState<AllContributors | null>(null)
   useEffect(() => {
     fetch(Endpoints.CONTRIBUTORS)
-      .then(r => r.json())
-      .then(c => setContributors(c))
-      .catch(e => console.error(e))
+      .then((r) => r.json())
+      .then((c) => setContributors(c))
+      .catch((e) => console.error(e))
   }, [])
 
   if (!contributors) {

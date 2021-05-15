@@ -73,10 +73,11 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
     const channel = this.getChannel(config.discord.ids.channelModLogs)
     if (!channel || !('getMessages' in channel)) return
 
-    const logs = await guild.getAuditLogs(10, void 0, type === 'add'
-      ? Constants.AuditLogActions.MEMBER_BAN_ADD
-      : Constants.AuditLogActions.MEMBER_BAN_REMOVE)
-    const entry = logs.entries.find((auditEntry) => (auditEntry.targetID = user.id))
+    const logs = await guild.getAuditLog({
+      actionType: type === 'add' ? Constants.AuditLogActions.MEMBER_BAN_ADD : Constants.AuditLogActions.MEMBER_BAN_REMOVE,
+      limit: 10
+    })
+    const entry = logs.entries.find((auditEntry) => auditEntry.targetID === user.id)
     if (!entry) return
 
     let [ modId, modName, reason ] = extractEntryData(entry)
@@ -88,12 +89,12 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
     }
 
     // todo: unsafe non-null assertion
-    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
+    const caseId = parseInt((await channel.getMessages({ limit: 1 }))[0].content.match(/Case (\d+)/)![1], 10) + 1
     const realType = type === 'add' ? soft ? 'Kick' : 'Ban' : 'Unban'
 
     this.createMessage(config.discord.ids.channelModLogs, {
       content: format(realType, String(caseId), user, modName, modId, reason),
-      allowedMentions: {}
+      allowedMentions: {},
     })
   }
 }
@@ -102,16 +103,16 @@ async function processMemberLeave (this: CommandClient, guild: Guild, user: User
   const channel = this.getChannel(config.discord.ids.channelModLogs)
   if (!channel || !('getMessages' in channel)) return
 
-  const logs = await guild.getAuditLogs(5, void 0, Constants.AuditLogActions.MEMBER_KICK)
-  const entry = logs.entries.find((auditEntry) => (auditEntry.targetID = user.id))
+  const logs = await guild.getAuditLog({ actionType: Constants.AuditLogActions.MEMBER_KICK, limit: 5 })
+  const entry = logs.entries.find((auditEntry) => auditEntry.targetID === user.id)
   if (entry && Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) < 5000) {
     const [ modId, modName, reason ] = extractEntryData(entry)
     // todo: unsafe non-null assertion
-    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
+    const caseId = parseInt((await channel.getMessages({ limit: 1 }))[0].content.match(/Case (\d+)/)![1], 10) + 1
 
     this.createMessage(config.discord.ids.channelModLogs, {
       content: format('Kick', String(caseId), user, modName, modId, reason),
-      allowedMentions: {}
+      allowedMentions: {},
     })
   }
 }
@@ -120,7 +121,7 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
   const channel = this.getChannel(config.discord.ids.channelModLogs)
   if (!channel || !('getMessages' in channel)) return
 
-  const logs = await guild.getAuditLogs(5, void 0, Constants.AuditLogActions.MEMBER_ROLE_UPDATE)
+  const logs = await guild.getAuditLog({ actionType: Constants.AuditLogActions.MEMBER_ROLE_UPDATE, limit: 5 })
 
   for (const entry of logs.entries) {
     if (entry.targetID !== user.id || !entry.after || Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) > 5000) {
@@ -138,11 +139,11 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
     }
 
     const [ modId, modName, reason ] = extractEntryData(entry)
-    const caseId = parseInt((await channel.getMessages(1))[0].content.match(/Case (\d+)/)![1], 10) + 1
+    const caseId = parseInt((await channel.getMessages({ limit: 1 }))[0].content.match(/Case (\d+)/)![1], 10) + 1
 
     this.createMessage(config.discord.ids.channelModLogs, {
       content: format(wasAdded ? 'Mute' : 'Unmute', String(caseId), user, modName, modId, reason),
-      allowedMentions: {}
+      allowedMentions: {},
     })
 
     break

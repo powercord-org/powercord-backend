@@ -20,13 +20,13 @@
  * SOFTWARE.
  */
 
-import type { RoutableProps } from 'preact-router'
+import type { Attributes } from 'preact'
 import { h } from 'preact'
 import { useTitle } from 'hoofd/preact'
 
 import style from '../docs/markdown.module.css'
 
-export default function Terms (_: RoutableProps) {
+export default function Terms (_: Attributes) {
   useTitle('Terms of Service')
 
   return (
@@ -37,7 +37,7 @@ export default function Terms (_: RoutableProps) {
 
       <p>Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the https://powercord.dev/ website (the "Service") operated by Powercord ("us", "we", or "our").</p>
       <p>Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service.</p>
-      <p>By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you may not access the Service. The Terms of Service agreement  for Powercord has been created with the help of <a href="https://termsfeed.com/">TermsFeed</a>.</p>
+      <p>By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you may not access the Service. The Terms of Service agreement  for Powercord has been created with the help of <a href='https://termsfeed.com/'>TermsFeed</a>.</p>
 
       <h2>Accounts</h2>
       <p>When you create an account with us, you must provide us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.</p>

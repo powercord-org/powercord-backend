@@ -63,7 +63,7 @@ function User () {
 }
 
 export default function Header () {
-  const isOctober = useMemo(() => (new Date().getUTCMonth()) === 9, [])
+  const isOctober = useMemo(() => new Date().getUTCMonth() === 9, [])
   const [ opened, setOpened ] = useState(false)
 
   return (

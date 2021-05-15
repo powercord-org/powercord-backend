@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-import type { RoutableProps } from 'preact-router'
-import type { CommunityStats as Stats } from './useStats'
+import type { Attributes } from 'preact'
+import type { CommunityStats } from './useStats'
 import { h, Fragment } from 'preact'
 import { useTitle } from 'hoofd/preact'
 
@@ -30,7 +30,7 @@ import useStats from './useStats'
 
 import style from './stats.module.css'
 
-function PowercordStats ({ charts }: { charts?: Stats }) {
+function Powercord ({ charts }: { charts?: CommunityStats }) {
   return (
     <>
       <Chart
@@ -39,7 +39,7 @@ function PowercordStats ({ charts }: { charts?: Stats }) {
         modes={[
           { name: 'All Time', key: 'allTime' },
           { name: 'Last Month', key: 'month' },
-          { name: 'Last Week', key: 'week' }
+          { name: 'Last Week', key: 'week' },
         ]}
       />
       <div className={style.group}>
@@ -79,7 +79,7 @@ function PowercordStats ({ charts }: { charts?: Stats }) {
   )
 }
 
-function CommunityStats ({ charts }: { charts?: Stats }) {
+function Community ({ charts }: { charts?: CommunityStats }) {
   if (!charts?.guild) return null
 
   return (
@@ -92,7 +92,7 @@ function CommunityStats ({ charts }: { charts?: Stats }) {
         modes={[
           { name: 'Last Month', key: 'month' },
           { name: 'Last Week', key: 'week' },
-          { name: 'Last Day', key: 'day' }
+          { name: 'Last Day', key: 'day' },
         ]}
       />
 
@@ -102,7 +102,7 @@ function CommunityStats ({ charts }: { charts?: Stats }) {
         modes={[
           { name: 'Last Month', key: 'month' },
           { name: 'Last Week', key: 'week' },
-          { name: 'Last Day', key: 'day' }
+          { name: 'Last Day', key: 'day' },
         ]}
       />
 
@@ -113,14 +113,14 @@ function CommunityStats ({ charts }: { charts?: Stats }) {
         modes={[
           { name: 'Last Month', key: 'month' },
           { name: 'Last Week', key: 'week' },
-          { name: 'Last Day', key: 'day' }
+          { name: 'Last Day', key: 'day' },
         ]}
       />
     </>
   )
 }
 
-export default function Stats (_: RoutableProps) {
+export default function Stats (_: Attributes) {
   useTitle('Statistics')
   const charts = useStats()
 
@@ -134,8 +134,8 @@ export default function Stats (_: RoutableProps) {
         <p>-- help me pls i'm just a stupid girl, it's painfullll - cynthia</p>
       </div>
 
-      <PowercordStats charts={charts}/>
-      <CommunityStats charts={charts}/>
+      <Powercord charts={charts}/>
+      <Community charts={charts}/>
     </main>
   )
 }

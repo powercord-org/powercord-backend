@@ -20,14 +20,14 @@
  * SOFTWARE.
  */
 
-import type { RoutableProps } from 'preact-router'
+import type { Attributes } from 'preact'
 import { h } from 'preact'
 import { useTitle } from 'hoofd/preact'
 import { Routes } from '../../constants'
 
 import style from '../docs/markdown.module.css'
 
-export default function Privacy (_: RoutableProps) {
+export default function Privacy (_: Attributes) {
   useTitle('Privacy Policy')
 
   return (
@@ -37,7 +37,7 @@ export default function Privacy (_: RoutableProps) {
       <p>Effective date: April 15, 2019</p>
 
       <p>Powercord ("us", "we", or "our") operates the https://powercord.dev/ website (the "Service").</p>
-      <p>This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data. Our Privacy Policy  for Powercord is created with the help of the <a href="https://www.freeprivacypolicy.com/">Free Privacy Policy website</a>.</p>
+      <p>This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data. Our Privacy Policy  for Powercord is created with the help of the <a href='https://www.freeprivacypolicy.com/'>Free Privacy Policy website</a>.</p>
       <p>We use your data to provide and improve the Service. By using the Service, you agree to the collection and use of information in accordance with this policy. Unless otherwise defined in this Privacy Policy, terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, accessible from https://powercord.dev/</p>
 
       <h2>Information Collection And Use</h2>

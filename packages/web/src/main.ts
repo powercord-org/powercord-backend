@@ -28,6 +28,7 @@ import { Endpoints } from './constants'
 import './main.css'
 
 if (import.meta.env.DEV) {
+  // eslint-disable-next-line no-inner-declarations
   function Wrapper () {
     const [ user, setUser ] = useState<void | null | User>(void 0)
     useEffect(() => {
@@ -40,7 +41,7 @@ if (import.meta.env.DEV) {
       }
     }, [])
 
-    return h(App, { user })
+    return h(App, { user: user })
   }
 
   render(h(Wrapper, null), document.querySelector('#app')!)
@@ -50,6 +51,6 @@ if (import.meta.env.DEV) {
       ? await fetch(Endpoints.USER_SELF).then((r) => r.json()).then((u) => u.id ? u : null)
       : null
 
-    hydrate(h(App, { user }), document.querySelector('#app')!)
+    hydrate(h(App, { user: user }), document.querySelector('#app')!)
   }())
 }

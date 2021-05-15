@@ -55,7 +55,8 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
   )
 
   // Purge channel
-  await msg._client.purgeChannel(config.discord.ids.channelFaq, void 0, void 0, void 0, void 0, 'Purging FAQ channel due to sync')
+  // todo: I don't think eris handles purging messages older than 14 days
+  await msg._client.purgeChannel(config.discord.ids.channelFaq, { limit: 50, reason: 'Purging FAQ channel due to sync' })
   for (const part of faq) {
     await msg._client.createMessage(config.discord.ids.channelFaq, `${part}\n${ZWS}`)
   }

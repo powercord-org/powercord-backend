@@ -34,7 +34,7 @@ export const Endpoints = {
   DOCS_CATEGORIES: '/api/v2/docs/categories',
   DOCS_DOCUMENT: (doc: string) => `/api/v2/docs/${doc}`,
   DOCS_CATEGORIZED: (cat: string, doc: string) => `/api/v2/docs/${cat}/${doc}`,
-  USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`
+  USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`,
 }
 
 export const Routes = {

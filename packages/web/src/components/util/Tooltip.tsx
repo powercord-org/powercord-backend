@@ -107,7 +107,7 @@ export default function Tooltip ({ children, text, position, align }: TooltipPro
 
   return (
     <>
-      {cloneElement(children, { ref: (r: HTMLElement) => setElementRef(r), onMouseEnter, onMouseLeave })}
+      {cloneElement(children, { ref: (r: HTMLElement) => setElementRef(r), onMouseEnter: onMouseEnter, onMouseLeave: onMouseLeave })}
       {tooltip}
     </>
   )

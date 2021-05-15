@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { RoutableProps } from 'preact-router'
+import type { Attributes } from 'preact'
 import { h } from 'preact'
 import { useTitle } from 'hoofd/preact'
 
@@ -53,16 +53,14 @@ function Asset ({ name, copyrightYear, copyrightHolder, links }: AssetProps) {
           Copyright &copy; {copyrightYear} {copyrightHolder}, All Rights Reserved.
         </div>
         <div className={style.links}>
-          {links.map(l => (
-            <a key={l.url} download={l.name} href={l.url}>.{l.name.split('.').pop()}</a>
-          ))}
+          {links.map((l) => <a key={l.url} download={l.name} href={l.url}>.{l.name.split('.').pop()}</a>)}
         </div>
       </footer>
     </section>
   )
 }
 
-export default function Branding (_: RoutableProps) {
+export default function Branding (_: Attributes) {
   useTitle('Branding')
 
   return (
@@ -79,7 +77,7 @@ export default function Branding (_: RoutableProps) {
           copyrightHolder='Katlyn Lorimer'
           links={[
             { name: 'plug.png', url: powercord },
-            { name: 'plug.svg', url: powercordSvg }
+            { name: 'plug.svg', url: powercordSvg },
           ]}
         />
         <Asset
@@ -88,7 +86,7 @@ export default function Branding (_: RoutableProps) {
           copyrightHolder='Katlyn Lorimer'
           links={[
             { name: 'outlet.png', url: outlet },
-            { name: 'outlet.svg', url: outletSvg }
+            { name: 'outlet.svg', url: outletSvg },
           ]}
         />
       </div>
@@ -103,7 +101,7 @@ export default function Branding (_: RoutableProps) {
           copyrightYear={2020}
           copyrightHolder='aetheryx'
           links={[
-            { name: 'plog.png', url: plog }
+            { name: 'plog.png', url: plog },
           ]}
         />
         <Asset
@@ -111,7 +109,7 @@ export default function Branding (_: RoutableProps) {
           copyrightYear={2019}
           copyrightHolder='Cynthia K. Rey'
           links={[
-            { name: 'spinning.gif', url: spinning }
+            { name: 'spinning.gif', url: spinning },
           ]}
         />
         <Asset
@@ -119,7 +117,7 @@ export default function Branding (_: RoutableProps) {
           copyrightYear={2019}
           copyrightHolder='aetheryx'
           links={[
-            { name: 'mspaint.png', url: mspaint }
+            { name: 'mspaint.png', url: mspaint },
           ]}
         />
         <Asset
@@ -128,7 +126,7 @@ export default function Branding (_: RoutableProps) {
           copyrightHolder='Cynthia K. Rey'
           links={[
             { name: 'powercast.png', url: powercast },
-            { name: 'powercast.svg', url: powercastSvg }
+            { name: 'powercast.svg', url: powercastSvg },
           ]}
         />
       </div>

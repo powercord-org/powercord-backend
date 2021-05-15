@@ -38,7 +38,7 @@ export default function PrismComponent ({ language, code }: PrismProps) {
     lines = Prism.highlight(code, Prism.languages[language], language)
       .replace(
         /<span class="([a-z ]+)">([^<]*)<\/span>/g,
-        (_, className, code) => code.split('\n').map((l: string) => `<span class="${className}">${l}</span>`).join('\n')
+        (_, className, contents) => contents.split('\n').map((l: string) => `<span class="${className}">${l}</span>`).join('\n')
       )
       .split('\n')
   } else {

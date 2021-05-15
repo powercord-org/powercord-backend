@@ -35,14 +35,14 @@ const remoteCache = new Map<string, Document>()
 
 function listCategories (this: FastifyInstance, _: FastifyRequest, reply: FastifyReply): void {
   reply.send(
-    Array.from(docsStore.entries()).map(([ id, category ]) => ({
-      id: id,
+    Array.from(docsStore.entries()).map(([ catId, category ]) => ({
+      id: catId,
       name: category.name,
-      docs: Array.from(category.docs.entries()).map(([ id, doc ]) => ({
-        id: id,
+      docs: Array.from(category.docs.entries()).map(([ docId, doc ]) => ({
+        id: docId,
         title: doc.title,
-        parts: doc.parts
-      }))
+        parts: doc.parts,
+      })),
     }))
   )
 }
@@ -71,9 +71,9 @@ function findDocsFolder (): URL | void {
     const attempt = new URL('documentation/', path)
     if (existsSync(attempt)) {
       return attempt
-    } else {
-      path = new URL('../', path)
     }
+
+    path = new URL('../', path)
   }
 }
 
@@ -94,8 +94,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     }
 
     docsStore.set(catId, {
-      name: catId.split('-').map(s => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
-      docs
+      name: catId.split('-').map((s) => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
+      docs: docs,
     })
   }
 

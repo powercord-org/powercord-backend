@@ -58,7 +58,7 @@ async function getAllReactions (msg: Message<GuildTextableChannel>, reaction: st
   const reactions = []
   let batch: User[] = []
   do {
-    batch = await msg.getReaction(reaction, 100, void 0, batch[0]?.id)
+    batch = await msg.getReaction(reaction, { limit: 100, after: batch[0]?.id })
     reactions.push(...batch)
   } while (batch.length === 100)
 

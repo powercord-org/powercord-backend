@@ -34,7 +34,7 @@ import style from './account.module.css'
 const includes = [
   'A custom role in our server, custom badge color',
   'A custom role in our server, custom badge color, custom profile badge',
-  'A custom role in our server, custom badge color, custom profile badge, custom server badge'
+  'A custom role in our server, custom badge color, custom profile badge, custom server badge',
 ]
 
 function Cutie ({ tier }: { tier: number }) {
@@ -56,6 +56,7 @@ export default function Account () {
   useTitle('My Account')
   const user = useContext(UserContext)
   const yeetAccount = useCallback(() => {
+    // eslint-disable-next-line no-alert
     if (confirm('Are you sure? This action is irreversible.')) {
       location.pathname = Endpoints.YEET_ACCOUNT
     }
@@ -68,7 +69,7 @@ export default function Account () {
   return (
     <main>
       <h1>Welcome back, {user.username}#{user.discriminator}</h1>
-      {!!user.patronTier && <Cutie tier={user.patronTier}/>}
+      {user.patronTier && <Cutie tier={user.patronTier}/>}
       <h3 className={style.header}>Linked Spotify account</h3>
       {typeof user.accounts?.spotify === 'string'
         ? <p>{user.accounts.spotify} - <a href={Endpoints.UNLINK_SPOTIFY}>Unlink</a></p>

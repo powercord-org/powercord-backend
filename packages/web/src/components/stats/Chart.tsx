@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { Point, Chart, StatsAll, StatsDay } from './useStats'
+import type { Point, Chart as ChartData, StatsAll, StatsDay } from './useStats'
 import { h } from 'preact'
 import { useState, useRef, useEffect, useMemo } from 'preact/hooks'
 
@@ -28,8 +28,8 @@ import style from './stats.module.css'
 
 type Legend = Record<string, string>
 
-type LegendProps = { legend: Legend, dataset: Chart }
-type ChartSideProps = { width: number, height: number, dataset: Chart }
+type LegendProps = { legend: Legend, dataset: ChartData }
+type ChartSideProps = { width: number, height: number, dataset: ChartData }
 type ChartBottomProps = {
   reduced: boolean
   mode: string
@@ -40,7 +40,7 @@ type ChartDatasetProps = {
   reduced: boolean
   width: number
   height: number
-  dataset: Chart
+  dataset: ChartData
 }
 type ChartLineProps = {
   reduced: boolean
@@ -88,8 +88,8 @@ function ChartSide ({ width, height, dataset }: ChartSideProps) {
     dataset.min + (linesDelta / 4 * 3),
     dataset.min + (linesDelta / 4 * 2),
     dataset.min + (linesDelta / 4),
-    dataset.min
-  ].map(a => Math.round(a))
+    dataset.min,
+  ].map((a) => Math.round(a))
 
   return (
     <g>
@@ -106,7 +106,7 @@ function ChartSide ({ width, height, dataset }: ChartSideProps) {
 function ChartBottom ({ reduced, mode, width, height }: ChartBottomProps) {
   const now = Date.now()
   const baseHeight = height - 35
-  const delta = (width - 50) / SHOWN_DATES
+  const deltaX = (width - 50) / SHOWN_DATES
   const dates = useMemo(() => {
     const res = []
     let addHour = false
@@ -153,7 +153,7 @@ function ChartBottom ({ reduced, mode, width, height }: ChartBottomProps) {
     <g>
       {dates.map((d, i) => {
         if (reduced && i % 2 !== 0) return null
-        const x = Math.round(50 + (delta * (i + 0.5)))
+        const x = Math.round(50 + (deltaX * (i + 0.5)))
         return (
           <g key={d}>
             <text className={style.gridText} x={x} y={baseHeight + 25} text-anchor='middle'>{d}</text>
@@ -161,16 +161,6 @@ function ChartBottom ({ reduced, mode, width, height }: ChartBottomProps) {
           </g>
         )
       })}
-    </g>
-  )
-}
-
-function ChartDataset ({ reduced, width, height, dataset }: ChartDatasetProps) {
-  return (
-    <g>
-      {Object.entries(dataset.dataset).map(([ key, { color, points } ]) => (
-        <ChartLine key={key} set={key} width={width} height={height} color={color} points={points} reduced={reduced}/>
-      ))}
     </g>
   )
 }
@@ -185,18 +175,27 @@ function ChartLine ({ reduced, width, height, set, color, points }: ChartLinePro
     () =>
       points
         .filter((_, i) => !reduced || i % 2 === 0)
-        .map((p) => ({ x: p.x * usableWidth + widthMargin, y: usableHeight - (p.y * usableHeight) + heightMargin })),
+        .map((p) => ({ x: (p.x * usableWidth) + widthMargin, y: usableHeight - (p.y * usableHeight) + heightMargin })),
     [ width, height, points, reduced ]
   )
 
-  const linePath = useMemo(() => mappedPoints.map(p => `${p.x},${p.y}`).join(' '), [ mappedPoints ])
+  const linePath = useMemo(() => mappedPoints.map((p) => `${p.x},${p.y}`).join(' '), [ mappedPoints ])
 
   return (
     <g data-dataset={set}>
       <polyline fill='none' stroke={color} stroke-width='2' points={linePath}/>
-      {mappedPoints.map(({ x, y }) => (
-        <circle key={`${x},${y}`} cx={x} cy={y} r={4} fill={color}/>
-      ))}
+      {mappedPoints.map(({ x, y }) => <circle key={`${x},${y}`} cx={x} cy={y} r={4} fill={color}/>)}
+    </g>
+  )
+}
+
+function ChartDataset ({ reduced, width, height, dataset }: ChartDatasetProps) {
+  return (
+    <g>
+      {Object.entries(dataset.dataset).map(
+        ([ key, { color, points } ]) =>
+          <ChartLine key={key} set={key} width={width} height={height} color={color} points={points} reduced={reduced}/>
+      )}
     </g>
   )
 }

@@ -47,7 +47,8 @@ function handler (req: IncomingMessage, res: ServerResponse) {
   const body = render(h(App, { url: req.url ?? '/', ctx: ctx }))
   const helmet = toStatic()
   const head = render(h(
-    Fragment, null,
+    Fragment,
+    null,
     h('title', null, helmet.title),
     helmet.metas.map((m) => h('meta', m)),
     helmet.links.map((l) => h('link', l))

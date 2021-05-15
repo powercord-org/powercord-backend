@@ -20,13 +20,13 @@
  * SOFTWARE.
  */
 
-import type { RoutableProps } from 'preact-router'
+import type { Attributes } from 'preact'
 import { h } from 'preact'
 import { useTitle } from 'hoofd/preact'
 
 import style from '../docs/markdown.module.css'
 
-export default function PorkordLicense (_: RoutableProps) {
+export default function PorkordLicense (_: Attributes) {
   useTitle('The Porkord License')
 
   return (

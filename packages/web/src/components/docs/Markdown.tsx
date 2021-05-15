@@ -52,6 +52,14 @@ function sluggify (string: string): string {
     .toLowerCase()
 }
 
+function renderMarkdown (item: MarkdownNode | MarkdownNode[] | string): ComponentChildren {
+  if (typeof item === 'string') return item.replace(/\\([*-_~])/, '$1')
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive calls
+  if (Array.isArray(item)) return item.map(renderMarkdownNode)
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive calls
+  return renderMarkdownNode(item)
+}
+
 function renderMarkdownNode (node: MarkdownNode) {
   switch (node.type) {
     case MarkdownType.HEADING:
@@ -61,7 +69,7 @@ function renderMarkdownNode (node: MarkdownNode) {
     case MarkdownType.QUOTE:
       return h('blockquote', null, renderMarkdown(node.content))
     case MarkdownType.NOTE:
-      return h('div', { className: `${style.note} ${style[node.kind]}`}, renderMarkdown(node.content))
+      return h('div', { className: `${style.note} ${style[node.kind]}` }, renderMarkdown(node.content))
     case MarkdownType.CODE_BLOCK:
       return h(Prism, { language: node.language, code: node.code })
     case MarkdownType.LIST:
@@ -71,10 +79,12 @@ function renderMarkdownNode (node: MarkdownNode) {
     case MarkdownType.HTTP:
       return <mark>Http</mark> // todo
     case MarkdownType.TABLE:
-      return h('table', null,
-        h('thead', null, h('tr', null, node.thead.map((node) => h('th', null, renderMarkdown(node))))),
+      return h(
+        'table',
+        null,
+        h('thead', null, h('tr', null, node.thead.map((n) => h('th', null, renderMarkdown(n))))),
         // todo: centered stuff
-        h('tbody', null, node.tbody.map((nodes) => h('tr', null, nodes.map((node) => h('td', null, renderMarkdown(node))))))
+        h('tbody', null, node.tbody.map((nodes) => h('tr', null, nodes.map((n) => h('td', null, renderMarkdown(n))))))
       )
     case MarkdownType.RULER:
       return h('hr', null)
@@ -122,12 +132,6 @@ function renderMarkdownNode (node: MarkdownNode) {
   return null
 }
 
-function renderMarkdown (item: MarkdownNode | MarkdownNode[] | string): ComponentChildren {
-  if (typeof item === 'string') return item.replace(/\\([*-_~])/, '$1')
-  if (Array.isArray(item)) return item.map(renderMarkdownNode)
-  return renderMarkdownNode(item)
-}
-
 const cache: Record<string, Document | false> = {}
 const getCache = (d: string) => import.meta.env.PROD ? cache[d] : null // Bypass cache during dev
 
@@ -140,14 +144,14 @@ export default function MarkdownDocument ({ document: mdDocument }: { document: 
     const cached = getCache(mdDocument)
     if (firstLoaded) {
       setDoc(cached)
-     } else {
-       setFirstLoaded(true)
-     }
+    } else {
+      setFirstLoaded(true)
+    }
 
     if (!cached) {
       fetch(Endpoints.DOCS_DOCUMENT(mdDocument))
-        .then(r => r.json())
-        .then(d => setDoc(cache[mdDocument] = d))
+        .then((r) => r.json())
+        .then((d) => setDoc(cache[mdDocument] = d))
         .catch(() => setDoc(cache[mdDocument] = false))
     }
   }, [ mdDocument ])
@@ -178,7 +182,7 @@ export default function MarkdownDocument ({ document: mdDocument }: { document: 
 
   return (
     <main className={style.markdown}>
-       <h1>{doc.title}</h1>
+      <h1>{doc.title}</h1>
       {renderMarkdown(doc.contents)}
     </main>
   )
