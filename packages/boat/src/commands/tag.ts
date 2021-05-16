@@ -74,7 +74,7 @@ async function sendTag (msg: Message<GuildTextableChannel>, args: string[]): Pro
 }
 
 export const description = 'Custom commands'
-
+export const aliases = [ 'tags' ]
 export function executor (msg: Message<GuildTextableChannel>, args: string[]): void {
   if (!msg.member) return // ???
 
