@@ -29,9 +29,10 @@ export const PLATFORMS = [ 'win', 'linux', 'osx' ] as const
 export const PLATFORM_WITH_NEW_UPDATER = [ 'win' ] as const
 
 export type Platform = typeof PLATFORMS[number]
+export type PlatformNew = typeof PLATFORM_WITH_NEW_UPDATER[number]
 export type PlatformedValue<TValue> = Record<Platform, TValue>
 
-export type UpdaterAwarePlatform = typeof PLATFORMS[number] | `${typeof PLATFORM_WITH_NEW_UPDATER[number]}_new`
+export type UpdaterAwarePlatform = `${typeof PLATFORMS[number]}_legacy` | typeof PLATFORM_WITH_NEW_UPDATER[number]
 export type UpdaterAwarePlatformedValue<TValue> = Record<UpdaterAwarePlatform, TValue>
 
 export type Treatment = { id: number, label: string, config: Record<string, unknown> | null }
@@ -46,7 +47,7 @@ export type Experiment = {
 export type CanaryCacheState = {
   host: UpdaterAwarePlatformedValue<string>
   modules: UpdaterAwarePlatformedValue<Record<string, number>>
-  webapp: string
+  webapp: { hash: string, id: number }
   experiments: Record<string, Experiment>
   __empty?: true
 }
@@ -56,9 +57,9 @@ try {
   canaryState = JSON.parse(readFileSync(CANARY_CACHE_FILE, 'utf8'))
 } catch {
   canaryState = {
-    host: { win_new: '', win: '', linux: '', osx: '' },
-    modules: { win_new: {}, win: {}, linux: {}, osx: {} },
-    webapp: '',
+    host: { win: '', win_legacy: '', linux_legacy: '', osx_legacy: '' },
+    modules: { win: {}, win_legacy: {}, linux_legacy: {}, osx_legacy: {} },
+    webapp: { hash: '', id: -1 },
     experiments: {},
     __empty: true,
   }

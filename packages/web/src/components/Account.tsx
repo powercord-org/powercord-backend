@@ -72,8 +72,10 @@ export default function Account () {
       {user.patronTier && <Cutie tier={user.patronTier}/>}
       <h3 className={style.header}>Linked Spotify account</h3>
       {typeof user.accounts?.spotify === 'string'
-        ? <p>{user.accounts.spotify} - <a href={Endpoints.UNLINK_SPOTIFY}>Unlink</a></p>
-        : <p>No account linked. <a href={Endpoints.LINK_SPOTIFY}>Link it now!</a></p>}
+        // @ts-expect-error
+        ? <p>{user.accounts.spotify} - <a href={Endpoints.UNLINK_SPOTIFY} native>Unlink</a></p>
+        // @ts-expect-error
+        : <p>No account linked. <a href={Endpoints.LINK_SPOTIFY} native>Link it now!</a></p>}
       <p>
         Linking your Spotify account gives you an enhanced experience with the Spotify plugin. It'll let you add songs
         to your Liked Songs, add songs to playlists, see private playlists and more.

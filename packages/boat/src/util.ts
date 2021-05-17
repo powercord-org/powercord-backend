@@ -25,6 +25,7 @@ import { readdir, stat } from 'fs/promises'
 import { URL } from 'url'
 
 const DURATION_MAP = { m: 60e3, h: 3600e3, d: 86400e3 }
+const BYTE_UNITS = [ 'B', 'KB', 'MB', 'GB', 'TB' ]
 
 /**
  * Await this to wait for `time` ms.
@@ -66,6 +67,15 @@ export async function readdirRecursive (path: URL): Promise<string[]> {
  */
 export function makePluralDumb (string: string, count: number) {
   return count === 1 ? string : `${string}s`
+}
+
+/**
+ * Capitalizes a string
+ * @param string - The string to capitalize
+ * @returns The pluralized string
+ */
+export function capitalize (string: string) {
+  return string[0].toUpperCase() + string.slice(1).toLowerCase()
 }
 
 /**
@@ -142,4 +152,19 @@ export function isStaff (member: Member | string, guild?: Guild): boolean {
  */
 export function sanitizeMarkdown (md: string): string {
   return md.replace(/[*_~`>\\]/g, '\\$1')
+}
+
+/**
+ * Formats a value in bytes to a more easily readable size
+ * @param bytes The size in bytes to pretty print
+ * @returns The pretty size with unit
+ */
+export function prettyPrintBytes (bytes: number): string {
+  let unitIdx = 0
+  while (bytes > 2 ** 10 && unitIdx < BYTE_UNITS.length - 1) {
+    bytes /= 2 ** 10
+    unitIdx++
+  }
+
+  return `${bytes.toFixed(2)} ${BYTE_UNITS[unitIdx]}`
 }
