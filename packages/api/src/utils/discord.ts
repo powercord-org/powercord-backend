@@ -25,17 +25,17 @@ import fetch from 'node-fetch'
 import config from '../config.js'
 
 export async function fetchUser (userId: string): Promise<DiscordUser> {
-  return fetch(`https://discord.com/api/v8/users/${userId}`, { headers: { authorization: `Bot ${config.discord.botToken}` } })
+  return fetch(`https://discord.com/api/v9/users/${userId}`, { headers: { authorization: `Bot ${config.discord.botToken}` } })
     .then((r) => r.json())
 }
 
 export async function fetchCurrentUser (token: string): Promise<DiscordUser> {
-  return fetch('https://discord.com/api/v8/users/@me', { headers: { authorization: `Bearer ${token}` } })
+  return fetch('https://discord.com/api/v9/users/@me', { headers: { authorization: `Bearer ${token}` } })
     .then((r) => r.json())
 }
 
 export async function dispatchHonk (honk: string, payload: unknown): Promise<unknown> {
-  return fetch(`https://discord.com/api/v8/webhooks/${honk}`, {
+  return fetch(`https://discord.com/api/v9/webhooks/${honk}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(payload),
@@ -44,36 +44,33 @@ export async function dispatchHonk (honk: string, payload: unknown): Promise<unk
 
 export async function fetchAllMembers (): Promise<DiscordMember[]> {
   const users: DiscordMember[] = []
-  let halt = false
-  let after = '0'
-  while (!halt) { // todo: consider using a proper do-while
-    const res = await fetch(
-      `https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members?limit=1000&after=${after}`,
+  let res: DiscordMember[] = []
+
+  do {
+    const after = res.length ? res[res.length - 1].id : '0'
+    res = await fetch(
+      `https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members?limit=1000&after=${after}`,
       { headers: { authorization: `Bot ${config.discord.botToken}` } }
     ).then((r) => r.json())
 
     users.concat(res)
-    halt = res.length !== 1000
-    if (!halt) {
-      after = res[res.length - 1].id
-    }
-  }
+  } while (res.length === 1000)
+
   return users
 }
 
 export async function fetchMember (memberId: string): Promise<DiscordMember> {
   return fetch(
-    `https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members/${memberId}`,
+    `https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members/${memberId}`,
     { headers: { authorization: `Bot ${config.discord.botToken}` } }
   ).then((r) => r.json())
 }
 
 export async function setRoles (memberId: string, roleIds: string[], auditLogReason?: string): Promise<unknown> {
   const headers: Record<string, string> = { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
-  if (auditLogReason) {
-    headers['X-Audit-Log-Reason'] = auditLogReason
-  }
-  return fetch(`https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members/${memberId}`, {
+  if (auditLogReason) headers['X-Audit-Log-Reason'] = auditLogReason
+
+  return fetch(`https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members/${memberId}`, {
     headers: headers,
     method: 'PATCH',
     body: JSON.stringify({ roles: roleIds }),
@@ -82,10 +79,9 @@ export async function setRoles (memberId: string, roleIds: string[], auditLogRea
 
 export async function addRole (memberId: string, roleId: string, auditLogReason?: string): Promise<unknown> {
   const headers: Record<string, string> = { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
-  if (auditLogReason) {
-    headers['X-Audit-Log-Reason'] = auditLogReason
-  }
-  return fetch(`https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
+  if (auditLogReason) headers['X-Audit-Log-Reason'] = auditLogReason
+
+  return fetch(`https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
     headers: headers,
     method: 'PUT',
   })
@@ -93,10 +89,9 @@ export async function addRole (memberId: string, roleId: string, auditLogReason?
 
 export async function removeRole (memberId: string, roleId: string, auditLogReason?: string): Promise<unknown> {
   const headers: Record<string, string> = { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
-  if (auditLogReason) {
-    headers['X-Audit-Log-Reason'] = auditLogReason
-  }
-  return fetch(`https://discord.com/api/v8/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
+  if (auditLogReason) headers['X-Audit-Log-Reason'] = auditLogReason
+
+  return fetch(`https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members/${memberId}/roles/${roleId}`, {
     headers: headers,
     method: 'DELETE',
   })

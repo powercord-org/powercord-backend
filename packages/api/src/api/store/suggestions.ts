@@ -24,7 +24,6 @@ import fetch from 'node-fetch'
 import { getOrCompute } from '../../utils/cache.js'
 import config from '../../config.js'
 
-// todo: move for frontend
 type GithubIssue = {
   number: number
   title: string

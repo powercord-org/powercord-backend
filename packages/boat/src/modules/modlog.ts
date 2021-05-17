@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { CommandClient, Guild, GuildAuditLogEntry, Role, User } from 'eris'
+import type { CommandClient, Guild, GuildAuditLogEntry, Role, TextableChannel, User } from 'eris'
 import { Constants } from 'eris'
 import { sanitizeMarkdown } from '../util.js'
 import config from '../config.js'
@@ -29,6 +29,12 @@ const TEMPLATE = `**$type | Case $case**
 __User__: $user ($userid)
 __Moderator__: $moderator ($modid)
 __Reason__: $reason`
+
+function delayedFunction (fn: Function): () => void {
+  return function (this: CommandClient, ...args: unknown[]) {
+    setTimeout(() => fn.apply(this, args), 2e3)
+  }
+}
 
 function format (type: string, caseId: string, user: User, modName: string, modId: string, reason: string) {
   return TEMPLATE
@@ -41,10 +47,15 @@ function format (type: string, caseId: string, user: User, modName: string, modI
     .replace('$reason', reason)
 }
 
-function delayedFunction (fn: Function): () => void {
-  return function (this: CommandClient, ...args: unknown[]) {
-    setTimeout(() => fn.apply(this, args), 2e3)
-  }
+async function computeCaseId (channel: TextableChannel): Promise<number> {
+  const messages = await channel.getMessages({ limit: 1 })
+  if (!messages.length) return 1
+
+  const lastCase = messages[0]
+  const match = lastCase.content.match(/Case (\d+)/)
+  if (!match) return 1
+
+  return parseInt(match[1], 10) + 1
 }
 
 function extractEntryData (entry: GuildAuditLogEntry): [ string, string, string ] {
@@ -88,8 +99,7 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
       reason = reason.replace('[soft] ', '')
     }
 
-    // todo: unsafe non-null assertion
-    const caseId = parseInt((await channel.getMessages({ limit: 1 }))[0].content.match(/Case (\d+)/)![1], 10) + 1
+    const caseId = await computeCaseId(channel)
     const realType = type === 'add' ? soft ? 'Kick' : 'Ban' : 'Unban'
 
     this.createMessage(config.discord.ids.channelModLogs, {
@@ -107,8 +117,7 @@ async function processMemberLeave (this: CommandClient, guild: Guild, user: User
   const entry = logs.entries.find((auditEntry) => auditEntry.targetID === user.id)
   if (entry && Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) < 5000) {
     const [ modId, modName, reason ] = extractEntryData(entry)
-    // todo: unsafe non-null assertion
-    const caseId = parseInt((await channel.getMessages({ limit: 1 }))[0].content.match(/Case (\d+)/)![1], 10) + 1
+    const caseId = await computeCaseId(channel)
 
     this.createMessage(config.discord.ids.channelModLogs, {
       content: format('Kick', String(caseId), user, modName, modId, reason),
@@ -139,7 +148,7 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
     }
 
     const [ modId, modName, reason ] = extractEntryData(entry)
-    const caseId = parseInt((await channel.getMessages({ limit: 1 }))[0].content.match(/Case (\d+)/)![1], 10) + 1
+    const caseId = await computeCaseId(channel)
 
     this.createMessage(config.discord.ids.channelModLogs, {
       content: format(wasAdded ? 'Mute' : 'Unmute', String(caseId), user, modName, modId, reason),

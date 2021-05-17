@@ -20,6 +20,8 @@
  * SOFTWARE.
  */
 
+// todo: it seems the api is dogshit and it's best to do it manually - get rid of this?
+
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import crypto from 'crypto'
 import { fetchUser, removeRole, dispatchHonk, addRole } from '../utils/discord.js'
