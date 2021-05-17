@@ -95,7 +95,7 @@ function extractExperiments (js: string): UpdatedExperiment[] {
             id: exp.id,
             label: exp.title,
             defaultConfig: null,
-            treatments: exp.buckets.slice(1).map((b: number) => ({ id: b, label: exp.description[b + 1].slice(12).trim(), config: null }))
+            treatments: exp.buckets.slice(1).map((b: number) => ({ id: b, label: exp.description[b + 1].slice(12).trim(), config: null })),
           })
         } else {
           experiments.push(exp)
@@ -118,7 +118,7 @@ async function downloadAllScripts (resourcesScript: string): Promise<string> {
 
   const all = await Promise.all(
     Array.from(new Set(resourcesMatch.map((r) => r.match(RESOURCE_REGEX)![1])))
-      .map((r) => fetch(`https://canary.discord.com/assets/${r}.js`).then((r) => r.text()))
+      .map((resource) => fetch(`https://canary.discord.com/assets/${resource}.js`).then((r) => r.text()))
   )
 
   return all.join('')
@@ -141,9 +141,9 @@ async function extractWebappData (): Promise<WebappUpdateInfo | null> {
   return {
     assets: {
       js: { name: scriptMatch[1], size: jsBuffer.length },
-      css: { name: styleMatch[1], size: cssBuffer.length }
+      css: { name: styleMatch[1], size: cssBuffer.length },
     },
-    experiments: extractExperiments(jsBuffer.toString('utf8') + resources)
+    experiments: extractExperiments(jsBuffer.toString('utf8') + resources),
   }
 }
 

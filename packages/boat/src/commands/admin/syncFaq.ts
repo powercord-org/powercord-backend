@@ -60,13 +60,13 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
   const messages = await msg._client.getMessages(config.discord.ids.channelFaq, { limit: 50 })
   const bulkable: string[] = []
   const promises: Promise<void>[] = []
-  for (const message of messages) {
-    if (Date.now() - message.timestamp > DICKORD_LIMIT) {
-      promises.push(message.delete(FAQ_REASON))
+  for (const m of messages) {
+    if (Date.now() - m.timestamp > DICKORD_LIMIT) {
+      promises.push(m.delete(FAQ_REASON))
       continue
     }
 
-    bulkable.push(message.id)
+    bulkable.push(m.id)
   }
 
   if (bulkable.length !== 0) {
