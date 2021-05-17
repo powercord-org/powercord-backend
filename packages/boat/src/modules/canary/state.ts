@@ -34,12 +34,12 @@ export type PlatformedValue<TValue> = Record<Platform, TValue>
 export type UpdaterAwarePlatform = typeof PLATFORMS[number] | `${typeof PLATFORM_WITH_NEW_UPDATER[number]}_new`
 export type UpdaterAwarePlatformedValue<TValue> = Record<UpdaterAwarePlatform, TValue>
 
-export type Treatment = { id: number, label: string, config: Record<string, unknown> }
+export type Treatment = { id: number, label: string, config: Record<string, unknown> | null }
 export type Experiment = {
   kind: 'user' | 'guild'
   id: string
   label: string
-  defaultConfig: Record<string, unknown>
+  defaultConfig: Record<string, unknown> | null
   treatments: Treatment[]
 }
 

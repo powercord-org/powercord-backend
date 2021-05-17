@@ -89,8 +89,17 @@ function extractExperiments (js: string): UpdatedExperiment[] {
       )
 
       if (!seenIds.includes(exp.id)) {
-        seenIds.push(exp.id)
-        experiments.push(exp)
+        if (registerMethod === 'registerUserExperiment' || registerMethod === 'registerGuildExperiment') {
+          experiments.push({
+            kind: registerMethod === 'registerUserExperiment' ? 'user' : 'guild',
+            id: exp.id,
+            label: exp.title,
+            defaultConfig: null,
+            treatments: exp.buckets.slice(1).map((b: number) => ({ id: b, label: exp.description[b + 1].slice(12).trim(), config: null }))
+          })
+        } else {
+          experiments.push(exp)
+        }
       }
     } catch (e) {
       console.error('Failed to parse experiment')
@@ -141,7 +150,7 @@ async function extractWebappData (): Promise<WebappUpdateInfo | null> {
 export default async function checkWebUpdates (): Promise<WebappUpdateInfo | null> {
   const version = await fetch(`${DISCORD_WEBAPP_ENDPOINT}?_=${Date.now()}`).then((r) => r.json())
   if (state.webapp === version.hash) {
-    return null
+    //return null
   }
 
   state.webapp = version.hash

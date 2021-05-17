@@ -40,13 +40,22 @@ async function webUpdates () {
 }
 
 export default async function () {
+  await checkWebUpdates()
+  process.exit()
+
+  // @ts-ignore
   if (state.__empty) {
+    // @ts-ignore
     delete state.__empty
+    // @ts-ignore
     await Promise.all([ checkAppUpdates(), checkWebUpdates() ])
+    // @ts-ignore
     await commitCanaryState()
   }
 
+  // @ts-ignore
   cron.schedule('*/5 * * * *', () => appUpdates())
+  // @ts-ignore
   cron.schedule('30 */30 * * * *', () => webUpdates())
 }
 
