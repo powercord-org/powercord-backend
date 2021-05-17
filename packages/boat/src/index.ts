@@ -37,13 +37,21 @@ const bot = new CommandClient(
 )
 
 async function loadModule (module: string) {
+  if (!module.endsWith('.js')) return
+
   const mdl = await import(module)
+  if (mdl.__skip) return
+
   if (typeof mdl.default !== 'function') throw new TypeError(`Invalid module: ${basename(module)}`)
   mdl.default(bot)
 }
 
 async function loadCommand (command: string) {
+  if (!command.endsWith('.js')) return
+
   const cmd = await import(command)
+  if (cmd.__skip) return
+
   if (typeof cmd.executor !== 'function') throw new TypeError(`Invalid command: ${basename(command)}`)
   bot.registerCommand(basename(command, '.js'), cmd.executor, { description: cmd.description, aliases: cmd.aliases })
 }

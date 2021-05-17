@@ -21,7 +21,7 @@
  */
 
 import { GuildTextableChannel, Message } from 'eris'
-import { BLACKLIST_CACHE } from '../../modules/automod.js'
+import { BLACKLIST_CACHE } from '../../modules/mod/automod.js'
 import { isStaff } from '../../util.js'
 import config from '../../config.js'
 

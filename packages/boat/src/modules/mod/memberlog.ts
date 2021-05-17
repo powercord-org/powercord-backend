@@ -21,8 +21,8 @@
  */
 
 import type { CommandClient, Guild, Member, MemberPartial } from 'eris'
-import { prettyPrintTimeSpan } from '../util.js'
-import config from '../config.js'
+import { prettyPrintTimeSpan } from '../../util.js'
+import config from '../../config.js'
 
 type OldMember = { nick?: string; premiumSince: number; roles: string[] } | null
 

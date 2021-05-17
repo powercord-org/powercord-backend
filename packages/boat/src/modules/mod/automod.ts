@@ -22,9 +22,9 @@
 
 import type { CommandClient, Message, GuildTextableChannel } from 'eris'
 import { deleteMeta } from './logger.js'
-import { skipSnipe } from './sniper.js'
-import { isStaff } from '../util.js'
-import config from '../config.js'
+import { skipSnipe } from '../sniper.js'
+import { isStaff } from '../../util.js'
+import config from '../../config.js'
 
 const INVITE_RE_SRC = '(?:https?:\\/\\/)?(?:www\\.)?(discord\\.(?:gg|io|me|li|link|list|media)|(?:discord(?:app)?|watchanimeattheoffice)\\.com\\/invite)\\/(.+[a-zA-Z0-9])'
 const INVITE_RE_G = new RegExp(INVITE_RE_SRC, 'ig')

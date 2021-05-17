@@ -13,13 +13,15 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - db-data:/var/lib/mongodb
+      - db-data:/data/db
     profiles:
       - website
       - bot
 
   # Our shitcode
   bot:
+    environment:
+      NODE_ENV: development
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -27,15 +29,18 @@ services:
         PACKAGE_NAME: boat
     image: powercord-boat
     working_dir: /opt/porkord/packages/boat
-    command: pnpm run dev -- --noClear
+    command: pnpm run dev
     volumes:
       - ./packages/boat/src:/opt/porkord/packages/boat/src
+      - ./packages/boat/dist:/opt/porkord/packages/boat/dist
       - ./packages/boat/package.json:/opt/porkord/packages/boat/package.json
       - ./packages/boat/tsconfig.json:/opt/porkord/packages/boat/tsconfig.json
       - ./config.json:/opt/porkord/config.json
     profiles:
       - bot
   api:
+    environment:
+      NODE_ENV: development
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -43,9 +48,10 @@ services:
         PACKAGE_NAME: api
     image: powercord-api
     working_dir: /opt/porkord/packages/api
-    command: pnpm run dev -- --noClear
+    command: pnpm run dev
     volumes:
       - ./packages/api/src:/opt/porkord/packages/api/src
+      - ./packages/api/dist:/opt/porkord/packages/api/dist
       - ./packages/api/package.json:/opt/porkord/packages/api/package.json
       - ./packages/api/tsconfig.json:/opt/porkord/packages/api/tsconfig.json
       - ./documentation:/opt/porkord/documentation

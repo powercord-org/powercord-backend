@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { RoutableProps } from 'preact-router'
+import type { Attributes } from 'preact'
 import { h } from 'preact'
 import { useTitle } from 'hoofd/preact'
 
@@ -30,7 +30,7 @@ import pawa404 from '../assets/pawa-404.png'
 
 import style from './notfound.module.css'
 
-type NotFoundProps = { ctx?: Record<string, any> } & RoutableProps
+type NotFoundProps = Attributes & { ctx?: Record<string, any> }
 
 export default function NotFound ({ ctx }: NotFoundProps) {
   if (import.meta.env.SSR && ctx) ctx.notFound = true

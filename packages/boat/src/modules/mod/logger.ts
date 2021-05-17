@@ -22,8 +22,8 @@
 
 import type { CommandClient, GuildTextableChannel, Message } from 'eris'
 import fetch from 'node-fetch'
-import { prettyPrintTimeSpan, stringifyDiscordMessage } from '../util.js'
-import config from '../config.js'
+import { prettyPrintTimeSpan, stringifyDiscordMessage } from '../../util.js'
+import config from '../../config.js'
 
 type MessagePartial = { id: string, channel: GuildTextableChannel }
 

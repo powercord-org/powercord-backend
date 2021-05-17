@@ -102,6 +102,7 @@ importers:
       eris: ^0.15.1
       eslint: ^7.26.0
       eslint-plugin-deprecation: ^1.2.1
+      json5: ^2.2.0
       mongodb: ^3.6.6
       node-cron: ^3.0.0
       node-fetch: ^2.6.1
@@ -109,6 +110,7 @@ importers:
       typescript: ^4.2.4
     dependencies:
       eris: 0.15.1
+      json5: 2.2.0
       mongodb: 3.6.6
       node-cron: 3.0.0
       node-fetch: 2.6.1

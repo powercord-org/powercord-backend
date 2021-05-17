@@ -23,8 +23,8 @@
 import type { CommandClient, Guild, User } from 'eris'
 import type { InsertOneWriteOpResult, ObjectId } from 'mongodb'
 import cron from 'node-cron'
-import { unmute, unban } from '../mod.js'
-import { exitRaidMode } from '../raidMode.js'
+import { unmute, unban } from '../../mod.js'
+import { exitRaidMode } from '../../raidMode.js'
 
 export type Schedulable = 'unmute' | 'unban' | 'endRaid'
 type Scheduled = { _id: ObjectId, type: Schedulable, guild: string, target: string, mod: string, time: number }

@@ -22,9 +22,9 @@
 
 import type { CommandClient, GuildTextableChannel, Message } from 'eris'
 import { createHash } from 'crypto'
-import { ban, softBan } from '../mod.js'
-import { enterRaidMode } from '../raidMode.js'
-import config from '../config.js'
+import { ban, softBan } from '../../mod.js'
+import { enterRaidMode } from '../../raidMode.js'
+import config from '../../config.js'
 
 // Any new members who send more than THRESHOLD messages with the same content, will be kicked
 const THRESHOLD = 2

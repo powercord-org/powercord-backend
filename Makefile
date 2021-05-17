@@ -6,15 +6,17 @@ web:
 boat:
 	docker-compose --profile bot up -d
 
+.PHONY: web-build
+web-build:
+	docker-compose --profile website up --build -d
+
+.PHONY: boat-build
+boat-build:
+	docker-compose --profile bot up --build -d
+
 .PHONY: down
 down:
 	docker-compose down
-
-.PHONY: rm-images
-rm-images:
-	docker image rm powercord-web || true
-	docker image rm powercord-api || true
-	docker image rm powercord-boat || true
 
 .PHONY: lint
 lint:

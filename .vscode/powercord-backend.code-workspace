@@ -6,9 +6,10 @@
     { "name": "web", "path": "../packages/web" }
   ],
   "settings": {
+    "files.eol": "\n",
     "files.exclude": {
-      "node_modules/": true,
-      "packages/": true
-    },
+      "packages": true,
+      "node_modules": true,
+    }
   }
 }

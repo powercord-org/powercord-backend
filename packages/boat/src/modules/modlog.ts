@@ -48,9 +48,9 @@ function delayedFunction (fn: Function): () => void {
 }
 
 function extractEntryData (entry: GuildAuditLogEntry): [ string, string, string ] {
-  let modId: string = ''
-  let modName: string = ''
-  let reason: string = ''
+  let modId = ''
+  let modName = ''
+  let reason = ''
 
   if (entry.user.id === config.discord.clientID && entry.reason) {
     const splittedReason = entry.reason.split(' ')
@@ -75,7 +75,7 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
 
     const logs = await guild.getAuditLog({
       actionType: type === 'add' ? Constants.AuditLogActions.MEMBER_BAN_ADD : Constants.AuditLogActions.MEMBER_BAN_REMOVE,
-      limit: 10
+      limit: 10,
     })
     const entry = logs.entries.find((auditEntry) => auditEntry.targetID === user.id)
     if (!entry) return

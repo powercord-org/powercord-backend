@@ -20,8 +20,7 @@
  * SOFTWARE.
  */
 
-import type { RoutableProps } from 'preact-router'
-import type { JSX } from 'preact'
+import type { Attributes, JSX } from 'preact'
 import { h, cloneElement } from 'preact'
 
 export default function Soon (_: any) {
@@ -34,7 +33,7 @@ export default function Soon (_: any) {
   )
 }
 
-export function SoonRoute ({ children, ...props }: RoutableProps & { children: JSX.Element }) {
+export function SoonRoute ({ children, ...props }: Attributes & { children: JSX.Element }) {
   if (import.meta.env.PROD) {
     return <Soon/>
   }

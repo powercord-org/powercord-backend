@@ -20,30 +20,35 @@
  * SOFTWARE.
  */
 
-import type { CommandClient, Guild, Member, MemberPartial } from 'eris'
-import { ban } from '../mod.js'
-import config from '../config.js'
+import cron from 'node-cron'
+import checkAppUpdates from './app.js'
+import checkWebUpdates from './web.js'
+import state, { commitCanaryState } from './state.js'
 
-const MAX_INFRACTIONS = 4
+async function appUpdates () {
+  const update = await checkAppUpdates()
+  console.log(update)
+  // todo: create & post embed
+  return commitCanaryState()
+}
 
-async function memberRemove (this: CommandClient, guild: Guild, member: Member | MemberPartial) {
-  if (guild.id !== config.discord.ids.serverId || !('roles' in member) || !member.roles.includes(config.discord.ids.roleMuted)) return
+async function webUpdates () {
+  const update = await checkWebUpdates()
+  console.log(update)
+  // todo: create & post embed
+  return commitCanaryState()
+}
 
-  const bans = await guild.getBans().then((guildBans) => guildBans.map((guildBan) => guildBan.user.id))
-  if (bans.includes(member.id)) return
-
-  await this.mongo.collection('enforce').insertOne({
-    userID: member.id, // todo: userID -> userId
-    rule: -1,
-    mod: `${this.user.username}#${this.user.discriminator}`, // todo: store id instead
-  })
-
-  const infractionCount = await this.mongo.collection('enforce').countDocuments({ userID: member.id })
-  if (infractionCount > MAX_INFRACTIONS) {
-    ban(guild, member.id, this.user, 'Left while muted one too many times.')
+export default async function () {
+  if (state.__empty) {
+    delete state.__empty
+    await Promise.all([ checkAppUpdates(), checkWebUpdates() ])
+    await commitCanaryState()
   }
+
+  cron.schedule('*/5 * * * *', () => appUpdates())
+  cron.schedule('30 */30 * * * *', () => webUpdates())
 }
 
-export default function (bot: CommandClient) {
-  bot.on('guildMemberRemove', memberRemove)
-}
+// dev
+export const __skip = process.env.NODE_ENV !== 'development'
