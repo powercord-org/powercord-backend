@@ -68,3 +68,5 @@ Promise.resolve()
   .then(() => loadLaws(bot))
   .then(() => initRaidMode(bot))
   .catch((e: Error) => console.error('An error occurred during startup', e))
+
+bot.on('error', (e) => console.error('Bot encountered an error', e))

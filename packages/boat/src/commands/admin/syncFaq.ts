@@ -25,7 +25,9 @@ import fetch from 'node-fetch'
 import config from '../../config.js'
 
 const ZWS = '\u200B'
+const DICKORD_LIMIT = (14 * 24 * 3600e3) - 3600e3 // 14 days - 1 hour to compensate falsehoods about time
 const FAQ_DOCUMENT = 'https://raw.githubusercontent.com/wiki/powercord-org/powercord/Frequently-Asked-Questions.md'
+const FAQ_REASON = 'Purging FAQ channel due to sync'
 
 export async function executor (msg: Message<GuildTextableChannel>): Promise<void> {
   if (!msg.member) return // ???
@@ -55,8 +57,23 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
   )
 
   // Purge channel
-  // todo: I don't think eris handles purging messages older than 14 days
-  await msg._client.purgeChannel(config.discord.ids.channelFaq, { limit: 50, reason: 'Purging FAQ channel due to sync' })
+  const messages = await msg._client.getMessages(config.discord.ids.channelFaq, { limit: 50 })
+  const bulkable: string[] = []
+  const promises: Promise<void>[] = []
+  for (const message of messages) {
+    if (Date.now() - message.timestamp > DICKORD_LIMIT) {
+      promises.push(message.delete(FAQ_REASON))
+      continue
+    }
+
+    bulkable.push(message.id)
+  }
+
+  if (bulkable.length !== 0) {
+    promises.push(msg._client.deleteMessages(config.discord.ids.channelFaq, bulkable, FAQ_REASON))
+  }
+
+  await Promise.all(promises)
   for (const part of faq) {
     await msg._client.createMessage(config.discord.ids.channelFaq, `${part}\n${ZWS}`)
   }
