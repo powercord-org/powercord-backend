@@ -36,7 +36,7 @@ const DISCORD_WEBAPP_ENDPOINT = 'https://canary.discord.com/assets/version.canar
 const STYLE_REGEX = /<link rel="stylesheet" href="([^"]+)/
 const SCRIPT_REGEX = /<script src="([^"]+)/
 const RESOURCE_REGEX = /\d+:"([^"]+)/
-const EXPERIMENT_REGEX = /\.(default|createExperiment|register(?:User)Experiment)\)\(({.+?})\)(?:;|}|,[a-zA-Z_]{1,4}=)/
+const EXPERIMENT_REGEX = /\.(default|createExperiment|register(?:User|Guild)Experiment)\)\(({.+?})\)(?:;|}|,[a-zA-Z_]{1,4}=)/
 
 const SCRIPT_REGEX_G = new RegExp(SCRIPT_REGEX, 'g')
 const RESOURCE_REGEX_G = new RegExp(RESOURCE_REGEX, 'g')
@@ -80,7 +80,7 @@ function extractExperiments (js: string): UpdatedExperiment[] {
         experimentData
           .replace(/!0/g, 'true')
           .replace(/!1/g, 'false')
-          .replace(/clientFilter:.*/g, '}')
+          .replace(/,clientFilter:.*/g, '}')
           .replace(/[a-zA-Z_]+\.ExperimentBuckets\.([A-Z0-9_]+)/g, (_, t) => t === 'CONTROL' ? 0 : t.slice(-1))
           .replace(/([:[{,]).(?:\.([a-zA-Z_]+))?\.([A-Z0-9_]+)/g, (_, prefix, namespace, constName) => {
             const regex = new RegExp(`${constName}=(${namespace === 'Experiments' ? '"\\d{4}-\\d{2}' : '(?:"|\\d)'}[^,;]+)`)
@@ -95,7 +95,11 @@ function extractExperiments (js: string): UpdatedExperiment[] {
             id: exp.id,
             label: exp.title,
             defaultConfig: null,
-            treatments: exp.buckets.slice(1).map((b: number) => ({ id: b, label: exp.description[b + 1].slice(12).trim(), config: null })),
+            treatments: exp.buckets.slice(1).map((b: number) => ({
+              id: b,
+              config: null,
+              label: exp.description.find((d: string) => d.startsWith(`Treatment ${b}: `)).slice(13).trim(),
+            })),
           })
         } else {
           experiments.push(exp)
