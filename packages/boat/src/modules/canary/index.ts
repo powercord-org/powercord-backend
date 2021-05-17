@@ -207,10 +207,8 @@ async function webUpdates () {
   const update = await checkWebUpdates()
 
   if (update) {
-    await dispatchHonk(config.honks.updootChannel, { embeds: [ generateBuildEmbed(update) ] })
-    for (const experiment of update.experiments) {
-      dispatchHonk(config.honks.updootChannel, { embeds: [ generateExperimentEmbed(experiment) ] })
-    }
+    const embeds = [ generateBuildEmbed(update), ...update.experiments.map((e) => generateExperimentEmbed(e)) ]
+    dispatchHonk(config.honks.updootChannel, { embeds: embeds })
   }
 
   return commitCanaryState()
