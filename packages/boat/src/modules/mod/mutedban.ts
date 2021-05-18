@@ -33,12 +33,12 @@ async function memberRemove (this: CommandClient, guild: Guild, member: Member |
   if (bans.includes(member.id)) return
 
   await this.mongo.collection('enforce').insertOne({
-    userID: member.id, // todo: userID -> userId
+    userId: member.id,
+    modId: this.user.id,
     rule: -1,
-    mod: `${this.user.username}#${this.user.discriminator}`, // todo: store id instead
   })
 
-  const infractionCount = await this.mongo.collection('enforce').countDocuments({ userID: member.id })
+  const infractionCount = await this.mongo.collection('enforce').countDocuments({ userId: member.id })
   if (infractionCount > MAX_INFRACTIONS) {
     ban(guild, member.id, this.user, 'Left while muted one too many times.')
   }

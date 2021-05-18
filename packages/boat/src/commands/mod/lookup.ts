@@ -25,6 +25,7 @@ import { prettyPrintTimeSpan, makePluralDumb, isStaff } from '../../util.js'
 import config from '../../config.js'
 
 const USAGE_STR = `Usage: ${config.discord.prefix}lookup <mention || discord id>`
+const ID_REGEX = /<@!?(\d+)>/
 
 export async function executor (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
   if (!msg.member) return // ???
@@ -38,20 +39,23 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
     return
   }
 
-  // todo: rely on member cache?
-  const fetchedMembers = await msg.channel.guild.fetchMembers({ userIDs: [ args.shift()!.replace(/<@!?(\d+)>/, '$1') ] })
-  if (fetchedMembers.length === 0) {
+  const memberId = args.shift()!.replace(ID_REGEX, '$1')
+  let member = msg.channel.guild.members.get(memberId)
+  if (!member) {
+    const fetched = await await msg.channel.guild.fetchMembers({ userIDs: [ memberId ] })
+    member = fetched[0]
+  }
+
+  if (!member) {
     msg.channel.createMessage('Could not find requested member')
     return
   }
 
-  const member = fetchedMembers[0]
   const createdAt = new Date(member.createdAt)
   const joinedAt = new Date(member.joinedAt)
 
   const infractions: Array<{ rule: string, count: number, occurrences: string[] }> = []
-  // todo: userID -> userId
-  await msg._client.mongo.collection('enforce').find({ userID: member.id }).forEach((doc) => {
+  await msg._client.mongo.collection('enforce').find({ userId: member.id }).forEach((doc) => {
     const infraction = infractions.find((inf) => inf.rule === doc.rule)
 
     if (infraction) {

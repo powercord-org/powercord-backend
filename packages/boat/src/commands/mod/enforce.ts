@@ -85,8 +85,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
     return
   }
 
-  // todo: userID -> userId
-  const cases = await msg._client.mongo.collection('enforce').countDocuments({ userID: target, rule: ruleId })
+  const cases = await msg._client.mongo.collection('enforce').countDocuments({ userId: target, rule: ruleId })
   if (!rules.penalties[cases]) {
     msg.channel.createMessage(`The maximum punishment has already been applied for rule #${ruleId}`)
     return
@@ -94,8 +93,8 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
 
   await punish(msg, target, rules.penalties[cases], rules, ruleId)
   msg._client.mongo.collection('enforce').insertOne({
-    userID: target, // todo: userID -> userId
+    userId: target,
+    modId: msg.author.id,
     rule: ruleId,
-    mod: `${msg.author.username}#${msg.author.discriminator}`, // todo: store id instead
   })
 }
