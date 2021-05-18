@@ -50,7 +50,6 @@ function isProcessable (msg: Message<GuildTextableChannel>, stargazer: HasId) {
     && !config.discord.ids.shitstars.channels.includes(msg.channel.id)
     && !config.discord.ids.shitstars.users.includes(msg.author.id)
     && !config.discord.ids.shitstars.users.includes(stargazer.id)
-    // todo: videos
     && !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'))
 }
 
@@ -66,7 +65,6 @@ async function getAllReactions (msg: Message<GuildTextableChannel>, reaction: st
 }
 
 function extractMedia (msg: Message<GuildTextableChannel>): { image?: EmbedImage, video?: EmbedVideo } {
-  // todo: video
   if (msg.attachments.length > 0 && msg.attachments[0].width) {
     return { image: msg.attachments[0] }
   } else if (msg.embeds.length > 0 && msg.embeds[0].type === 'image') {
