@@ -29,7 +29,7 @@ export type UpdatedExperiment = Experiment & { update: 'add' | 'update' | 'delet
 
 type Asset = { name: string, size: number }
 type AssetsInfo = { js: Asset, css: Asset }
-export type WebappUpdateInfo = { rollback: boolean, assets: AssetsInfo, build: { id: string, hash: string }, experiments: UpdatedExperiment[] }
+export type WebappUpdateInfo = { rollback: boolean, assets: AssetsInfo, build: { id: string, hash: string }, experiments: UpdatedExperiment[], date: Date }
 
 const DISCORD_WEBAPP_ENDPOINT = 'https://canary.discord.com/assets/version.canary.json'
 const STYLE_REGEX = /<link rel="stylesheet" href="([^"]+)/
@@ -127,7 +127,7 @@ async function downloadAllScripts (resourcesScript: string): Promise<string> {
   return all.join('')
 }
 
-async function extractWebappData (hash: string): Promise<WebappUpdateInfo | null> {
+async function extractWebappData (hash: string, date: Date): Promise<WebappUpdateInfo | null> {
   const html = await fetch(`https://canary.discord.com/app?_=${Date.now()}`).then((r) => r.text())
   const styleMatch = html.match(STYLE_REGEX)
   const scriptAllMatch = html.match(SCRIPT_REGEX_G)
@@ -157,17 +157,19 @@ async function extractWebappData (hash: string): Promise<WebappUpdateInfo | null
       hash: hash,
     },
     experiments: extractExperiments(jsBuffer.toString('utf8') + resources),
+    date: date,
   }
 }
 
 export default async function checkWebUpdates (): Promise<WebappUpdateInfo | null> {
-  const version = await fetch(`${DISCORD_WEBAPP_ENDPOINT}?_=${Date.now()}`).then((r) => r.json())
+  const versionRes = await fetch(`${DISCORD_WEBAPP_ENDPOINT}?_=${Date.now()}`)
+  const version = await versionRes.json()
   if (state.webapp.hash === version.hash) {
     return null
   }
 
   state.webapp.hash = version.hash
-  return extractWebappData(version.hash)
+  return extractWebappData(version.hash, new Date(versionRes.headers.get('last-modified') ?? Date.now()))
 }
 
 // Don't load this file as a module

@@ -28,7 +28,6 @@
 import type { ComponentChildren, Attributes } from 'preact'
 import type { MarkdownNode } from '@borkenware/spoonfeed/src/types/markdown'
 
-
 import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
@@ -44,6 +43,7 @@ import { Endpoints, Routes } from '../../constants'
 import style from './markdown.module.css'
 
 type Document = { title: string, parts: string[], contents: MarkdownNode[] }
+type MarkdownProps = Attributes & { document: string, notFoundClassName?: string }
 
 function sluggify (string: string): string {
   return string.replace(/(^\d+-|\.(md|markdown)$)/ig, '')
@@ -102,7 +102,7 @@ function renderMarkdownNode (node: MarkdownNode) {
       return h('code', { className: style.inline }, renderMarkdown(node.content))
     case MarkdownType.LINK:
       if (node.href.startsWith('https://powercord.dev')) {
-        return h('a', { href: node.href.slice(21) }, renderMarkdown(node.label))
+        return h('a', { href: node.href.slice(21), native: node.href.startsWith('https://powercord.dev/link/') }, renderMarkdown(node.label))
       }
       return h('a', { href: node.href, target: '_blank', rel: 'noreferrer' }, renderMarkdown(node.label))
     case MarkdownType.EMAIL:
@@ -135,7 +135,7 @@ function renderMarkdownNode (node: MarkdownNode) {
 const cache: Record<string, Document | false> = {}
 const getCache = (d: string) => import.meta.env.PROD ? cache[d] : null // Bypass cache during dev
 
-export default function MarkdownDocument ({ document: mdDocument }: { document: string } & Attributes) {
+export default function MarkdownDocument ({ document: mdDocument, notFoundClassName }: MarkdownProps) {
   const [ firstLoaded, setFirstLoaded ] = useState(false)
   const [ doc, setDoc ] = useState(getCache(mdDocument))
   useTitle(doc === null ? 'Powercord' : doc ? doc.title : '', doc === null)
@@ -161,14 +161,14 @@ export default function MarkdownDocument ({ document: mdDocument }: { document: 
       const element = document.querySelector(window.location.hash)
       if (element) {
         setTimeout(() => element.scrollIntoView(), 10)
-        return void 0
+        return
       }
     }
   }, [ doc, typeof window !== 'undefined' ? window.location.hash : null ])
 
   if (doc === false) {
     return (
-      <NotFound/>
+      <NotFound className={notFoundClassName}/>
     )
   }
 

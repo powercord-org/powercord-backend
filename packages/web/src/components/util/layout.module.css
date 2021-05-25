@@ -23,7 +23,9 @@
 .container {
   display: flex;
   overflow: hidden;
-  border-top: 2px var(--background-tertiary) solid;
+  border: 0 var(--background-tertiary) solid;
+  border-top-width: 2px;
+  border-bottom-width: 2px;
   position: relative;
   flex: 1;
 }

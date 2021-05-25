@@ -22,7 +22,7 @@
 
 import type { CommandClient, GuildTextableChannel, Message } from 'eris'
 import fetch from 'node-fetch'
-import { prettyPrintTimeSpan, stringifyDiscordMessage } from '../../util.js'
+import { prettyPrintTimeSpan, stringifyDiscordMessage, sanitizeMarkdown } from '../../util.js'
 import config from '../../config.js'
 
 type MessagePartial = { id: string, channel: GuildTextableChannel }
@@ -57,7 +57,7 @@ function format (template: string, message: Message<GuildTextableChannel>): stri
     .replace(/\$userId/g, message.author.id)
     .replace(/\$channelId/g, message.channel.id)
     .replace(/\$channel/g, message.channel.name)
-    .replace(/\$username/g, message.author.username.replace(/`/g, `\`${ZWS}`))
+    .replace(/\$username/g, sanitizeMarkdown(message.author.username))
     .replace(/\$discrim/g, message.author.discriminator)
     .replace(/\$time/g, new Date(message.timestamp).toUTCString())
     .replace(/\$duration/g, prettyPrintTimeSpan(Date.now() - message.timestamp))
@@ -65,8 +65,8 @@ function format (template: string, message: Message<GuildTextableChannel>): stri
 }
 
 async function messageDelete (this: CommandClient, msg: Message<GuildTextableChannel>) {
-  if (!msg.author || msg.channel.guild.id !== config.discord.ids.serverId || msg.author.bot) {
-    return // Message not cached; let's just ignore
+  if (!msg.author || msg.author.bot || msg.channel.guild.id !== config.discord.ids.serverId) {
+    return // Let's just ignore
   }
 
   this.createMessage(config.discord.ids.channelMessageLogs, {
@@ -76,6 +76,10 @@ async function messageDelete (this: CommandClient, msg: Message<GuildTextableCha
 }
 
 async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<GuildTextableChannel> | MessagePartial>) {
+  if (msgs[0].channel.id !== config.discord.ids.serverId) {
+    return // Let's just ignore
+  }
+
   const list = msgs.map(
     (msg) =>
       'author' in msg

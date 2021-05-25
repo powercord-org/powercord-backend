@@ -30,15 +30,15 @@ import pawa404 from '../assets/pawa-404.png'
 
 import style from './notfound.module.css'
 
-type NotFoundProps = Attributes & { ctx?: Record<string, any> }
+type NotFoundProps = Attributes & { ctx?: Record<string, any>, className?: string }
 
-export default function NotFound ({ ctx }: NotFoundProps) {
+export default function NotFound ({ ctx, className }: NotFoundProps) {
   if (import.meta.env.SSR && ctx) ctx.notFound = true
 
   useTitle('404')
 
   return (
-    <main className={style.container}>
+    <main className={`${style.container}${className ? ` ${className}` : ''}`}>
       <h1>Seems like you're lost...</h1>
       <p>Pawa looked far and wide, but couldn't find what you're looking for... Maybe she can bring you back home?</p>
       <p>

@@ -20,6 +20,11 @@
  * SOFTWARE.
  */
 
+.markdown {
+  /* Display block here to enable margin collapsing */
+  display: block;
+}
+
 .markdown :is(h1, h2, h3, h4, h5, h6) code {
   font-size: 100%;
 }
@@ -38,6 +43,14 @@
 
 .markdown h3 {
   font-size: 1.5em;
+}
+
+.markdown h4 {
+  font-size: 1.2em;
+}
+
+.markdown h5 {
+  font-size: 1em;
 }
 
 .markdown h6 {
@@ -97,7 +110,7 @@
 }
 
 .markdown table {
-  margin-bottom: 15px;
+  margin: 16px 0;
   border-collapse: collapse;
   width: 100%;
 }

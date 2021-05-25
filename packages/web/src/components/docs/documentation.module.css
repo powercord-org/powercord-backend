@@ -54,3 +54,7 @@
 .item.active {
   background-color: var(--background-primary);
 }
+
+.notfound {
+  height: calc(100% + 24px);
+}

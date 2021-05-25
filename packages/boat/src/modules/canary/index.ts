@@ -23,6 +23,7 @@
 import type { Embed, EmbedField } from 'eris'
 import type { WebappUpdateInfo, UpdatedExperiment } from './web.js'
 import type { AppUpdateInfo, UpdateInfo } from './app.js'
+import type { UpdaterAwarePlatform } from './state.js'
 import fetch from 'node-fetch'
 import cron from 'node-cron'
 import json5 from 'json5'
@@ -82,6 +83,7 @@ function generateBuildEmbed (update: WebappUpdateInfo): Embed {
           + `• CSS: [\`${update.assets.css.name}\`](https://canary.discord.com${update.assets.css.name}) (${prettyPrintBytes(update.assets.css.size)})\n`,
       },
     ],
+    timestamp: update.date,
   }
 }
 
@@ -122,20 +124,24 @@ function generateExperimentEmbed (experiment: UpdatedExperiment): Embed {
 
 function generateHostEmbed (update: AppUpdateInfo): Embed | null {
   const fields: EmbedField[] = []
+  let date: Date | undefined = void 0
   for (const platform of PLATFORMS) {
     if (update.new[platform]?.host) {
       fields.push({
         name: PLATFORM_NAMES[platform],
         value: `\`${update.new[platform]!.host!.prev} => ${update.new[platform]!.host!.next}\``,
       })
+
+      date ??= update.new[platform]!.dates.host
     }
 
     if (update.legacy[platform]?.host) {
-      console.log(`${PLATFORM_NAMES[platform]}${PLATFORM_WITH_NEW_UPDATER.includes(platform as any) ? ' (Legacy)' : ''}`)
       fields.push({
         name: `${PLATFORM_NAMES[platform]}${PLATFORM_WITH_NEW_UPDATER.includes(platform as any) ? ' (Legacy)' : ''}`,
         value: `\`${update.legacy[platform]!.host!.prev} => ${update.legacy[platform]!.host!.next}\``,
       })
+
+      date ??= update.legacy[platform]!.dates.host
     }
   }
 
@@ -146,6 +152,7 @@ function generateHostEmbed (update: AppUpdateInfo): Embed | null {
     thumbnail: { url: CANARY },
     color: 0xfaad2b,
     fields: fields,
+    timestamp: date,
   }
 }
 
@@ -170,6 +177,8 @@ function generateModulesEmbeds (update: AppUpdateInfo): Embed[] {
         thumbnail: { url: CANARY },
         color: 0xfaad2b,
         fields: fields,
+        footer: { text: `Canary Host ${state.host[platform as UpdaterAwarePlatform]}` },
+        timestamp: update.new[platform]!.dates.modules,
       })
     }
 
@@ -183,6 +192,8 @@ function generateModulesEmbeds (update: AppUpdateInfo): Embed[] {
         thumbnail: { url: CANARY },
         color: 0xfaad2b,
         fields: fields,
+        footer: { text: `Canary Host ${state.host[`${platform}_legacy` as UpdaterAwarePlatform]}` },
+        timestamp: update.legacy[platform]!.dates.modules,
       })
     }
   }
@@ -215,6 +226,11 @@ async function webUpdates () {
 }
 
 export default async function () {
+  if (!config.honks.updootChannel) {
+    console.log('no channel id provided for canary updates. module will be disabled.')
+    return
+  }
+
   if (state.__empty) {
     delete state.__empty
     await Promise.all([ checkAppUpdates(), checkWebUpdates() ])
@@ -223,7 +239,6 @@ export default async function () {
 
   cron.schedule('30 */30 * * * *', () => appUpdates())
   cron.schedule('*/5 * * * *', () => webUpdates())
-  appUpdates()
 }
 
 // dev

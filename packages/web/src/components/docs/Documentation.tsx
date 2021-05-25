@@ -93,7 +93,7 @@ export default function Documentation ({ categoryId, documentId }: DocProps) {
   return (
     <LayoutWithSidebar title={doc?.title || 'Loading...'}>
       <Sidebar categories={categories}/>
-      <Markdown document={docKey}/>
+      <Markdown document={docKey} notFoundClassName={style.notfound}/>
     </LayoutWithSidebar>
   )
 }

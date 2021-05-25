@@ -22,8 +22,8 @@
 
 import type { CommandClient, Guild, GuildAuditLogEntry, Role, TextableChannel, User } from 'eris'
 import { Constants } from 'eris'
-import { sanitizeMarkdown } from '../util.js'
-import config from '../config.js'
+import { sanitizeMarkdown } from '../../util.js'
+import config from '../../config.js'
 
 const TEMPLATE = `**$type | Case $case**
 __User__: $user ($userid)

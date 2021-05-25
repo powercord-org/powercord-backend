@@ -35,6 +35,7 @@ type PrismProps = { language?: string | null, code: string }
 export default function PrismComponent ({ language, code }: PrismProps) {
   let lines = []
   if (language && Prism.languages[language]) {
+    // [Cynthia] This allows to be 100% certain spans don't go across multiple lines, so we can safely split
     lines = Prism.highlight(code, Prism.languages[language], language)
       .replace(
         /<span class="([a-z ]+)">([^<]*)<\/span>/g,
@@ -51,7 +52,7 @@ export default function PrismComponent ({ language, code }: PrismProps) {
         {lines.map((line, i) => (
           <div className={style.line}>
             <div className={style.lineNumber}>{i + 1}</div>
-            <div dangerouslySetInnerHTML={{ __html: line }}/>
+            <div className={style.lineContent} dangerouslySetInnerHTML={{ __html: line }}/>
           </div>
         ))}
       </code>
