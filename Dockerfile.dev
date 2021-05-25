@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS pnpm
+FROM node:15-alpine AS pnpm
 ENV NPM_CONFIG_LOGLEVEL error
 ARG PACKAGE_NAME
 
