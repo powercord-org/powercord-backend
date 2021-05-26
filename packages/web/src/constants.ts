@@ -53,9 +53,11 @@ export const Routes = {
   STORE_PUBLISH: '/store/forms/publish',
   STORE_VERIFICATION: '/store/forms/verification',
   STORE_HOSTING: '/store/forms/hosting',
+  STORE_COPYRIGHT: '/store/copyright',
 
   DOCS: '/docs',
   DOCS_ITEM: (cat: string, doc: string) => `/docs/${cat}/${doc}`,
+  DOCS_GITHUB: 'https://github.com/powercord-org/documentation',
   GUIDELINES: '/guidelines',
   INSTALLATION: '/installation',
   LISTING_AGREEMENT: '/listing-agreement',

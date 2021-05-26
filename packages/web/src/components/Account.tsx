@@ -69,7 +69,7 @@ export default function Account () {
   return (
     <main>
       <h1>Welcome back, {user.username}#{user.discriminator}</h1>
-      {user.patronTier && <Cutie tier={user.patronTier}/>}
+      {Boolean(user.patronTier) && <Cutie tier={user.patronTier!}/>}
       <h3 className={style.header}>Linked Spotify account</h3>
       {typeof user.accounts?.spotify === 'string'
         // @ts-expect-error

@@ -21,14 +21,16 @@
  */
 
 import type { Attributes } from 'preact'
-import { h } from 'preact'
+import { h, Fragment } from 'preact'
 import { useTitle, useTitleTemplate } from 'hoofd/preact'
 import { Router } from 'preact-router'
 import { Link } from 'preact-router/match'
 
 import Redirect from '../util/Redirect'
 import LayoutWithSidebar from '../util/LayoutWithSidebar'
+import MarkdownDocument from '../docs/Markdown'
 import Store from './Store'
+import FormLayout from './FormLayout'
 
 import { Routes } from '../../constants'
 
@@ -64,17 +66,21 @@ function Item ({ icon, href, label }: ItemProps) {
 
 function Sidebar () {
   return (
-    <div>
+    <Fragment>
       <h1 className={style.title}>Powercord Store</h1>
       <Item icon={Plugin} label='Plugins' href={Routes.STORE_PLUGINS}/>
       <Item icon={Theme} label='Themes' href={Routes.STORE_THEMES}/>
       <Item icon={Yifi} label='Suggestions' href={Routes.STORE_SUGGESTIONS}/>
 
       <div className={style.subTitle}>Get in touch</div>
-      <Item icon={Upload} label='Publish a product' href={Routes.STORE_PUBLISH}/>
+      <Item icon={Upload} label='Publish a work' href={Routes.STORE_PUBLISH}/>
       <Item icon={Verified} label='Get verified' href={Routes.STORE_VERIFICATION}/>
       <Item icon={HardDisk} label='Host a backend' href={Routes.STORE_HOSTING}/>
-    </div>
+
+      <div className={style.sideFooter}>
+        <a href={Routes.STORE_COPYRIGHT}>Copyright policy</a>
+      </div>
+    </Fragment>
   )
 }
 
@@ -88,7 +94,7 @@ export default function Storefront (props: StoreProps) {
       title = 'Themes'
       break
     case Routes.STORE_PUBLISH:
-      title = 'Publish a product'
+      title = 'Publish a work'
       break
     case Routes.STORE_VERIFICATION:
       title = 'Get verified'
@@ -108,9 +114,17 @@ export default function Storefront (props: StoreProps) {
         <Store path={Routes.STORE_PLUGINS} kind='plugins'/>
         <Store path={Routes.STORE_THEMES} kind='themes'/>
 
-        <div path={Routes.STORE_PUBLISH}>publish</div>
-        <div path={Routes.STORE_VERIFICATION}>verify</div>
-        <div path={Routes.STORE_HOSTING}>hosting</div>
+        <FormLayout id='publish' title='Publish a work' path={Routes.STORE_PUBLISH}>
+          publish
+        </FormLayout>
+        <FormLayout id='verification' title='Get verified' path={Routes.STORE_VERIFICATION}>
+          verify
+        </FormLayout>
+        <FormLayout id='hosting' title='Host a backend' path={Routes.STORE_HOSTING}>
+          hosting
+        </FormLayout>
+
+        <MarkdownDocument document='store/copyright' path={Routes.STORE_COPYRIGHT}/>
         <Redirect default to={Routes.STORE_PLUGINS}/>
       </Router>
     </LayoutWithSidebar>

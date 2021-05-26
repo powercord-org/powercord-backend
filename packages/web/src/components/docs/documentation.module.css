@@ -55,6 +55,18 @@
   background-color: var(--background-primary);
 }
 
+.contents {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+.footer {
+  font-size: .85rem;
+  color: var(--text-dark);
+  padding-bottom: 16px;
+}
+
 .notfound {
   height: calc(100% + 24px);
 }

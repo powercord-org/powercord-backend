@@ -29,7 +29,8 @@ export type UpdatedExperiment = Experiment & { update: 'add' | 'update' | 'delet
 
 type Asset = { name: string, size: number }
 type AssetsInfo = { js: Asset, css: Asset }
-export type WebappUpdateInfo = { rollback: boolean, assets: AssetsInfo, build: { id: string, hash: string }, experiments: UpdatedExperiment[], date: Date }
+export type BuildInfo = { id: string, hash: string }
+export type WebappUpdateInfo = { rollback: boolean, assets: AssetsInfo, build: BuildInfo, experiments: UpdatedExperiment[], date: Date }
 
 const DISCORD_WEBAPP_ENDPOINT = 'https://canary.discord.com/assets/version.canary.json'
 const STYLE_REGEX = /<link rel="stylesheet" href="([^"]+)/

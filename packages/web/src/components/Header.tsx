@@ -32,6 +32,7 @@ import spookycordPlug from '../assets/spookycord.svg?file'
 import Staff from '../assets/staff.svg'
 
 import style from './header.module.css'
+import sharedStyle from './shared.module.css'
 
 function User () {
   const user = useContext(UserContext)
@@ -39,7 +40,7 @@ function User () {
   if (!user) {
     return (
       /* @ts-expect-error */
-      <a native href={Endpoints.LOGIN} className={style.button}>Login with Discord</a>
+      <a native href={Endpoints.LOGIN} className={sharedStyle.button}>Login with Discord</a>
     )
   }
 

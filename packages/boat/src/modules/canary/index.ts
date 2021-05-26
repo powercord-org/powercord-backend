@@ -218,7 +218,15 @@ async function webUpdates () {
   const update = await checkWebUpdates()
 
   if (update) {
-    const embeds = [ generateBuildEmbed(update), ...update.experiments.map((e) => generateExperimentEmbed(e)) ]
+    const embeds = [
+      generateBuildEmbed(update),
+      ...update.experiments.map((e) => {
+        const embed = generateExperimentEmbed(e)
+        embed.footer = { text: `Canary ${update.build.id} (${update.build.hash.slice(0, 7)})` }
+        embed.timestamp = update.date
+        return embed
+      }),
+    ]
     dispatchHonk(config.honks.updootChannel, { embeds: embeds })
   }
 

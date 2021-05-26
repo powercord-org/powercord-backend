@@ -91,9 +91,18 @@ export default function Documentation ({ categoryId, documentId }: DocProps) {
   }
 
   return (
-    <LayoutWithSidebar title={doc?.title || 'Loading...'}>
+    <LayoutWithSidebar title={doc?.title || 'Loading...'} contentsClassName={style.contents}>
       <Sidebar categories={categories}/>
-      <Markdown document={docKey} notFoundClassName={style.notfound}/>
+      <Fragment>
+        <Markdown document={docKey} notFoundClassName={style.notfound}/>
+        <div className={style.footer}>
+          <hr/>
+          <p>
+            Contribute to the documentation on <a href={Routes.DOCS_GITHUB} target='_blank' rel='noreferrer'>GitHub</a>.
+            Licensed under <a href='https://creativecommons.org/licenses/by-nd/4.0/' target='_blank' rel='noreferrer'>CC BY-ND 4.0</a>.
+          </p>
+        </div>
+      </Fragment>
     </LayoutWithSidebar>
   )
 }

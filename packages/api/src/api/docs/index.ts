@@ -32,18 +32,17 @@ type GetDocParams = { category: string, document: string }
 type Category = { name: string, docs: Map<string, Document> }
 const docsStore = new Map<string, Category>()
 const remoteCache = new Map<string, Document>()
+const docsCategories: string[] = []
 
 function listCategories (this: FastifyInstance, _: FastifyRequest, reply: FastifyReply): void {
   reply.send(
-    Array.from(docsStore.entries()).map(([ catId, category ]) => ({
-      id: catId,
-      name: category.name,
-      docs: Array.from(category.docs.entries()).map(([ docId, doc ]) => ({
-        id: docId,
-        title: doc.title,
-        parts: doc.parts,
-      })),
-    }))
+    Array.from(docsStore.entries())
+      .filter(([ catId ]) => docsCategories.includes(catId))
+      .map(([ catId, category ]) => ({
+        id: catId,
+        name: category.name,
+        docs: Array.from(category.docs.entries()).map(([ docId, doc ]) => ({ id: docId, title: doc.title })),
+      }))
   )
 }
 
@@ -93,6 +92,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       docs.set(document.split('.')[0].replace(/^\d+-/, ''), markdown(md))
     }
 
+    if (cat !== catId) docsCategories.push(catId)
     docsStore.set(catId, {
       name: catId.split('-').map((s) => `${s[0].toUpperCase()}${s.substring(1).toLowerCase()}`).join(' '),
       docs: docs,

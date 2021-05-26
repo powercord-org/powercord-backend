@@ -43,7 +43,7 @@ import { Endpoints, Routes } from '../../constants'
 import style from './markdown.module.css'
 
 type Document = { title: string, parts: string[], contents: MarkdownNode[] }
-type MarkdownProps = Attributes & { document: string, notFoundClassName?: string }
+type MarkdownProps = Attributes & { document: string, notFoundClassName?: string, children?: ComponentChildren }
 
 function sluggify (string: string): string {
   return string.replace(/(^\d+-|\.(md|markdown)$)/ig, '')
@@ -135,7 +135,7 @@ function renderMarkdownNode (node: MarkdownNode) {
 const cache: Record<string, Document | false> = {}
 const getCache = (d: string) => import.meta.env.PROD ? cache[d] : null // Bypass cache during dev
 
-export default function MarkdownDocument ({ document: mdDocument, notFoundClassName }: MarkdownProps) {
+export default function MarkdownDocument ({ document: mdDocument, notFoundClassName, children }: MarkdownProps) {
   const [ firstLoaded, setFirstLoaded ] = useState(false)
   const [ doc, setDoc ] = useState(getCache(mdDocument))
   useTitle(doc === null ? 'Powercord' : doc ? doc.title : '', doc === null)
@@ -184,6 +184,7 @@ export default function MarkdownDocument ({ document: mdDocument, notFoundClassN
     <main className={style.markdown}>
       <h1>{doc.title}</h1>
       {renderMarkdown(doc.contents)}
+      {children}
     </main>
   )
 }

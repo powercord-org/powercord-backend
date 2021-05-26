@@ -20,77 +20,26 @@
  * SOFTWARE.
  */
 
-.title {
-  font-size: 1.45rem;
-  margin-bottom: 8px;
-  width: 205px;
-}
-
-.sub-title {
-  width: 205px;
-  font-size: 1.2rem;
-  margin-top: 16px;
-  margin-bottom: 8px;
-  font-weight: 600;
-  padding-top: 16px;
-  border-top: 1px solid var(--background-tertiary);
-}
-
-.item {
-  width: 205px;
-  display: flex;
-  align-items: center;
-  color: var(--text-color);
-  padding: 6px 8px;
-  margin-bottom: 8px;
-  border-radius: 3px;
-}
-
-.item:hover {
-  text-decoration: none;
-  background-color: var(--background-primary);
-}
-
-.item.active {
+.button {
+  color: #fff;
   background-color: var(--blurple);
-}
-
-.item svg {
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
-}
-
-.side-footer {
-  margin-top: auto;
-  color: var(--text-dark);
-  font-size: .85rem;
-  width: 205px;
-}
-
-.side-footer a {
-  color: inherit;
-}
-
-.pawa-screen {
-  display: flex;
-  flex-direction: column;
+  height: 36px;
+  min-width: 60px;
+  display: inline-flex;
   align-items: center;
-  margin-top: 32px;
-}
-
-.pawa-screen img {
-  height: 256px;
-}
-
-.pawa-screen hr {
-  margin-top: 0;
-}
-
-.pawa-screen h3 {
+  justify-content: center;
   font-weight: 600;
+  padding: 2px 16px;
+  border-radius: 3px;
+  transition: filter .17s ease;
+  font-size: 14px;
+  appearance: none;
+  outline: none;
+  border: 0;
+  cursor: pointer;
 }
 
-.pawa-screen p {
-  font-size: 1.25rem;
+.button:hover {
+  filter: brightness(.85);
+  text-decoration: none;
 }

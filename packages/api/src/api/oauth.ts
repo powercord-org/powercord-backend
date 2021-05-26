@@ -29,7 +29,7 @@ import discordAuth from '../oauth/discord.js'
 import spotifyAuth from '../oauth/spotify.js'
 import config from '../config.js'
 
-type OAuth2Query = { error?: string, code?: string, redirect?: string }
+type OAuth2Query = { error?: string, code?: string, redirect?: string, return?: string }
 type Auth = { TokenizeUser: User }
 type OAuth = { Querystring: OAuth2Query }
 type AuthOAuth = Auth & OAuth
