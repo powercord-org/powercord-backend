@@ -83,7 +83,6 @@ export default function App (props: null | AppProps) {
         <Markdown document='faq' path={Routes.FAQ}/>
         <Markdown document='installation' path={Routes.INSTALLATION}/>
         <Markdown document='guidelines' path={Routes.GUIDELINES}/>
-        <Markdown document='listing-agreement' path={Routes.LISTING_AGREEMENT}/>
 
         <PorkordLicense path={Routes.PORKORD_LICENSE}/>
         <Terms path={Routes.TERMS}/>

@@ -42,7 +42,7 @@ export type User = {
       white: string
       name: string
     }
-  },
+  }
   accounts: {
     spotify: string
   }

@@ -24,17 +24,23 @@ export const Endpoints = {
   LOGIN: '/api/v2/login',
   LOGOUT: '/api/v2/logout',
   USER_SELF: '/api/v2/users/@me',
-  ADVISORIES: '/api/v2/advisories',
-  ADVISORY: (id: string) => `/api/v2/advisories/${id}`,
   LINK_SPOTIFY: '/api/v2/oauth/spotify',
   UNLINK_SPOTIFY: '/api/v2/oauth/spotify/unlink',
   YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
-  CONTRIBUTORS: '/api/v2/stats/contributors',
-  STATS: '/api/v2/stats/numbers',
+  USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`,
+
+  ADVISORIES: '/api/v2/advisories',
+  ADVISORY: (id: string) => `/api/v2/advisories/${id}`,
+
+  STORE_FORM_ELIGIBILITY: '/api/v2/store/forms/eligibility',
+  STORE_FORM: (id: string) => `/api/v2/store/forms/${id}`,
+
   DOCS_CATEGORIES: '/api/v2/docs/categories',
   DOCS_DOCUMENT: (doc: string) => `/api/v2/docs/${doc}`,
   DOCS_CATEGORIZED: (cat: string, doc: string) => `/api/v2/docs/${cat}/${doc}`,
-  USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`,
+
+  CONTRIBUTORS: '/api/v2/stats/contributors',
+  STATS: '/api/v2/stats/numbers',
 }
 
 export const Routes = {
@@ -60,7 +66,6 @@ export const Routes = {
   DOCS_GITHUB: 'https://github.com/powercord-org/documentation',
   GUIDELINES: '/guidelines',
   INSTALLATION: '/installation',
-  LISTING_AGREEMENT: '/listing-agreement',
   PORKORD_LICENSE: '/porkord-license',
   TERMS: '/legal/tos',
   PRIVACY: '/legal/privacy',

@@ -36,6 +36,7 @@ const SECRETS = [
   config.discord.clientSecret,
   config.discord.botToken,
   config.spotify.clientSecret,
+  config.mango,
   config.secret,
   config.ghToken,
 ].filter(Boolean)

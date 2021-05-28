@@ -41,6 +41,7 @@ export type Category = { id: string, name: string, docs: Document[] }
 
 function Sidebar ({ categories }: SidebarProps) {
   return <>
+    <h1 className={style.title}>Powercord Docs</h1>
     {categories.map((category) => (
       <Fragment key={category.id}>
         <h3 className={style.categoryName}>{category.name}</h3>
@@ -98,7 +99,7 @@ export default function Documentation ({ categoryId, documentId }: DocProps) {
         <div className={style.footer}>
           <hr/>
           <p>
-            Contribute to the documentation on <a href={Routes.DOCS_GITHUB} target='_blank' rel='noreferrer'>GitHub</a>.
+            Want to add something? Fix a typo? You can contribute to the documentation on <a href={Routes.DOCS_GITHUB} target='_blank' rel='noreferrer'>GitHub</a>.
             Licensed under <a href='https://creativecommons.org/licenses/by-nd/4.0/' target='_blank' rel='noreferrer'>CC BY-ND 4.0</a>.
           </p>
         </div>

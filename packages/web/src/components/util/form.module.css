@@ -1,0 +1,116 @@
+/*
+ * Copyright (c) 2018-2021 aetheryx & Cynthia K. Rey
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+.field {
+  margin: 16px 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--background-tertiary);
+  position: relative;
+}
+
+.label {
+  font-weight: 600;
+  margin-bottom: 0 0 8px;
+  cursor: pointer;
+}
+
+.required {
+  color: var(--red);
+  font-size: .8rem;
+  margin-left: 4px;
+}
+
+.note, .error {
+  font-size: .9rem;
+  color: var(--text-dark);
+  margin: 8px 0 0;
+}
+
+.error {
+  color: var(--red);
+}
+
+.text-field, .textarea-field {
+  display: block;
+  margin-top: 8px;
+  width: 100%;
+  border: 1px solid var(--background-tertiary);
+  background-color: var(--background-secondary);
+  outline: none;
+  font: inherit;
+  color: inherit;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.textarea-field {
+  padding: 8px;
+  height: 88px;
+  resize: none;
+}
+
+.checkbox-field {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  height: 22px;
+  width: 40px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.checkbox-field::before {
+  content: '';
+  transition: background-color .2s;
+  background-color: var(--background-tertiary);
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 11px;
+}
+
+.checkbox-field::after {
+  content: '';
+  transition: transform .2s;
+  background-color: var(--text-color);
+  width: 16px;
+  height: 16px;
+  display: block;
+  border-radius: 11px;
+  position: absolute;
+  margin: 3px;
+  top: 0;
+}
+
+.checkbox-field:checked::before {
+  background-color: var(--green);
+}
+
+.checkbox-field:checked::after {
+  transform: translateX(18px);
+}
+
+.checkbox-field:disabled {
+  filter: brightness(.7);
+  cursor: not-allowed;
+}

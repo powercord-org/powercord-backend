@@ -72,6 +72,10 @@
   color: inherit;
 }
 
+.button {
+  margin-bottom: 16px;
+}
+
 .pawa-screen {
   display: flex;
   flex-direction: column;

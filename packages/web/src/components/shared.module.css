@@ -40,6 +40,11 @@
 }
 
 .button:hover {
-  filter: brightness(.85);
+  filter: brightness(.9);
   text-decoration: none;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  filter: brightness(.7);
 }

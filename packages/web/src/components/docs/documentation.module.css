@@ -20,6 +20,12 @@
  * SOFTWARE.
  */
 
+.title {
+  font-size: 1.45rem;
+  margin-bottom: 8px;
+  width: 205px;
+}
+
 .category-name, .item {
   width: 205px;
 }

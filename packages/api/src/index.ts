@@ -30,7 +30,7 @@ import fastifyTokenize from 'fastify-tokenize'
 import apiModule from './api/index.js'
 import config from './config.js'
 
-const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'production' ? 'warn' : 'info' } })
+const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'development' ? 'info' : 'warn' } })
 fastify.register(fastifyAuth)
 fastify.register(fastifyCookie)
 fastify.register(fastifyRawBody, { global: false })

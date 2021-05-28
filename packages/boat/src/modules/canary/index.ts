@@ -159,7 +159,7 @@ function generateHostEmbed (update: AppUpdateInfo): Embed | null {
 function makeModulesFields (modules: UpdateInfo['modules']): EmbedField[] {
   return Object.keys(modules).map((mdl) => ({
     name: mdl,
-    value: `\`${modules[mdl].next} => ${modules[mdl].prev}\``,
+    value: `\`${modules[mdl].prev} => ${modules[mdl].next}\``,
     inline: true,
   }))
 }

@@ -30,13 +30,15 @@ import Redirect from '../util/Redirect'
 import LayoutWithSidebar from '../util/LayoutWithSidebar'
 import MarkdownDocument from '../docs/Markdown'
 import Store from './Store'
-import FormLayout from './FormLayout'
+import PublishForm from './form/Publish'
+import VerificationForm from './form/Verification'
+import HostingForm from './form/Hosting'
 
 import { Routes } from '../../constants'
 
 import Plugin from '../../assets/icons/plugin.svg'
 import Theme from '../../assets/icons/brush.svg'
-import Yifi from '../../assets/icons/bulb.svg' // private jokes best jokes
+import Yifi from '../../assets/icons/bulb.svg' // private jokes best jokes alexclickYifi
 import Upload from 'feather-icons/dist/icons/upload.svg'
 import Verified from '../../assets/icons/verified.svg'
 import HardDisk from 'feather-icons/dist/icons/hard-drive.svg'
@@ -73,7 +75,7 @@ function Sidebar () {
       <Item icon={Yifi} label='Suggestions' href={Routes.STORE_SUGGESTIONS}/>
 
       <div className={style.subTitle}>Get in touch</div>
-      <Item icon={Upload} label='Publish a work' href={Routes.STORE_PUBLISH}/>
+      <Item icon={Upload} label='Publish your work' href={Routes.STORE_PUBLISH}/>
       <Item icon={Verified} label='Get verified' href={Routes.STORE_VERIFICATION}/>
       <Item icon={HardDisk} label='Host a backend' href={Routes.STORE_HOSTING}/>
 
@@ -94,7 +96,7 @@ export default function Storefront (props: StoreProps) {
       title = 'Themes'
       break
     case Routes.STORE_PUBLISH:
-      title = 'Publish a work'
+      title = 'Publish your work'
       break
     case Routes.STORE_VERIFICATION:
       title = 'Get verified'
@@ -114,15 +116,9 @@ export default function Storefront (props: StoreProps) {
         <Store path={Routes.STORE_PLUGINS} kind='plugins'/>
         <Store path={Routes.STORE_THEMES} kind='themes'/>
 
-        <FormLayout id='publish' title='Publish a work' path={Routes.STORE_PUBLISH}>
-          publish
-        </FormLayout>
-        <FormLayout id='verification' title='Get verified' path={Routes.STORE_VERIFICATION}>
-          verify
-        </FormLayout>
-        <FormLayout id='hosting' title='Host a backend' path={Routes.STORE_HOSTING}>
-          hosting
-        </FormLayout>
+        <PublishForm path={Routes.STORE_PUBLISH}/>
+        <VerificationForm path={Routes.STORE_VERIFICATION}/>
+        <HostingForm path={Routes.STORE_HOSTING}/>
 
         <MarkdownDocument document='store/copyright' path={Routes.STORE_COPYRIGHT}/>
         <Redirect default to={Routes.STORE_PLUGINS}/>
