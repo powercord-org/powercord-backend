@@ -17,7 +17,8 @@
     "lint": "eslint --ext ts --ext tsx src"
   },
   "dependencies": {
-    "@borkenware/spoonfeed": "workspace:spoonfeed",
+    "@borkenware/spoonfeed": "workspace:*",
+    "@powercord/types": "workspace:*",
     "fastify": "^3.15.1",
     "fastify-auth": "^1.1.0",
     "fastify-cookie": "^5.3.0",

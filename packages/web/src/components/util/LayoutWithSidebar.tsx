@@ -39,7 +39,6 @@ export type Category = { id: string, name: string, docs: Document[] }
 
 export default function LayoutWithSidebar ({ title, sidebarClassName, contentsClassName, children: [ sidebar, content ] }: LayoutWithSidebarProps) {
   const [ opened, setOpened ] = useState(false)
-
   return (
     <div className={style.container}>
       <div className={[ style.sidebar, opened && style.opened, sidebarClassName ].filter(Boolean).join(' ')}>

@@ -21,14 +21,17 @@
  */
 
 import type { Attributes } from 'preact'
+import type { Eligibility } from '@powercord/types/store'
 import { h } from 'preact'
 
 import FormLayout from './Layout'
 import { TextField, TextareaField, CheckboxField } from '../../util/Form'
 
-export default function HostingForm (_: Attributes) {
+type FormProps = Attributes & { eligibility?: Eligibility }
+
+export default function HostingForm ({ eligibility }: FormProps) {
   return (
-    <FormLayout id='hosting' title='Host a backend'>
+    <FormLayout id='hosting' title='Host a backend' eligibility={eligibility}>
       <TextField
         label='Repository URL'
         name='repoUrl'

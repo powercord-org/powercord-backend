@@ -1,0 +1,22 @@
+{
+  "name": "@powercord/types",
+  "version": "2.0.0",
+  "description": "Shared Powercord types",
+  "repository": "git@github.com:powercord-org/powercord-backend.git",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">= 14",
+    "pnpm": ">= 5.13"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "eslint": "^7.26.0",
+    "eslint-plugin-deprecation": "^1.2.1",
+    "typescript": "^4.2.4"
+  },
+  "exports": {
+    "./store": "./src/store.d.ts"
+  }
+}

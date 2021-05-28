@@ -3,3 +3,4 @@ packages:
   - 'packages/boat'
   - 'packages/spoonfeed'
   - 'packages/web'
+  - 'packages/types'

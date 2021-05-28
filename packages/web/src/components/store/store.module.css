@@ -80,7 +80,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 32px;
+  text-align: center;
+  padding: 32px 0;
 }
 
 .pawa-screen img {
@@ -97,4 +98,9 @@
 
 .pawa-screen p {
   font-size: 1.25rem;
+  width: 80%;
+}
+
+.notfound {
+  height: calc(100% + 24px);
 }

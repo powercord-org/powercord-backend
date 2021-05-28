@@ -21,7 +21,9 @@
  */
 
 import type { Attributes } from 'preact'
+import type { EligibilityStatus } from '@powercord/types/store'
 import { h, Fragment } from 'preact'
+import { useEffect, useState } from 'preact/hooks'
 import { useTitle, useTitleTemplate } from 'hoofd/preact'
 import { Router } from 'preact-router'
 import { Link } from 'preact-router/match'
@@ -34,7 +36,7 @@ import PublishForm from './form/Publish'
 import VerificationForm from './form/Verification'
 import HostingForm from './form/Hosting'
 
-import { Routes } from '../../constants'
+import { Endpoints, Routes } from '../../constants'
 
 import Plugin from '../../assets/icons/plugin.svg'
 import Theme from '../../assets/icons/brush.svg'
@@ -47,6 +49,25 @@ import style from './store.module.css'
 
 type StoreProps = Attributes & { url?: string }
 type ItemProps = Attributes & { icon: any, href: string, label: string }
+
+let eligibilityCache: EligibilityStatus | null = null
+function useEligibility () {
+  const [ eligibility, setEligibility ] = useState(eligibilityCache)
+  useEffect(() => {
+    if (!eligibility) {
+      fetch(Endpoints.STORE_FORM_ELIGIBILITY).then((res) => {
+        if (res.status !== 200) {
+          setEligibility({ publish: 1, verification: 1, hosting: 1, reporting: 1 })
+          return
+        }
+
+        res.json().then((e) => setEligibility(e))
+      })
+    }
+  }, [])
+
+  return eligibility
+}
 
 function Item ({ icon, href, label }: ItemProps) {
   if (href.startsWith('https')) {
@@ -106,6 +127,7 @@ export default function Storefront (props: StoreProps) {
       break
   }
 
+  const eligibility = useEligibility()
   useTitleTemplate(title ? '%s • Powercord Store' : '')
   useTitle(title ?? 'Powercord Store')
 
@@ -116,9 +138,9 @@ export default function Storefront (props: StoreProps) {
         <Store path={Routes.STORE_PLUGINS} kind='plugins'/>
         <Store path={Routes.STORE_THEMES} kind='themes'/>
 
-        <PublishForm path={Routes.STORE_PUBLISH}/>
-        <VerificationForm path={Routes.STORE_VERIFICATION}/>
-        <HostingForm path={Routes.STORE_HOSTING}/>
+        <PublishForm path={Routes.STORE_PUBLISH} eligibility={eligibility?.publish}/>
+        <VerificationForm path={Routes.STORE_VERIFICATION} eligibility={eligibility?.verification}/>
+        <HostingForm path={Routes.STORE_HOSTING} eligibility={eligibility?.hosting}/>
 
         <MarkdownDocument document='store/copyright' path={Routes.STORE_COPYRIGHT}/>
         <Redirect default to={Routes.STORE_PLUGINS}/>

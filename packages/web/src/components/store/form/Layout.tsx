@@ -20,22 +20,24 @@
  * SOFTWARE.
  */
 
-import { Attributes, cloneElement, VNode } from 'preact'
-import { h } from 'preact'
+import type { Attributes, ComponentChild, VNode } from 'preact'
+import type { Eligibility } from '@powercord/types/store'
+import { cloneElement } from 'preact'
+import { h, Fragment } from 'preact'
 import { useState, useContext, useCallback, useMemo } from 'preact/hooks'
 
 import Spinner from '../../util/Spinner'
 import MarkdownDocument from '../../docs/Markdown'
 import UserContext from '../../UserContext'
-import { Endpoints } from '../../../constants'
+import { Endpoints, Routes } from '../../../constants'
 
 import pawaKnockHead from '../../../assets/pawa-knock-head.png'
 
 import style from '../store.module.css'
 import sharedStyle from '../../shared.module.css'
 
-type FormLayoutProps = Attributes & { id: string, title: string, children: VNode[] }
-type PawaScreenProps = { headline: string, text: string }
+type FormLayoutProps = Attributes & { id: string, title: string, children: VNode[], eligibility?: Eligibility }
+type PawaScreenProps = { headline: ComponentChild, text: ComponentChild }
 
 const button = `${sharedStyle.button} ${style.button}`
 
@@ -44,7 +46,7 @@ function Intro ({ id, onNext }: { id: string, onNext: () => void }) {
   const path = typeof location !== 'undefined' ? location.pathname : '/'
 
   return (
-    <MarkdownDocument document={`store/${id}`}>
+    <MarkdownDocument document={`store/${id}`} notFoundClassName={style.notfound}>
       <h2>Ready?</h2>
       {!isLoggedIn && (
         <p>
@@ -145,8 +147,31 @@ function PawaScreen ({ headline, text }: PawaScreenProps) {
   )
 }
 
-export default function FormLayout ({ id, title, children }: FormLayoutProps) {
-  const [ stage, setStage ] = useState(1)
+export default function FormLayout ({ id, title, children, eligibility }: FormLayoutProps) {
+  const [ stage, setStage ] = useState(0)
+
+  if (typeof eligibility !== 'number') {
+    return (
+      <Spinner/>
+    )
+  }
+
+  if (eligibility === 1) {
+    return <PawaScreen headline='This form is closed for now!' text='We currently have paused submissions, try again later.'/>
+  }
+
+  if (eligibility === 2) {
+    return (
+      <PawaScreen
+        headline={'Sorry not sorry, you\'ve been banned'}
+        text={<>
+          Powercord Staff banned you from submitting this form due to abuse. To appeal the ban, please join
+          our <a href={Routes.DICKSWORD} target='_blank' rel='noreferrer'>support server</a>, and ask for help
+          in #misc-support.
+        </>}
+      />
+    )
+  }
 
   if (stage === 0) {
     return <Intro id={id} onNext={() => setStage(1)}/>

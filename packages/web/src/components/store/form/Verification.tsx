@@ -21,14 +21,17 @@
  */
 
 import type { Attributes } from 'preact'
+import type { Eligibility } from '@powercord/types/store'
 import { h } from 'preact'
 
 import FormLayout from './Layout'
 import { TextField, TextareaField, CheckboxField } from '../../util/Form'
 
-export default function VerificationForm (_: Attributes) {
+type FormProps = Attributes & { eligibility?: Eligibility }
+
+export default function VerificationForm ({ eligibility }: FormProps) {
   return (
-    <FormLayout id='verification' title='Get verified'>
+    <FormLayout id='verification' title='Get verified' eligibility={eligibility}>
       <TextField
         label='Store URL'
         name='workUrl'

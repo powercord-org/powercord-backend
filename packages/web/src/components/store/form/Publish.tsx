@@ -21,15 +21,18 @@
  */
 
 import type { Attributes } from 'preact'
+import type { Eligibility } from '@powercord/types/store'
 import { h, Fragment } from 'preact'
 
 import FormLayout from './Layout'
 import { TextField, TextareaField, CheckboxField } from '../../util/Form'
 import { Routes } from '../../../constants'
 
-export default function PublishForm (_: Attributes) {
+type FormProps = Attributes & { eligibility?: Eligibility }
+
+export default function PublishForm ({ eligibility }: FormProps) {
   return (
-    <FormLayout id='publish' title='Publish your work'>
+    <FormLayout id='publish' title='Publish your work' eligibility={eligibility}>
       <TextField
         label='Repository URL'
         name='repoUrl'

@@ -20,33 +20,12 @@
  * SOFTWARE.
  */
 
-import type { FastifyInstance, FastifyRequest } from 'fastify'
-import type { EligibilityStatus } from '@powercord/types/store'
-import type { User } from '../../types.js'
+// 0 = Eligible; 1 = Closed; 2 = Banned
+export type Eligibility = 0 | 1 | 2
 
-async function getEligibility (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<EligibilityStatus> {
-  // todo: ability to disable forms in backoffice
-
-  if (request.user) {
-    const banStatus = await this.mongo.db!.collection('banned').findOne({ _id: request.user!._id })
-    return {
-      publish: banStatus?.publish ? 2 : 0,
-      verification: banStatus?.verification ? 2 : 0,
-      hosting: banStatus?.hosting ? 2 : 0,
-      reporting: banStatus?.reporting ? 2 : 0,
-    }
-  }
-
-  return {
-    publish: 0,
-    verification: 0,
-    hosting: 0,
-    reporting: 1,
-  }
-}
-
-export default async function (fastify: FastifyInstance): Promise<void> {
-  const optionalAuth = fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ])
-
-  fastify.get<{ TokenizeUser: User }>('/eligibility', { preHandler: optionalAuth }, getEligibility)
+export type EligibilityStatus = {
+  publish: Eligibility,
+  verification: Eligibility,
+  hosting: Eligibility,
+  reporting: Eligibility,
 }
