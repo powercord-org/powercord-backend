@@ -22,8 +22,7 @@
 
 import type { Attributes, ComponentChild, VNode } from 'preact'
 import type { Eligibility } from '@powercord/types/store'
-import { cloneElement } from 'preact'
-import { h, Fragment } from 'preact'
+import { h, cloneElement, Fragment } from 'preact'
 import { useState, useContext, useCallback, useMemo } from 'preact/hooks'
 
 import Spinner from '../../util/Spinner'
@@ -127,6 +126,7 @@ function Form ({ children, onNext, onError, id }: { children: VNode<any>[], onNe
   return (
     <form onSubmit={onSubmitHandler}>
       {statefulChildren}
+      <div className={style.note}>Make sure your form is complete and accurate before submitting. Once submitted, you won't be able to edit it!</div>
       <div>
         <button type='submit' className={button} disabled={isSubmitting}>
           {isSubmitting ? <Spinner balls/> : 'Submit'}

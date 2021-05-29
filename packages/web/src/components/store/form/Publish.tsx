@@ -43,7 +43,7 @@ export default function PublishForm ({ eligibility }: FormProps) {
       <TextField
         label='BetterDiscord alternative'
         name='bdAlternative'
-        note='Let us know if your product is an alternative to an existing one for BetterDiscord. Provide a URL from betterdiscordlibrary.com or raw.githubusercontent.com. We only accept approved BetterDiscord works.'
+        note='Let us know if your product is an alternative to an existing one for BetterDiscord. Provide a URL from betterdiscord.app.'
         maxLength={256}
       />
       <TextareaField
@@ -55,6 +55,10 @@ export default function PublishForm ({ eligibility }: FormProps) {
       <CheckboxField
         name='complianceGuidelines'
         label={<>I certify my work complies with the <a href={Routes.GUIDELINES}>Powercord Guidelines</a></>}
+      />
+      <CheckboxField
+        name='complianceLegal'
+        label='By publishing this work, I grant Powercord the non-transferable right to redistribute verbatim copies of my work and allow its use along with Powercord if these are not already granted by the license applied to the work'
       />
     </FormLayout>
   )

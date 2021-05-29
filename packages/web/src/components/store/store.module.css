@@ -76,6 +76,10 @@
   margin-bottom: 16px;
 }
 
+.note {
+  margin-bottom: 16px;
+}
+
 .pawa-screen {
   display: flex;
   flex-direction: column;

@@ -28,9 +28,11 @@
 }
 
 .label {
+  display: block;
   font-weight: 600;
-  margin-bottom: 0 0 8px;
   cursor: pointer;
+  margin-bottom: 0 0 8px;
+  width: calc(100% - 64px);
 }
 
 .required {

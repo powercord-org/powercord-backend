@@ -20,9 +20,91 @@
  * SOFTWARE.
  */
 
-import type { FastifyInstance, FastifyRequest } from 'fastify'
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { EligibilityStatus } from '@powercord/types/store'
 import type { User } from '../../types.js'
+import { lookup } from 'dns'
+import fetch from 'node-fetch'
+
+// todo: see if this can deduped easily, schemas also contain the structure
+type PublishBody = {
+  repoUrl: string
+  bdAlternative: string
+  reviewNotes: string
+  complianceGuidelines: boolean
+  complianceLegal: boolean
+}
+
+type VerificationBody = {
+  workUrl: string
+  workAbout: string
+  developerAbout: string
+  workFuture: string
+  why: string
+  complianceCute: boolean
+}
+
+type HostingBody = {
+  repoUrl: string
+  purpose: string
+  technical: string
+  subdomain: string
+  reviewNotes: string
+  complianceSecurity: boolean
+  compliancePrivacy: boolean
+}
+
+const BD_URL_RE = /^(?:https?:\/\/)?betterdiscord\.app\/(plugin|theme)\/([^/]+)/i
+const PLAIN_RE = /^[a-z0-9-]+$/i
+
+const publishSchema = {
+  body: {
+    required: [ 'repoUrl', 'bdAlternative', 'reviewNotes', 'complianceGuidelines' ],
+    type: 'object',
+    properties: {
+      repoUrl: { type: 'string', maxLength: 256 },
+      bdAlternative: { type: 'string', maxLength: 256 },
+      reviewNotes: { type: 'string', maxLength: 1024 },
+      complianceGuidelines: { type: 'boolean' },
+      complianceLegal: { type: 'boolean' },
+    },
+  },
+}
+
+const verificationSchema = {
+  body: {
+    required: [ 'workUrl', 'workAbout', 'developerAbout', 'workFuture', 'why', 'complianceCute' ],
+    type: 'object',
+    properties: {
+      workUrl: { type: 'string', maxLength: 256 },
+      workAbout: { type: 'string', minLength: 128, maxLength: 2048 },
+      developerAbout: { type: 'string', minLength: 128, maxLength: 2048 },
+      workFuture: { type: 'string', minLength: 128, maxLength: 2048 },
+      why: { type: 'string', minLength: 128, maxLength: 2048 },
+      complianceCute: { type: 'boolean' },
+    },
+  },
+}
+
+const hostingSchema = {
+  body: {
+    required: [ 'repoUrl', 'purpose', 'technical', 'subdomain', 'reviewNotes', 'complianceSecurity', 'compliancePrivacy' ],
+    type: 'object',
+    properties: {
+      repoUrl: { type: 'string', maxLength: 256 },
+      purpose: { type: 'string', maxLength: 1024 },
+      technical: { type: 'string', maxLength: 1024 },
+      subdomain: { type: 'string', minLength: 3, maxLength: 16 },
+      reviewNotes: { type: 'string', maxLength: 1024 },
+      complianceSecurity: { type: 'boolean' },
+      compliancePrivacy: { type: 'boolean' },
+    },
+  },
+}
+
+async function isAvailable (subdomain: string): Promise<boolean> {
+  return new Promise((resolve) => lookup(`${subdomain}.powercord.dev`, (e) => resolve(e?.code === 'ENOTFOUND')))
+}
 
 async function getEligibility (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<EligibilityStatus> {
   // todo: ability to disable forms in backoffice
@@ -45,8 +127,84 @@ async function getEligibility (this: FastifyInstance, request: FastifyRequest<{ 
   }
 }
 
+async function publishForm (request: FastifyRequest<{ TokenizeUser: User, Body: PublishBody }>, reply: FastifyReply) {
+  if (request.body.bdAlternative) {
+    const match = request.body.bdAlternative.match(BD_URL_RE)
+    if (!match) {
+      return reply.code(400)
+        .send({ errors: { bdAlternative: 'The provided URL is invalid.' } })
+    }
+
+    const workKind = match[1]
+    const workId = match[2]
+    const res = await fetch(`https://betterdiscord.app/${workKind}/${workId}`).then((r) => r.text())
+    if (res.includes('404 Not Found')) {
+      return reply.code(400)
+        .send({ errors: { bdAlternative: 'The provided URL doesn\'t point to a BetterDiscord work.' } })
+    }
+  }
+
+  if (!request.body.complianceGuidelines) {
+    return reply.code(400)
+      .send({ errors: { complianceGuidelines: 'Your work must comply with the guidelines to be published.' } })
+  }
+
+  if (!request.body.complianceLegal) {
+    return reply.code(400)
+      .send({ errors: { complianceLegal: 'You must grant Powercord sufficient rights in order to publish your work on the store.' } })
+  }
+
+  reply.code(501)
+  console.log(request.body)
+  return { uwu: 'owo' }
+}
+
+async function verificationForm (request: FastifyRequest<{ TokenizeUser: User, Body: VerificationBody }>, reply: FastifyReply) {
+  // todo: validate existence of store item
+
+  if (!request.body.complianceCute) {
+    return reply.code(400)
+      .send({ errors: { complianceCute: 'Hey cutie, you forgot to confirm you\'re cute!!' } })
+  }
+
+  reply.code(501)
+  console.log(request.body)
+  return { uwu: 'owo' }
+}
+
+async function hostingForm (request: FastifyRequest<{ TokenizeUser: User, Body: HostingBody }>, reply: FastifyReply) {
+  if (!PLAIN_RE.test(request.body.subdomain)) {
+    return reply.code(400)
+      .send({ errors: { subdomain: 'The subdomain must only use letters, numbers and dashes.' } })
+  }
+
+  const availability = await isAvailable(request.body.subdomain)
+  if (!availability) {
+    return reply.code(400)
+      .send({ errors: { subdomain: 'This subdomain is already taken.' } })
+  }
+
+  if (!request.body.complianceSecurity) {
+    return reply.code(400)
+      .send({ errors: { complianceSecurity: 'You must ensure minimum levels of safety in your backend.' } })
+  }
+
+  if (!request.body.compliancePrivacy) {
+    return reply.code(400)
+      .send({ errors: { compliancePrivacy: 'You must comply with the applicable privacy laws.' } })
+  }
+
+  reply.code(501)
+  console.log(request.body)
+  return { uwu: 'owo' }
+}
+
 export default async function (fastify: FastifyInstance): Promise<void> {
   const optionalAuth = fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ])
+  const auth = fastify.auth([ fastify.verifyTokenizeToken ])
 
   fastify.get<{ TokenizeUser: User }>('/eligibility', { preHandler: optionalAuth }, getEligibility)
+  fastify.post<{ TokenizeUser: User, Body: PublishBody }>('/publish', { preHandler: auth, schema: publishSchema }, publishForm)
+  fastify.post<{ TokenizeUser: User, Body: VerificationBody }>('/verification', { preHandler: auth, schema: verificationSchema }, verificationForm)
+  fastify.post<{ TokenizeUser: User, Body: HostingBody }>('/hosting', { preHandler: auth, schema: hostingSchema }, hostingForm)
 }

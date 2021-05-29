@@ -57,6 +57,7 @@ export default function HostingForm ({ eligibility }: FormProps) {
         label='Desired subdomain'
         name='subdomain'
         note={'Request here the subdomain you\'d like your backend to run on.'}
+        minLength={3}
         maxLength={16}
         required
       />
