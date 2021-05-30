@@ -87,6 +87,15 @@
   top: 0;
 }
 
+.inner h1 {
+  font-size: 1.45rem;
+  margin-bottom: 8px;
+}
+
+.inner > * {
+  width: 205px;
+}
+
 .sidebar.opened {
   pointer-events: all;
 }

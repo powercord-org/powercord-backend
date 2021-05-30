@@ -20,14 +20,7 @@
  * SOFTWARE.
  */
 
-.title {
-  font-size: 1.45rem;
-  margin-bottom: 8px;
-  width: 205px;
-}
-
 .sub-title {
-  width: 205px;
   font-size: 1.2rem;
   margin-top: 16px;
   margin-bottom: 8px;
@@ -37,7 +30,6 @@
 }
 
 .item {
-  width: 205px;
   display: flex;
   align-items: center;
   color: var(--text-color);
@@ -65,7 +57,6 @@
   margin-top: auto;
   color: var(--text-dark);
   font-size: .85rem;
-  width: 205px;
 }
 
 .side-footer a {

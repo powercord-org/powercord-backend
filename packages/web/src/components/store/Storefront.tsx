@@ -90,7 +90,7 @@ function Item ({ icon, href, label }: ItemProps) {
 function Sidebar () {
   return (
     <Fragment>
-      <h1 className={style.title}>Powercord Store</h1>
+      <h1>Powercord Store</h1>
       <Item icon={Plugin} label='Plugins' href={Routes.STORE_PLUGINS}/>
       <Item icon={Theme} label='Themes' href={Routes.STORE_THEMES}/>
       <Item icon={Yifi} label='Suggestions' href={Routes.STORE_SUGGESTIONS}/>

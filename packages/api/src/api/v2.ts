@@ -22,7 +22,6 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import backofficeModule from './backoffice/index.js'
-import advisoriesModule from './advisories.js'
 import storeModule from './store/index.js'
 import usersModule from './users.js'
 import guildsModule from './guilds.js'
@@ -42,7 +41,6 @@ export default async function (fastify: FastifyInstance) {
   fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
 
   fastify.register(backofficeModule, { prefix: '/backoffice' })
-  fastify.register(advisoriesModule, { prefix: '/advisories' })
   fastify.register(storeModule, { prefix: '/store' })
   fastify.register(usersModule, { prefix: '/users' })
   fastify.register(guildsModule, { prefix: '/guilds' })

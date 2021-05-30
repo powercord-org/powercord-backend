@@ -29,9 +29,6 @@ export const Endpoints = {
   YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
   USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`,
 
-  ADVISORIES: '/api/v2/advisories',
-  ADVISORY: (id: string) => `/api/v2/advisories/${id}`,
-
   STORE_FORM_ELIGIBILITY: '/api/v2/store/forms/eligibility',
   STORE_FORM: (id: string) => `/api/v2/store/forms/${id}`,
 
@@ -75,7 +72,4 @@ export const Routes = {
   DICKSWORD: 'https://discord.gg/gs4ZMbBfCh',
   PATREON: 'https://patreon.com/aetheryx',
   GITHUB: 'https://github.com/powercord-org',
-
-  ADVISORIES: '/advisories',
-  ADVISORY: (id: string) => `/advisories/${id}`,
 }

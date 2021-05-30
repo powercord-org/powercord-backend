@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import type { Db } from 'mongodb'
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { EligibilityStatus } from '@powercord/types/store'
 import type { User } from '../../types.js'
@@ -102,15 +103,10 @@ const hostingSchema = {
   },
 }
 
-async function isAvailable (subdomain: string): Promise<boolean> {
-  return new Promise((resolve) => lookup(`${subdomain}.powercord.dev`, (e) => resolve(e?.code === 'ENOTFOUND')))
-}
-
-async function getEligibility (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<EligibilityStatus> {
-  // todo: ability to disable forms in backoffice
-
-  if (request.user) {
-    const banStatus = await this.mongo.db!.collection('banned').findOne({ _id: request.user!._id })
+// -- Helpers
+async function fetchEligibility (db: Db, user?: User | null): Promise<EligibilityStatus> {
+  if (user) {
+    const banStatus = await db.collection('banned').findOne({ _id: user!._id })
     return {
       publish: banStatus?.publish ? 2 : 0,
       verification: banStatus?.verification ? 2 : 0,
@@ -127,7 +123,24 @@ async function getEligibility (this: FastifyInstance, request: FastifyRequest<{ 
   }
 }
 
-async function publishForm (request: FastifyRequest<{ TokenizeUser: User, Body: PublishBody }>, reply: FastifyReply) {
+async function isAvailable (subdomain: string): Promise<boolean> {
+  return new Promise((resolve) => lookup(`${subdomain}.powercord.dev`, (e) => resolve(e?.code === 'ENOTFOUND')))
+}
+
+async function finalizeForm (db: Db, user: User, kind: string, data: Record<string, unknown>, reply: FastifyReply) {
+  const collection = db.collection('forms')
+  const pending = await collection.countDocuments({ submitter: user._id, kind: kind })
+  if (pending > 5) return reply.code(429).send()
+
+  await collection.insertOne({ submitter: user._id, kind: kind, ...data })
+  return reply.code(201).send()
+}
+
+// -- Routes handlers
+async function publishForm (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User, Body: PublishBody }>, reply: FastifyReply) {
+  const eligibility = await fetchEligibility(this.mongo.db!, request.user!)
+  if (eligibility.publish !== 0) return reply.code(403).send()
+
   if (request.body.bdAlternative) {
     const match = request.body.bdAlternative.match(BD_URL_RE)
     if (!match) {
@@ -154,12 +167,13 @@ async function publishForm (request: FastifyRequest<{ TokenizeUser: User, Body: 
       .send({ errors: { complianceLegal: 'You must grant Powercord sufficient rights in order to publish your work on the store.' } })
   }
 
-  reply.code(501)
-  console.log(request.body)
-  return { uwu: 'owo' }
+  return finalizeForm(this.mongo.db!, request.user!, 'publish', request.body, reply)
 }
 
-async function verificationForm (request: FastifyRequest<{ TokenizeUser: User, Body: VerificationBody }>, reply: FastifyReply) {
+async function verificationForm (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User, Body: VerificationBody }>, reply: FastifyReply) {
+  const eligibility = await fetchEligibility(this.mongo.db!, request.user!)
+  if (eligibility.verification !== 0) return reply.code(403).send()
+
   // todo: validate existence of store item
 
   if (!request.body.complianceCute) {
@@ -167,12 +181,13 @@ async function verificationForm (request: FastifyRequest<{ TokenizeUser: User, B
       .send({ errors: { complianceCute: 'Hey cutie, you forgot to confirm you\'re cute!!' } })
   }
 
-  reply.code(501)
-  console.log(request.body)
-  return { uwu: 'owo' }
+  return finalizeForm(this.mongo.db!, request.user!, 'verification', request.body, reply)
 }
 
-async function hostingForm (request: FastifyRequest<{ TokenizeUser: User, Body: HostingBody }>, reply: FastifyReply) {
+async function hostingForm (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User, Body: HostingBody }>, reply: FastifyReply) {
+  const eligibility = await fetchEligibility(this.mongo.db!, request.user!)
+  if (eligibility.hosting !== 0) return reply.code(403).send()
+
   if (!PLAIN_RE.test(request.body.subdomain)) {
     return reply.code(400)
       .send({ errors: { subdomain: 'The subdomain must only use letters, numbers and dashes.' } })
@@ -194,16 +209,16 @@ async function hostingForm (request: FastifyRequest<{ TokenizeUser: User, Body: 
       .send({ errors: { compliancePrivacy: 'You must comply with the applicable privacy laws.' } })
   }
 
-  reply.code(501)
-  console.log(request.body)
-  return { uwu: 'owo' }
+  return finalizeForm(this.mongo.db!, request.user!, 'hosting', request.body, reply)
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
+  if (process.env.NODE_ENV !== 'development') return
+
   const optionalAuth = fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ])
   const auth = fastify.auth([ fastify.verifyTokenizeToken ])
 
-  fastify.get<{ TokenizeUser: User }>('/eligibility', { preHandler: optionalAuth }, getEligibility)
+  fastify.get<{ TokenizeUser: User }>('/eligibility', { preHandler: optionalAuth }, (request) => fetchEligibility(fastify.mongo.db!, request.user))
   fastify.post<{ TokenizeUser: User, Body: PublishBody }>('/publish', { preHandler: auth, schema: publishSchema }, publishForm)
   fastify.post<{ TokenizeUser: User, Body: VerificationBody }>('/verification', { preHandler: auth, schema: verificationSchema }, verificationForm)
   fastify.post<{ TokenizeUser: User, Body: HostingBody }>('/hosting', { preHandler: auth, schema: hostingSchema }, hostingForm)

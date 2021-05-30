@@ -25,7 +25,6 @@ import { h } from 'preact'
 import { useCallback } from 'preact/hooks'
 import { useTitleTemplate, useMeta } from 'hoofd/preact'
 import Router from 'preact-router'
-import { Match } from 'preact-router/match'
 
 import UserContext from './UserContext'
 import Header from './Header'
@@ -66,7 +65,7 @@ export default function App (props: null | AppProps) {
 
   return (
     <UserContext.Provider value={props?.user}>
-      <Match>{({ path }: { path: string }) => !path.startsWith('/backoffice') && <Header/>}</Match>
+      <Header/>
       <Router url={props?.url} onChange={change}>
         <Homepage path={Routes.HOME}/>
         <AuthBoundary path={Routes.ME}><Account/></AuthBoundary>
@@ -93,7 +92,7 @@ export default function App (props: null | AppProps) {
         </SoonRoute>
         <NotFound ctx={props?.ctx} default/>
       </Router>
-      <Match>{({ path }: { path: string }) => !path.startsWith('/backoffice') && <Footer/>}</Match>
+      <Footer/>
     </UserContext.Provider>
   )
 }

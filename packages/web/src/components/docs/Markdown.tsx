@@ -166,7 +166,6 @@ export default function MarkdownDocument ({ document: mdDocument, notFoundClassN
     }
   }, [ doc, typeof window !== 'undefined' ? window.location.hash : null ])
 
-  console.log(doc)
   if (doc === false) {
     return (
       <NotFound className={notFoundClassName}/>
