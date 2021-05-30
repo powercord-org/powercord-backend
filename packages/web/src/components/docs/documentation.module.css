@@ -21,9 +21,9 @@
  */
 
 .title {
-  font-size: 1.45rem;
-  margin-bottom: 8px;
   width: 205px;
+  font-size: 1.45rem;
+  margin-bottom: 16px;
 }
 
 .category-name, .item {
@@ -31,17 +31,11 @@
 }
 
 .category-name {
-  margin: 0;
-  margin-top: 8px;
-  font-size: 16px;
-  margin-bottom: 8px;
-  padding-top: 16px;
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 16px 0 12px;
+  padding: 16px 0 0;
   border-top: 1px solid var(--background-tertiary);
-}
-
-.category-name:first-of-type {
-  padding: 0;
-  border-top-width: 0;
 }
 
 .item {
@@ -73,6 +67,6 @@
   padding-bottom: 16px;
 }
 
-.notfound {
-  height: calc(100% + 24px);
+.notfound + .footer hr {
+  margin-top: 0;
 }

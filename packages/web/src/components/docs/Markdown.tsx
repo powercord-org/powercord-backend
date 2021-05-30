@@ -151,7 +151,7 @@ export default function MarkdownDocument ({ document: mdDocument, notFoundClassN
     if (!cached) {
       fetch(Endpoints.DOCS_DOCUMENT(mdDocument))
         .then((r) => r.json())
-        .then((d) => setDoc(cache[mdDocument] = d))
+        .then((d) => setDoc(cache[mdDocument] = (d.error ? false : d)))
         .catch(() => setDoc(cache[mdDocument] = false))
     }
   }, [ mdDocument ])
@@ -166,6 +166,7 @@ export default function MarkdownDocument ({ document: mdDocument, notFoundClassN
     }
   }, [ doc, typeof window !== 'undefined' ? window.location.hash : null ])
 
+  console.log(doc)
   if (doc === false) {
     return (
       <NotFound className={notFoundClassName}/>
