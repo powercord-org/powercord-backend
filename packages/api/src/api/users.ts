@@ -72,7 +72,7 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
-  fastify.register(settingsModule, { prefix: '/@me' })
+  fastify.register(settingsModule, { prefix: '/@me/settings' })
   fastify.get<{ TokenizeUser: User }>('/@me', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSelf)
   fastify.get<{ TokenizeUser: User }>('/@me/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSpotifyToken)
   fastify.get('/:id(\\d+)', getUser)

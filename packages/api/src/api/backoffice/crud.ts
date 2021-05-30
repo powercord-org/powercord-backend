@@ -25,49 +25,91 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { ConfiguredReply } from '../../types.js'
 
-interface CrudSettings {
+type CrudModule = boolean | {}
+
+type CrudSettings = {
   collection: string
   projection: { [key: string]: 0 | 1 }
+  modules?: {
+    create?: CrudModule
+    readAll?: CrudModule
+    read?: CrudModule
+    update?: CrudModule
+    delete?: CrudModule
+  }
 }
 
 type Reply = ConfiguredReply<FastifyReply, CrudSettings>
 
 type ReadQuery = { limit?: number, page?: number }
 
-async function read (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadQuery }>, reply: Reply): Promise<unknown> {
+type RouteParams = { id: string }
+
+const readQuerySchema = {
+  limit: { type: 'integer', exclusiveMinimum: 0, maximum: 100 },
+  page: { type: 'integer', exclusiveMinimum: 0 },
+}
+
+async function readAll (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadQuery }>, reply: Reply): Promise<unknown> {
   const data = reply.context.config
-  const collection = this.mongo.db!.collection(data.collection)
-  const limit = request.query.limit ?? 50 // todo: schema
+  const limit = request.query.limit ?? 50
   const cursor = ((request.query.page ?? 1) - 1) * limit
+  const collection = this.mongo.db!.collection(data.collection)
 
   const res = await collection.find({}, { projection: data.projection }).limit(limit).skip(cursor).toArray()
   return res
 }
 
 // @ts-expect-error -- not implemented
-async function create (this: FastifyInstance, request: FastifyRequest, reply: Reply): Promise<unknown> {
+async function create (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply): Promise<unknown> {
   const data = reply.context.config
   console.log(data)
   return {}
+}
+
+async function read (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply): Promise<unknown> {
+  const data = reply.context.config
+  const collection = this.mongo.db!.collection(data.collection)
+  const res = await collection.findOne({ _id: request.params.id }, { projection: data.projection })
+
+  if (!res) return reply.callNotFound()
+  return res
 }
 
 // @ts-expect-error -- not implemented
-async function update (this: FastifyInstance, request: FastifyRequest, reply: Reply): Promise<unknown> {
+async function update (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply): Promise<unknown> {
   const data = reply.context.config
   console.log(data)
   return {}
 }
 
-// @ts-expect-error -- not implemented
-async function del (this: FastifyInstance, request: FastifyRequest, reply: Reply): Promise<unknown> {
+async function del (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply): Promise<unknown> {
   const data = reply.context.config
-  console.log(data)
-  return {}
+  const collection = this.mongo.db!.collection(data.collection)
+  const res = await collection.deleteOne({ _id: request.params.id })
+
+  if (res.deletedCount !== 1) return reply.callNotFound()
+  return reply.code(204).send()
 }
 
-export default async function (fastify: FastifyInstance, { data }: { data: CrudSettings }): Promise<void> {
-  fastify.get('/', { config: data }, read)
-  fastify.post('/', { config: data }, create)
-  fastify.patch('/:id', { config: data }, update)
-  fastify.delete('/:id', { config: data }, del)
+export default async function crudPlugin (fastify: FastifyInstance, { data }: { data: CrudSettings }): Promise<void> {
+  if (data.modules?.readAll !== false) {
+    fastify.get('/', { config: data, schema: { querystring: readQuerySchema } }, readAll)
+  }
+
+  if (data.modules?.create !== false) {
+    fastify.post('/', { config: data }, create)
+  }
+
+  if (data.modules?.read !== false) {
+    fastify.get('/:id', { config: data }, read)
+  }
+
+  if (data.modules?.update !== false) {
+    fastify.patch('/:id', { config: data }, update)
+  }
+
+  if (data.modules?.delete !== false) {
+    fastify.delete('/:id', { config: data }, del)
+  }
 }

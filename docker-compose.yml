@@ -50,6 +50,7 @@ services:
     working_dir: /opt/porkord/packages/api
     command: pnpm run dev
     volumes:
+      - settings-data:/var/lib/powercord
       - ./packages/api/src:/opt/porkord/packages/api/src
       - ./packages/api/dist:/opt/porkord/packages/api/dist
       - ./packages/api/package.json:/opt/porkord/packages/api/package.json
@@ -74,4 +75,6 @@ services:
 
 volumes:
   db-data:
+    driver: local
+  settings-data:
     driver: local

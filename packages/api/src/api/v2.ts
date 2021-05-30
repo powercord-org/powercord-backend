@@ -40,6 +40,7 @@ function logout (_: FastifyRequest, reply: FastifyReply): void {
 export default async function (fastify: FastifyInstance) {
   fastify.get('/login', (req: FastifyRequest, reply: FastifyReply) => void reply.redirect(`/api/v2/oauth/discord?${req.url.split('?')[1] ?? ''}`))
   fastify.get('/logout', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, logout)
+
   fastify.register(backofficeModule, { prefix: '/backoffice' })
   fastify.register(advisoriesModule, { prefix: '/advisories' })
   fastify.register(storeModule, { prefix: '/store' })

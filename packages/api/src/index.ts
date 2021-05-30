@@ -20,6 +20,8 @@
  * SOFTWARE.
  */
 
+import type { FastifyRequest, FastifyReply } from 'fastify'
+import type { User } from './types.js'
 import fastifyFactory from 'fastify'
 import fastifyAuth from 'fastify-auth'
 import fastifyCookie from 'fastify-cookie'
@@ -31,6 +33,15 @@ import apiModule from './api/index.js'
 import config from './config.js'
 
 const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'development' ? 'info' : 'warn' } })
+
+function verifyAdmin (request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply, next: (e?: Error) => void) {
+  if (request.user?.badges.staff) return next()
+
+  reply.code(403)
+  next(new Error('Missing permissions'))
+}
+
+fastify.decorate('verifyAdmin', verifyAdmin)
 fastify.register(fastifyAuth)
 fastify.register(fastifyCookie)
 fastify.register(fastifyRawBody, { global: false })

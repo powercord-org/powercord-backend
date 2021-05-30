@@ -20,11 +20,10 @@
  * SOFTWARE.
  */
 
-import type { FastifyInstance } from 'fastify'
-import crudModule from './crud.js'
+import type { RouteHandler } from 'fastify'
 
-export default async function (fastify: FastifyInstance): Promise<void> {
-  fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken, fastify.verifyAdmin ], { relation: 'and' }))
-
-  fastify.register(crudModule, { prefix: '/users', data: { collection: 'users', projection: { accounts: 0, settings: 0 }, modules: { create: false } } })
+declare module 'fastify' {
+  export interface FastifyInstance {
+    verifyAdmin: RouteHandler
+  }
 }
