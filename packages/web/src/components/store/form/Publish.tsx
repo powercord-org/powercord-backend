@@ -23,6 +23,7 @@
 import type { Attributes } from 'preact'
 import type { Eligibility } from '@powercord/types/store'
 import { h, Fragment } from 'preact'
+import { useTitle } from 'hoofd/preact'
 
 import FormLayout from './Layout'
 import { TextField, TextareaField, CheckboxField } from '../../util/Form'
@@ -31,6 +32,8 @@ import { Routes } from '../../../constants'
 type FormProps = Attributes & { eligibility?: Eligibility }
 
 export default function PublishForm ({ eligibility }: FormProps) {
+  useTitle('Publish your work')
+
   return (
     <FormLayout id='publish' title='Publish your work' eligibility={eligibility}>
       <TextField

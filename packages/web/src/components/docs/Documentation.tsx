@@ -65,7 +65,6 @@ export default function Documentation ({ categoryId, documentId }: DocProps) {
   const docKey = useMemo(() => `${categoryId}/${documentId}`, [ categoryId, documentId ])
   const [ categories, setCategories ] = useState(cache)
   const category = useMemo(() => categories?.find((c) => c.id === categoryId), [ categories, categoryId ])
-  const doc = useMemo(() => category?.docs.find((d) => d.id === documentId), [ categories, category, documentId ])
 
   useEffect(() => {
     if (!categories) {
@@ -92,7 +91,7 @@ export default function Documentation ({ categoryId, documentId }: DocProps) {
   }
 
   return (
-    <LayoutWithSidebar title={doc?.title || 'Loading...'} contentsClassName={style.contents}>
+    <LayoutWithSidebar contentsClassName={style.contents}>
       <Sidebar categories={categories}/>
       <Fragment>
         <Markdown document={docKey} notFoundClassName={style.notfound}/>

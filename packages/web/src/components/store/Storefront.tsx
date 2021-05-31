@@ -24,7 +24,7 @@ import type { Attributes } from 'preact'
 import type { EligibilityStatus } from '@powercord/types/store'
 import { h, Fragment } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
-import { useTitle, useTitleTemplate } from 'hoofd/preact'
+import { useTitleTemplate } from 'hoofd/preact'
 import { Router } from 'preact-router'
 import { Link } from 'preact-router/match'
 
@@ -108,31 +108,11 @@ function Sidebar () {
 }
 
 export default function Storefront (props: StoreProps) {
-  let title = null
-  switch (props?.url || typeof location !== 'undefined' ? location.pathname : '/') {
-    case Routes.STORE_PLUGINS:
-      title = 'Plugins'
-      break
-    case Routes.STORE_THEMES:
-      title = 'Themes'
-      break
-    case Routes.STORE_PUBLISH:
-      title = 'Publish your work'
-      break
-    case Routes.STORE_VERIFICATION:
-      title = 'Get verified'
-      break
-    case Routes.STORE_HOSTING:
-      title = 'Host a backend'
-      break
-  }
-
   const eligibility = useEligibility()
-  useTitleTemplate(title ? '%s • Powercord Store' : '')
-  useTitle(title ?? 'Powercord Store')
+  useTitleTemplate('%s • Powercord Store')
 
   return (
-    <LayoutWithSidebar title={title ?? 'Store'}>
+    <LayoutWithSidebar>
       <Sidebar/>
       <Router url={props?.url}>
         <Store path={Routes.STORE_PLUGINS} kind='plugins'/>

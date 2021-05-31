@@ -23,6 +23,7 @@
 import type { Attributes } from 'preact'
 import type { Eligibility } from '@powercord/types/store'
 import { h } from 'preact'
+import { useTitle } from 'hoofd/preact'
 
 import FormLayout from './Layout'
 import { TextField, TextareaField, CheckboxField } from '../../util/Form'
@@ -30,6 +31,8 @@ import { TextField, TextareaField, CheckboxField } from '../../util/Form'
 type FormProps = Attributes & { eligibility?: Eligibility }
 
 export default function VerificationForm ({ eligibility }: FormProps) {
+  useTitle('Get verified')
+
   return (
     <FormLayout id='verification' title='Get verified' eligibility={eligibility}>
       <TextField

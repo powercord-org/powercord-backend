@@ -44,7 +44,7 @@ import Markdown from './docs/Markdown'
 import PorkordLicense from './legal/PorkordLicense'
 import Terms from './legal/Terms'
 import Privacy from './legal/Privacy'
-// Backoffice
+import AdminWrapper from './backoffice/Wrapper'
 import NotFound from './NotFound'
 
 import { Routes } from '../constants'
@@ -88,7 +88,7 @@ export default function App (props: null | AppProps) {
         <Privacy path={Routes.PRIVACY}/>
 
         <SoonRoute path={Routes.BACKOFFICE}>
-          <main>todo</main>
+          <AdminWrapper/>
         </SoonRoute>
         <NotFound ctx={props?.ctx} default/>
       </Router>
