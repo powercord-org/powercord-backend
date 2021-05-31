@@ -20,15 +20,78 @@
  * SOFTWARE.
  */
 
-import { h } from 'preact'
+import { h, Fragment } from 'preact'
+import Router from 'preact-router'
+import { Link } from 'preact-router/match'
 
 import LayoutWithSidebar from '../util/LayoutWithSidebar'
+import Redirect from '../util/Redirect'
+import Users from './Users/Manage'
+import { Routes } from '../../constants'
+
+import Smile from 'feather-icons/dist/icons/smile.svg'
+import Activity from 'feather-icons/dist/icons/activity.svg'
+import Layout from 'feather-icons/dist/icons/layout.svg'
+import Inbox from 'feather-icons/dist/icons/inbox.svg'
+import Flag from 'feather-icons/dist/icons/flag.svg'
+import CodeSandbox from 'feather-icons/dist/icons/codesandbox.svg'
+
+import style from './admin.module.css'
+
+function Sidebar () {
+  return (
+    <Fragment>
+      <h1>Administration</h1>
+      <Link
+        className={style.item}
+        activeClassName={style.active}
+        href={Routes.BACKOFFICE_USERS}
+        path={Routes.BACKOFFICE_USERS_USER(':id?')}
+      >
+        <Smile/>
+        <span>Users</span>
+      </Link>
+      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_MONITORING}>
+        <Activity/>
+        <span>Abuse Monitoring</span>
+      </Link>
+      <h3>Store management</h3>
+      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_FRONT}>
+        <Layout/>
+        <span>Frontpage</span>
+      </Link>
+      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_FORMS}>
+        <Inbox/>
+        <span>Forms</span>
+      </Link>
+      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_REPORTS}>
+        <Flag/>
+        <span>Reports</span>
+      </Link>
+      <h3>Community</h3>
+      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_EVENTS_SECRET}>
+        <CodeSandbox/>
+        <span>Super Secret Event</span>
+      </Link>
+    </Fragment>
+  )
+}
 
 export default function Admin () {
   return (
     <LayoutWithSidebar>
-      <p>s</p>
-      <p>b</p>
+      <Sidebar/>
+      <Router>
+        <Users path={Routes.BACKOFFICE_USERS_USER(':id?')}/>
+        <div path={Routes.BACKOFFICE_MONITORING}>monitoring</div>
+
+        <div path={Routes.BACKOFFICE_STORE_FRONT}>store front</div>
+        <div path={Routes.BACKOFFICE_STORE_FORMS}>forms</div>
+        <div path={Routes.BACKOFFICE_STORE_REPORTS}>reports</div>
+
+        <div path={Routes.BACKOFFICE_EVENTS_SECRET}>eyes</div>
+        <Redirect default to={Routes.BACKOFFICE_USERS}/>
+      </Router>
     </LayoutWithSidebar>
   )
 }

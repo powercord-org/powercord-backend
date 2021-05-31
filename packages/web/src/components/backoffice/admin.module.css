@@ -20,55 +20,33 @@
  * SOFTWARE.
  */
 
-.wrapper {
-  margin-top: 16px;
-  margin-bottom: 16px;
+.item {
   display: flex;
   align-items: center;
-  justify-content: center;
+  color: var(--text-color);
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  border-radius: 3px;
 }
 
-.container {
-  display: flex;
-  background-color: var(--background-secondary);
-  border: 1px var(--background-tertiary) solid;
+.item:hover {
+  text-decoration: none;
+  background-color: var(--background-primary);
 }
 
-.button {
-  padding: 4px;
-  appearance: none;
-  display: block;
-  outline: none;
-  background: none;
-  border: none;
-  cursor: pointer;
+.item.active {
+  background-color: var(--blurple);
 }
 
-.button, .pages {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-left: 1px var(--background-tertiary) solid;
-}
-
-.button:first-child {
-  border-left-width: 0;
-}
-
-.button:not(:disabled):hover {
-  background-color: rgba(0, 0, 0, .2);
-}
-
-.button:disabled {
-  cursor: not-allowed;
-}
-
-.button svg {
+.item svg {
   width: 24px;
   height: 24px;
-  color: var(--text-color);
+  margin-right: 12px;
 }
 
-.pages {
-  padding: 4px 8px;
+.row {
+  display: flex;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--background-tertiary);
 }

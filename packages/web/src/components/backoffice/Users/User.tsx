@@ -20,55 +20,11 @@
  * SOFTWARE.
  */
 
-.wrapper {
-  margin-top: 16px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+import type { Attributes } from 'preact'
+import { h } from 'preact'
 
-.container {
-  display: flex;
-  background-color: var(--background-secondary);
-  border: 1px var(--background-tertiary) solid;
-}
-
-.button {
-  padding: 4px;
-  appearance: none;
-  display: block;
-  outline: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.button, .pages {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-left: 1px var(--background-tertiary) solid;
-}
-
-.button:first-child {
-  border-left-width: 0;
-}
-
-.button:not(:disabled):hover {
-  background-color: rgba(0, 0, 0, .2);
-}
-
-.button:disabled {
-  cursor: not-allowed;
-}
-
-.button svg {
-  width: 24px;
-  height: 24px;
-  color: var(--text-color);
-}
-
-.pages {
-  padding: 4px 8px;
+export default function User ({ id }: Attributes & { id?: string }) {
+  return (
+    <p>manage {id}</p>
+  )
 }

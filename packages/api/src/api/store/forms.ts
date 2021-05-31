@@ -23,7 +23,7 @@
 import type { Db } from 'mongodb'
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { EligibilityStatus } from '@powercord/types/store'
-import type { User } from '../../types.js'
+import type { User } from '@powercord/types/users'
 import { lookup } from 'dns'
 import fetch from 'node-fetch'
 
@@ -106,7 +106,7 @@ const hostingSchema = {
 // -- Helpers
 async function fetchEligibility (db: Db, user?: User | null): Promise<EligibilityStatus> {
   if (user) {
-    const banStatus = await db.collection('banned').findOne({ _id: user!._id })
+    const banStatus = await db.collection('userbans').findOne({ _id: user!._id })
     return {
       publish: banStatus?.publish ? 2 : 0,
       verification: banStatus?.verification ? 2 : 0,

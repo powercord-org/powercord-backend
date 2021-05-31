@@ -21,7 +21,7 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import type { User } from '../types.js'
+import type { User } from '@powercord/types/users'
 import { URL } from 'url'
 import { unlink, rename } from 'fs/promises'
 import { existsSync, mkdirSync, createReadStream, createWriteStream } from 'fs'

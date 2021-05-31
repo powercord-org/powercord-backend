@@ -21,7 +21,7 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import type { User, RestUser } from '../types.js'
+import type { User, RestUser } from '@powercord/types/users'
 import spotifyAuth from '../oauth/spotify.js'
 import { formatUser } from '../utils/users.js'
 import settingsModule from './settings.js'

@@ -42,7 +42,7 @@ const button = `${sharedStyle.button} ${style.button}`
 
 function Intro ({ id, onNext }: { id: string, onNext: () => void }) {
   const isLoggedIn = Boolean(useContext(UserContext))
-  const path = typeof location !== 'undefined' ? location.pathname : '/'
+  const path = typeof location !== 'undefined' ? location.pathname : ''
 
   return (
     <MarkdownDocument document={`store/${id}`} notFoundClassName={style.notfound}>

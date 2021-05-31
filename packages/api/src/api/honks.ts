@@ -66,7 +66,7 @@ async function patreon (this: FastifyInstance, request: FastifyRequest<{ Headers
 
   if (discordId) {
     discordUser = await fetchUser(discordId)
-    const banStatus = await this.mongo.db!.collection('banned').findOne({ _id: discordId })
+    const banStatus = await this.mongo.db!.collection('userbans').findOne({ _id: discordId })
     if (banStatus && banStatus.pledging) {
       banned = true
     } else {

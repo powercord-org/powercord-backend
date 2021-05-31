@@ -34,6 +34,8 @@ type AuthBoundaryProps = { children: JSX.Element, staff?: boolean } & Record<str
 
 export default function AuthBoundary ({ children, staff }: AuthBoundaryProps) {
   const user = useContext(UserContext)
+  const path = typeof location !== 'undefined' ? location.pathname : ''
+
   if (user === void 0) {
     useTitleTemplate('Powercord')
     return (
@@ -48,7 +50,8 @@ export default function AuthBoundary ({ children, staff }: AuthBoundaryProps) {
       <main>
         <h1>You must be authenticated to see this</h1>
         <p>
-          <a href={Endpoints.LOGIN}>Login</a>
+          {/* @ts-ignore */}
+          <a href={`${Endpoints.LOGIN}?redirect=${path}`} native>Login</a>
         </p>
       </main>
     )

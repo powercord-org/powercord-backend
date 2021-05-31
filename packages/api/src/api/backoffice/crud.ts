@@ -29,7 +29,8 @@ type CrudModule = boolean | {}
 
 type CrudSettings = {
   collection: string
-  projection: { [key: string]: 0 | 1 }
+  projection: { [key: string]: 0 | 1 },
+  aggregation?: object[],
   modules?: {
     create?: CrudModule
     readAll?: CrudModule
@@ -56,8 +57,20 @@ async function readAll (this: FastifyInstance, request: FastifyRequest<{ Queryst
   const cursor = ((request.query.page ?? 1) - 1) * limit
   const collection = this.mongo.db!.collection(data.collection)
 
-  const res = await collection.find({}, { projection: data.projection }).limit(limit).skip(cursor).toArray()
-  return res
+  const cur = collection.aggregate([
+    ...data.aggregation || [],
+    { $project: data.projection },
+    { $set: { id: '$_id' } },
+    { $unset: '_id' },
+  ]).limit(limit).skip(cursor)
+
+  const total = await collection.countDocuments()
+  const res = await cur.toArray()
+
+  return {
+    data: res, // res.map((u) => ({ id: u._id, ...u, _id: void 0 })),
+    pages: Math.ceil(total / limit),
+  }
 }
 
 // @ts-expect-error -- not implemented
@@ -70,7 +83,13 @@ async function create (this: FastifyInstance, request: FastifyRequest<{ Params: 
 async function read (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply): Promise<unknown> {
   const data = reply.context.config
   const collection = this.mongo.db!.collection(data.collection)
-  const res = await collection.findOne({ _id: request.params.id }, { projection: data.projection })
+  const res = await collection.aggregate([
+    { $match: { _id: request.params.id } },
+    ...data.aggregation || [],
+    { $project: data.projection },
+    { $set: { id: '$_id' } },
+    { $unset: '_id' },
+  ]).limit(1).next()
 
   if (!res) return reply.callNotFound()
   return res

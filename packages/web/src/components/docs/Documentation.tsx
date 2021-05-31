@@ -44,13 +44,13 @@ function Sidebar ({ categories }: SidebarProps) {
     <h1>Powercord Docs</h1>
     {categories.map((category) => (
       <Fragment key={category.id}>
-        {category.id !== 'intro' && <h3 className={style.categoryName}>{category.name}</h3>}
+        {category.id !== 'intro' && <h3>{category.name}</h3>}
         {category.docs.map((doc) => (
           <Link
-            key={`${category.id}-${doc.id}`}
-            href={Routes.DOCS_ITEM(category.id, doc.id)}
             className={style.item}
             activeClassName={style.active}
+            href={Routes.DOCS_ITEM(category.id, doc.id)}
+            key={`${category.id}-${doc.id}`}
           >
             {doc.title}
           </Link>

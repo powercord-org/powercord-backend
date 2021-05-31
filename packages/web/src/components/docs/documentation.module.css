@@ -20,29 +20,20 @@
  * SOFTWARE.
  */
 
-.category-name {
-  font-size: 1.1em;
-  font-weight: 600;
-  margin: 16px 0 12px;
-  padding: 16px 0 0;
-  border-top: 1px solid var(--background-tertiary);
-}
-
 .item {
-  padding: 6px 12px;
-  margin-bottom: 2px;
-  border-radius: 3px;
+  color: var(--text-color);
+  padding: 6px 8px;
   margin-bottom: 4px;
-  color: inherit;
+  border-radius: 3px;
 }
 
 .item:hover {
-  background-color: #272727;
   text-decoration: none;
+  background-color: var(--background-primary);
 }
 
 .item.active {
-  background-color: var(--background-primary);
+  background-color: var(--blurple);
 }
 
 .contents {

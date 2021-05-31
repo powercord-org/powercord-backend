@@ -23,7 +23,7 @@
 // todo: oauth state & schema
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import type { User } from '../types.js'
+import type { User } from '@powercord/types/users'
 import { fetchMember, addRole, setRoles } from '../utils/discord.js'
 import discordAuth from '../oauth/discord.js'
 import spotifyAuth from '../oauth/spotify.js'
@@ -44,7 +44,7 @@ async function discord (this: FastifyInstance, request: FastifyRequest<OAuth>, r
     const codes = await discordAuth.getToken(request.query.code)
     const user = await discordAuth.getCurrentUser(codes.access_token)
     const collection = this.mongo.db!.collection('users')
-    const banStatus = await this.mongo.db!.collection('banned').findOne({ _id: user.id })
+    const banStatus = await this.mongo.db!.collection('userbans').findOne({ _id: user.id })
     if (banStatus && banStatus.account) {
       // todo: Notify the user why the auth failed instead of silently failing
       reply.redirect('/')

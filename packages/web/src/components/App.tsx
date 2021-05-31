@@ -87,8 +87,10 @@ export default function App (props: null | AppProps) {
         <Terms path={Routes.TERMS}/>
         <Privacy path={Routes.PRIVACY}/>
 
-        <SoonRoute path={Routes.BACKOFFICE}>
-          <AdminWrapper/>
+        <SoonRoute path={`${Routes.BACKOFFICE}/:path*`}>
+          <AuthBoundary staff>
+            <AdminWrapper/>
+          </AuthBoundary>
         </SoonRoute>
         <NotFound ctx={props?.ctx} default/>
       </Router>

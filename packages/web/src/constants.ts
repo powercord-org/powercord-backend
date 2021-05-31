@@ -38,6 +38,9 @@ export const Endpoints = {
 
   CONTRIBUTORS: '/api/v2/stats/contributors',
   STATS: '/api/v2/stats/numbers',
+
+  BACKOFFICE_USERS: '/api/v2/backoffice/users',
+  BACKOFFICE_USER: (id: string) => `/api/v2/backoffice/users/${id}`,
 }
 
 export const Routes = {
@@ -68,6 +71,15 @@ export const Routes = {
   PRIVACY: '/legal/privacy',
 
   BACKOFFICE: '/backoffice',
+  BACKOFFICE_USERS: '/backoffice/users',
+  BACKOFFICE_USERS_USER: (id: string) => `/backoffice/users/${id}`,
+  BACKOFFICE_MONITORING: '/backoffice/monitoring',
+  BACKOFFICE_STORE_FRONT: '/backoffice/store/front',
+  BACKOFFICE_STORE_FORMS: '/backoffice/store/forms',
+  BACKOFFICE_USERS_FORMS_FORM: (id: string) => `/backoffice/store/forms/${id}`,
+  BACKOFFICE_STORE_REPORTS: '/backoffice/store/reports',
+  BACKOFFICE_STORE_REPORTS_REPORT: (id: string) => `/backoffice/store/reports/${id}`,
+  BACKOFFICE_EVENTS_SECRET: '/backoffice/events/secret',
 
   DICKSWORD: 'https://discord.gg/gs4ZMbBfCh',
   PATREON: 'https://patreon.com/aetheryx',
