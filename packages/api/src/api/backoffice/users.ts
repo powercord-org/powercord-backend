@@ -25,23 +25,6 @@ import crudModule from './crud.js'
 
 type RouteParams = { id: string }
 
-/*
-{
-  "patronTier": 0,
-  "badges.developer": false,
-  "badges.staff": true,
-  "badges.support": false,
-  "badges.contributor": false,
-  "badges.hunter": false,
-  "badges.early": false,
-  "badges.translator": false,
-  "badges.custom.color": null,
-  "badges.custom.icon": "dsq",
-  "badges.custom.white": null,
-  "badges.custom.name": null
-}
-*/
-
 const updateUserSchema = {
   body: {
     type: 'object',
@@ -102,7 +85,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       projection: { accounts: 0, settings: 0 },
       aggregation: [
         { $lookup: { from: 'userbans', localField: '_id', foreignField: '_id', as: 'banStatus' } },
-        { $unwind: '$banStatus' },
+        { $unwind: { path: '$banStatus', preserveNullAndEmptyArrays: true } },
         { $project: { 'banStatus._id': 0 } },
       ],
       modules: {
