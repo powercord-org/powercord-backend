@@ -189,6 +189,7 @@ async function numbers (this: FastifyInstance): Promise<unknown> {
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
+  fastify.mongo.db!.collection('users').createIndex('createdAt')
   fastify.get('/contributors', contributors)
   fastify.get('/numbers', numbers)
 }

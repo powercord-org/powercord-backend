@@ -56,7 +56,7 @@ const readQuerySchema = {
 
 const basicRouteSchema = {
   type: 'object',
-  properties: { id: { type: 'string', pattern: '^\\d{18,}$' } },
+  properties: { id: { type: 'string', pattern: '^\\d{16,}$' } },
 }
 
 async function readAll (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadQuery }>, reply: Reply) {
@@ -66,11 +66,13 @@ async function readAll (this: FastifyInstance, request: FastifyRequest<{ Queryst
   const collection = this.mongo.db!.collection(data.collection)
 
   const cur = collection.aggregate([
+    { $skip: cursor },
+    { $limit: limit },
     ...data.aggregation || [],
     { $project: data.projection },
     { $set: { id: '$_id' } },
     { $unset: '_id' },
-  ]).limit(limit).skip(cursor)
+  ])
 
   const total = await collection.countDocuments()
   const res = await cur.toArray()
