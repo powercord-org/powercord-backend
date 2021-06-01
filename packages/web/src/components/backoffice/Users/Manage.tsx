@@ -54,12 +54,14 @@ function userReducer (state: UserStore, action: UserStoreAction): UserStore {
 function EditById ({ onClose }: { onClose: () => void }) {
   const [ status, setStatus ] = useState(Status.IDLE)
   const [ user, setUser ] = useState<RestAdminUser | null>(null)
-  const inputRef = useRef<HTMLFormElement>()
+  const formRef = useRef<HTMLFormElement>()
 
-  const doEditById = useCallback(() => {
-    if (!inputRef.current.userId.value) return
+  const doEditById = useCallback((e?: Event) => {
+    if (e) e.preventDefault()
+
+    if (!formRef.current.userId.value) return
     setStatus(Status.PROCESSING)
-    fetch(Endpoints.BACKOFFICE_USER(inputRef.current.userId.value))
+    fetch(Endpoints.BACKOFFICE_USER(formRef.current.userId.value))
       .then((r) => {
         if (r.status !== 200) return setStatus(Status.NOT_FOUND)
         r.json().then((u) => {
@@ -68,13 +70,15 @@ function EditById ({ onClose }: { onClose: () => void }) {
       })
   }, [])
 
+  useEffect(() => void formRef.current.querySelector('input')?.focus(), [])
+
   if (user) {
     return <ManageEdit user={user} onClose={onClose}/>
   }
 
   return (
     <Modal title='Edit a user by ID' onConfirm={doEditById} onClose={onClose} confirmText='Edit' processing={status === Status.PROCESSING}>
-      <form className={style.loneForm} ref={inputRef}>
+      <form className={style.loneForm} ref={formRef} onSubmit={doEditById}>
         <TextField
           label='User ID'
           name='userId'

@@ -37,7 +37,7 @@ type EditFormProps = { user: RestAdminUser, formRef: Ref<HTMLFormElement>, chang
 
 function EditForm ({ user, formRef, changeForm }: EditFormProps) {
   return (
-    <form ref={formRef}>
+    <form ref={formRef} onSubmit={changeForm}>
       <div className={style.form2}>
         <CheckboxField
           name='badgeDeveloper'
@@ -93,7 +93,7 @@ function EditForm ({ user, formRef, changeForm }: EditFormProps) {
 
 function EditPerks ({ user, formRef, changeForm }: EditFormProps) {
   return (
-    <form ref={formRef}>
+    <form ref={formRef} onSubmit={changeForm}>
       <TextField
         name='color'
         label='Badges color'
@@ -149,12 +149,14 @@ export function ManageEdit ({ user, onClose }: ManageModalProps) {
     }
   }
 
-  const changeForm = useCallback(() => {
+  const changeForm = useCallback((e?: Event) => {
+    if (e) e.preventDefault()
     setMemoizedForm(editPerks ? processPerksForm() : processForm())
     setEditPerks(!editPerks)
   }, [ editPerks ])
 
-  const onSave = useCallback(() => {
+  const onSave = useCallback((e?: Event) => {
+    if (e) e.preventDefault()
     if (!formRef.current) return
     setProcessing(true)
     const data = Object.assign({}, editPerks ? processPerksForm() : processForm(), memoizedForm)
@@ -178,9 +180,11 @@ export function ManageEdit ({ user, onClose }: ManageModalProps) {
 export function ManageModeration ({ user, onClose }: ManageModalProps) {
   const [ processing, setProcessing ] = useState(false)
   const formRef = useRef<HTMLFormElement>()
-  const onApply = useCallback(() => {
+  const onApply = useCallback((e?: Event) => {
+    if (e) e.preventDefault()
     if (!formRef.current) return
     setProcessing(true)
+
     const userbans = {
       publish: formRef.current.publish.checked,
       verification: formRef.current.verification.checked,
@@ -198,7 +202,7 @@ export function ManageModeration ({ user, onClose }: ManageModalProps) {
 
   return (
     <Modal title={`User bans - ${user.username}#${user.discriminator}`} onClose={onClose} onConfirm={onApply} confirmText='Apply' processing={processing}>
-      <form ref={formRef}>
+      <form ref={formRef} onSubmit={onApply}>
         <CheckboxField
           name='publish'
           label='Store publish request'
