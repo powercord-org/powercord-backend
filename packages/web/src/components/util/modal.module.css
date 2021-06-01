@@ -34,12 +34,11 @@
 }
 
 .container {
-  margin: 64px;
+  width: 100%;
+  height: 100%;
   background-color: var(--background-primary);
-  width: 560px;
-  max-height: 75%;
-  display: flex;
   flex-direction: column;
+  display: flex;
 }
 
 .header, .footer {
@@ -92,4 +91,13 @@
 
 .danger {
   background-color: var(--red);
+}
+
+@media screen and (min-width: 640px) {
+  .container {
+    margin: 64px;
+    width: 560px;
+    max-height: 75%;
+    height: auto;
+  }
 }

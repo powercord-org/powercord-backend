@@ -50,8 +50,8 @@ export default function Modal (props: ModalProps) {
 
   const btnStyle = `${sharedStyle.button}${props.danger ? ` ${style.danger}` : ''}`
   return createPortal(
-    <div className={style.overlay}>
-      <div className={style.container}>
+    <div className={style.overlay} onClick={props.onClose}>
+      <div className={style.container} onClick={(e) => e.stopPropagation()}>
         <header className={style.header}>
           <span className={style.title}>{props.title}</span>
           <X className={style.close} onClick={props.onClose}/>
