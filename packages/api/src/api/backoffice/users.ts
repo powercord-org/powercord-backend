@@ -46,21 +46,6 @@ const updateUserSchema = {
   },
 }
 
-const updateBansSchema = {
-  body: {
-    type: 'object',
-    additionalProperties: false,
-    properties: {
-      account: { type: 'boolean' },
-      publish: { type: 'boolean' },
-      verification: { type: 'boolean' },
-      hosting: { type: 'boolean' },
-      reporting: { type: 'boolean' },
-      sync: { type: 'boolean' },
-    },
-  },
-}
-
 // @ts-ignore
 function searchUsers (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: FastifyReply) { // eslint-disable-line
   // todo
@@ -71,22 +56,15 @@ function findBans (this: FastifyInstance, request: FastifyRequest<{ Params: Rout
   // todo
 }
 
-function updateUserBans (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: FastifyReply) {
-  // Since we're in admin routes, we're in that rare case where we can trust user input
-  this.mongo.db!.collection('userbans').updateOne({ _id: request.params.id }, { $set: request.body }, { upsert: true })
-    .then(() => reply.code(204).send())
-}
-
 export default async function (fastify: FastifyInstance): Promise<void> {
   // Main routes
   fastify.register(crudModule, {
     data: {
       collection: 'users',
-      projection: { accounts: 0, settings: 0 },
+      projection: { accounts: 0, settings: 0, 'banStatus._id': 0 },
       aggregation: [
         { $lookup: { from: 'userbans', localField: '_id', foreignField: '_id', as: 'banStatus' } },
         { $unwind: { path: '$banStatus', preserveNullAndEmptyArrays: true } },
-        { $project: { 'banStatus._id': 0 } },
       ],
       modules: {
         create: false,
@@ -98,5 +76,4 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   // And some other ones
   fastify.get('/search', { schema: void 0 }, searchUsers)
   fastify.get('/banned', { schema: void 0 }, findBans)
-  fastify.post('/:id/bans', { schema: updateBansSchema }, updateUserBans)
 }

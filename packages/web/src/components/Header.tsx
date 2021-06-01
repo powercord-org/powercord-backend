@@ -57,7 +57,7 @@ function User () {
           {/* @ts-expect-error */}
           <a className={style.link} href={Endpoints.LOGOUT} native>Logout</a>
         </div>
-        {user.badges.staff && <a className={style.link} href={Routes.BACKOFFICE}>Admin panel</a>}
+        {user.badges.staff && <a className={style.link} href={Routes.BACKOFFICE}>Administration</a>}
       </div>
     </div>
   )

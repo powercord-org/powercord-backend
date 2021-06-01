@@ -97,7 +97,7 @@ function EditPerks ({ user, formRef, changeForm }: EditFormProps) {
       <TextField
         name='color'
         label='Badges color'
-        note='Defaults to blurple'
+        note='Hex code without the #. Defaults to blurple.'
         value={user.badges.custom?.color ?? ''}
       />
       <TextField
@@ -108,7 +108,7 @@ function EditPerks ({ user, formRef, changeForm }: EditFormProps) {
       <TextField
         name='white'
         label='Custom Badge (white variant)'
-        note='Defaults to the classic custom badge'
+        note='Defaults to the classic custom badge.'
         value={user.badges.custom?.white ?? ''}
       />
       <TextField
@@ -191,9 +191,10 @@ export function ManageModeration ({ user, onClose }: ManageModalProps) {
       hosting: formRef.current.hosting.checked,
       reporting: formRef.current.reporting.checked,
       sync: formRef.current.sync.checked,
+      events: formRef.current.events.checked,
     }
 
-    fetch(Endpoints.BACKOFFICE_USER_BANS(user.id), {
+    fetch(Endpoints.BACKOFFICE_BAN(user.id), {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(userbans),
@@ -212,26 +213,32 @@ export function ManageModeration ({ user, onClose }: ManageModalProps) {
         <CheckboxField
           name='verification'
           label='Store verification request'
-          note='Forbids the user from requesting to get a work verified'
+          note='Forbids the user from requesting to get a work verified.'
           value={user.banStatus?.verification}
         />
         <CheckboxField
           name='hosting'
           label='Hosting request'
-          note='Forbids the user from requesting free hosting for a plugin backend'
+          note='Forbids the user from requesting free hosting for a plugin backend.'
           value={user.banStatus?.hosting}
         />
         <CheckboxField
           name='reporting'
           label='Reporting features'
-          note='Forbids the user from sending reports of contents in the store'
+          note='Forbids the user from sending reports of contents in the store.'
           value={user.banStatus?.reporting}
         />
         <CheckboxField
           name='sync'
           label='Setting sync'
-          note='Forbids the user from using the Settings Sync feature on powercord.dev'
+          note='Forbids the user from using the Settings Sync feature on powercord.dev.'
           value={user.banStatus?.sync}
+        />
+        <CheckboxField
+          name='events'
+          label='Community events'
+          note='Forbids the user from participating in Powercord-organized events.'
+          value={user.banStatus?.events}
         />
       </form>
     </Modal>
@@ -246,7 +253,7 @@ export function ManageDelete ({ user, onClose }: ManageModalProps) {
     fetch(Endpoints.BACKOFFICE_USER(user.id), { method: 'DELETE' })
       .then(() => {
         if (formRef.current?.ban.checked) {
-          fetch(Endpoints.BACKOFFICE_USER_BANS(user.id), {
+          fetch(Endpoints.BACKOFFICE_BAN(user.id), {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ account: true }),

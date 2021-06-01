@@ -27,10 +27,19 @@
 .cutie {
   display: flex;
   height: 96px;
-  border-radius: 8px;
   align-items: center;
-  background: linear-gradient(90deg, #b473f5, #e292aa);
   padding: 16px 32px;
+  background-color: var(--background-secondary);
+}
+
+.cutie::before {
+  content: '';
+  display: block;
+  position: relative;
+  background: linear-gradient(160deg, #b473f5, #e292aa);
+  height: calc(100% + 32px);
+  width: 16px;
+  left: -32px;
 }
 
 .cutie-logo {

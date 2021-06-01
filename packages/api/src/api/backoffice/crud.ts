@@ -78,7 +78,7 @@ async function readAll (this: FastifyInstance, request: FastifyRequest<{ Queryst
   const res = await cur.toArray()
 
   return {
-    data: res, // res.map((u) => ({ id: u._id, ...u, _id: void 0 })),
+    data: res,
     pages: Math.ceil(total / limit),
   }
 }

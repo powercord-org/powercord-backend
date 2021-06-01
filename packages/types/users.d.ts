@@ -65,6 +65,7 @@ export type UserBanStatus = {
   hosting: boolean
   reporting: boolean
   sync: boolean
+  events: boolean
 }
 
 export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
@@ -75,3 +76,5 @@ export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
 }
 
 export type RestAdminUser = RestUser & { banStatus?: UserBanStatus }
+
+export type RestAdminBans = UserBanStatus & { user?: RestAdminUser }

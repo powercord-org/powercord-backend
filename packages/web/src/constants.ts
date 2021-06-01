@@ -43,7 +43,8 @@ export const Endpoints = {
 
   BACKOFFICE_USERS: '/api/v2/backoffice/users',
   BACKOFFICE_USER: (id: string) => `/api/v2/backoffice/users/${id}`,
-  BACKOFFICE_USER_BANS: (id: string) => `/api/v2/backoffice/users/${id}/bans`,
+  BACKOFFICE_BANS: '/api/v2/backoffice/bans/',
+  BACKOFFICE_BAN: (id: string) => `/api/v2/backoffice/bans/${id}`,
 }
 
 export const Routes = {
