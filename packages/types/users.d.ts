@@ -74,4 +74,4 @@ export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
   }
 }
 
-export type RestAdminUser = RestUser & { banStatus: UserBanStatus }
+export type RestAdminUser = RestUser & { banStatus?: UserBanStatus }

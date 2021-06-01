@@ -203,31 +203,31 @@ export function ManageModeration ({ user, onClose }: ManageModalProps) {
           name='publish'
           label='Store publish request'
           note='Forbids the user from sending publish requests.'
-          value={user.banStatus.publish}
+          value={user.banStatus?.publish}
         />
         <CheckboxField
           name='verification'
           label='Store verification request'
           note='Forbids the user from requesting to get a work verified'
-          value={user.banStatus.verification}
+          value={user.banStatus?.verification}
         />
         <CheckboxField
           name='hosting'
           label='Hosting request'
           note='Forbids the user from requesting free hosting for a plugin backend'
-          value={user.banStatus.hosting}
+          value={user.banStatus?.hosting}
         />
         <CheckboxField
           name='reporting'
           label='Reporting features'
           note='Forbids the user from sending reports of contents in the store'
-          value={user.banStatus.reporting}
+          value={user.banStatus?.reporting}
         />
         <CheckboxField
           name='sync'
           label='Setting sync'
           note='Forbids the user from using the Settings Sync feature on powercord.dev'
-          value={user.banStatus.sync}
+          value={user.banStatus?.sync}
         />
       </form>
     </Modal>
@@ -245,7 +245,7 @@ export function ManageDelete ({ user, onClose }: ManageModalProps) {
           fetch(Endpoints.BACKOFFICE_USER_BANS(user.id), {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ ...user.banStatus, account: true }),
+            body: JSON.stringify({ account: true }),
           }).then(() => onClose())
         } else {
           onClose()
@@ -262,7 +262,7 @@ export function ManageDelete ({ user, onClose }: ManageModalProps) {
           name='ban'
           label='Ban the user as well'
           note='The user will not be able to create a new Powercord account with this Discord account.'
-          value={user.banStatus.publish}
+          value={user.banStatus?.account}
         />
       </form>
     </Modal>

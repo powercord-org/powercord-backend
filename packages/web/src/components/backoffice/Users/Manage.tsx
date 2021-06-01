@@ -58,9 +58,11 @@ function UserAvatar ({ user }: { user: RestAdminUser }) {
 }
 
 function UserRow ({ user, setModal }: { user: RestAdminUser, setModal: (s: ModalState) => void }) {
-  const bans = Object.entries(user.banStatus)
-    .filter(([ , isBanned ]) => isBanned)
-    .map(([ key ]) => key)
+  const bans = user.banStatus
+    ? Object.entries(user.banStatus)
+      .filter(([ , isBanned ]) => isBanned)
+      .map(([ key ]) => key)
+    : []
 
   const editUser = useCallback(() => setModal({ kind: 'edit', user: user }), [ user, setModal ])
   const moderateUser = useCallback(() => setModal({ kind: 'mod', user: user }), [ user, setModal ])
