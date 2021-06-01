@@ -22,10 +22,10 @@
 
 // todo: make safe enough and modular enough for usage in public routes
 
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import type { FastifyInstance, FastifyRequest, FastifyReply, FastifySchema } from 'fastify'
 import type { ConfiguredReply } from '../../types.js'
 
-type CrudModule = boolean | {}
+type CrudModule = boolean | { schema?: FastifySchema }
 
 type CrudSettings = {
   collection: string
@@ -47,11 +47,19 @@ type ReadQuery = { limit?: number, page?: number }
 type RouteParams = { id: string }
 
 const readQuerySchema = {
-  limit: { type: 'integer', exclusiveMinimum: 0, maximum: 100 },
-  page: { type: 'integer', exclusiveMinimum: 0 },
+  type: 'object',
+  properties: {
+    limit: { type: 'integer', exclusiveMinimum: 0, maximum: 100 },
+    page: { type: 'integer', exclusiveMinimum: 0 },
+  },
 }
 
-async function readAll (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadQuery }>, reply: Reply): Promise<unknown> {
+const basicRouteSchema = {
+  type: 'object',
+  properties: { id: { type: 'string', pattern: '^\\d{18,}$' } },
+}
+
+async function readAll (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadQuery }>, reply: Reply) {
   const data = reply.context.config
   const limit = request.query.limit ?? 50
   const cursor = ((request.query.page ?? 1) - 1) * limit
@@ -74,13 +82,13 @@ async function readAll (this: FastifyInstance, request: FastifyRequest<{ Queryst
 }
 
 // @ts-expect-error -- not implemented
-async function create (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply): Promise<unknown> {
+async function create (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const data = reply.context.config
   console.log(data)
   return {}
 }
 
-async function read (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply): Promise<unknown> {
+async function read (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const data = reply.context.config
   const collection = this.mongo.db!.collection(data.collection)
   const res = await collection.aggregate([
@@ -95,14 +103,17 @@ async function read (this: FastifyInstance, request: FastifyRequest<{ Params: Ro
   return res
 }
 
-// @ts-expect-error -- not implemented
-async function update (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply): Promise<unknown> {
+async function update (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
+  // todo: mongo injection???!!!!!!
   const data = reply.context.config
-  console.log(data)
-  return {}
+  const collection = this.mongo.db!.collection(data.collection)
+  const res = await collection.updateOne({ _id: request.params.id }, { $set: request.body })
+
+  if (res.matchedCount !== 1) return reply.callNotFound()
+  return reply.code(204).send()
 }
 
-async function del (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply): Promise<unknown> {
+async function del (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const data = reply.context.config
   const collection = this.mongo.db!.collection(data.collection)
   const res = await collection.deleteOne({ _id: request.params.id })
@@ -111,24 +122,45 @@ async function del (this: FastifyInstance, request: FastifyRequest<{ Params: Rou
   return reply.code(204).send()
 }
 
-export default async function crudPlugin (fastify: FastifyInstance, { data }: { data: CrudSettings }): Promise<void> {
+export default async function crudPlugin (fastify: FastifyInstance, { data }: { data: CrudSettings }) {
   if (data.modules?.readAll !== false) {
-    fastify.get('/', { config: data, schema: { querystring: readQuerySchema } }, readAll)
+    const schema = typeof data.modules?.readAll !== 'boolean' ? data.modules?.readAll?.schema ?? {} : {}
+    schema.querystring = schema.querystring
+      ? { ...(schema.querystring as {}), ...readQuerySchema }
+      : schema.querystring = readQuerySchema
+
+    fastify.get('/', { config: data, schema: schema }, readAll)
   }
 
   if (data.modules?.create !== false) {
-    fastify.post('/', { config: data }, create)
+    const schema = typeof data.modules?.create !== 'boolean' ? data.modules?.create?.schema : void 0
+    fastify.post('/', { config: data, schema: schema }, create)
   }
 
   if (data.modules?.read !== false) {
-    fastify.get('/:id', { config: data }, read)
+    const schema = typeof data.modules?.read !== 'boolean' ? data.modules?.read?.schema ?? {} : {}
+    schema.params = schema.params
+      ? { ...(schema.params as {}), ...basicRouteSchema }
+      : schema.params = basicRouteSchema
+
+    fastify.get('/:id', { config: data, schema: schema }, read)
   }
 
   if (data.modules?.update !== false) {
-    fastify.patch('/:id', { config: data }, update)
+    const schema = typeof data.modules?.update !== 'boolean' ? data.modules?.update?.schema ?? {} : {}
+    schema.params = schema.params
+      ? { ...(schema.params as {}), ...basicRouteSchema }
+      : schema.params = basicRouteSchema
+
+    fastify.patch('/:id', { config: data, schema: schema }, update)
   }
 
   if (data.modules?.delete !== false) {
-    fastify.delete('/:id', { config: data }, del)
+    const schema = typeof data.modules?.delete !== 'boolean' ? data.modules?.delete?.schema ?? {} : {}
+    schema.params = schema.params
+      ? { ...(schema.params as {}), ...basicRouteSchema }
+      : schema.params = basicRouteSchema
+
+    fastify.delete('/:id', { config: data, schema: schema }, del)
   }
 }

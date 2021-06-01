@@ -28,6 +28,8 @@ export const Endpoints = {
   UNLINK_SPOTIFY: '/api/v2/oauth/spotify/unlink',
   YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
   USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`,
+  USER_AVATAR_DISCORD: (id: string, avatar: string) => `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=128`,
+  DEFAULT_AVATAR_DISCORD: (dicrim: number) => `https://cdn.discordapp.com/embed/avatars/${dicrim % 6}.png?size=128`,
 
   STORE_FORM_ELIGIBILITY: '/api/v2/store/forms/eligibility',
   STORE_FORM: (id: string) => `/api/v2/store/forms/${id}`,
@@ -41,6 +43,7 @@ export const Endpoints = {
 
   BACKOFFICE_USERS: '/api/v2/backoffice/users',
   BACKOFFICE_USER: (id: string) => `/api/v2/backoffice/users/${id}`,
+  BACKOFFICE_USER_BANS: (id: string) => `/api/v2/backoffice/users/${id}/bans`,
 }
 
 export const Routes = {
@@ -72,7 +75,6 @@ export const Routes = {
 
   BACKOFFICE: '/backoffice',
   BACKOFFICE_USERS: '/backoffice/users',
-  BACKOFFICE_USERS_USER: (id: string) => `/backoffice/users/${id}`,
   BACKOFFICE_MONITORING: '/backoffice/monitoring',
   BACKOFFICE_STORE_FRONT: '/backoffice/store/front',
   BACKOFFICE_STORE_FORMS: '/backoffice/store/forms',

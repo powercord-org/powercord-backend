@@ -140,10 +140,6 @@
 }
 
 /* Scrollbar */
-.container::-webkit-scrollbar, .container ::-webkit-scrollbar {
-  border-left-width: 0;
-}
-
 .inner::-webkit-scrollbar {
   width: 8px;
   height: 8px;

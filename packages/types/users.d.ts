@@ -64,7 +64,7 @@ export type UserBanStatus = {
   verification: boolean
   hosting: boolean
   reporting: boolean
-  pledging: boolean
+  sync: boolean
 }
 
 export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {

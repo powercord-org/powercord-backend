@@ -51,7 +51,7 @@
   color: var(--red);
 }
 
-.text-field, .textarea-field {
+.text-field, .textarea-field, .select-field {
   display: block;
   margin-top: 8px;
   width: 100%;
@@ -68,6 +68,19 @@
   padding: 8px;
   height: 88px;
   resize: none;
+}
+
+.select-field {
+  appearance: none;
+}
+
+.select-arrow {
+  display: block;
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  top: 38px;
+  right: 8px;
 }
 
 .checkbox-field {

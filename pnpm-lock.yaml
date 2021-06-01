@@ -163,7 +163,7 @@ importers:
       prismjs: ^1.23.0
       typescript: ^4.2.4
       vite: ^2.2.4
-      vite-plugin-magical-svg: ^0.2.4
+      vite-plugin-magical-svg: ^0.3.0
     dependencies:
       '@preact/preset-vite': 2.1.0_preact@10.5.13+vite@2.2.4
       '@prefresh/vite': 2.2.2_preact@10.5.13+vite@2.2.4
@@ -184,7 +184,7 @@ importers:
       feather-icons: 4.28.0
       typescript: 4.2.4
       vite: 2.2.4
-      vite-plugin-magical-svg: 0.2.4_vite@2.2.4
+      vite-plugin-magical-svg: 0.3.0_vite@2.2.4
 
 packages:
 
@@ -3817,8 +3817,8 @@ packages:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}
     dev: true
 
-  /vite-plugin-magical-svg/0.2.4_vite@2.2.4:
-    resolution: {integrity: sha512-ooOBUNLSPmZFbmTEx/CUH89oPAdRtMCwPDQUMxIud8Y8TRAQLGta18Gsz6Gq5Y6LEFkKgCy5MT3ANw4SL3b+yA==}
+  /vite-plugin-magical-svg/0.3.0_vite@2.2.4:
+    resolution: {integrity: sha512-n05+PVlPe9gE3dJf4XKDv7wp1pgtvIP8pHzajTUEMF2LVzniYaNn3BWHuQICvi5WJd5sy85VHk7HMj1NMOHixw==}
     peerDependencies:
       vite: '>= 2.0.0'
     dependencies:

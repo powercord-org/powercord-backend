@@ -80,7 +80,7 @@ function Item ({ icon, href, label }: ItemProps) {
   }
 
   return (
-    <Link className={style.item} activeClassName={style.active} href={href}>
+    <Link class={style.item} activeClassName={style.active} href={href}>
       {h(icon, null)}
       <span>{label}</span>
     </Link>

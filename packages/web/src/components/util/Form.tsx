@@ -24,6 +24,8 @@ import type { Attributes, ComponentChild } from 'preact'
 import { h } from 'preact'
 import { useState, useCallback, useMemo, useEffect } from 'preact/hooks'
 
+import ChevronDown from 'feather-icons/dist/icons/chevron-down.svg'
+
 import style from './form.module.css'
 
 type BaseProps = Attributes & {
@@ -47,6 +49,7 @@ type BaseFieldProps = Attributes & {
 
 type TextFieldProps = BaseFieldProps & { value?: string, minLength?: number, maxLength?: number, placeholder?: string }
 type CheckboxFieldProps = BaseFieldProps & { value?: boolean }
+type SelectFieldProps = BaseFieldProps & { value?: string, options: Array<{ id: string, name: string }> }
 
 type FieldState = { id: string, note?: ComponentChild, error?: ComponentChild, onChange: () => void }
 
@@ -146,6 +149,28 @@ export function CheckboxField (props: CheckboxFieldProps) {
         className={style.checkboxField}
         onClick={field.onChange}
       />
+    </BaseField>
+  )
+}
+
+export function SelectField (props: SelectFieldProps) {
+  const field = useField(props.note, props.error, props.rk)
+
+  return (
+    <BaseField {...field} label={props.label} required={props.required} id={field.id}>
+      <select
+        type='checkbox'
+        id={field.id}
+        name={props.name}
+        value={props.value}
+        required={props.required}
+        disabled={props.disabled}
+        className={style.selectField}
+        onClick={field.onChange}
+      >
+        {props.options.map(({ id, name }) => <option key={id} value={id}>{name}</option>)}
+      </select>
+      <ChevronDown className={style.selectArrow}/>
     </BaseField>
   )
 }

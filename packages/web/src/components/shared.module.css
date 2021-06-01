@@ -20,23 +20,22 @@
  * SOFTWARE.
  */
 
-.button {
+.button, .button-link {
   color: #fff;
-  background-color: var(--blurple);
-  height: 36px;
-  min-width: 60px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  padding: 2px 16px;
-  border-radius: 3px;
   transition: filter .17s ease;
   font-size: 14px;
-  appearance: none;
-  outline: none;
-  border: 0;
-  cursor: pointer;
+}
+
+.button {
+  background-color: var(--blurple);
+  font-weight: 600;
+  height: 36px;
+  min-width: 60px;
+  padding: 2px 16px;
+  border-radius: 3px;
 }
 
 .button:hover {
@@ -47,4 +46,12 @@
 .button:disabled {
   cursor: not-allowed;
   filter: brightness(.7);
+}
+
+.button-link {
+  color: var(--blurple);
+}
+
+.button-link:hover {
+  text-decoration: underline;
 }

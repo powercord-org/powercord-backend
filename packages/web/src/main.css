@@ -91,6 +91,18 @@ a:hover {
   text-decoration: underline;
 }
 
+button {
+  font: inherit;
+  appearance: none;
+  background: none;
+  outline: none;
+  color: inherit;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
 hr {
   width: 100%;
   border: 0 solid var(--background-tertiary);
@@ -115,7 +127,6 @@ hr {
 ::-webkit-scrollbar {
   width: 16px;
   height: 16px;
-  border-left: 1px solid var(--background-tertiary);
 }
 
 ::-webkit-scrollbar-corner {
@@ -135,4 +146,8 @@ hr {
 
 ::-webkit-scrollbar-track {
   background-color: var(--background-secondary);
+}
+
+#app::-webkit-scrollbar {
+  border-left: 1px solid var(--background-tertiary);
 }

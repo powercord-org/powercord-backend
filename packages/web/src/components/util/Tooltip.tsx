@@ -20,30 +20,26 @@
  * SOFTWARE.
  */
 
-import { h, cloneElement, JSX } from 'preact'
-import { useCallback, useState } from 'preact/hooks'
+import type { VNode } from 'preact'
+import { h, Fragment, cloneElement } from 'preact'
+import { useCallback, useRef, useState } from 'preact/hooks'
 import { createPortal } from 'preact/compat'
 
-import style from './tooltip/tooltip.module.css'
+import style from './tooltip.module.css'
 
 type TooltipProps = {
-  children: JSX.Element
+  children: VNode<any>
   text: string
-  position: 'top' | 'bottom'
-  align: 'left' | 'left-center' | 'right' | 'right-center' | 'center'
+  position?: 'top' | 'bottom'
+  align?: 'left' | 'left-center' | 'right' | 'right-center' | 'center'
 }
 
 export default function Tooltip ({ children, text, position, align }: TooltipProps) {
-  if (!children) return null
-  if (typeof children === 'string') {
-    children = <span>{children}</span>
-  }
-
   position = position ?? 'top'
   align = align ?? 'left'
 
-  const [ elementRef, setElementRef ] = useState<HTMLElement | null>(null)
-  const [ tooltipRef, setTooltipRef ] = useState<HTMLElement | null>(null)
+  const elementRef = useRef<HTMLElement>()
+  const tooltipRef = useRef<HTMLDivElement>()
   const [ display, setDisplay ] = useState(false)
   const ogOnMouseEnter = children.props.onMouseEnter
   const onMouseEnter = useCallback((e: MouseEvent) => {
@@ -62,10 +58,10 @@ export default function Tooltip ({ children, text, position, align }: TooltipPro
   }, [ ogOnMouseLeave ])
 
   let tooltip = null
-  if (display && elementRef) {
-    const css: JSX.CSSProperties = {}
+  if (display && elementRef.current) {
+    const css: Record<string, any> = {}
     const className = [ style.tooltip ]
-    const rect = elementRef.getBoundingClientRect()
+    const rect = elementRef.current.getBoundingClientRect()
 
     if (align === 'left' || align === 'left-center') {
       className.push(style.alignLeft)
@@ -86,29 +82,24 @@ export default function Tooltip ({ children, text, position, align }: TooltipPro
     }
     if (align === 'center') {
       className.push(style.alignCenter)
-      const width = tooltipRef ? tooltipRef.getBoundingClientRect().width : 0
+      const width = tooltipRef.current ? tooltipRef.current.getBoundingClientRect().width : 0
       css.left = rect.x + ((rect.width - width) / 2)
     }
 
     if (position === 'top') {
       className.push(style.positionTop)
-      css.top = rect.y - (tooltipRef ? tooltipRef.getBoundingClientRect().height : 32) - 6
+      css.top = rect.y - (tooltipRef.current ? tooltipRef.current.getBoundingClientRect().height : 32) - 6
     }
     if (position === 'bottom') {
       className.push(style.positionBottom)
-      css.top = rect.y + rect.height + (tooltipRef ? tooltipRef.getBoundingClientRect().height : 32) + 6
+      css.top = rect.y + rect.height + (tooltipRef.current ? tooltipRef.current.getBoundingClientRect().height : 32) + 6
     }
 
     tooltip = createPortal(
-      <div ref={(r) => setTooltipRef(r)} className={className.join(' ')} style={css}>{text}</div>,
+      <div ref={tooltipRef} className={className.join(' ')} style={css}>{text}</div>,
       document.body
     )
   }
 
-  return (
-    <>
-      {cloneElement(children, { ref: (r: HTMLElement) => setElementRef(r), onMouseEnter: onMouseEnter, onMouseLeave: onMouseLeave })}
-      {tooltip}
-    </>
-  )
+  return h(Fragment, null, cloneElement(children, { ref: elementRef, onMouseEnter: onMouseEnter, onMouseLeave: onMouseLeave }), tooltip)
 }

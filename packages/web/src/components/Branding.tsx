@@ -53,7 +53,8 @@ function Asset ({ name, copyrightYear, copyrightHolder, links }: AssetProps) {
           Copyright &copy; {copyrightYear} {copyrightHolder}, All Rights Reserved.
         </div>
         <div className={style.links}>
-          {links.map((l) => <a key={l.url} download={l.name} href={l.url}>.{l.name.split('.').pop()}</a>)}
+          {/* @ts-ignore */}
+          {links.map((l) => <a key={l.url} download={l.name} href={l.url} native>.{l.name.split('.').pop()}</a>)}
         </div>
       </footer>
     </section>

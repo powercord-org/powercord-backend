@@ -47,7 +47,7 @@ function Sidebar ({ categories }: SidebarProps) {
         {category.id !== 'intro' && <h3>{category.name}</h3>}
         {category.docs.map((doc) => (
           <Link
-            className={style.item}
+            class={style.item}
             activeClassName={style.active}
             href={Routes.DOCS_ITEM(category.id, doc.id)}
             key={`${category.id}-${doc.id}`}

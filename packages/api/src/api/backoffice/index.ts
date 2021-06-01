@@ -21,18 +21,10 @@
  */
 
 import type { FastifyInstance } from 'fastify'
-import crudModule from './crud.js'
+import usersModule from './users.js'
 
 export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken, fastify.verifyAdmin ], { relation: 'and' }))
 
-  fastify.register(crudModule, {
-    prefix: '/users',
-    data: {
-      collection: 'users',
-      projection: { accounts: 0, settings: 0 },
-      aggregation: [ { $lookup: { from: 'userbans', localField: '_id', foreignField: '_id', as: 'banStatus' } } ],
-      modules: { create: false },
-    },
-  })
+  fastify.register(usersModule, { prefix: '/users' })
 }

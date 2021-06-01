@@ -26,6 +26,7 @@ import { Link } from 'preact-router/match'
 
 import LayoutWithSidebar from '../util/LayoutWithSidebar'
 import Redirect from '../util/Redirect'
+import { SoonRoute } from '../util/Soon'
 import Users from './Users/Manage'
 import { Routes } from '../../constants'
 
@@ -42,34 +43,29 @@ function Sidebar () {
   return (
     <Fragment>
       <h1>Administration</h1>
-      <Link
-        className={style.item}
-        activeClassName={style.active}
-        href={Routes.BACKOFFICE_USERS}
-        path={Routes.BACKOFFICE_USERS_USER(':id?')}
-      >
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_USERS}>
         <Smile/>
         <span>Users</span>
       </Link>
-      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_MONITORING}>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_MONITORING}>
         <Activity/>
         <span>Abuse Monitoring</span>
       </Link>
       <h3>Store management</h3>
-      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_FRONT}>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_FRONT}>
         <Layout/>
         <span>Frontpage</span>
       </Link>
-      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_FORMS}>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_FORMS}>
         <Inbox/>
         <span>Forms</span>
       </Link>
-      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_REPORTS}>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_REPORTS}>
         <Flag/>
         <span>Reports</span>
       </Link>
       <h3>Community</h3>
-      <Link className={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_EVENTS_SECRET}>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_EVENTS_SECRET}>
         <CodeSandbox/>
         <span>Super Secret Event</span>
       </Link>
@@ -82,14 +78,24 @@ export default function Admin () {
     <LayoutWithSidebar>
       <Sidebar/>
       <Router>
-        <Users path={Routes.BACKOFFICE_USERS_USER(':id?')}/>
-        <div path={Routes.BACKOFFICE_MONITORING}>monitoring</div>
+        <Users path={Routes.BACKOFFICE_USERS}/>
+        <SoonRoute path={Routes.BACKOFFICE_MONITORING}>
+          <div>monitoring</div>
+        </SoonRoute>
 
-        <div path={Routes.BACKOFFICE_STORE_FRONT}>store front</div>
-        <div path={Routes.BACKOFFICE_STORE_FORMS}>forms</div>
-        <div path={Routes.BACKOFFICE_STORE_REPORTS}>reports</div>
+        <SoonRoute path={Routes.BACKOFFICE_STORE_FRONT}>
+          <div>store front</div>
+        </SoonRoute>
+        <SoonRoute path={Routes.BACKOFFICE_STORE_FORMS}>
+          <div>forms</div>
+        </SoonRoute>
+        <SoonRoute path={Routes.BACKOFFICE_STORE_REPORTS}>
+          <div>reports</div>
+        </SoonRoute>
 
-        <div path={Routes.BACKOFFICE_EVENTS_SECRET}>eyes</div>
+        <SoonRoute path={Routes.BACKOFFICE_EVENTS_SECRET}>
+          <div>eyes</div>
+        </SoonRoute>
         <Redirect default to={Routes.BACKOFFICE_USERS}/>
       </Router>
     </LayoutWithSidebar>

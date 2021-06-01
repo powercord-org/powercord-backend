@@ -33,18 +33,13 @@ async function getSelf (request: FastifyRequest<{ TokenizeUser: User }>): Promis
 
 async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply): Promise<RestUser | void> {
   const user = await this.mongo.db!.collection('users').findOne({ _id: request.params.id })
-  if (!user) {
-    reply.callNotFound()
-    return
-  }
+  if (!user) return reply.callNotFound()
   return formatUser(user)
 }
 
 async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<unknown> {
   const { spotify } = request.user!.accounts
-  if (!spotify) {
-    return { token: null }
-  }
+  if (!spotify) return { token: null }
 
   if (!spotify.scopes || !config.spotify.scopes.every((key: string) => spotify.scopes.includes(key))) {
     await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $set: { 'accounts.spotify': null } })

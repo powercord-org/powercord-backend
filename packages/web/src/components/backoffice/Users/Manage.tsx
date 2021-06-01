@@ -21,18 +21,112 @@
  */
 
 import type { Attributes } from 'preact'
+import type { RestAdminUser } from '@powercord/types/users'
 import { h } from 'preact'
-import { Router } from 'preact-router'
-import { Routes } from '../../../constants'
+import { useState, useEffect, useReducer, useCallback } from 'preact/hooks'
 
-import List from './List'
-import User from './User'
+import Spinner from '../../util/Spinner'
+import Tooltip from '../../util/Tooltip'
+import Paginator from '../../util/Paginator'
+import { ManageEdit, ManageModeration, ManageDelete } from './Modals'
+import { Endpoints } from '../../../constants'
 
-export default function Manage (_: Attributes) {
+import Edit from 'feather-icons/dist/icons/edit.svg'
+import Shield from 'feather-icons/dist/icons/shield.svg'
+import Trash from 'feather-icons/dist/icons/trash-2.svg'
+
+import style from '../admin.module.css'
+
+type UserStore = { [page: number]: RestAdminUser[] }
+type UserStoreAction = { users: RestAdminUser[], page: number }
+type ApiResponse = { data: RestAdminUser[], pages: number }
+type ModalState = { kind: 'edit' | 'mod' | 'delete', user: RestAdminUser }
+
+function userReducer (state: UserStore, action: UserStoreAction): UserStore {
+  return { ...state, [action.page]: action.users }
+}
+
+function UserAvatar ({ user }: { user: RestAdminUser }) {
+  const avatar = user.avatar
+    ? Endpoints.USER_AVATAR_DISCORD(user.id, user.avatar)
+    : Endpoints.DEFAULT_AVATAR_DISCORD(Number(user.discriminator))
+
+  const [ effectiveAvatar, setAvatar ] = useState(avatar)
+  const onError = useCallback(() => setAvatar(Endpoints.DEFAULT_AVATAR_DISCORD(Number(user.discriminator))), [])
+
+  return <img src={effectiveAvatar} alt={`${user.username}'s avatar`} onError={onError} className={style.avatar}/>
+}
+
+function UserRow ({ user, setModal }: { user: RestAdminUser, setModal: (s: ModalState) => void }) {
+  const bans = Object.entries(user.banStatus)
+    .filter(([ , isBanned ]) => isBanned)
+    .map(([ key ]) => key)
+
+  const editUser = useCallback(() => setModal({ kind: 'edit', user: user }), [ user, setModal ])
+  const moderateUser = useCallback(() => setModal({ kind: 'mod', user: user }), [ user, setModal ])
+  const deleteUser = useCallback(() => setModal({ kind: 'delete', user: user }), [ user, setModal ])
+
   return (
-    <Router>
-      <List path={Routes.BACKOFFICE_USERS}/>
-      <User path={Routes.BACKOFFICE_USERS_USER(':id')}/>
-    </Router>
+    <div className={style.row}>
+      <UserAvatar user={user}/>
+      <div className={style.rowInfo}>
+        <span>{user.username}#{user.discriminator}</span>
+        <span className={bans.length ? style.red : ''}>
+          {bans.length ? `Active bans: ${bans.join(', ')}` : 'No active bans'}
+        </span>
+      </div>
+      <div className={style.rowActions}>
+        <Tooltip text='Edit user'>
+          <button className={style.action} onClick={editUser}>
+            <Edit/>
+          </button>
+        </Tooltip>
+        <Tooltip text='Manage user bans'>
+          <button className={style.action} onClick={moderateUser}>
+            <Shield/>
+          </button>
+        </Tooltip>
+        <Tooltip text='Delete user account'>
+          <button className={style.action} onClick={deleteUser}>
+            <Trash className={style.red}/>
+          </button>
+        </Tooltip>
+      </div>
+    </div>
+  )
+}
+
+export default function List (_: Attributes) {
+  const [ page, setPage ] = useState(1)
+  const [ pages, setPages ] = useState(0)
+  const [ usersStore, pushUsers ] = useReducer(userReducer, {})
+  const [ modal, setModal ] = useState<ModalState | null>(null)
+  const users = usersStore[page]
+
+  const fetchUserPage = useCallback(() => {
+    fetch(`${Endpoints.BACKOFFICE_USERS}?page=${page}`)
+      .then((r) => r.json())
+      .then((u: ApiResponse) => {
+        pushUsers({ users: u.data, page: page })
+        if (!pages) setPages(u.pages)
+      })
+  }, [ page ])
+
+  useEffect(fetchUserPage, [ page ])
+  const onModalClose = useCallback(() => {
+    setModal(null)
+    fetchUserPage()
+  }, [])
+
+  return (
+    <main>
+      <h1>Manage users</h1>
+      {users ? users.map((u) => <UserRow key={u.id} user={u} setModal={setModal}/>) : <Spinner/>}
+      {pages > 1 && <Paginator current={page} total={pages} setPage={setPage}/>}
+
+      {modal?.kind === 'edit' && <ManageEdit user={modal.user} onClose={onModalClose}/>}
+      {modal?.kind === 'mod' && <ManageModeration user={modal.user} onClose={onModalClose}/>}
+      {modal?.kind === 'delete' && <ManageDelete user={modal.user} onClose={onModalClose}/>}
+    </main>
   )
 }
