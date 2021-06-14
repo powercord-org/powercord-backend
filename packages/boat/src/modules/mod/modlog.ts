@@ -63,7 +63,7 @@ function extractEntryData (entry: GuildAuditLogEntry): [ string, string, string 
   let modName = ''
   let reason = ''
 
-  if (entry.user.id === config.discord.clientID && entry.reason) {
+  if (entry.user.id === config.discord.clientID && entry.reason?.startsWith('[')) {
     const splittedReason = entry.reason.split(' ')
     modName = splittedReason.shift()!.replace('[', '').replace(']', '')
     reason = splittedReason.join(' ')

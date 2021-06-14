@@ -25,6 +25,7 @@ import { URL } from 'url'
 import { readFileSync } from 'fs'
 import { deleteMeta } from './logger.js'
 import { skipSnipe } from '../sniper.js'
+import { Period, getPeriod, ban, mute } from '../../mod.js'
 import { isStaff } from '../../util.js'
 import config from '../../config.js'
 
@@ -47,6 +48,26 @@ const MAX_EMOJI_THRESHOLD_MULTIPLIER = 0.3 // Amount of words * mult (floored) =
 
 export const BLACKLIST_CACHE: string[] = []
 
+function takeAction (msg: Message, reason: string, warning: string, loose?: boolean) {
+  skipSnipe.add(msg.id)
+  deleteMeta.set(msg.id, reason)
+  msg.delete(reason)
+
+  if (!msg.member) return // ??
+  const period = getPeriod(msg.member)
+  if (!loose && period === Period.PROBATIONARY) {
+    ban(msg.member.guild, msg.author.id, null, `Automod: ${reason} (New member)`)
+    return
+  }
+
+  if (period === Period.RECENT) {
+    mute(msg.member.guild, msg.author.id, null, `Automod: ${reason} (Recent member)`, 24 * 3600e3)
+  }
+
+  msg.channel.createMessage({ content: warning, allowedMentions: { users: [ msg.author.id ] } })
+    .then((m) => setTimeout(() => m.delete(), 10e3))
+}
+
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (msg.guildID !== config.discord.ids.serverId || msg.author.bot || !isStaff(msg.member)) return null
 
@@ -57,13 +78,8 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
   }
 
   if (BLACKLIST_CACHE.some((word) => msg.content.replace(CLEANER, '').toLowerCase().includes(word))) {
-    skipSnipe.add(msg.id)
-    deleteMeta.set(msg.id, 'Contained a blacklisted word')
-    msg.delete('Message contained a blacklisted word.')
-    msg.channel.createMessage({
-      content: `${msg.author.mention}, you used a word on the blacklist so I deleted your message.`,
-      allowedMentions: { users: [ msg.author.id ] },
-    }).then((m) => setTimeout(() => m.delete(), 10e3))
+    takeAction(msg, 'Message contained a blacklisted word', `${msg.author.mention} Your message has been deleted because it contained a word blacklisted.`)
+    return // No need to keep checking for smth else
   }
 
   // Filter ads
@@ -76,34 +92,19 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
         if (inv && inv.guild?.id === config.discord.ids.serverId) continue
       }
 
-      skipSnipe.add(msg.id)
-      deleteMeta.set(msg.id, 'Advertisement')
-      msg.delete('Message contained advertisement')
-      msg.channel.createMessage({
-        content: `${msg.author.mention} **Rule #02**: Advertising of any kind is prohibited.`,
-        allowedMentions: { users: [ msg.author.id ] },
-      }).then((m) => setTimeout(() => m.delete(), 10e3))
-
-      return
+      takeAction(msg, 'Advertisement', `${msg.author.mention} **Rule #02**: Advertising of any kind is prohibited.`)
+      return // No need to keep checking for smth else
     }
   }
 
   // Filter emoji spam
   const emojis = msg.content.match(EMOJI_RE)?.length || 0
-  console.log(emojis)
   if (emojis > 5) {
     const words = msg.content.replace(EMOJI_RE, '').split(/\s+/g).filter(Boolean).length
     const max = Math.floor(words * MAX_EMOJI_THRESHOLD_MULTIPLIER)
     if (emojis > max) {
-      skipSnipe.add(msg.id)
-      deleteMeta.set(msg.id, 'Emoji spam')
-      msg.delete('Message contained too many emojis')
-      msg.channel.createMessage({
-        content: `${msg.author.mention} **Rule #03**: Spam of any kind is prohibited.\nConsider reducing the amount of emojis in your message.`,
-        allowedMentions: { users: [ msg.author.id ] },
-      }).then((m) => setTimeout(() => m.delete(), 10e3))
-
-      return
+      takeAction(msg, 'Emoji spam', `${msg.author.mention} **Rule #03**: Spam of any kind is prohibited.\nConsider reducing the amount of emojis in your message.`, true)
+      return // No need to keep checking for smth else
     }
   }
 }

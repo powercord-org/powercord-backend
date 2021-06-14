@@ -20,13 +20,22 @@
  * SOFTWARE.
  */
 
-import type { Guild, User } from 'eris'
+import type { Guild, Member, User } from 'eris'
 import { schedule } from './modules/mod/modtasks.js'
 import { prettyPrintTimeSpan } from './util.js'
 import config from './config.js'
 
-function formatReason (mod: User, reason?: string, duration?: number, soft: boolean = false) {
-  let formatted = `[${mod.username}#${mod.discriminator}] ${soft ? '[soft] ' : ''}${reason ?? 'No reason specified.'}`
+export enum Period {
+  PROBATIONARY = 0,
+  RECENT,
+  KNOWN,
+}
+
+const PROBATIONARY_PERIOD = 24 * 3600e3 // 1 day
+const RECENT_PERIOD = 7 * 24 * 3600e3 // 7 days
+
+function formatReason (mod: User | null, reason?: string, duration?: number, soft: boolean = false) {
+  let formatted = `${mod ? `[${mod.username}#${mod.discriminator}] ` : ''}${soft ? '[soft] ' : ''}${reason ?? 'No reason specified.'}`
   if (duration) formatted += ` (duration: ${prettyPrintTimeSpan(duration)})`
   return formatted
 }
@@ -38,7 +47,7 @@ function formatReason (mod: User, reason?: string, duration?: number, soft: bool
  * @param mod - the moderator preforming the mute
  * @param reason - the reason the mute is occurring
  */
-export function mute (guild: Guild, userId: string, mod: User, reason?: string, duration?: number) {
+export function mute (guild: Guild, userId: string, mod: User | null, reason?: string, duration?: number) {
   guild.addMemberRole(userId, config.discord.ids.roleMuted, formatReason(mod, reason, duration))
   if (duration) schedule('unmute', guild, userId, mod, duration)
 }
@@ -50,7 +59,7 @@ export function mute (guild: Guild, userId: string, mod: User, reason?: string, 
  * @param mod - the moderator preforming the unmute
  * @param reason - the reason the unmute is occurring
  */
-export function unmute (guild: Guild, userId: string, mod: User, reason?: string) {
+export function unmute (guild: Guild, userId: string, mod: User | null, reason?: string) {
   guild.removeMemberRole(userId, config.discord.ids.roleMuted, formatReason(mod, reason))
 }
 
@@ -61,7 +70,7 @@ export function unmute (guild: Guild, userId: string, mod: User, reason?: string
  * @param mod - the moderator preforming the kick
  * @param reason - the reason the kick is occurring
  */
-export function kick (guild: Guild, userId: string, mod: User, reason?: string) {
+export function kick (guild: Guild, userId: string, mod: User | null, reason?: string) {
   guild.kickMember(userId, formatReason(mod, reason))
 }
 
@@ -73,7 +82,7 @@ export function kick (guild: Guild, userId: string, mod: User, reason?: string) 
  * @param reason - the reason the ban is occurring
  * @param deleteDays - `default = 0` the number of days worth of messages to delete
  */
-export function ban (guild: Guild, userId: string, mod: User, reason?: string, duration?: number, deleteDays: number = 0) {
+export function ban (guild: Guild, userId: string, mod: User | null, reason?: string, duration?: number, deleteDays: number = 0) {
   guild.banMember(userId, deleteDays, formatReason(mod, reason, duration))
   if (duration) schedule('unban', guild, userId, mod, duration)
 }
@@ -85,7 +94,7 @@ export function ban (guild: Guild, userId: string, mod: User, reason?: string, d
  * @param mod - the moderator preforming the unban
  * @param reason - the reason the unban is occurring
  */
-export function unban (guild: Guild, userId: string, mod: User, reason?: string) {
+export function unban (guild: Guild, userId: string, mod: User | null, reason?: string) {
   guild.unbanMember(userId, formatReason(mod, reason))
 }
 
@@ -97,7 +106,20 @@ export function unban (guild: Guild, userId: string, mod: User, reason?: string)
  * @param reason - the reason the soft ban is occurring
  * @param deleteDays - `default = 0` the number of days worth of messages to delete
  */
-export function softBan (guild: Guild, userId: string, mod: User, reason?: string, deleteDays: number = 0) {
+export function softBan (guild: Guild, userId: string, mod: User | null, reason?: string, deleteDays: number = 0) {
   guild.banMember(userId, deleteDays, formatReason(mod, reason, 0, true))
     .then(() => guild.unbanMember(userId, formatReason(mod, reason, 0, true)))
+}
+
+export function getPeriod (user: Member): Period {
+  const memberFor = Date.now() - user.joinedAt
+  if (memberFor < PROBATIONARY_PERIOD) {
+    return Period.PROBATIONARY
+  }
+
+  if (memberFor < RECENT_PERIOD) {
+    return Period.RECENT
+  }
+
+  return Period.KNOWN
 }

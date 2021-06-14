@@ -26,7 +26,7 @@ import { prettyPrintTimeSpan } from './util.js'
 import config from './config.js'
 
 const RAID_LEVEL = 3
-const NORMAL_LEVEL = 1
+const NORMAL_LEVEL = 2
 
 let raidMode: boolean
 
@@ -69,7 +69,7 @@ export async function enterRaidMode (guild: Guild, mod: User, duration: number) 
  * @param guild - the guild to have its verification level lowered
  * @param mod - the moderator responsible for lowering the verification level
  */
-export async function exitRaidMode (guild: Guild, mod: User) {
+export async function exitRaidMode (guild: Guild, mod: User | null) {
   if (!raidMode) return
 
   await guild.edit({ verificationLevel: NORMAL_LEVEL })
@@ -80,6 +80,6 @@ export async function exitRaidMode (guild: Guild, mod: User) {
 
   const staffChannel = guild.channels.get(config.discord.ids.channelStaff) as TextChannel
   if (staffChannel) {
-    staffChannel.createMessage(`Now exiting raid mode as requested by ${mod.username}#${mod.discriminator}.`)
+    staffChannel.createMessage(`Now exiting raid mode (Was originally enabled ${mod ? `${mod.username}#${mod.discriminator}` : 'automatically'}).`)
   }
 }

@@ -27,14 +27,14 @@ import { unmute, unban } from '../../mod.js'
 import { exitRaidMode } from '../../raidMode.js'
 
 export type Schedulable = 'unmute' | 'unban' | 'endRaid'
-type Scheduled = { _id: ObjectId, type: Schedulable, guild: string, target: string, mod: string, time: number }
+type Scheduled = { _id: ObjectId, type: Schedulable, guild: string, target: string, mod: string | null, time: number }
 
 function processTasks (bot: CommandClient) {
   const collection = bot.mongo.collection<Scheduled>('tasks')
   collection.find().forEach((task) => {
     if (task.time < Date.now()) {
       const guild = bot.guilds.get(task.guild)! // Should never be null in theory; need to check that
-      const mod = bot.users.get(task.mod)! // Should never be null in theory; need to check that
+      const mod = task.mod ? bot.users.get(task.mod) || null : null
 
       switch (task.type) {
         case 'unmute':
@@ -61,12 +61,12 @@ function processTasks (bot: CommandClient) {
  * @param mod - the moderator scheduling the task
  * @param time - how long in ms until the task runs
  */
-export async function schedule (task: Schedulable, guild: Guild, userId: string, mod: User, time: number): Promise<InsertOneWriteOpResult<Scheduled>> {
-  return mod._client.mongo.collection<Scheduled>('tasks').insertOne({
+export async function schedule (task: Schedulable, guild: Guild, userId: string, mod: User | null, time: number): Promise<InsertOneWriteOpResult<Scheduled>> {
+  return guild._client.mongo.collection<Scheduled>('tasks').insertOne({
     type: task,
     guild: guild.id,
     target: userId,
-    mod: mod.id,
+    mod: mod?.id || null,
     time: Date.now() + time,
   })
 }
