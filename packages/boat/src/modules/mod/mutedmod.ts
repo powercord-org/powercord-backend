@@ -25,7 +25,6 @@ import { ban } from '../../mod.js'
 import { delayedFunction, extractEntryData } from '../../util.js'
 import config from '../../config.js'
 
-
 const MAX_INFRACTIONS = 4
 
 async function memberRemove (this: CommandClient, guild: Guild, member: Member | MemberPartial) {
