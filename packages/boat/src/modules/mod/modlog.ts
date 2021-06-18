@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-import type { CommandClient, Guild, GuildAuditLogEntry, Role, TextableChannel, User } from 'eris'
+import type { CommandClient, Guild, Role, TextableChannel, User } from 'eris'
 import { Constants } from 'eris'
-import { sanitizeMarkdown } from '../../util.js'
+import { delayedFunction, extractEntryData, sanitizeMarkdown } from '../../util.js'
 import config from '../../config.js'
 
 const TEMPLATE = `**$type | Case $case**
@@ -30,11 +30,6 @@ __User__: $user ($userid)
 __Moderator__: $moderator ($modid)
 __Reason__: $reason`
 
-function delayedFunction (fn: Function): () => void {
-  return function (this: CommandClient, ...args: unknown[]) {
-    setTimeout(() => fn.apply(this, args), 2e3)
-  }
-}
 
 function format (type: string, caseId: string, user: User, modName: string, modId: string, reason: string) {
   return TEMPLATE
@@ -58,27 +53,6 @@ async function computeCaseId (channel: TextableChannel): Promise<number> {
   return parseInt(match[1], 10) + 1
 }
 
-function extractEntryData (entry: GuildAuditLogEntry): [ string, string, string ] {
-  let modId = ''
-  let modName = ''
-  let reason = ''
-
-  if (entry.user.id === config.discord.clientID && entry.reason?.startsWith('[')) {
-    const splittedReason = entry.reason.split(' ')
-    modName = splittedReason.shift()!.replace('[', '').replace(']', '')
-    reason = splittedReason.join(' ')
-    const [ username, discrim ] = modName.split('#')
-    const mod = entry.guild.members.find((m) => m.username === username && m.discriminator === discrim)
-    modId = mod ? mod.id : '<unknown>' // Should not happen
-  } else {
-    modId = entry.user.id
-    modName = `${entry.user.username}#${entry.user.discriminator}`
-    reason = entry.reason || 'No reason specified.'
-  }
-
-  return [ modId, modName, reason ]
-}
-
 function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) => Promise<void> {
   return async function (this: CommandClient, guild: Guild, user: User): Promise<void> {
     const channel = this.getChannel(config.discord.ids.channelModLogs)
@@ -91,7 +65,7 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
     const entry = logs.entries.find((auditEntry) => auditEntry.targetID === user.id)
     if (!entry) return
 
-    let [ modId, modName, reason ] = extractEntryData(entry)
+    let { modId, modName, reason } = extractEntryData(entry)
 
     const soft = reason.startsWith('[soft]')
     if (soft) {
@@ -116,7 +90,7 @@ async function processMemberLeave (this: CommandClient, guild: Guild, user: User
   const logs = await guild.getAuditLog({ actionType: Constants.AuditLogActions.MEMBER_KICK, limit: 5 })
   const entry = logs.entries.find((auditEntry) => auditEntry.targetID === user.id)
   if (entry && Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) < 5000) {
-    const [ modId, modName, reason ] = extractEntryData(entry)
+    const { modId, modName, reason } = extractEntryData(entry)
     const caseId = await computeCaseId(channel)
 
     this.createMessage(config.discord.ids.channelModLogs, {
@@ -147,7 +121,7 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
       continue
     }
 
-    const [ modId, modName, reason ] = extractEntryData(entry)
+    const { modId, modName, reason } = extractEntryData(entry)
     const caseId = await computeCaseId(channel)
 
     this.createMessage(config.discord.ids.channelModLogs, {

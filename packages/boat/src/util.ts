@@ -20,9 +20,10 @@
  * SOFTWARE.
  */
 
-import type { Guild, GuildTextableChannel, Member, Message } from 'eris'
+import type { CommandClient, Guild, GuildAuditLogEntry, GuildTextableChannel, Member, Message } from 'eris'
 import { readdir, stat } from 'fs/promises'
 import { URL } from 'url'
+import config from './config.js'
 
 const DURATION_MAP = { m: 60e3, h: 3600e3, d: 86400e3 }
 const BYTE_UNITS = [ 'B', 'KB', 'MB', 'GB', 'TB' ]
@@ -167,4 +168,45 @@ export function prettyPrintBytes (bytes: number): string {
   }
 
   return `${bytes.toFixed(2)} ${BYTE_UNITS[unitIdx]}`
+}
+
+/**
+ * Data pertaining to an Audit Log Entry.
+ */
+export type AuditEntryData = {
+  modId: string,
+  modName: string,
+  reason: string;
+}
+
+/**
+ * Extract data from a GuildAuditLogEntry.
+ * @param entry The GuildAuditLogEntry from which to extract the data
+ * @returns A `AuditEntryData` containing data from `entry`
+ */
+export function extractEntryData (entry: GuildAuditLogEntry): AuditEntryData {
+  let modId = ''
+  let modName = ''
+  let reason = ''
+
+  if (entry.user.id === config.discord.clientID && entry.reason?.startsWith('[')) {
+    const splittedReason = entry.reason.split(' ')
+    modName = splittedReason.shift()!.replace('[', '').replace(']', '')
+    reason = splittedReason.join(' ')
+    const [ username, discrim ] = modName.split('#')
+    const mod = entry.guild.members.find((m) => m.username === username && m.discriminator === discrim)
+    modId = mod ? mod.id : '<unknown>' // Should not happen
+  } else {
+    modId = entry.user.id
+    modName = `${entry.user.username}#${entry.user.discriminator}`
+    reason = entry.reason || 'No reason specified.'
+  }
+
+  return { modId: modId, modName: modName, reason: reason }
+}
+
+export function delayedFunction (fn: Function): () => void {
+  return function (this: CommandClient, ...args: unknown[]) {
+    setTimeout(() => fn.apply(this, args), 2e3)
+  }
 }

@@ -64,5 +64,10 @@ export function executor (msg: Message<GuildTextableChannel>, args: string[]): v
 
   mute(msg.channel.guild, target, msg.author, reason, duration)
   msg.channel.createMessage('Shut')
+  msg._client.mongo.collection('enforce').insertOne({
+    userId: target,
+    modId: msg.author.id,
+    rule: -1,
+  })
   return
 }
