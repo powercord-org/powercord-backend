@@ -20,9 +20,11 @@
  * SOFTWARE.
  */
 
-import type { CommandClient, Guild, Member, MemberPartial } from 'eris'
+import { CommandClient, Constants, Guild, Member, MemberPartial, Role, User } from 'eris'
 import { ban } from '../../mod.js'
+import { delayedFunction, extractEntryData } from '../../util.js'
 import config from '../../config.js'
+
 
 const MAX_INFRACTIONS = 4
 
@@ -44,6 +46,47 @@ async function memberRemove (this: CommandClient, guild: Guild, member: Member |
   }
 }
 
+async function processMemberUpdate (this: CommandClient, guild: Guild, user: User) {
+  const channel = this.getChannel(config.discord.ids.channelModLogs)
+  if (!channel || !('getMessages' in channel)) return
+
+  const logs = await guild.getAuditLog({ actionType: Constants.AuditLogActions.MEMBER_ROLE_UPDATE, limit: 5 })
+
+  for (const entry of logs.entries) {
+    if (entry.targetID !== user.id
+      || entry.user.id === config.discord.clientID
+      || !entry.after
+      || Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) > 5000) {
+      continue
+    }
+
+    const added = entry.after.$add as Role[] | null
+    const removed = entry.after.$remove as Role[] | null
+
+    const wasAdded = Boolean(added?.find((r) => r.id === config.discord.ids.roleMuted))
+    const wasRemoved = Boolean(removed?.find((r) => r.id === config.discord.ids.roleMuted))
+
+    if (wasRemoved || wasAdded === wasRemoved) {
+      continue
+    }
+
+    const { modId } = extractEntryData(entry)
+
+    if (modId === config.discord.clientID) {
+      continue
+    }
+
+    this.mongo.collection('enforce').insertOne({
+      userId: user.id,
+      modId: modId,
+      rule: -1,
+    })
+
+    break
+  }
+}
+
 export default function (bot: CommandClient) {
   bot.on('guildMemberRemove', memberRemove)
+  bot.on('guildMemberUpdate', delayedFunction(processMemberUpdate))
 }
