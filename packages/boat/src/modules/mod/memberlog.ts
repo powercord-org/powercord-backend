@@ -29,14 +29,13 @@ type OldMember = { nick?: string; premiumSince: number; roles: string[] } | null
 function memberAdd (this: CommandClient, guild: Guild, member: Member) {
   if (guild.id !== config.discord.ids.serverId) return
 
-  const date = new Date(member.createdAt).toUTCString()
   const elapsed = prettyPrintTimeSpan(Date.now() - member.createdAt)
 
   this.createMessage(config.discord.ids.channelMemberLogs, {
     embed: {
       title: `${member.username}#${member.discriminator} just joined`,
       // there are no typo in the next line
-      description: `<@${member.id}> created their accout at ${date} (${elapsed})`,
+      description: `<@${member.id}> created their accout at <t${Math.floor(member.createdAt / 1000)}> (${elapsed})`,
       // there are no typo in the previous line
       timestamp: new Date().toISOString(),
       color: 0x7289da,

@@ -51,21 +51,22 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
     return
   }
 
-  const createdAt = new Date(member.createdAt)
-  const joinedAt = new Date(member.joinedAt)
+  const createdAt = Math.floor(member.createdAt / 1000)
+  const joinedAt = Math.floor(member.joinedAt / 1000)
 
   const infractions: Array<{ rule: string, count: number, occurrences: string[] }> = []
   await msg._client.mongo.collection('enforce').find({ userId: member.id }).forEach((doc) => {
     const infraction = infractions.find((inf) => inf.rule === doc.rule)
+    const timestamp = Math.floor(doc._id.getTimestamp() / 1000)
 
     if (infraction) {
       infractions[infractions.indexOf(infraction)].count++
-      infractions[infractions.indexOf(infraction)].occurrences.push(`• ${doc._id.getTimestamp().toUTCString()}`)
+      infractions[infractions.indexOf(infraction)].occurrences.push(`• <t:${timestamp}> (<t:${timestamp}:R>)`)
     } else {
       infractions.push({
         rule: doc.rule,
         count: 1,
-        occurrences: [ `• ${doc._id.getTimestamp().toUTCString()}` ],
+        occurrences: [ `• <t:${timestamp}> (<t:${timestamp}:R>)` ],
       })
     }
   })
@@ -73,10 +74,10 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
   const roles = member.roles.map((id) => msg.channel.guild.roles.get(id)!.mention)
   const fields: EmbedField[] = [ { name: 'Roles', value: roles.length > 0 ? roles.join(' ') : 'None' } ]
 
-  infractions.forEach(({ rule, count, occurrences: occurences }) => {
+  infractions.forEach(({ rule, count, occurrences }) => {
     fields.push({
       name: `Rule ${rule} broken ${count} ${makePluralDumb('time', count)}`,
-      value: occurences.join('\n'),
+      value: occurrences.join('\n'),
       inline: true,
     })
   })
@@ -87,7 +88,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
         name: `${member.username}#${member.discriminator}`,
         icon_url: member.avatarURL,
       },
-      description: `**Account created:** ${createdAt.toUTCString()} (${prettyPrintTimeSpan(Date.now() - member.createdAt)} ago)\n\n**Joined:** ${joinedAt.toUTCString()} (${prettyPrintTimeSpan(Date.now() - member.joinedAt)}`,
+      description: `**Account created:** <t:${createdAt}> (${prettyPrintTimeSpan(Date.now() - member.createdAt)} ago)\n\n**Joined:** <t:${joinedAt}> (${prettyPrintTimeSpan(Date.now() - member.joinedAt)} ago)`,
       timestamp: new Date().toISOString(),
       fields: fields,
       footer: { text: `Discord ID: ${member.id}` },
