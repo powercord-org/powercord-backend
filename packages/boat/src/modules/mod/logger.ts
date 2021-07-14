@@ -76,7 +76,7 @@ async function messageDelete (this: CommandClient, msg: Message<GuildTextableCha
 }
 
 async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<GuildTextableChannel> | MessagePartial>) {
-  if (msgs[0].channel.id !== config.discord.ids.serverId) {
+  if (msgs[0].channel.guild.id !== config.discord.ids.serverId) {
     return // Let's just ignore
   }
 
