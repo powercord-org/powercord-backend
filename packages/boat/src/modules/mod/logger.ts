@@ -42,7 +42,7 @@ Timestamp: $time ($duration ago)
 Message contents:
 $message`
 
-function format (template: string, message: Message<GuildTextableChannel>): string {
+async function format (template: string, message: Message<GuildTextableChannel>): Promise<string> {
   const attachments = message.attachments.length > 0
     ? `Attachments:\n${message.attachments.map((attachment) => attachment.filename).join(', ')}`
     : ''
@@ -50,6 +50,17 @@ function format (template: string, message: Message<GuildTextableChannel>): stri
   const meta = deleteMeta.has(message.id)
     ? `\nReason: ${deleteMeta.get(message.id)}`
     : ''
+
+  const tooLong = message.content.length > 1700
+  let hasteBin = ''
+
+  if (tooLong) {
+    const res = await fetch('https://haste.powercord.dev/documents', {
+      method: 'POST',
+      body: stringifyDiscordMessage(message),
+    }).then((r) => r.json())
+    hasteBin = `<https://haste.powercord.dev/${res.key}.txt>`
+  }
 
   deleteMeta.delete(message.id)
   return `${template
@@ -61,7 +72,10 @@ function format (template: string, message: Message<GuildTextableChannel>): stri
     .replace(/\$discrim/g, message.author.discriminator)
     .replace(/\$time/g, new Date(message.timestamp).toUTCString())
     .replace(/\$duration/g, prettyPrintTimeSpan(Date.now() - message.timestamp))
-    .replace(/\$message/g, stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`) || '*No contents*')}\n${attachments}`
+    .replace(/\$message/g, tooLong
+      ? '*Message too long*'
+      : stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`)
+      || '*No contents*')}${hasteBin}\n${attachments}`
 }
 
 async function messageDelete (this: CommandClient, msg: Message<GuildTextableChannel>) {
@@ -70,7 +84,7 @@ async function messageDelete (this: CommandClient, msg: Message<GuildTextableCha
   }
 
   this.createMessage(config.discord.ids.channelMessageLogs, {
-    content: format(SINGLE_TEMPLATE, msg),
+    content: await format(SINGLE_TEMPLATE, msg),
     allowedMentions: {},
   })
 }
