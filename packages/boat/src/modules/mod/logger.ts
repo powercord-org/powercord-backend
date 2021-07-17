@@ -42,25 +42,25 @@ Timestamp: $time ($duration ago)
 Message contents:
 $message`
 
-async function format (template: string, message: Message<GuildTextableChannel>): Promise<string> {
-  const attachments = message.attachments.length > 0
-    ? `Attachments:\n${message.attachments.map((attachment) => attachment.filename).join(', ')}`
-    : ''
+async function format (template: string, message: Message<GuildTextableChannel>, bulk: boolean = false): Promise<string> {
+  const cleanContent = stringifyDiscordMessage(message)
+  let extra = ''
+
+  if (!bulk && cleanContent.length > 1700) {
+    const res = await fetch('https://haste.powercord.dev/documents', {
+      method: 'POST',
+      body: cleanContent,
+    }).then((r) => r.json())
+    extra += `<https://haste.powercord.dev/${res.key}.txt>\n\n`
+  }
+
+  if (message.attachments.length > 0) {
+    extra += `Attachments:\n${message.attachments.map((attachment) => attachment.filename).join(', ')}`
+  }
 
   const meta = deleteMeta.has(message.id)
     ? `\nReason: ${deleteMeta.get(message.id)}`
     : ''
-
-  const tooLong = message.content.length > 1700
-  let hasteBin = ''
-
-  if (tooLong) {
-    const res = await fetch('https://haste.powercord.dev/documents', {
-      method: 'POST',
-      body: stringifyDiscordMessage(message),
-    }).then((r) => r.json())
-    hasteBin = `<https://haste.powercord.dev/${res.key}.txt>`
-  }
 
   deleteMeta.delete(message.id)
   return `${template
@@ -72,10 +72,10 @@ async function format (template: string, message: Message<GuildTextableChannel>)
     .replace(/\$discrim/g, message.author.discriminator)
     .replace(/\$time/g, new Date(message.timestamp).toUTCString())
     .replace(/\$duration/g, prettyPrintTimeSpan(Date.now() - message.timestamp))
-    .replace(/\$message/g, tooLong
+    .replace(/\$message/g, !bulk && cleanContent.length > 1700
       ? '*Message too long*'
-      : stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`)
-      || '*No contents*')}${hasteBin}\n${attachments}`
+      : cleanContent.replace(/`/g, `\`${ZWS}`)
+      || '*No contents*')}${extra}`
 }
 
 async function messageDelete (this: CommandClient, msg: Message<GuildTextableChannel>) {
@@ -94,12 +94,11 @@ async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<Guild
     return // Let's just ignore
   }
 
-  const list = msgs.map(
-    (msg) =>
-      'author' in msg
-        ? format(LIST_TEMPLATE, msg)
-        : `A message in #${msg.channel.name} that was not cached`
-  ).join('\n\n')
+  const list = (await Promise.all(msgs.map(
+    (msg) => 'author' in msg
+      ? format(LIST_TEMPLATE, msg, true)
+      : `A message in #${msg.channel.name} that was not cached`
+  ))).join('\n\n')
 
   const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: list.trim() }).then((r) => r.json())
   this.createMessage(config.discord.ids.channelMessageLogs, `${msgs.length} messages deleted:\n<https://haste.powercord.dev/${res.key}.txt>`)
