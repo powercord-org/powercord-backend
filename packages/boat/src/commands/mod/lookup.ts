@@ -42,7 +42,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
   const memberId = args.shift()!.replace(ID_REGEX, '$1')
   let member = msg.channel.guild.members.get(memberId)
   if (!member) {
-    const fetched = await await msg.channel.guild.fetchMembers({ userIDs: [ memberId ] })
+    const fetched = await msg.channel.guild.fetchMembers({ userIDs: [ memberId ] })
     member = fetched[0]
   }
 
@@ -61,12 +61,12 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
 
     if (infraction) {
       infractions[infractions.indexOf(infraction)].count++
-      infractions[infractions.indexOf(infraction)].occurrences.push(`• <t:${timestamp}> (<t:${timestamp}:R>)`)
+      infractions[infractions.indexOf(infraction)].occurrences.push(`• <t:${timestamp}>`)
     } else {
       infractions.push({
         rule: doc.rule,
         count: 1,
-        occurrences: [ `• <t:${timestamp}> (<t:${timestamp}:R>)` ],
+        occurrences: [ `• <t:${timestamp}>` ],
       })
     }
   })
