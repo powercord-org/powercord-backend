@@ -59,7 +59,7 @@ function format (template: string, message: Message<GuildTextableChannel>): stri
     .replace(/\$channel/g, message.channel.name)
     .replace(/\$username/g, sanitizeMarkdown(message.author.username))
     .replace(/\$discrim/g, message.author.discriminator)
-    .replace(/\$time/g, new Date(message.timestamp).toUTCString())
+    .replace(/\$time/g, `<t:${Math.floor(message.timestamp / 1000)}>`)
     .replace(/\$duration/g, prettyPrintTimeSpan(Date.now() - message.timestamp))
     .replace(/\$message/g, stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`) || '*No contents*')}\n${attachments}`
 }
