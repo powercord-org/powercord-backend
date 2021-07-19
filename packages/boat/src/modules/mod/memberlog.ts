@@ -35,7 +35,7 @@ function memberAdd (this: CommandClient, guild: Guild, member: Member) {
     embed: {
       title: `${member.username}#${member.discriminator} just joined`,
       // there are no typo in the next line
-      description: `<@${member.id}> created their accout at <t${Math.floor(member.createdAt / 1000)}> (${elapsed})`,
+      description: `<@${member.id}> created their accout at <t:${Math.floor(member.createdAt / 1000)}> (${elapsed} agp)`,
       // there are no typo in the previous line
       timestamp: new Date().toISOString(),
       color: 0x7289da,
