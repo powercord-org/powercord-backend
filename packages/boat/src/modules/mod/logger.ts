@@ -25,7 +25,14 @@ import fetch from 'node-fetch'
 import { prettyPrintTimeSpan, stringifyDiscordMessage, sanitizeMarkdown } from '../../util.js'
 import config from '../../config.js'
 
-type MessagePartial = { id: string, channel: GuildTextableChannel }
+type MessagePartial = {
+  id: string,
+  channel: {
+    id: string,
+    guild: { id: string }
+  },
+  guildId: string
+}
 
 export const deleteMeta = new Map<string, string>()
 
@@ -94,13 +101,15 @@ async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<Guild
     return // Let's just ignore
   }
 
-  const list = (await Promise.all(msgs.map(
-    (msg) => 'author' in msg
-      ? format(LIST_TEMPLATE, msg, true)
-      : `A message in #${msg.channel.name} that was not cached`
-  ))).join('\n\n')
+  const list = []
+  for (const msg of msgs) {
+    const channelName = this.guilds.get(config.discord.ids.serverId)?.channels.get(msg.channel.id)?.name || msg.channel.id
+    list.push('author' in msg
+      ? await format(LIST_TEMPLATE, msg, true)
+      : `A message in #${channelName} that was not cached`)
+  }
 
-  const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: list.trim() }).then((r) => r.json())
+  const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: list.join('\n\n').trim() }).then((r) => r.json())
   this.createMessage(config.discord.ids.channelMessageLogs, `${msgs.length} messages deleted:\n<https://haste.powercord.dev/${res.key}.txt>`)
 }
 
