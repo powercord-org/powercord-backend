@@ -100,10 +100,10 @@ async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<Guild
   if (msgs[0].channel.guild.id !== config.discord.ids.serverId) {
     return // Let's just ignore
   }
+  const channelName = this.guilds.get(config.discord.ids.serverId)?.channels.get(msgs[0].channel.id)?.name || msgs[0].channel.id
 
   const list = []
   for (const msg of msgs) {
-    const channelName = this.guilds.get(config.discord.ids.serverId)?.channels.get(msg.channel.id)?.name || msg.channel.id
     list.push('author' in msg
       ? await format(LIST_TEMPLATE, msg, true)
       : `A message in #${channelName} that was not cached`)
