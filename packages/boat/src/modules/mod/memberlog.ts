@@ -25,19 +25,20 @@ import { prettyPrintTimeSpan } from '../../util.js'
 import config from '../../config.js'
 
 type OldMember = { nick?: string; premiumSince: number; roles: string[] } | null
-type PartialInvite = { code: string, uses: number, inviter?: User }
+type PartialRawInvite = { code: string, uses: number, inviter?: User }
+type PartialInvite = { code: string, uses: number, inviter: string }
 
 const inviteCache = new Map<string, number>()
 
-async function fetchInvites (bot: CommandClient): Promise<PartialInvite[]> {
-  const res: PartialInvite[] = await bot.getGuildInvites(config.discord.ids.serverId)
+async function fetchInvites (bot: CommandClient): Promise<PartialRawInvite[]> {
+  const res: PartialRawInvite[] = await bot.getGuildInvites(config.discord.ids.serverId)
   const vanity = await bot.getGuildVanity(config.discord.ids.serverId)
   if (vanity) res.push({ code: vanity.code || 'powercord', uses: vanity.uses })
 
   return res
 }
 
-async function getPotentialInvites (bot: CommandClient): Promise<Array<{ code: string, inviter: string }>> {
+async function getPotentialInvites (bot: CommandClient): Promise<Array<PartialInvite>> {
   const res = []
   const invites = await fetchInvites(bot)
   for (const { code, uses, inviter } of invites) {
@@ -46,6 +47,7 @@ async function getPotentialInvites (bot: CommandClient): Promise<Array<{ code: s
       inviteCache.set(code, uses)
       res.push({
         code: code,
+        uses: uses,
         inviter: code === 'powercord' ? 'Vanity' : inviter ? `${inviter.username}#${inviter.discriminator}` : '<unknown>',
       })
     }
@@ -61,6 +63,7 @@ async function memberAdd (this: CommandClient, guild: Guild, member: Member) {
   const elapsed = prettyPrintTimeSpan(Date.now() - member.createdAt)
   const codes = invUsed.map(({ code }) => code).join(', ')
   const inviters = invUsed.map(({ inviter }) => inviter).join(', ')
+  const inviteUses = invUsed.map(({ uses }) => uses).join(', ')
 
   this.createMessage(config.discord.ids.channelMemberLogs, {
     embed: {
@@ -77,6 +80,11 @@ async function memberAdd (this: CommandClient, guild: Guild, member: Member) {
         {
           name: 'Inviter',
           value: inviters || 'Detection failure',
+          inline: true,
+        },
+        {
+          name: 'Uses',
+          value: inviteUses || 'Detection failure',
           inline: true,
         },
       ],
