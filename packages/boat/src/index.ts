@@ -32,7 +32,7 @@ import config from './config.js'
 
 const bot = new CommandClient(
   config.discord.botToken,
-  { intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildPresences', 'guildMessages', 'guildMessageReactions' ] },
+  { intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildPresences', 'guildMessages', 'guildMessageReactions', 'guildInvites' ] },
   { defaultHelpCommand: false, prefix: config.discord.prefix }
 )
 
@@ -64,9 +64,12 @@ Promise.resolve(new MongoClient(config.mango))
   .then(() => readdirRecursive(new URL('./commands/', import.meta.url)))
   .then((commands: string[]) => Promise.all(commands.map(loadCommand)))
   .then(() => bot.connect())
-  .then(() => console.log('Bot logged in'))
   .then(() => loadLaws(bot))
   .then(() => initRaidMode(bot))
   .catch((e: Error) => console.error('An error occurred during startup', e))
+
+bot.on('ready', () => {
+  console.log('Bot logged in (%s#%s)', bot.user.username, bot.user.discriminator)
+})
 
 bot.on('error', (e) => console.error('Bot encountered an error', e))

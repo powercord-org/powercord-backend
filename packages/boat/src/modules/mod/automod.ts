@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { CommandClient, Message, GuildTextableChannel } from 'eris'
+import type { CommandClient, Message, GuildTextableChannel, Guild, Invite } from 'eris'
 import { URL } from 'url'
 import { readFileSync } from 'fs'
 import { deleteMeta } from './logger.js'
@@ -109,7 +109,28 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
   }
 }
 
+function checkInvite (guild: Guild, invite: Invite) {
+  const member = invite.inviter && guild.members.get(invite.inviter.id)
+  console.log(member?.username)
+  if (!member) return
+
+  const channel = guild.channels.get(invite.channel.id)
+  console.log(channel?.name)
+  if (!channel) return
+
+  if (!channel.permissionsOf(member).has('readMessages')) {
+    invite.delete('Honeypot: no permissions to see channel but created an invite')
+
+    // todo: ban instead of logging
+    const staff = guild.channels.get(config.discord.ids.channelStaff) as GuildTextableChannel | undefined
+    staff?.createMessage({ content: `:eyes: ${invite.code} <@${member.id}> ${member.username}#${member.discriminator}`, allowedMentions: {} })
+  }
+
+  // todo: check if user is muted, flag invite as suspicious
+}
+
 export default function (bot: CommandClient) {
   bot.on('messageCreate', process)
   bot.on('messageUpdate', process)
+  bot.on('inviteCreate', checkInvite)
 }

@@ -20,16 +20,48 @@
  * SOFTWARE.
  */
 
-import type { CommandClient, Guild, Member, MemberPartial } from 'eris'
+import type { CommandClient, Guild, Member, MemberPartial, User } from 'eris'
 import { prettyPrintTimeSpan } from '../../util.js'
 import config from '../../config.js'
 
 type OldMember = { nick?: string; premiumSince: number; roles: string[] } | null
+type PartialInvite = { code: string, uses: number, inviter?: User }
 
-function memberAdd (this: CommandClient, guild: Guild, member: Member) {
+const inviteCache = new Map<string, number>()
+
+async function fetchInvites (bot: CommandClient): Promise<PartialInvite[]> {
+  const res: PartialInvite[] = await bot.getGuildInvites(config.discord.ids.serverId)
+  const vanity = await bot.getGuildVanity(config.discord.ids.serverId)
+  if (vanity) res.push({ code: vanity.code || 'powercord', uses: vanity.uses })
+
+  return res
+}
+
+async function getPotentialInvites (bot: CommandClient): Promise<Array<{ code: string, inviter: string }>> {
+  const res = []
+  const invites = await fetchInvites(bot)
+  for (const { code, uses, inviter } of invites) {
+    const prevCount = inviteCache.get(code) || 0
+    if (uses > prevCount) {
+      inviteCache.set(code, uses)
+      console.log(inviter)
+      res.push({
+        code: code,
+        inviter: code === 'powercord' ? 'Vanity' : inviter ? `${inviter.username}#${inviter.discriminator}` : '<unknown>',
+      })
+    }
+  }
+
+  return res
+}
+
+async function memberAdd (this: CommandClient, guild: Guild, member: Member) {
   if (guild.id !== config.discord.ids.serverId) return
 
+  const invUsed = await getPotentialInvites(this)
   const elapsed = prettyPrintTimeSpan(Date.now() - member.createdAt)
+  const codes = invUsed.map(({ code }) => code).join(', ')
+  const inviters = invUsed.map(({ inviter }) => inviter).join(', ')
 
   this.createMessage(config.discord.ids.channelMemberLogs, {
     embed: {
@@ -37,6 +69,18 @@ function memberAdd (this: CommandClient, guild: Guild, member: Member) {
       // there are no typo in the next line
       description: `<@${member.id}> created their accout at <t:${Math.floor(member.createdAt / 1000)}> (${elapsed} ago)`,
       // there are no typo in the previous line
+      fields: [
+        {
+          name: 'Invite used',
+          value: codes || 'Detection failure',
+          inline: true,
+        },
+        {
+          name: 'Inviter',
+          value: inviters || 'Detection failure',
+          inline: true,
+        },
+      ],
       timestamp: new Date().toISOString(),
       color: 0x7289da,
       thumbnail: { url: member.avatarURL },
@@ -138,6 +182,14 @@ export default function (bot: CommandClient) {
     console.log('no channel ids provided for member logs. module will be disabled.')
     return
   }
+
+  bot.on('ready', () => {
+    fetchInvites(bot).then((invites) => {
+      for (const { code, uses } of invites) {
+        inviteCache.set(code, uses)
+      }
+    })
+  })
 
   bot.on('guildMemberAdd', memberAdd)
   bot.on('guildMemberUpdate', memberUpdate)
