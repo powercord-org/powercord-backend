@@ -44,7 +44,6 @@ async function getPotentialInvites (bot: CommandClient): Promise<Array<{ code: s
     const prevCount = inviteCache.get(code) || 0
     if (uses > prevCount) {
       inviteCache.set(code, uses)
-      console.log(inviter)
       res.push({
         code: code,
         inviter: code === 'powercord' ? 'Vanity' : inviter ? `${inviter.username}#${inviter.discriminator}` : '<unknown>',
