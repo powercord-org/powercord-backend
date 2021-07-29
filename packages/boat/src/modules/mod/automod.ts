@@ -69,7 +69,7 @@ function takeAction (msg: Message, reason: string, warning: string, loose?: bool
 }
 
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
-  if (msg.guildID !== config.discord.ids.serverId || msg.author.bot || !isStaff(msg.member)) return null
+  if (msg.guildID !== config.discord.ids.serverId || msg.author.bot || isStaff(msg.member)) return null
 
   // Filter bad words
   if (!BLACKLIST_CACHE.length) {

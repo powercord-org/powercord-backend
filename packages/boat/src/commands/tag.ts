@@ -21,10 +21,11 @@
  */
 
 import type { GuildTextableChannel, Message } from 'eris'
+import type { DatabaseTag } from '../db.js'
 import config from '../config.js'
 
 async function listTags (msg: Message<GuildTextableChannel>): Promise<void> {
-  const tags = await msg._client.mongo.collection('tags').find({}).toArray()
+  const tags = await msg._client.mongo.collection<DatabaseTag>('tags').find({}).toArray()
   msg.channel.createMessage(`Available tags: ${tags.map((t) => t._id).join(', ')}`)
 }
 
@@ -34,37 +35,37 @@ async function addTag (msg: Message<GuildTextableChannel>, args: string[]): Prom
     return
   }
 
-  if (await msg._client.mongo.collection('tags').findOne({ _id: args[1] })) {
+  if (await msg._client.mongo.collection<DatabaseTag>('tags').findOne({ _id: args[1] })) {
     msg.channel.createMessage('This tag already exists.')
     return
   }
 
-  await msg._client.mongo.collection('tags').insertOne({ _id: args[1], content: msg.content.slice(msg.content.indexOf(args[1]) + args[1].length).trim() })
+  await msg._client.mongo.collection<DatabaseTag>('tags').insertOne({ _id: args[1], content: msg.content.slice(msg.content.indexOf(args[1]) + args[1].length).trim() })
   msg.channel.createMessage('Tag created.')
 }
 
 async function editTag (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
-  if (!await msg._client.mongo.collection('tags').findOne({ _id: args[1] })) {
+  if (!await msg._client.mongo.collection<DatabaseTag>('tags').findOne({ _id: args[1] })) {
     msg.channel.createMessage('This tag does not exist.')
     return
   }
 
-  await msg._client.mongo.collection('tags').updateOne({ _id: args[1] }, { $set: { content: msg.content.slice(msg.content.indexOf(args[1]) + args[1].length).trim() } })
+  await msg._client.mongo.collection<DatabaseTag>('tags').updateOne({ _id: args[1] }, { $set: { content: msg.content.slice(msg.content.indexOf(args[1]) + args[1].length).trim() } })
   msg.channel.createMessage('Tag updated.')
 }
 
 async function deleteTag (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
-  if (!await msg._client.mongo.collection('tags').findOne({ _id: args[1] })) {
+  if (!await msg._client.mongo.collection<DatabaseTag>('tags').findOne({ _id: args[1] })) {
     msg.channel.createMessage('This tag does not exist.')
     return
   }
 
-  await msg._client.mongo.collection('tags').deleteOne({ _id: args[1] })
+  await msg._client.mongo.collection<DatabaseTag>('tags').deleteOne({ _id: args[1] })
   msg.channel.createMessage('Tag deleted.')
 }
 
 async function sendTag (msg: Message<GuildTextableChannel>, args: string[]): Promise<void> {
-  const tag = await msg._client.mongo.collection('tags').findOne({ _id: args[0] })
+  const tag = await msg._client.mongo.collection<DatabaseTag>('tags').findOne({ _id: args[0] })
   if (!tag) {
     msg.channel.createMessage('This tag does not exist.')
     return

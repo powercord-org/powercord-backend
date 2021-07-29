@@ -71,7 +71,7 @@ async function getDiscordAvatar (user: User, update: (avatar: string) => void): 
 async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequest>, reply: FastifyReply): Promise<Buffer | void> {
   let user = request.user!
   if (request.params.id !== request.user?._id.toString()) {
-    user = await this.mongo.db!.collection('users').findOne({
+    const dbUser = await this.mongo.db!.collection<User>('users').findOne({
       _id: request.params.id,
       $or: [
         { 'badges.developer': true },
@@ -81,6 +81,7 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
       ],
     })
 
+    user = dbUser!
     if (!user) {
       reply.code(422).send()
       return

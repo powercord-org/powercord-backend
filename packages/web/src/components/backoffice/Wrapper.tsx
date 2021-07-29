@@ -23,11 +23,13 @@
 import type { VNode } from 'preact'
 import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
+import { useTitleTemplate } from 'hoofd/preact'
 
 import Spinner from '../util/Spinner'
 
 let Admin: null | (() => VNode) = null
 export default function Wrapper () {
+  useTitleTemplate('Powercord Admin')
   const forceUpdate = useState(false)[1]
 
   useEffect(() => {

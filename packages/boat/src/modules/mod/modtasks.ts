@@ -21,7 +21,7 @@
  */
 
 import type { CommandClient, Guild, User } from 'eris'
-import type { InsertOneWriteOpResult, ObjectId } from 'mongodb'
+import type { InsertOneResult, ObjectId } from 'mongodb'
 import cron from 'node-cron'
 import { unmute, unban } from '../../mod.js'
 import { exitRaidMode } from '../../raidMode.js'
@@ -61,7 +61,7 @@ function processTasks (bot: CommandClient) {
  * @param mod - the moderator scheduling the task
  * @param time - how long in ms until the task runs
  */
-export async function schedule (task: Schedulable, guild: Guild, userId: string, mod: User | null, time: number): Promise<InsertOneWriteOpResult<Scheduled>> {
+export async function schedule (task: Schedulable, guild: Guild, userId: string, mod: User | null, time: number): Promise<InsertOneResult<Scheduled>> {
   return guild._client.mongo.collection<Scheduled>('tasks').insertOne({
     type: task,
     guild: guild.id,

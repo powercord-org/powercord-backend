@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { GuildTextableChannel, Message } from 'eris'
+import type { GuildTextableChannel, Message, Member } from 'eris'
 import config from '../../config.js'
 
 export async function executor (msg: Message<GuildTextableChannel>): Promise<void> {
@@ -38,7 +38,7 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
   const filteredUsers = users.map((user) => ({
     ...user,
     member: guild.members.find((member) => member.id === user._id),
-  })).filter((m) => m.member)
+  })).filter((m) => m.member) as Array<{ _id: string, member: Member }>
 
   for (const user of filteredUsers) {
     const originalRoles = user.member.roles

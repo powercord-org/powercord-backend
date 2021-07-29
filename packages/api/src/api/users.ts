@@ -32,9 +32,9 @@ async function getSelf (request: FastifyRequest<{ TokenizeUser: User }>): Promis
 }
 
 async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply): Promise<RestUser | void> {
-  const user = await this.mongo.db!.collection('users').findOne({ _id: request.params.id })
+  const user = await this.mongo.db!.collection<User>('users').findOne({ _id: request.params.id })
   if (!user) return reply.callNotFound()
-  return formatUser(user)
+  return formatUser(user!)
 }
 
 async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<unknown> {

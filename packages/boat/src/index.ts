@@ -23,7 +23,7 @@
 import { URL } from 'url'
 import { basename } from 'path'
 import { CommandClient } from 'eris'
-import MongoClient from 'mongodb'
+import { MongoClient } from 'mongodb'
 
 import { readdirRecursive } from './util.js'
 import { loadLaws } from './laws.js'
@@ -56,8 +56,8 @@ async function loadCommand (command: string) {
   bot.registerCommand(basename(command, '.js'), cmd.executor, { description: cmd.description, aliases: cmd.aliases })
 }
 
-Promise.resolve()
-  .then(() => MongoClient.connect(config.mango, { useUnifiedTopology: true }))
+Promise.resolve(new MongoClient(config.mango))
+  .then((client) => client.connect())
   .then((client) => (bot.mongo = client.db('powercord')))
   .then(() => readdirRecursive(new URL('./modules/', import.meta.url)))
   .then((modules: string[]) => Promise.all(modules.map(loadModule)))

@@ -76,6 +76,7 @@ export const Routes = {
 
   BACKOFFICE: '/backoffice',
   BACKOFFICE_USERS: '/backoffice/users',
+  BACKOFFICE_BANS: '/backoffice/bans',
   BACKOFFICE_MONITORING: '/backoffice/monitoring',
   BACKOFFICE_STORE_FRONT: '/backoffice/store/front',
   BACKOFFICE_STORE_FORMS: '/backoffice/store/forms',

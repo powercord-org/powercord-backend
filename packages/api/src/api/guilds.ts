@@ -22,9 +22,11 @@
 
 import type { FastifyInstance } from 'fastify'
 
-async function badges (this: FastifyInstance): Promise<Array<{ name: string, icon: string }>> {
-  return this.mongo.db!.collection('badges').find({}).toArray().then((b) =>
-    b.reduce((acc, badge) => {
+type Badge = { name: string, icon: string }
+
+async function badges (this: FastifyInstance): Promise<Record<string, Badge>> {
+  return this.mongo.db!.collection<Badge & { _id: string }>('badges').find({}).toArray().then((b) =>
+    b.reduce<Record<string, Badge>>((acc, badge) => {
       acc[badge._id] = {
         name: badge.name,
         icon: badge.icon,

@@ -152,7 +152,7 @@ async function computeGuildStats (db: Db) {
   const data = await cursor.toArray()
   cursor.close()
 
-  return formatPeriodicData(data)
+  return formatPeriodicData(data as PeriodicData[])
 }
 
 async function contributors (this: FastifyInstance): Promise<unknown> {

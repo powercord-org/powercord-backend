@@ -31,6 +31,7 @@ import Users from './Users/Manage'
 import { Routes } from '../../constants'
 
 import Smile from 'feather-icons/dist/icons/smile.svg'
+import Shield from 'feather-icons/dist/icons/shield.svg'
 import Activity from 'feather-icons/dist/icons/activity.svg'
 import Layout from 'feather-icons/dist/icons/layout.svg'
 import Inbox from 'feather-icons/dist/icons/inbox.svg'
@@ -46,6 +47,10 @@ function Sidebar () {
       <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_USERS}>
         <Smile/>
         <span>Users</span>
+      </Link>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_BANS}>
+        <Shield/>
+        <span>Bans</span>
       </Link>
       <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_MONITORING}>
         <Activity/>
