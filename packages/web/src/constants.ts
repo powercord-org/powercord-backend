@@ -85,7 +85,7 @@ export const Routes = {
   BACKOFFICE_STORE_REPORTS_REPORT: (id: string) => `/backoffice/store/reports/${id}`,
   BACKOFFICE_EVENTS_SECRET: '/backoffice/events/secret',
 
-  DICKSWORD: 'https://discord.gg/gs4ZMbBfCh',
+  DICKSWORD: 'https://discord.gg/powercord',
   PATREON: 'https://patreon.com/aetheryx',
   GITHUB: 'https://github.com/powercord-org',
 }
