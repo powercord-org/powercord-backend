@@ -107,6 +107,15 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
       return // No need to keep checking for smth else
     }
   }
+
+  // Deal with people who can't write
+  if (msg.content.includes('PowerCord') || msg.content.includes('powerCord') || msg.content.includes('Power Cord') || msg.content.includes('power Cord')) {
+    skipSnipe.add(msg.id)
+    deleteMeta.set(msg.id, 'Improper writing of Powercord')
+
+    msg.delete('Improper writing of Powercord')
+    msg.channel.createMessage({ content: 'There is no uppercase C. "Powercord".', allowedMentions: {} })
+  }
 }
 
 function checkInvite (guild: Guild, invite: Invite) {
