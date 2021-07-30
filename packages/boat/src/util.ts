@@ -151,7 +151,7 @@ export function isStaff (member: Member | string, guild?: Guild): boolean {
  * @returns The sanitized string
  */
 export function sanitizeMarkdown (md: string): string {
-  return md.replace(/[*_~`>\\]/g, '\\$1')
+  return md.replace(/([*_~`>\\])/g, '\\$1')
 }
 
 /**
