@@ -21,6 +21,7 @@
  */
 
 import { h, Fragment } from 'preact'
+import { useState, useEffect } from 'preact/hooks'
 import Router from 'preact-router'
 import { Link } from 'preact-router/match'
 
@@ -41,6 +42,9 @@ import CodeSandbox from 'feather-icons/dist/icons/codesandbox.svg'
 import style from './admin.module.css'
 
 function Sidebar () {
+  const [ , forceUpdate ] = useState(0)
+  useEffect(() => void setTimeout(() => forceUpdate(1), 10), [])
+
   return (
     <Fragment>
       <h1>Administration</h1>

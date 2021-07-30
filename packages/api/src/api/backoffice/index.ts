@@ -29,4 +29,11 @@ export default async function (fastify: FastifyInstance): Promise<void> {
 
   fastify.register(usersModule, { prefix: '/users' })
   fastify.register(userbansModule, { prefix: '/bans' })
+  // abuse monitoring
+
+  // store frontpage
+  // store forms
+  // store reports
+
+  // super secret event
 }

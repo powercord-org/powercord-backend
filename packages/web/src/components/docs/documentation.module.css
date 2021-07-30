@@ -22,7 +22,7 @@
 
 .item {
   color: var(--text-color);
-  padding: 6px 8px;
+  padding: 6px 12px;
   margin-bottom: 4px;
   border-radius: 3px;
 }
@@ -33,7 +33,9 @@
 }
 
 .item.active {
-  background-color: var(--blurple);
+  border-left: 4px var(--blurple) solid;
+  background-color: var(--background-tertiary);
+  padding-left: 8px;
 }
 
 .contents {
