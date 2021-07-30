@@ -44,6 +44,7 @@ type BaseFieldProps = Attributes & {
   error?: ComponentChild
   required?: boolean
   disabled?: boolean
+  raw?: boolean
   rk?: number // [Cynthia] this is used to force re-render of form fields, to help with errors sometimes not showing up
 }
 
@@ -93,22 +94,29 @@ function BaseField (props: BaseProps) {
 
 export function TextField (props: TextFieldProps) {
   const field = useField(props.note, props.error, props.rk)
+  const inputElement = (
+    <input
+      type='text'
+      id={field.id}
+      name={props.name}
+      value={props.value}
+      required={props.required}
+      disabled={props.disabled}
+      placeholder={props.placeholder}
+      minLength={props.minLength}
+      maxLength={props.maxLength}
+      className={style.textField}
+      onKeyDown={field.onChange}
+    />
+  )
+
+  if (props.raw) {
+    return inputElement
+  }
 
   return (
     <BaseField {...field} label={props.label} required={props.required} id={field.id}>
-      <input
-        type='text'
-        id={field.id}
-        name={props.name}
-        value={props.value}
-        required={props.required}
-        disabled={props.disabled}
-        placeholder={props.placeholder}
-        minLength={props.minLength}
-        maxLength={props.maxLength}
-        className={style.textField}
-        onKeyDown={field.onChange}
-      />
+      {inputElement}
     </BaseField>
   )
 }

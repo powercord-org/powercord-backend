@@ -46,9 +46,16 @@
 
 .toolbar {
   display: flex;
-  justify-content: flex-end;
-  gap: 32px;
-  margin-bottom: 16px;
+  margin: 16px 0;
+  gap: 16px;
+}
+
+.toolbar input {
+  flex: 1;
+}
+
+.toolbar button {
+  flex-shrink: 0;
 }
 
 .row {

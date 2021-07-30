@@ -201,7 +201,7 @@ function ChartDataset ({ reduced, width, height, dataset }: ChartDatasetProps) {
 }
 
 export default function Chart (props: ChartProps) {
-  const ref = useRef<HTMLElement>()
+  const ref = useRef<HTMLElement>(null)
   const [ reduced, setReduced ] = useState(typeof window === 'undefined' ? false : window.innerWidth < 810)
   const [ mode, setMode ] = useState(props.defaultMode || props.modes[0].key)
   const [ [ width, height ], setSize ] = useState([ 0, 0 ])

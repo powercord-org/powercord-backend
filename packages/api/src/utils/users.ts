@@ -27,7 +27,6 @@ function paywallify (customBadges: User['badges']['custom'], tier: number): User
   return {
     color: tier < 1 ? null : customBadges?.color || null,
     icon: tier < 2 ? null : customBadges?.icon || null,
-    white: tier < 2 ? null : customBadges?.white || null,
     name: tier < 2 ? null : customBadges?.name || null,
   }
 }

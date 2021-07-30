@@ -54,10 +54,11 @@ function userReducer (state: UserStore, action: UserStoreAction): UserStore {
 function EditById ({ onClose }: { onClose: () => void }) {
   const [ status, setStatus ] = useState(Status.IDLE)
   const [ user, setUser ] = useState<RestAdminUser | null>(null)
-  const formRef = useRef<HTMLFormElement>()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const doEditById = useCallback((e?: Event) => {
     if (e) e.preventDefault()
+    if (!formRef.current) return
 
     if (!formRef.current.userId.value) return
     setStatus(Status.PROCESSING)
@@ -70,7 +71,7 @@ function EditById ({ onClose }: { onClose: () => void }) {
       })
   }, [])
 
-  useEffect(() => void formRef.current.querySelector('input')?.focus(), [])
+  useEffect(() => void formRef.current?.querySelector('input')?.focus(), [])
 
   if (user) {
     return <ManageEdit user={user} onClose={onClose}/>
@@ -168,6 +169,7 @@ export default function List (_: Attributes) {
     <main>
       <h1>Manage users</h1>
       <div className={style.toolbar}>
+        {/* <TextField name='search' label='Search' placeholder='Search a user...' raw disabled/> */}
         <button className={sharedStyle.button} onClick={editById}>Edit a user by ID</button>
       </div>
       {users ? users.map((u) => <UserRow key={u.id} user={u} setModal={setModal}/>) : <Spinner/>}

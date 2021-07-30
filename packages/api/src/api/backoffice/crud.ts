@@ -26,6 +26,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply, FastifySchema } fro
 import type { ConfiguredReply } from '../../types.js'
 
 type CrudModule = boolean | { schema?: FastifySchema }
+type CrudUpdateModule = boolean | { schema?: FastifySchema, upsert?: boolean }
 
 type CrudSettings = {
   collection: string
@@ -35,7 +36,7 @@ type CrudSettings = {
     create?: CrudModule
     readAll?: CrudModule
     read?: CrudModule
-    update?: CrudModule
+    update?: CrudUpdateModule
     delete?: CrudModule
   }
 }
@@ -109,9 +110,10 @@ async function update (this: FastifyInstance, request: FastifyRequest<{ Params: 
   // todo: mongo injection???!!!!!!
   const data = reply.context.config
   const collection = this.mongo.db!.collection(data.collection)
-  const res = await collection.updateOne({ _id: request.params.id }, { $set: request.body })
+  const upsert = typeof data.modules?.update === 'object' && data.modules.update.upsert
+  const res = await collection.updateOne({ _id: request.params.id }, { $set: request.body }, { upsert: upsert })
 
-  if (res.matchedCount !== 1) return reply.callNotFound()
+  if (res.matchedCount !== 1 && res.upsertedCount !== 1) return reply.callNotFound()
   return reply.code(204).send()
 }
 
@@ -154,7 +156,11 @@ export default async function crudPlugin (fastify: FastifyInstance, { data }: { 
       ? { ...(schema.params as {}), ...basicRouteSchema }
       : schema.params = basicRouteSchema
 
-    fastify.patch('/:id', { config: data, schema: schema }, update)
+    if (typeof data.modules?.update === 'object' && data.modules.update.upsert) {
+      fastify.put('/:id', { config: data, schema: schema }, update)
+    } else {
+      fastify.patch('/:id', { config: data, schema: schema }, update)
+    }
   }
 
   if (data.modules?.delete !== false) {

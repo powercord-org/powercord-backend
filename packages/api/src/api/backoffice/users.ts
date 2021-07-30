@@ -40,7 +40,6 @@ const updateUserSchema = {
       'badges.translator': { type: 'boolean' },
       'badges.custom.color': { type: [ 'string', 'null' ] },
       'badges.custom.icon': { type: [ 'string', 'null' ] },
-      'badges.custom.white': { type: [ 'string', 'null' ] },
       'badges.custom.name': { type: [ 'string', 'null' ] },
     },
   },
@@ -48,11 +47,6 @@ const updateUserSchema = {
 
 // @ts-ignore
 function searchUsers (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: FastifyReply) { // eslint-disable-line
-  // todo
-}
-
-// @ts-ignore
-function findBans (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: FastifyReply) { // eslint-disable-line
   // todo
 }
 
@@ -75,5 +69,4 @@ export default async function (fastify: FastifyInstance): Promise<void> {
 
   // And some other ones
   fastify.get('/search', { schema: void 0 }, searchUsers)
-  fastify.get('/banned', { schema: void 0 }, findBans)
 }

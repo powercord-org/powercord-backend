@@ -51,6 +51,7 @@ services:
     command: pnpm run dev
     volumes:
       - settings-data:/var/lib/powercord
+      - ./packages/types:/opt/porkord/packages/types
       - ./packages/api/src:/opt/porkord/packages/api/src
       - ./packages/api/dist:/opt/porkord/packages/api/dist
       - ./packages/api/package.json:/opt/porkord/packages/api/package.json

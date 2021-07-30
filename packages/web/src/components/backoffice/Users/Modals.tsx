@@ -106,12 +106,6 @@ function EditPerks ({ user, formRef, changeForm }: EditFormProps) {
         value={user.badges.custom?.icon ?? ''}
       />
       <TextField
-        name='white'
-        label='Custom Badge (white variant)'
-        note='Defaults to the classic custom badge.'
-        value={user.badges.custom?.white ?? ''}
-      />
-      <TextField
         name='tooltip'
         label='Custom Badge Tooltip'
         value={user.badges.custom?.name ?? ''}
@@ -125,9 +119,11 @@ export function ManageEdit ({ user, onClose }: ManageModalProps) {
   const [ processing, setProcessing ] = useState(false)
   const [ editPerks, setEditPerks ] = useState(false)
   const [ memoizedForm, setMemoizedForm ] = useState<Record<string, unknown>>({})
-  const formRef = useRef<HTMLFormElement>()
+  const formRef = useRef<HTMLFormElement>(null)
 
   function processForm (): Record<string, unknown> {
+    if (!formRef.current) return {}
+
     return {
       patronTier: Number(formRef.current.patronTier.value),
       'badges.developer': formRef.current.badgeDeveloper.checked,
@@ -141,10 +137,11 @@ export function ManageEdit ({ user, onClose }: ManageModalProps) {
   }
 
   function processPerksForm (): Record<string, unknown> {
+    if (!formRef.current) return {}
+
     return {
       'badges.custom.color': formRef.current.color.value || null,
       'badges.custom.icon': formRef.current.icon.value || null,
-      'badges.custom.white': formRef.current.white.value || null,
       'badges.custom.name': formRef.current.tooltip.value || null,
     }
   }
@@ -179,7 +176,7 @@ export function ManageEdit ({ user, onClose }: ManageModalProps) {
 
 export function ManageModeration ({ user, onClose }: ManageModalProps) {
   const [ processing, setProcessing ] = useState(false)
-  const formRef = useRef<HTMLFormElement>()
+  const formRef = useRef<HTMLFormElement>(null)
   const onApply = useCallback((e?: Event) => {
     if (e) e.preventDefault()
     if (!formRef.current) return
@@ -194,8 +191,16 @@ export function ManageModeration ({ user, onClose }: ManageModalProps) {
       events: formRef.current.events.checked,
     }
 
+    if (!Object.values(userbans).filter((b) => b).length) {
+      fetch(Endpoints.BACKOFFICE_BAN(user.id), {
+        method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+      }).then(() => onClose())
+      return
+    }
+
     fetch(Endpoints.BACKOFFICE_BAN(user.id), {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(userbans),
     }).then(() => onClose())
@@ -247,7 +252,7 @@ export function ManageModeration ({ user, onClose }: ManageModalProps) {
 
 export function ManageDelete ({ user, onClose }: ManageModalProps) {
   const [ processing, setProcessing ] = useState(false)
-  const formRef = useRef<HTMLFormElement>()
+  const formRef = useRef<HTMLFormElement>(null)
   const onYeet = useCallback(() => {
     setProcessing(true)
     fetch(Endpoints.BACKOFFICE_USER(user.id), { method: 'DELETE' })

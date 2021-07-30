@@ -37,7 +37,6 @@ export type User = {
     custom?: {
       color: string | null
       icon: string | null
-      white: string | null
       name: string | null
     }
   }

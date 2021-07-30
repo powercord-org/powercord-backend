@@ -47,7 +47,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'user' } },
         { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
       ],
-      modules: { update: { schema: updateBansSchema } },
+      modules: { update: { schema: updateBansSchema, upsert: true } },
     },
   })
 }

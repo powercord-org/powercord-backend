@@ -38,8 +38,8 @@ export default function Tooltip ({ children, text, position, align }: TooltipPro
   position = position ?? 'top'
   align = align ?? 'left'
 
-  const elementRef = useRef<HTMLElement>()
-  const tooltipRef = useRef<HTMLDivElement>()
+  const elementRef = useRef<HTMLElement>(null)
+  const tooltipRef = useRef<HTMLDivElement>(null)
   const [ display, setDisplay ] = useState(false)
   const ogOnMouseEnter = children.props.onMouseEnter
   const onMouseEnter = useCallback((e: MouseEvent) => {
