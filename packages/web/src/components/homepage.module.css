@@ -20,12 +20,12 @@
  * SOFTWARE.
  */
 
-.title {
+.title-old {
   text-align: center;
   margin-bottom: 24px;
 }
 
-.feature {
+.feature-old {
   background-color: var(--background-secondary);
   padding: 20px 24px;
   display: grid;
@@ -36,25 +36,25 @@
   margin-bottom: 24px;
 }
 
-.feature-icon {
+.feature-icon-old {
   grid-row: 1/2;
   width: 32px;
   height: 32px;
 }
 
-.feature-name {
+.feature-name-old {
   font-size: 1.6rem;
   font-weight: 600;
   line-height: 32px;
 }
 
-.feature-description {
+.feature-description-old {
   margin-top: 8px;
   grid-column: 2;
   flex: 1;
 }
 
-.soon {
+.soon-old {
   position: absolute;
   top: 0;
   right: 0;
@@ -64,26 +64,125 @@
   user-select: none;
 }
 
-.performance {
-  opacity: 0.6;
-  font-size: 0.85rem;
+.performance-old {
+  opacity: .6;
+  font-size: .85rem;
 }
 
-.install {
+.install-old {
   margin-top: 32px;
   text-align: center;
   font-size: 1.3rem;
   font-weight: 600;
 }
 
-.install p {
+.install-old p {
   margin-top: 8px;
+}
+
+@media screen and (min-width: 860px) {
+  .features-old {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .feature-old {
+    margin-bottom: 0;
+  }
+}
+
+@media screen and (min-width: 1240px) {
+  .features, .features-old {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+/** ---- **/
+
+.container {
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+.wrapper {
+  margin: 0 auto;
+  max-width: 1300px;
+  padding: 0 2em;
+  width: 100%;
+}
+
+.heading {
+  padding: 40px 0 48px;
+  text-align: center;
+  background-color: var(--background-secondary);
+  position: relative;
+}
+
+.title {
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.motto {
+  margin: 0;
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.section {
+  margin: 32px 0;
+}
+
+.section-title {
+  margin-bottom: 16px;
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  padding: 14px;
+  background-color: var(--background-secondary);
+  border-radius: 50%;
+  margin-right: 16px;
+}
+
+.feature-title {
+  margin: 8px 0 16px;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.feature-description {
+  margin: 0;
+  padding: 0;
+}
+
+.feature-link {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.feature-link svg {
+  height: 20px;
+  width: 20px;
+  margin-right: 4px;
+}
+
+.note {
+  opacity: 0.6;
+  font-size: 0.9rem;
+  margin: 8px 0 0;
 }
 
 @media screen and (min-width: 860px) {
   .features {
     display: grid;
-    gap: 24px;
+    gap: 40px 32px;
     grid-template-columns: 1fr 1fr;
   }
 
