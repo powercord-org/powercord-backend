@@ -88,6 +88,9 @@ export default function Admin () {
       <Sidebar/>
       <Router>
         <Users path={Routes.BACKOFFICE_USERS}/>
+        <SoonRoute path={Routes.BACKOFFICE_BANS}>
+          <div>banned users</div>
+        </SoonRoute>
         <SoonRoute path={Routes.BACKOFFICE_MONITORING}>
           <div>monitoring</div>
         </SoonRoute>
