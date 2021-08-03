@@ -50,7 +50,7 @@ Message contents:
 $message`
 
 async function format (template: string, message: Message<GuildTextableChannel>, bulk: boolean = false): Promise<string> {
-  const cleanContent = stringifyDiscordMessage(message)
+  const cleanContent = stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`)
   let extra = ''
 
   if (!bulk && cleanContent.length > 1700) {
@@ -85,7 +85,7 @@ async function format (template: string, message: Message<GuildTextableChannel>,
     .replace(/\$duration/g, prettyPrintTimeSpan(Date.now() - message.timestamp))
     .replace(/\$message/g, !bulk && cleanContent.length > 1700
       ? '*Message too long*'
-      : cleanContent.replace(/`/g, `\`${ZWS}`)
+      : cleanContent
       || '*No contents*')}${extra}`
 }
 
