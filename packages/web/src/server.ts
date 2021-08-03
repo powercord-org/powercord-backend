@@ -37,6 +37,13 @@ const template = readFileSync(join(__dirname, 'index.html'), 'utf8')
 function handler (req: IncomingMessage, res: ServerResponse) {
   res.setHeader('content-type', 'text/html')
 
+  // Security headers
+  // Note: HSTS is assumed setup by Cloudflare
+  // todo: csp nonce
+  res.setHeader('content-security-policy', 'default-src \'self\'; img-src \'self\' https://cdn.discordapp.com;')
+  res.setHeader('permissions-policy', 'interest-cohort=()')
+  res.setHeader('x-frame-options', 'DENY')
+
   if (req.method?.toLowerCase() !== 'get') {
     res.writeHead(405, 'method not allowed')
     res.end()

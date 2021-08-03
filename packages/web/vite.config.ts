@@ -27,6 +27,7 @@ import { rename } from 'fs/promises'
 import { join } from 'path'
 import preact from '@preact/preset-vite'
 import magicalSvg from 'vite-plugin-magical-svg'
+// import sriPlugin from 'rollup-plugin-sri'
 
 function noJsxInject (): Plugin {
   return {
@@ -51,20 +52,20 @@ export default defineConfig({
   publicDir: process.argv.includes('--ssr') ? '_' : 'public',
   build: {
     assetsInlineLimit: 0,
-    outDir: process.argv.includes('--ssr') ? 'server' : 'dist'
+    outDir: process.argv.includes('--ssr') ? 'server' : 'dist',
   },
   server: { hmr: { port: 8080 } },
-  resolve: {
-    alias: {
-      '../types/markdown.js': '../types/markdown.ts'
-    }
-  },
+  resolve: { alias: { '../types/markdown.js': '../types/markdown.ts' } },
   // @ts-expect-error -- Vite's kinda dumb
   ssr: { noExternal: [ '@borkenware/spoonfeed' ] },
   plugins: [
     preact(),
     noJsxInject(),
     magicalSvg({ target: 'preact' }),
-    moveIndex()
-  ]
+    // {  __VITE_PRELOAD__ is a meme and it's not a fun one
+    //   ...sriPlugin({ publicPath: '/', algorithms: [ 'sha256', 'sha512' ] }),
+    //   enforce: 'post',
+    // },
+    moveIndex(),
+  ],
 })

@@ -157,6 +157,7 @@ importers:
       preact-render-to-string: ^5.1.19
       preact-router: ^3.2.1
       prismjs: ^1.24.1
+      rollup-plugin-sri: ^1.3.4
       typescript: ^4.3.5
       vite: ^2.4.4
       vite-plugin-magical-svg: ^0.3.0
@@ -178,6 +179,7 @@ importers:
       eslint: 7.31.0
       eslint-plugin-deprecation: 1.2.1_eslint@7.31.0+typescript@4.3.5
       feather-icons: 4.28.0
+      rollup-plugin-sri: 1.3.4
       typescript: 4.3.5
       vite: 2.4.4
       vite-plugin-magical-svg: 0.3.0_vite@2.4.4
@@ -1963,6 +1965,29 @@ packages:
       supports-color: 7.2.0
     dev: true
 
+  /cheerio-select/1.5.0:
+    resolution: {integrity: sha512-qocaHPv5ypefh6YNxvnbABM07KMxExbtbfuJoIie3iZXX1ERwYmJcIiRrr9H05ucQP1k28dav8rpdDgjQd8drg==}
+    dependencies:
+      css-select: 4.1.3
+      css-what: 5.0.1
+      domelementtype: 2.2.0
+      domhandler: 4.2.0
+      domutils: 2.7.0
+    dev: true
+
+  /cheerio/1.0.0-rc.10:
+    resolution: {integrity: sha512-g0J0q/O6mW8z5zxQ3A8E8J1hUgp4SMOvEoW/x84OwyHKe/Zccz83PVT4y5Crcr530FV6NgmKI1qvGTKVl9XXVw==}
+    engines: {node: '>= 6'}
+    dependencies:
+      cheerio-select: 1.5.0
+      dom-serializer: 1.3.2
+      domhandler: 4.2.0
+      htmlparser2: 6.1.0
+      parse5: 6.0.1
+      parse5-htmlparser2-tree-adapter: 6.0.1
+      tslib: 2.3.0
+    dev: true
+
   /chokidar/3.5.2:
     resolution: {integrity: sha512-ekGhOnNVPgT77r4K/U3GDhu+FQ2S8TnK/s2KbIGXi0SZWuwkZ2QNyfWdZW+TVfn84DpEP7rLeCt2UI6bJ8GwbQ==}
     engines: {node: '>= 8.10.0'}
@@ -2711,6 +2736,15 @@ packages:
       react: '>= 16.8.0'
     dev: false
 
+  /htmlparser2/6.1.0:
+    resolution: {integrity: sha512-gyyPk6rgonLFEDGoeRgQNaEUvdJ4ktTmmUh/h2t7s+M8oPpIPxgNACWa+6ESR57kXstwqPiCut0V8NRpcwgU7A==}
+    dependencies:
+      domelementtype: 2.2.0
+      domhandler: 4.2.0
+      domutils: 2.7.0
+      entities: 2.2.0
+    dev: true
+
   /http-errors/1.7.3:
     resolution: {integrity: sha512-ZTTX0MWrsQ2ZAhA1cejAwDLycFsd7I7nVtnkT3Ol0aqodaKW+0CTZDQ1uBv5whptCnc8e8HeRRJxRs0kmm/Qfw==}
     engines: {node: '>= 0.6'}
@@ -3052,7 +3086,6 @@ packages:
   /node-fetch/2.6.1:
     resolution: {integrity: sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==}
     engines: {node: 4.x || >=6.0.0}
-    dev: false
 
   /node-releases/1.1.73:
     resolution: {integrity: sha512-uW7fodD6pyW2FZNZnp/Z3hvWKeEW1Y8R1+1CnErE8cXFXzl5blBOoVB41CvMer6P6Q0S5FXDwcHgFd1Wj0U9zg==}
@@ -3130,6 +3163,16 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       callsites: 3.1.0
+    dev: true
+
+  /parse5-htmlparser2-tree-adapter/6.0.1:
+    resolution: {integrity: sha512-qPuWvbLgvDGilKc5BoicRovlT4MtYT6JfJyBOMDsKoiT+GiuP5qyrPCnR9HcPECIJJmZh5jRndyNThnhhb/vlA==}
+    dependencies:
+      parse5: 6.0.1
+    dev: true
+
+  /parse5/6.0.1:
+    resolution: {integrity: sha512-Ofn/CTFzRGTTxwpNEs9PP93gXShHcTq255nzRYSKe8AkVpZY7e1fpmTfOyoIvjP5HG7Z2ZM7VS9PPhQGW2pOpw==}
     dev: true
 
   /path-is-absolute/1.0.1:
@@ -3392,6 +3435,13 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.1.7
+    dev: true
+
+  /rollup-plugin-sri/1.3.4:
+    resolution: {integrity: sha512-EkDZi6rQwTx/D8e9MisAVUw0avb24ZKixb8CypIsqJ1EySPP5ESTTm6IaBY29TBaYI/S+S85so0BNboRufyAyg==}
+    dependencies:
+      cheerio: 1.0.0-rc.10
+      node-fetch: 2.6.1
     dev: true
 
   /rollup-plugin-terser/7.0.2_rollup@2.55.1:
@@ -3764,6 +3814,10 @@ packages:
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
+    dev: true
+
+  /tslib/2.3.0:
+    resolution: {integrity: sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==}
     dev: true
 
   /tsutils/3.21.0_typescript@4.3.5:
