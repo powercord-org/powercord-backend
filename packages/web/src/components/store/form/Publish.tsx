@@ -39,14 +39,14 @@ export default function PublishForm ({ eligibility }: FormProps) {
       <TextField
         label='Repository URL'
         name='repoUrl'
-        note={'In order for us to review your work you\'ll need to publish it to a temporary repository (on GitHub, or GitLab, or somewhere else). For plugins once the review process is complete you will receive a repo in the Community GitHub organization.'}
+        note={'In order for us to review your work you\'ll need to publish it to a repository (on GitHub, or GitLab, or somewhere else). For plugins, once the review process is complete you will receive a repo in the powercord-community GitHub organization, which will be the official home of your plugin.'}
         maxLength={256}
         required
       />
       <TextField
         label='BetterDiscord alternative'
         name='bdAlternative'
-        note='Let us know if your product is an alternative to an existing one for BetterDiscord. Provide a URL from betterdiscord.app.'
+        note='Let us know if your work is an alternative to an existing one for BetterDiscord. Provide a URL from betterdiscord.app.'
         maxLength={256}
       />
       <TextareaField

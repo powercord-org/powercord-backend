@@ -29,7 +29,7 @@ import LayoutWithSidebar from '../util/LayoutWithSidebar'
 import Redirect from '../util/Redirect'
 import { SoonRoute } from '../util/Soon'
 import Users from './Users/Manage'
-import { Routes } from '../../constants'
+import { Endpoints, Routes } from '../../constants'
 
 import Smile from 'feather-icons/dist/icons/smile.svg'
 import Shield from 'feather-icons/dist/icons/shield.svg'
@@ -42,8 +42,20 @@ import CodeSandbox from 'feather-icons/dist/icons/codesandbox.svg'
 import style from './admin.module.css'
 
 function Sidebar () {
-  const [ , forceUpdate ] = useState(0)
+  // Lazy-load bugs
+  const forceUpdate = useState(0)[1]
   useEffect(() => void setTimeout(() => forceUpdate(1), 10), [])
+
+  // Unread badges
+  const [ unread, setUnread ] = useState({ forms: 10, reports: 10 })
+  useEffect(() => {
+    fetch(Endpoints.BACKOFFICE_FORMS_COUNT).then((r) => r.json()).then((d) => {
+      setUnread({
+        forms: d.publish + d.verification + d.hosting,
+        reports: d.reports,
+      })
+    })
+  }, [])
 
   return (
     <Fragment>
@@ -68,10 +80,12 @@ function Sidebar () {
       <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_FORMS}>
         <Inbox/>
         <span>Forms</span>
+        {Boolean(unread.forms) && <span className={style.unread}>{unread.forms}</span>}
       </Link>
       <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_REPORTS}>
         <Flag/>
         <span>Reports</span>
+        {Boolean(unread.reports) && <span className={style.unread}>{unread.reports}</span>}
       </Link>
       <h3>Community</h3>
       <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_EVENTS_SECRET}>

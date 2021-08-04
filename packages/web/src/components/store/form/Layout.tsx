@@ -23,7 +23,7 @@
 import type { Attributes, ComponentChild, VNode } from 'preact'
 import type { Eligibility } from '@powercord/types/store'
 import { h, cloneElement, Fragment } from 'preact'
-import { useState, useContext, useCallback, useMemo } from 'preact/hooks'
+import { useState, useContext, useCallback, useMemo, useLayoutEffect } from 'preact/hooks'
 
 import Spinner from '../../util/Spinner'
 import MarkdownDocument from '../../docs/Markdown'
@@ -109,10 +109,12 @@ function Form ({ children, onNext, onError, id }: { children: VNode<any>[], onNe
       return
     }
 
-    const resp = await res.json()
-    if (resp.errors) {
-      setErrors(resp.errors)
-      return
+    if (res.status !== 201) {
+      const resp = await res.json()
+      if (resp.errors) {
+        setErrors(resp.errors)
+        return
+      }
     }
 
     onNext()
@@ -149,6 +151,9 @@ function PawaScreen ({ headline, text }: PawaScreenProps) {
 
 export default function FormLayout ({ id, title, children, eligibility }: FormLayoutProps) {
   const [ stage, setStage ] = useState(0)
+  useLayoutEffect(() => {
+    document.querySelector('header + div')!.scrollTop = 0
+  }, [ stage ])
 
   if (typeof eligibility !== 'number') {
     return (

@@ -21,20 +21,40 @@
  */
 
 import type { FastifyInstance } from 'fastify'
-import usersModule from './users.js'
-import userbansModule from './userbans.js'
-import formsModule from './forms.js'
+import crudModule from './crud.js'
+
+async function getFormCount (this: FastifyInstance) {
+  const res: Record<string, number> = {
+    verification: 0,
+    publish: 0,
+    hosting: 0,
+    reports: 0,
+  }
+
+  const forms = await this.mongo.db!.collection('forms').aggregate([ { $group: { _id: '$kind', count: { $sum: 1 } } } ]).toArray()
+  for (const form of forms) res[form._id] = form.count
+
+  return res
+}
 
 export default async function (fastify: FastifyInstance): Promise<void> {
-  fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken, fastify.verifyAdmin ], { relation: 'and' }))
+  fastify.register(crudModule, {
+    data: {
+      collection: 'forms',
+      projection: {
+        kind: 0,
+        complianceLegal: 0,
+        complianceGuidelines: 0,
+        complianceSecurity: 0,
+        compliancePrivacy: 0,
+        complianceCute: 0,
+      },
+      modules: {
+        readAll: { filter: [ 'kind' ] },
+        create: false,
+      },
+    },
+  })
 
-  fastify.register(usersModule, { prefix: '/users' })
-  fastify.register(userbansModule, { prefix: '/bans' })
-  // abuse monitoring
-
-  // store frontpage
-  fastify.register(formsModule, { prefix: '/forms' })
-  // store reports
-
-  // super secret event
+  fastify.get('/count', getFormCount)
 }

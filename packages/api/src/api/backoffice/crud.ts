@@ -22,10 +22,12 @@
 
 // todo: make safe enough and modular enough for usage in public routes
 
+import type { Filter, Document } from 'mongodb'
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifySchema } from 'fastify'
 import type { ConfiguredReply } from '../../types.js'
 
 type CrudModule = boolean | { schema?: FastifySchema }
+type CrudReadAllModule = boolean | { schema?: FastifySchema, filter?: string[] }
 type CrudUpdateModule = boolean | { schema?: FastifySchema, upsert?: boolean }
 
 type CrudSettings = {
@@ -34,7 +36,7 @@ type CrudSettings = {
   aggregation?: object[],
   modules?: {
     create?: CrudModule
-    readAll?: CrudModule
+    readAll?: CrudReadAllModule
     read?: CrudModule
     update?: CrudUpdateModule
     delete?: CrudModule
@@ -44,6 +46,8 @@ type CrudSettings = {
 type Reply = ConfiguredReply<FastifyReply, CrudSettings>
 
 type ReadQuery = { limit?: number, page?: number }
+
+type ReadAllQuery = ReadQuery & Record<string, unknown>
 
 type RouteParams = { id: string }
 
@@ -60,22 +64,40 @@ const basicRouteSchema = {
   properties: { id: { type: 'string', pattern: '^\\d{16,}$' } },
 }
 
-async function readAll (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadQuery }>, reply: Reply) {
+async function readAll (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadAllQuery }>, reply: Reply) {
   const data = reply.context.config
   const limit = request.query.limit ?? 50
   const cursor = ((request.query.page ?? 1) - 1) * limit
   const collection = this.mongo.db!.collection(data.collection)
 
+  const aggregation = data.aggregation || []
+  const filters = typeof data.modules?.readAll === 'object' && data.modules.readAll.filter
+  let countFilter: Filter<Document> | undefined = void 0
+
+  if (Array.isArray(filters)) {
+    const query: Filter<Document> = {}
+    for (const filter of filters) {
+      if (request.query[filter]) {
+        query[filter] = request.query[filter]
+      }
+    }
+
+    aggregation.unshift({ $match: query })
+    countFilter = query
+  }
+
   const cur = collection.aggregate([
     { $skip: cursor },
     { $limit: limit },
-    ...data.aggregation || [],
+    ...aggregation,
     { $project: data.projection },
     { $set: { id: '$_id' } },
     { $unset: '_id' },
   ])
 
-  const total = await collection.countDocuments()
+  const total = countFilter
+    ? await collection.countDocuments(countFilter)
+    : await collection.countDocuments()
   const res = await cur.toArray()
 
   return {

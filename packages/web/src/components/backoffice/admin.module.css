@@ -46,6 +46,16 @@
   margin-right: 12px;
 }
 
+.unread {
+  margin-left: auto;
+  font-size: 0.75em;
+  font-weight: 600;
+  padding: 1px 5px;
+  background-color: var(--blurple-t);
+  border: 2px solid var(--blurple);
+  border-radius: 12px;
+}
+
 .toolbar {
   display: flex;
   margin: 16px 0;

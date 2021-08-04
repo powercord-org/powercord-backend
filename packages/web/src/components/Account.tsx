@@ -27,7 +27,7 @@ import { useTitle } from 'hoofd/preact'
 import UserContext from './UserContext'
 import { Endpoints } from '../constants'
 
-import PowercordCutie from '../assets/cutie.svg'
+import cutieSvg from '../assets/cutie.svg?file'
 
 import style from './account.module.css'
 
@@ -41,7 +41,7 @@ function Cutie ({ tier }: { tier: number }) {
   return (
     <>
       <div className={style.cutie}>
-        <PowercordCutie className={style.cutieLogo}/>
+        <img className={style.cutieLogo} src={cutieSvg} alt='Powercord Cutie'/>
         <div className={style.cutieContents}>
           <span>Thank you for supporting Powercord! You are a tier {tier} patron.</span>
           <span>Includes: {includes[tier - 1]}.</span>
