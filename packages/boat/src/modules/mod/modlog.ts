@@ -81,6 +81,8 @@ function extractEntryData (entry: GuildAuditLogEntry): [ string, string, string 
 
 function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) => Promise<void> {
   return async function (this: CommandClient, guild: Guild, user: User): Promise<void> {
+    if (guild.id !== config.discord.ids.serverId) return
+
     const channel = this.getChannel(config.discord.ids.channelModLogs)
     if (!channel || !('getMessages' in channel)) return
 
@@ -110,6 +112,8 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
 }
 
 async function processMemberLeave (this: CommandClient, guild: Guild, user: User) {
+  if (guild.id !== config.discord.ids.serverId) return
+
   const channel = this.getChannel(config.discord.ids.channelModLogs)
   if (!channel || !('getMessages' in channel)) return
 
@@ -127,6 +131,8 @@ async function processMemberLeave (this: CommandClient, guild: Guild, user: User
 }
 
 async function processMemberUpdate (this: CommandClient, guild: Guild, user: User) {
+  if (guild.id !== config.discord.ids.serverId) return
+
   const channel = this.getChannel(config.discord.ids.channelModLogs)
   if (!channel || !('getMessages' in channel)) return
 
