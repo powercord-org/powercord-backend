@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import { MinimalUser } from '@powercord/types/users'
 import type { FastifyInstance } from 'fastify'
 import type { Db, ObjectId } from 'mongodb'
 import mongo from 'mongodb'
@@ -156,20 +157,56 @@ async function computeGuildStats (db: Db) {
 }
 
 async function contributors (this: FastifyInstance): Promise<unknown> {
-  const findUsers = (filters: {}) =>
-    this.mongo.db!.collection('users').find(filters, {
-      projection: {
-        _id: true,
-        username: true,
-        discriminator: true,
-      },
-    }).toArray()
-
-  return {
-    developers: await findUsers({ 'badges.developer': true }),
-    staff: await findUsers({ $or: [ { 'badges.staff': true }, { 'badges.support': true } ], 'badges.developer': { $not: { $eq: true } } }),
-    contributors: await findUsers({ 'badges.contributor': true }),
+  const res: Record<string, MinimalUser[]> = {
+    developers: [],
+    staff: [],
+    contributors: [],
   }
+
+  await this.mongo.db!.collection('users').aggregate([
+    {
+      $match: {
+        $or: [
+          { 'badges.developer': true },
+          { 'badges.staff': true },
+          { 'badges.support': true },
+          { 'badges.contributor': true },
+        ],
+      },
+    },
+    {
+      $set: {
+        _rank: {
+          $cond: {
+            if: '$badges.developer',
+            then: 'developer',
+            else: {
+              $cond: {
+                if: '$badges.contributor',
+                then: 'contributor',
+                else: 'staff',
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      $group: {
+        _id: '$_rank',
+        users: {
+          $push: {
+            id: '$_id',
+            username: '$username',
+            discriminator: '$discriminator',
+            avatar: '$avatar',
+          },
+        },
+      },
+    },
+  ]).forEach((doc) => (res[`${doc._id}s`] = doc.users))
+
+  return res
 }
 
 async function numbers (this: FastifyInstance): Promise<unknown> {

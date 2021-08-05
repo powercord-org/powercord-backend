@@ -20,41 +20,9 @@
  * SOFTWARE.
  */
 
-.section {
-  margin: 40px 0 24px;
-}
-
-.section:first-child {
-  margin-top: 0;
-}
-
-.wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  grid-gap: 1rem;
-}
-
-.container {
-  background-color: var(--background-secondary);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.name {
-  max-width: calc(100% - 88px);
-}
-
-.username {
-  margin: 0;
-  font-size: 24px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  font-weight: 600;
-}
-
-.discriminator {
-  font-size: .6em;
-  opacity: 0.6;
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }

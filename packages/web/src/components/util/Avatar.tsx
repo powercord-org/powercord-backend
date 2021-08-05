@@ -20,41 +20,27 @@
  * SOFTWARE.
  */
 
-.section {
-  margin: 40px 0 24px;
+import type { MinimalUser } from '@powercord/types/users'
+import { useState, useCallback } from 'preact/hooks'
+import { h } from 'preact'
+
+import { Endpoints } from '../../constants'
+
+import style from './avatar.module.css'
+
+type AvatarProps = { user: MinimalUser }
+
+export function DiscordAvatar ({ user }: AvatarProps) {
+  const avatar = user.avatar
+    ? Endpoints.USER_AVATAR_DISCORD(user.id, user.avatar)
+    : Endpoints.DEFAULT_AVATAR_DISCORD(Number(user.discriminator))
+
+  const [ effectiveAvatar, setAvatar ] = useState(avatar)
+  const onError = useCallback(() => setAvatar(Endpoints.DEFAULT_AVATAR_DISCORD(Number(user.discriminator))), [])
+
+  return <img src={effectiveAvatar} alt={`${user.username}'s avatar`} onError={onError} className={style.avatar}/>
 }
 
-.section:first-child {
-  margin-top: 0;
-}
-
-.wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  grid-gap: 1rem;
-}
-
-.container {
-  background-color: var(--background-secondary);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.name {
-  max-width: calc(100% - 88px);
-}
-
-.username {
-  margin: 0;
-  font-size: 24px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  font-weight: 600;
-}
-
-.discriminator {
-  font-size: .6em;
-  opacity: 0.6;
+export default function Avatar ({ user }: AvatarProps) {
+  return <img src={Endpoints.USER_AVATAR(user.id)} alt={`${user.username}'s avatar`} className={style.avatar}/>
 }

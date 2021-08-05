@@ -47,10 +47,6 @@
   margin: 8px 0 0;
 }
 
-.error {
-  color: var(--red);
-}
-
 .text-field, .textarea-field, .select-field {
   display: block;
   width: 100%;

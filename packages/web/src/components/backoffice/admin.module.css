@@ -79,15 +79,9 @@
 .row {
   display: flex;
   padding: 16px;
+  gap: 16px;
   border-bottom: 1px solid var(--background-tertiary);
   align-items: center;
-}
-
-.avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  margin-right: 16px;
 }
 
 .row-info {
@@ -149,12 +143,6 @@
   padding: 0;
 }
 
-.review {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .actions {
   margin: 0;
   padding-left: 32px;
@@ -176,6 +164,12 @@
   word-break: keep-all;
 }
 
+.align-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .action {
   width: 24px;
   height: 24px;
@@ -184,14 +178,6 @@
 .icon {
   width: 18px;
   height: 18px;
-}
-
-.green {
-  color: var(--green);
-}
-
-.red {
-  color: var(--red);
 }
 
 .line-2 {

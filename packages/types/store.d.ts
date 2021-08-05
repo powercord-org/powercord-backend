@@ -32,19 +32,24 @@ export type EligibilityStatus = {
   reporting: Eligibility,
 }
 
-export type FormPublish = {
+type PendingForm = { reviewed?: false, approved?: boolean, reviewer?: null }
+type ReviewedForm = { reviewed: true, approved: boolean, reviewer: MinimalUser }
+
+export type Form = (PendingForm | ReviewedForm) & {
   id: string
-  kind: 'publish'
+  kind: 'publish' | 'verification' | 'hosting'
   submitter: MinimalUser
+}
+
+export type FormPublish = Form & {
+  kind: 'publish'
   repoUrl: string
   bdAlterative: string
   reviewNotes: string
 }
 
-export type FormVerification = {
-  id: string
+export type FormVerification = Form & {
   kind: 'verification'
-  submitter: MinimalUser
   workUrl: string
   workAbout: string
   developerAbout: string
@@ -52,10 +57,8 @@ export type FormVerification = {
   why: string
 }
 
-export type FormHosting = {
-  id: string
+export type FormHosting = Form & {
   kind: 'hosting'
-  submitter: MinimalUser
   repoUrl: string
   purpose: string
   technical: string

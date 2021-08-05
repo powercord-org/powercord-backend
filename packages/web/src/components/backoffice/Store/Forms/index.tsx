@@ -22,59 +22,55 @@
 
 import type { Attributes } from 'preact'
 import type { StoreForm } from '@powercord/types/store'
-import { h } from 'preact'
+import { h, Fragment } from 'preact'
 import { useState, useEffect } from 'preact/hooks'
 
+import Tooltip from '../../../util/Tooltip'
 import Spinner from '../../../util/Spinner'
 import { PublishForm, VerificationForm, HostingForm } from './Items'
 import { Endpoints } from '../../../../constants'
 
+import ExternalLink from 'feather-icons/dist/icons/external-link.svg'
 import Check from 'feather-icons/dist/icons/check.svg'
 import X from 'feather-icons/dist/icons/x.svg'
 
 import style from '../../admin.module.css'
 import sharedStyle from '../../../shared.module.css'
 
-type FormProps<T = StoreForm> = { form: T }
+type FormProps = {
+  form: StoreForm
+  canViewDiscussions: boolean
+}
 
-// @ts-expect-error
-function ReviewFields ({ form }: FormProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+function ReviewButtons ({ form, canViewDiscussions }: FormProps) {
   return (
-    <div className={style.line2}>
-      <div>
-        <div className={style.label}>Reviews</div>
-        <ul className={style.reviews}>
-          <li className={style.review}>
-            <Check className={`${style.icon} ${style.green}`}/>
-            <span>OwO#0000</span>
-            <span>No remarks</span>
-          </li>
-          <li className={style.review}>
-            <X className={`${style.icon} ${style.red}`}/>
-            <span>UwU#0000</span>
-            <span>No remarks</span>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <div className={style.label}>Actions</div>
-        <ul className={style.actions}>
-          <li>
-            <button className={sharedStyle.buttonLink}>Submit a review</button>
-          </li>
-          <li>
-            <button className={sharedStyle.buttonLink}>Approve the request</button>
-          </li>
-          <li>
-            <button className={sharedStyle.buttonLink}>Deny the request</button>
-          </li>
-        </ul>
-      </div>
+    <div className={sharedStyle.buttons}>
+      <Tooltip text={'Can\'t connect to Powercord'} disabled={canViewDiscussions}>
+        <button className={sharedStyle.button} disabled={!canViewDiscussions}>
+          <ExternalLink className={style.icon}/>
+          <span>View discussion</span>
+        </button>
+      </Tooltip>
+      {form.reviewed
+        ? <div className={style.alignCenter}>
+          {form.approved ? <Check className={style.icon}/> : <X className={style.icon}/>}
+          <span>{form.approved ? 'Approved' : 'Rejected'} by {form.reviewer.username}#{form.reviewer.discriminator}</span>
+        </div>
+        : <Fragment>
+          <button className={`${sharedStyle.button} ${sharedStyle.green}`}>
+            <Check className={style.icon}/>
+            <span>Accept</span>
+          </button>
+          <button className={`${sharedStyle.button} ${sharedStyle.red}`}>
+            <X className={style.icon}/>
+            <span>Reject</span>
+          </button>
+        </Fragment>}
     </div>
   )
 }
 
-function Form ({ form }: FormProps) {
+function Form ({ form, canViewDiscussions }: FormProps) {
   let body = null
   switch (form.kind) {
     case 'publish':
@@ -97,7 +93,7 @@ function Form ({ form }: FormProps) {
       <div className={style.sectionBody}>
         {body}
         <hr className={style.sectionSeparator}/>
-        <ReviewFields form={form}/>
+        <ReviewButtons form={form} canViewDiscussions={canViewDiscussions}/>
       </div>
       <footer className={style.sectionFooter}>
         Form ID: {form.id}
@@ -121,7 +117,7 @@ export default function ManageForms (_: Attributes) {
       {forms
         ? !forms.length
           ? <p>All clear!</p>
-          : forms.map((f) => <Form key={f.id} form={f}/>)
+          : forms.map((f) => <Form key={f.id} form={f} canViewDiscussions={false}/>)
         : <Spinner/>}
     </main>
   )

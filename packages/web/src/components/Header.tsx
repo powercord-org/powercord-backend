@@ -24,6 +24,7 @@ import { h } from 'preact'
 import { useMemo, useState, useContext } from 'preact/hooks'
 
 import UserContext from './UserContext'
+import Avatar from './util/Avatar'
 import Hamburger from './util/Hamburger'
 import { Endpoints, Routes } from '../constants'
 
@@ -46,7 +47,7 @@ function User () {
 
   return (
     <div className={style.profile}>
-      <img className={style.avatar} src={Endpoints.USER_AVATAR(user.id)} alt={`${user.username}'s avatar`}/>
+      <Avatar user={user}/>
       <div className={style.details}>
         <div className={style.name}>
           <div className={style.username}>{user.username}<span className={style.discriminator}>#{user.discriminator}</span></div>

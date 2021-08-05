@@ -21,28 +21,32 @@
  */
 
 import type { Attributes } from 'preact'
+import type { MinimalUser } from '@powercord/types/users'
 import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
 
 import Spinner from './util/Spinner'
+import Avatar from './util/Avatar'
+
 import { Endpoints } from '../constants'
 
 import style from './contributors.module.css'
 
-type RestContributor = { _id: string, username: string, discriminator: string }
 type AllContributors = {
-  developers: RestContributor[]
-  staff: RestContributor[]
-  contributors: RestContributor[]
+  developers: MinimalUser[]
+  staff: MinimalUser[]
+  contributors: MinimalUser[]
 }
 
-function Contributor ({ _id, username, discriminator }: RestContributor) {
+function Contributor ({ user }: { user: MinimalUser }) {
   return (
     <div className={style.container}>
-      <img className={style.avatar} src={Endpoints.USER_AVATAR(_id)} alt={`${username}'s avatar`}/>
+      <Avatar user={user}/>
       <div className={style.name}>
-        <h3 className={style.username} >{username}<span className={style.discriminator} >#{discriminator}</span></h3>
+        <h3 className={style.username}>
+          {user.username}<span className={style.discriminator} >#{user.discriminator}</span>
+        </h3>
       </div>
     </div>
   )
@@ -71,15 +75,15 @@ export default function Contributors (_: Attributes) {
     <main>
       <h2 className={style.section}>Developers</h2>
       <div className={style.wrapper}>
-        {contributors.developers.map((u: any) => <Contributor key={u._id} {...u}/>)}
+        {contributors.developers.map((user) => <Contributor key={user.id} user={user}/>)}
       </div>
       <h2 className={style.section}>Powercord Staff &amp; Support</h2>
       <div className={style.wrapper}>
-        {contributors.staff.map((u: any) => <Contributor key={u._id} {...u}/>)}
+        {contributors.staff.map((user) => <Contributor key={user.id} user={user}/>)}
       </div>
       <h2 className={style.section}>Contributors</h2>
       <div className={style.wrapper}>
-        {contributors.contributors.map((u: any) => <Contributor key={u._id} {...u}/>)}
+        {contributors.contributors.map((user) => <Contributor key={user.id} user={user}/>)}
       </div>
     </main>
   )

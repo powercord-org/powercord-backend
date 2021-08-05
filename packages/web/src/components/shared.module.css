@@ -20,6 +20,20 @@
  * SOFTWARE.
  */
 
+.green, .button-link.green {
+  color: var(--green);
+}
+
+.red, .button-link.red {
+  color: var(--red);
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .button, .button-link {
   color: #fff;
   display: inline-flex;
@@ -36,6 +50,10 @@
   min-width: 60px;
   padding: 2px 16px;
   border-radius: 3px;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .button:hover {
@@ -48,7 +66,16 @@
   filter: brightness(.7);
 }
 
+.button.green {
+  background-color: var(--green);
+}
+
+.button.red {
+  background-color: var(--red);
+}
+
 .button-link {
+  font-size: 1em;
   color: var(--blurple);
 }
 

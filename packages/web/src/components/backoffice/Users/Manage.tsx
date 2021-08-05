@@ -29,6 +29,7 @@ import Spinner from '../../util/Spinner'
 import Tooltip from '../../util/Tooltip'
 import Paginator from '../../util/Paginator'
 import Modal from '../../util/Modal'
+import { DiscordAvatar } from '../../util/Avatar'
 import { TextField } from '../../util/Form'
 import { ManageEdit, ManageModeration, ManageDelete } from './Modals'
 import { Endpoints } from '../../../constants'
@@ -71,7 +72,7 @@ function EditById ({ onClose }: { onClose: () => void }) {
       })
   }, [])
 
-  useEffect(() => void formRef.current?.querySelector('input')?.focus(), [])
+  useEffect(() => formRef.current?.querySelector('input')?.focus(), [])
 
   if (user) {
     return <ManageEdit user={user} onClose={onClose}/>
@@ -90,17 +91,6 @@ function EditById ({ onClose }: { onClose: () => void }) {
   )
 }
 
-function UserAvatar ({ user }: { user: RestAdminUser }) {
-  const avatar = user.avatar
-    ? Endpoints.USER_AVATAR_DISCORD(user.id, user.avatar)
-    : Endpoints.DEFAULT_AVATAR_DISCORD(Number(user.discriminator))
-
-  const [ effectiveAvatar, setAvatar ] = useState(avatar)
-  const onError = useCallback(() => setAvatar(Endpoints.DEFAULT_AVATAR_DISCORD(Number(user.discriminator))), [])
-
-  return <img src={effectiveAvatar} alt={`${user.username}'s avatar`} onError={onError} className={style.avatar}/>
-}
-
 function UserRow ({ user, setModal }: { user: RestAdminUser, setModal: (s: ModalState) => void }) {
   const bans = user.banStatus
     ? Object.entries(user.banStatus)
@@ -114,10 +104,10 @@ function UserRow ({ user, setModal }: { user: RestAdminUser, setModal: (s: Modal
 
   return (
     <div className={style.row}>
-      <UserAvatar user={user}/>
+      <DiscordAvatar user={user}/>
       <div className={style.rowInfo}>
         <span>{user.username}#{user.discriminator}</span>
-        <span className={bans.length ? style.red : ''}>
+        <span className={bans.length ? sharedStyle.red : ''}>
           {bans.length ? `Active bans: ${bans.join(', ')}` : 'No active bans'}
         </span>
       </div>
@@ -134,7 +124,7 @@ function UserRow ({ user, setModal }: { user: RestAdminUser, setModal: (s: Modal
         </Tooltip>
         <Tooltip text='Delete user account'>
           <button className={style.action} onClick={deleteUser}>
-            <Trash className={style.red}/>
+            <Trash className={sharedStyle.red}/>
           </button>
         </Tooltip>
       </div>

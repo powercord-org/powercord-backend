@@ -30,6 +30,7 @@ import { Endpoints } from '../constants'
 import cutieSvg from '../assets/cutie.svg?file'
 
 import style from './account.module.css'
+import sharedStyle from './shared.module.css'
 
 const includes = [
   'A custom role in our server, custom badge color',
@@ -87,7 +88,7 @@ export default function Account () {
         requiring a Powercord account (such as enhanced Spotify plugin, settings sync, and more).
       </p>
       <p>
-        <a role='button' href='#' className={style.danger} onClick={yeetAccount}>Delete my account</a>
+        <button className={`${sharedStyle.buttonLink} ${sharedStyle.red}`} onClick={yeetAccount}>Delete my account</button>
       </p>
     </main>
   )

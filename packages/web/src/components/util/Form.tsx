@@ -27,6 +27,7 @@ import { useState, useCallback, useMemo, useEffect } from 'preact/hooks'
 import ChevronDown from 'feather-icons/dist/icons/chevron-down.svg'
 
 import style from './form.module.css'
+import sharedStyle from '../shared.module.css'
 
 type BaseProps = Attributes & {
   id: string
@@ -87,7 +88,7 @@ function BaseField (props: BaseProps) {
       </label>
       {props.children}
       {props.note && <p className={style.note}>{props.note}</p>}
-      {props.error && <p className={style.error}>{props.error}</p>}
+      {props.error && <p className={sharedStyle.red}>{props.error}</p>}
     </div>
   )
 }

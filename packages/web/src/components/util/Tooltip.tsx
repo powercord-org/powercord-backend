@@ -31,10 +31,11 @@ type TooltipProps = {
   children: VNode<any>
   text: string
   position?: 'top' | 'bottom'
-  align?: 'left' | 'left-center' | 'right' | 'right-center' | 'center'
+  align?: 'left' | 'left-center' | 'right' | 'right-center' | 'center',
+  disabled?: boolean
 }
 
-export default function Tooltip ({ children, text, position, align }: TooltipProps) {
+export default function Tooltip ({ children, text, position, align, disabled }: TooltipProps) {
   position = position ?? 'top'
   align = align ?? 'left'
 
@@ -99,6 +100,10 @@ export default function Tooltip ({ children, text, position, align }: TooltipPro
       <div ref={tooltipRef} className={className.join(' ')} style={css}>{text}</div>,
       document.body
     )
+  }
+
+  if (disabled) {
+    return children
   }
 
   return h(Fragment, null, cloneElement(children, { ref: elementRef, onMouseEnter: onMouseEnter, onMouseLeave: onMouseLeave }), tooltip)

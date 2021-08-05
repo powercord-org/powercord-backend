@@ -79,13 +79,7 @@
 .profile {
   display: flex;
   align-items: center;
-}
-
-.avatar {
-  border-radius: 50%;
-  width: 56px;
-  height: 56px;
-  margin-right: 16px;
+  gap: 16px;
 }
 
 .link {
