@@ -29,6 +29,8 @@ import LayoutWithSidebar from '../util/LayoutWithSidebar'
 import Redirect from '../util/Redirect'
 import { SoonRoute } from '../util/Soon'
 import Users from './Users/Manage'
+import Forms from './Store/Forms'
+
 import { Endpoints, Routes } from '../../constants'
 
 import Smile from 'feather-icons/dist/icons/smile.svg'
@@ -37,6 +39,7 @@ import Activity from 'feather-icons/dist/icons/activity.svg'
 import Layout from 'feather-icons/dist/icons/layout.svg'
 import Inbox from 'feather-icons/dist/icons/inbox.svg'
 import Flag from 'feather-icons/dist/icons/flag.svg'
+import Alert from 'feather-icons/dist/icons/alert-octagon.svg'
 import CodeSandbox from 'feather-icons/dist/icons/codesandbox.svg'
 
 import style from './admin.module.css'
@@ -87,6 +90,10 @@ function Sidebar () {
         <span>Reports</span>
         {Boolean(unread.reports) && <span className={style.unread}>{unread.reports}</span>}
       </Link>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_THREATS}>
+        <Alert/>
+        <span>Known Threats</span>
+      </Link>
       <h3>Community</h3>
       <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_EVENTS_SECRET}>
         <CodeSandbox/>
@@ -112,11 +119,14 @@ export default function Admin () {
         <SoonRoute path={Routes.BACKOFFICE_STORE_FRONT}>
           <div>store front</div>
         </SoonRoute>
-        <SoonRoute path={Routes.BACKOFFICE_STORE_FORMS}>
-          <div>forms</div>
+        <SoonRoute path={Routes.BACKOFFICE_MONITORING}>
+          <Forms path={Routes.BACKOFFICE_STORE_FORMS}/>
         </SoonRoute>
         <SoonRoute path={Routes.BACKOFFICE_STORE_REPORTS}>
           <div>reports</div>
+        </SoonRoute>
+        <SoonRoute path={Routes.BACKOFFICE_THREATS}>
+          <div>threats</div>
         </SoonRoute>
 
         <SoonRoute path={Routes.BACKOFFICE_EVENTS_SECRET}>

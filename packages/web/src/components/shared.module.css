@@ -26,7 +26,7 @@
   align-items: center;
   justify-content: center;
   transition: filter .17s ease;
-  font-size: 14px;
+  font-size: 0.9em;
 }
 
 .button {

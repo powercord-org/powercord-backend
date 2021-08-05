@@ -77,3 +77,10 @@ export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
 export type RestAdminUser = RestUser & { banStatus?: UserBanStatus }
 
 export type RestAdminBans = UserBanStatus & { user?: RestAdminUser }
+
+export type MinimalUser = {
+  id: string
+  username: string
+  discriminator: string
+  avatar: string | null
+}

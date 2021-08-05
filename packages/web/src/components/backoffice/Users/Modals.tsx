@@ -22,8 +22,8 @@
 
 import type { Ref } from 'preact'
 import type { RestAdminUser } from '@powercord/types/users'
-import { h } from 'preact'
 import { useCallback, useRef, useState } from 'preact/hooks'
+import { h } from 'preact'
 
 import Modal from '../../util/Modal'
 import { CheckboxField, SelectField, TextField } from '../../util/Form'

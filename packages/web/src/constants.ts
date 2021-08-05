@@ -45,9 +45,10 @@ export const Endpoints = {
   BACKOFFICE_USER: (id: string) => `/api/v2/backoffice/users/${id}`,
   BACKOFFICE_BANS: '/api/v2/backoffice/bans/',
   BACKOFFICE_BAN: (id: string) => `/api/v2/backoffice/bans/${id}`,
-  BACKOFFICE_FORMS: '/api/v2/backoffice/forms',
+  BACKOFFICE_FORMS: '/api/v2/backoffice/forms?kind=hosting&kind=publish&kind=verification',
   BACKOFFICE_FORMS_COUNT: '/api/v2/backoffice/forms/count',
   BACKOFFICE_FORM: (id: string) => `/api/v2/backoffice/forms/${id}`,
+  BACKOFFICE_REPORTS: '/api/v2/backoffice/forms?kind=reports',
 }
 
 export const Routes = {
@@ -86,6 +87,7 @@ export const Routes = {
   BACKOFFICE_STORE_FORMS_FORM: (id: string) => `/backoffice/store/forms/${id}`,
   BACKOFFICE_STORE_REPORTS: '/backoffice/store/reports',
   BACKOFFICE_STORE_REPORTS_REPORT: (id: string) => `/backoffice/store/reports/${id}`,
+  BACKOFFICE_THREATS: '/backoffice/threats',
   BACKOFFICE_EVENTS_SECRET: '/backoffice/events/secret',
 
   DICKSWORD: 'https://discord.gg/powercord',

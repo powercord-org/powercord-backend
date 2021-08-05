@@ -27,7 +27,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply, FastifySchema } fro
 import type { ConfiguredReply } from '../../types.js'
 
 type CrudModule = boolean | { schema?: FastifySchema }
-type CrudReadAllModule = boolean | { schema?: FastifySchema, filter?: string[] }
+type CrudReadAllModule = boolean | { schema?: FastifySchema, filter?: string[], all?: boolean }
 type CrudUpdateModule = boolean | { schema?: FastifySchema, upsert?: boolean }
 
 type CrudSettings = {
@@ -47,7 +47,7 @@ type Reply = ConfiguredReply<FastifyReply, CrudSettings>
 
 type ReadQuery = { limit?: number, page?: number }
 
-type ReadAllQuery = ReadQuery & Record<string, unknown>
+type ReadAllQuery = ReadQuery & { [key: string]: unknown }
 
 type RouteParams = { id: string }
 
@@ -72,18 +72,32 @@ async function readAll (this: FastifyInstance, request: FastifyRequest<{ Queryst
 
   const aggregation = data.aggregation || []
   const filters = typeof data.modules?.readAll === 'object' && data.modules.readAll.filter
+  const all = typeof data.modules?.readAll === 'object' && data.modules.readAll.all === true
   let countFilter: Filter<Document> | undefined = void 0
 
   if (Array.isArray(filters)) {
     const query: Filter<Document> = {}
     for (const filter of filters) {
       if (request.query[filter]) {
-        query[filter] = request.query[filter]
+        query[filter] = Array.isArray(request.query[filter])
+          ? { $in: request.query[filter] }
+          : request.query[filter]
       }
     }
 
     aggregation.unshift({ $match: query })
     countFilter = query
+  }
+
+  if (all) {
+    const cur = collection.aggregate([
+      ...aggregation,
+      { $project: data.projection },
+      { $set: { id: '$_id' } },
+      { $unset: '_id' },
+    ])
+
+    return cur.toArray()
   }
 
   const cur = collection.aggregate([

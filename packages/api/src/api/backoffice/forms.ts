@@ -42,15 +42,24 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     data: {
       collection: 'forms',
       projection: {
-        kind: 0,
         complianceLegal: 0,
         complianceGuidelines: 0,
         complianceSecurity: 0,
         compliancePrivacy: 0,
         complianceCute: 0,
+        'submitter.accounts': 0,
+        'submitter.badges': 0,
+        'submitter.createdAt': 0,
+        'submitter.patronTier': 0,
       },
+      aggregation: [
+        { $lookup: { from: 'users', localField: 'submitter', foreignField: '_id', as: 'submitter' } },
+        { $unwind: { path: '$submitter', preserveNullAndEmptyArrays: true } },
+        { $set: { 'submitter.id': '$submitter._id' } },
+        { $unset: 'submitter._id' },
+      ],
       modules: {
-        readAll: { filter: [ 'kind' ] },
+        readAll: { filter: [ 'kind' ], all: true },
         create: false,
       },
     },

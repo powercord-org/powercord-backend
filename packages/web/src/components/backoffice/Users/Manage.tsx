@@ -142,7 +142,7 @@ function UserRow ({ user, setModal }: { user: RestAdminUser, setModal: (s: Modal
   )
 }
 
-export default function List (_: Attributes) {
+export default function ManageUsers (_: Attributes) {
   const [ page, setPage ] = useState(1)
   const [ pages, setPages ] = useState(0)
   const [ usersStore, pushUsers ] = useReducer(userReducer, {})
@@ -167,7 +167,7 @@ export default function List (_: Attributes) {
 
   return (
     <main>
-      <h1>Manage users</h1>
+      <h1 className={style.title}>Manage users</h1>
       <div className={style.toolbar}>
         {/* <TextField name='search' label='Search' placeholder='Search a user...' raw disabled/> */}
         <button className={sharedStyle.button} onClick={editById}>Edit a user by ID</button>
