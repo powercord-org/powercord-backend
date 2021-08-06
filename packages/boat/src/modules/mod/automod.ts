@@ -134,7 +134,7 @@ function checkInvite (guild: Guild, invite: Invite) {
 
     // todo: ban instead of logging
     const staff = guild.channels.get(config.discord.ids.channelStaff) as GuildTextableChannel | undefined
-    staff?.createMessage({ content: `:eyes: ${invite.code} <@${member.id}> ${member.username}#${member.discriminator}`, allowedMentions: {} })
+    staff?.createMessage({ content: `:eyes: ${invite.code} <@${member.id}> ${member.username}#${member.discriminator} <#${invite.channel.id}>`, allowedMentions: {} })
   }
 
   // todo: check if user is muted, flag invite as suspicious

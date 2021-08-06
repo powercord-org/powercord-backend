@@ -28,7 +28,7 @@ import { existsSync, mkdirSync, createReadStream, createWriteStream } from 'fs'
 
 const SETTINGS_UPLOAD_LIMIT = 1e8 // 100MB
 const SETTINGS_UPLOAD_EYES = 1e6 // 1MB
-const SETTINGS_STORAGE_FOLDER = new URL('file:///var/lib/powercord/settings/')
+export const SETTINGS_STORAGE_FOLDER = new URL('file:///var/lib/powercord/settings/')
 if (!existsSync(SETTINGS_STORAGE_FOLDER)) mkdirSync(SETTINGS_STORAGE_FOLDER)
 
 type ReqProps = { TokenizeUser: User }

@@ -20,8 +20,6 @@
  * SOFTWARE.
  */
 
-/// <reference lib="dom"/>
-
 import type { ComponentChild, Attributes } from 'preact'
 import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'

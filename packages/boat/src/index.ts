@@ -56,7 +56,7 @@ async function loadCommand (command: string) {
   bot.registerCommand(basename(command, '.js'), cmd.executor, { description: cmd.description, aliases: cmd.aliases })
 }
 
-Promise.resolve(new MongoClient(config.mango))
+Promise.resolve(new MongoClient(`${config.mango}?appName=Powercord%20Boat`))
   .then((client) => client.connect())
   .then((client) => (bot.mongo = client.db('powercord')))
   .then(() => readdirRecursive(new URL('./modules/', import.meta.url)))

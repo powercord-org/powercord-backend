@@ -45,7 +45,7 @@ fastify.decorate('verifyAdmin', verifyAdmin)
 fastify.register(fastifyAuth)
 fastify.register(fastifyCookie)
 fastify.register(fastifyRawBody, { global: false })
-fastify.register(fastifyMongodb, { url: config.mango })
+fastify.register(fastifyMongodb, { url: `${config.mango}?appName=Powercord%20API` })
 fastify.register(fastifyTokenize, {
   secret: config.secret,
   fastifyAuth: true,
