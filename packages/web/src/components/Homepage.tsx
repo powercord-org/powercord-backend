@@ -26,6 +26,8 @@ import { useTitleTemplate } from 'hoofd/preact'
 
 import { Routes } from '../constants'
 
+import Zap from 'feather-icons/dist/icons/zap.svg'
+import MessageCircle from 'feather-icons/dist/icons/message-circle.svg'
 import ArrowRight from 'feather-icons/dist/icons/arrow-right.svg'
 import Feather from 'feather-icons/dist/icons/feather.svg'
 import Shield from 'feather-icons/dist/icons/shield.svg'
@@ -34,10 +36,15 @@ import Update from 'feather-icons/dist/icons/refresh-cw.svg'
 import Terminal from 'feather-icons/dist/icons/terminal.svg'
 import Download from 'feather-icons/dist/icons/download-cloud.svg'
 import PenTool from 'feather-icons/dist/icons/pen-tool.svg'
+import Coffee from 'feather-icons/dist/icons/coffee.svg'
+import BatteryCharging from 'feather-icons/dist/icons/battery-charging.svg'
+import Disc from 'feather-icons/dist/icons/disc.svg'
+
 import Plugin from '../assets/icons/plugin.svg'
 import Theme from '../assets/icons/brush.svg'
 
 import style from './homepage.module.css'
+import sharedStyle from './shared.module.css'
 
 type FeatureOldProps = { icon: any, title: string, desc: string, soon?: boolean }
 
@@ -104,9 +111,9 @@ function HomepageOld (_: Attributes) {
   )
 }
 
-/** ------ **/
+/** ------ */
 
-type FeatureProps = { icon: any, title: string, description: string, note?: string, link?: string }
+type FeatureProps = { icon: any, title: string, description: string, note?: string, link?: { href: string, label: string } }
 
 function Feature ({ icon, title, description, note, link }: FeatureProps) {
   return (
@@ -115,9 +122,9 @@ function Feature ({ icon, title, description, note, link }: FeatureProps) {
       <h3 className={style.featureTitle}>{title}</h3>
       <p className={style.featureDescription}>{description}</p>
       {note && <p className={style.note}>{note}</p>}
-      {link && <a href={link} className={style.featureLink}>
+      {link && <a href={link.href} className={style.featureLink}>
         <ArrowRight/>
-        <span>Explore available plugins</span>
+        <span>{link.label}</span>
       </a>}
     </section>
   )
@@ -132,23 +139,37 @@ function Homepage (_: Attributes) {
         <div className={style.wrapper}>
           <h1 className={style.title}>Powerful and simple Discord client mod</h1>
           <p className={style.motto}>Enhance your Discord experience with new feature and looks. Make your Discord truly yours.</p>
+          <div className={style.buttons}>
+            <a href={Routes.INSTALLATION} className={sharedStyle.button}>
+              <Zap className={sharedStyle.icon}/>
+              <span>Installation</span>
+            </a>
+            <a href={Routes.DICKSWORD} className={sharedStyle.buttonLink}>
+              <MessageCircle className={sharedStyle.icon}/>
+              <span>Discord Server</span>
+            </a>
+          </div>
         </div>
       </div>
       <div className={style.wrapper}>
         <section className={style.section}>
           <h2 className={style.sectionTitle}>Zero-compromise experience</h2>
+          <p className={style.sectionDescription}>
+            Powercord has everything you need to enhance your Discord client, without compromising on performance or
+            security.
+          </p>
           <div className={style.features}>
             <Feature
               icon={Plugin}
               title='Plugins'
               description={'Add new features to your Discord client, or enhance already existing ones by extending them. You can even write your own plugins!'}
-              link={Routes.STORE_PLUGINS}
+              link={{ href: Routes.STORE_PLUGINS, label: 'Explore available plugins' }}
             />
             <Feature
               icon={Theme}
               title='Themes'
               description={'Give your Discord client a fresh new look, that matches your taste. You\'re no longer limited by what Discord gave you, only imagination!'}
-              link={Routes.STORE_THEMES}
+              link={{ href: Routes.STORE_THEMES, label: 'Explore available themes' }}
             />
             <Feature
               icon={PenTool}
@@ -172,6 +193,49 @@ function Homepage (_: Attributes) {
               title='Feels like home'
               description={'We try to integrate as smoothly as possible within Discord\'s design language. Every modded element feels like it always has been there. You\'ll almost forget you\'re running a modded client!'}
             />
+          </div>
+        </section>
+        <hr/>
+        <section className={style.section}>
+          <h2 className={style.sectionTitle}>Powerful APIs for amazing plugins</h2>
+          <p className={style.sectionDescription}>
+            Powercord gives plugins and theme developers the tools they need to build their next amazing plugin or
+            theme.
+          </p>
+          <div className={style.features}>
+            <Feature
+              icon={Coffee}
+              title='Standard library'
+              description={'Don\'t struggle with basic setup or boilerplate code. Powercord provides already everything you need to get started and do your patchwork.'}
+              link={{ href: Routes.DOCS, label: 'Read the documentation' }}
+            />
+            <Feature
+              icon={BatteryCharging}
+              title='Efficient code'
+              description={'An efficient plugin keeps users happy, their Discord client speedy, and preserves their laptop\'s battery. Powercord gives you in-depth insights and detects inefficient code to help you make better and more efficient plugins.'}
+            />
+            <Feature
+              icon={Disc}
+              title='Error handling'
+              description={'Discord is a rolling-release product and injections can quickly go wrong. Powercord has built-in error handling that is designed to ensure plugins cannot brick Discord clients. No more crashes, or at least way fewer.'}
+            />
+          </div>
+        </section>
+        <hr/>
+        <section className={style.section}>
+          <h2 className={style.sectionTitle}>Make your Discord spicier</h2>
+          <p className={style.sectionDescription}>
+            Stop limiting yourself to what Discord gives you. Get Powercord!
+          </p>
+          <div className={sharedStyle.buttons}>
+            <a href={Routes.INSTALLATION} className={sharedStyle.button}>
+              <Zap className={sharedStyle.icon}/>
+              <span>Installation</span>
+            </a>
+            <a href={Routes.DICKSWORD} className={sharedStyle.buttonLink}>
+              <MessageCircle className={sharedStyle.icon}/>
+              <span>Discord Server</span>
+            </a>
           </div>
         </section>
       </div>

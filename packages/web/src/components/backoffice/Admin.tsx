@@ -36,10 +36,15 @@ import { Endpoints, Routes } from '../../constants'
 import Smile from 'feather-icons/dist/icons/smile.svg'
 import Shield from 'feather-icons/dist/icons/shield.svg'
 import Activity from 'feather-icons/dist/icons/activity.svg'
+
+import Package from 'feather-icons/dist/icons/package.svg'
+import Tag from 'feather-icons/dist/icons/tag.svg'
 import Layout from 'feather-icons/dist/icons/layout.svg'
+import Alert from 'feather-icons/dist/icons/alert-octagon.svg'
+
 import Inbox from 'feather-icons/dist/icons/inbox.svg'
 import Flag from 'feather-icons/dist/icons/flag.svg'
-import Alert from 'feather-icons/dist/icons/alert-octagon.svg'
+
 import CodeSandbox from 'feather-icons/dist/icons/codesandbox.svg'
 
 import style from './admin.module.css'
@@ -75,11 +80,26 @@ function Sidebar () {
         <Activity/>
         <span>Abuse Monitoring</span>
       </Link>
+
       <h3>Store management</h3>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_ITEMS}>
+        <Package/>
+        <span>Items</span>
+      </Link>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_TAGS}>
+        <Tag/>
+        <span>Tags</span>
+      </Link>
       <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_FRONT}>
         <Layout/>
         <span>Frontpage</span>
       </Link>
+      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_THREATS}>
+        <Alert/>
+        <span>Known Threats</span>
+      </Link>
+
+      <h3>Store submissions</h3>
       <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_STORE_FORMS}>
         <Inbox/>
         <span>Forms</span>
@@ -90,10 +110,7 @@ function Sidebar () {
         <span>Reports</span>
         {Boolean(unread.reports) && <span className={style.unread}>{unread.reports}</span>}
       </Link>
-      <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_THREATS}>
-        <Alert/>
-        <span>Known Threats</span>
-      </Link>
+
       <h3>Community</h3>
       <Link class={style.item} activeClassName={style.active} href={Routes.BACKOFFICE_EVENTS_SECRET}>
         <CodeSandbox/>
@@ -116,17 +133,24 @@ export default function Admin () {
           <div>monitoring</div>
         </SoonRoute>
 
+        <SoonRoute path={Routes.BACKOFFICE_STORE_ITEMS}>
+          <div>store items</div>
+        </SoonRoute>
+        <SoonRoute path={Routes.BACKOFFICE_STORE_TAGS}>
+          <div>store tags</div>
+        </SoonRoute>
         <SoonRoute path={Routes.BACKOFFICE_STORE_FRONT}>
           <div>store front</div>
         </SoonRoute>
+        <SoonRoute path={Routes.BACKOFFICE_THREATS}>
+          <div>threats</div>
+        </SoonRoute>
+
         <SoonRoute path={Routes.BACKOFFICE_STORE_FORMS}>
           <Forms path={Routes.BACKOFFICE_STORE_FORMS}/>
         </SoonRoute>
         <SoonRoute path={Routes.BACKOFFICE_STORE_REPORTS}>
           <div>reports</div>
-        </SoonRoute>
-        <SoonRoute path={Routes.BACKOFFICE_THREATS}>
-          <div>threats</div>
         </SoonRoute>
 
         <SoonRoute path={Routes.BACKOFFICE_EVENTS_SECRET}>

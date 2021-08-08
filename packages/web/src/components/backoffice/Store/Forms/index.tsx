@@ -47,22 +47,22 @@ function ReviewButtons ({ form, canViewDiscussions }: FormProps) {
     <div className={sharedStyle.buttons}>
       <Tooltip text={'Can\'t connect to Powercord'} disabled={canViewDiscussions}>
         <button className={sharedStyle.button} disabled={!canViewDiscussions}>
-          <ExternalLink className={style.icon}/>
+          <ExternalLink className={sharedStyle.icon}/>
           <span>View discussion</span>
         </button>
       </Tooltip>
       {form.reviewed
         ? <div className={style.alignCenter}>
-          {form.approved ? <Check className={style.icon}/> : <X className={style.icon}/>}
+          {form.approved ? <Check className={sharedStyle.icon}/> : <X className={sharedStyle.icon}/>}
           <span>{form.approved ? 'Approved' : 'Rejected'} by {form.reviewer.username}#{form.reviewer.discriminator}</span>
         </div>
         : <Fragment>
           <button className={`${sharedStyle.button} ${sharedStyle.green}`}>
-            <Check className={style.icon}/>
+            <Check className={sharedStyle.icon}/>
             <span>Accept</span>
           </button>
           <button className={`${sharedStyle.button} ${sharedStyle.red}`}>
-            <X className={style.icon}/>
+            <X className={sharedStyle.icon}/>
             <span>Reject</span>
           </button>
         </Fragment>}

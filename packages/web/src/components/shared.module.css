@@ -34,26 +34,35 @@
   gap: 16px;
 }
 
-.button, .button-link {
+.button, .button-link, .button-border {
   color: #fff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: filter .17s ease;
-  font-size: 0.9em;
+  transition: filter .2s, background .2s;
+  gap: 8px;
 }
 
-.button {
-  background-color: var(--blurple);
-  font-weight: 600;
+.button, .button-border {
   height: 36px;
   min-width: 60px;
   padding: 2px 16px;
   border-radius: 3px;
   user-select: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+}
+
+.button {
+  font-size: 0.9em;
+  background-color: var(--blurple);
+  font-weight: 600;
+}
+
+.button.green {
+  background-color: var(--green);
+}
+
+.button.red {
+  background-color: var(--red);
 }
 
 .button:hover {
@@ -66,19 +75,43 @@
   filter: brightness(.7);
 }
 
-.button.green {
-  background-color: var(--green);
+.button-border {
+  border: 1px solid var(--blurple);
+  color: var(--blurple);
 }
 
-.button.red {
-  background-color: var(--red);
+.button-border.green {
+  border-color: var(--green);
+}
+
+.button-border.red {
+  border-color: var(--red);
+}
+
+.button-border:hover {
+  text-decoration: none;
+  background-color: var(--blurple-t);
+}
+
+.button-border.green:hover {
+  border-color: var(--green);
+  background-color: var(--green-t);
+}
+
+.button-border.red:hover {
+  border-color: var(--red);
+  background-color: var(--red-t);
 }
 
 .button-link {
-  font-size: 1em;
   color: var(--blurple);
 }
 
 .button-link:hover {
   text-decoration: underline;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
 }

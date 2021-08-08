@@ -114,7 +114,7 @@
 }
 
 .heading {
-  padding: 40px 0 48px;
+  padding: 32px 0;
   text-align: center;
   background-color: var(--background-secondary);
   position: relative;
@@ -130,15 +130,27 @@
   margin: 0;
   font-size: 1.1rem;
   position: relative;
+  margin-bottom: 24px;
   z-index: 2;
 }
 
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
 .section {
-  margin: 32px 0;
+  margin: 32px 0 64px;
 }
 
 .section-title {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.section-description {
+  margin: 0 0 24px;
 }
 
 .feature-icon {
