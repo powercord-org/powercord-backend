@@ -20,30 +20,40 @@
  * SOFTWARE.
  */
 
-import type { User } from '@powercord/types/discord'
-import OAuth from './oauth.js'
-import { fetchCurrentUser } from '../utils/discord.js'
-import config from '../config.js'
-
-class Discord extends OAuth<User> {
-  constructor () {
-    super(
-      config.discord.clientID,
-      config.discord.clientSecret,
-      'https://discord.com/oauth2/authorize',
-      'https://discord.com/api/v6/oauth2/token'
-    )
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  get scopes () {
-    return [ 'identify' ]
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  async getCurrentUser (token: string) {
-    return fetchCurrentUser(token)
-  }
+export type User = {
+  id: string
+  username: string
+  discriminator: string
+  avatar: string | null
+  bot?: boolean
+  system?: boolean
+  mfa_enabled?: boolean
+  locale?: string
+  flags?: number
+  premium_type?: number
+  public_flags?: number
 }
 
-export default new Discord()
+export type Member = {
+  user: User
+  nick?: string | null
+  roles: string[]
+  joined_at: string
+  premium_since?: string | null
+  deaf: boolean
+  mute: boolean
+  pending?: boolean
+  permissions?: string
+}
+
+// Note: type is incomplete
+export type ApiMessage = {
+  id: string
+  channel_id: string
+  guild_id?: string
+  author: User
+  member?: Member
+  content: string
+  timestamp: string
+  thread?: { id: string }
+}

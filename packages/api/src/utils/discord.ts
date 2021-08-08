@@ -20,34 +20,50 @@
  * SOFTWARE.
  */
 
-import type { DiscordUser, DiscordMember } from '../types.js'
+import type { User, Member, ApiMessage } from '@powercord/types/discord'
 import fetch from 'node-fetch'
 import config from '../config.js'
 
-export async function fetchUser (userId: string): Promise<DiscordUser> {
+/// Generic API stuff
+
+export async function fetchUser (userId: string): Promise<User> {
   return fetch(`https://discord.com/api/v9/users/${userId}`, { headers: { authorization: `Bot ${config.discord.botToken}` } })
     .then((r) => r.json())
 }
 
-export async function fetchCurrentUser (token: string): Promise<DiscordUser> {
+export async function fetchCurrentUser (token: string): Promise<User> {
   return fetch('https://discord.com/api/v9/users/@me', { headers: { authorization: `Bearer ${token}` } })
     .then((r) => r.json())
 }
 
-export async function dispatchHonk (honk: string, payload: unknown): Promise<unknown> {
+export async function dispatchHonk (honk: string, payload: unknown): Promise<ApiMessage> {
   return fetch(`https://discord.com/api/v9/webhooks/${honk}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(payload),
-  })
+  }).then((r) => r.json())
 }
 
-export async function fetchAllMembers (): Promise<DiscordMember[]> {
-  const users: DiscordMember[] = []
-  let res: DiscordMember[] = []
+export async function fetchHonkMessage (honk: string, message: string): Promise<ApiMessage> {
+  return fetch(`https://discord.com/api/v9/webhooks/${honk}/${message}`).then((r) => r.json())
+}
+
+export async function editHonkMessage (honk: string, message: string, payload: unknown): Promise<ApiMessage> {
+  return fetch(`https://discord.com/api/v9/webhooks/${honk}/${message}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload),
+  }).then((r) => r.json())
+}
+
+/// Members management
+
+export async function fetchAllMembers (): Promise<Member[]> {
+  const users: Member[] = []
+  let res: Member[] = []
 
   do {
-    const after = res.length ? res[res.length - 1].id : '0'
+    const after = res.length ? res[res.length - 1].user.id : '0'
     res = await fetch(
       `https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members?limit=1000&after=${after}`,
       { headers: { authorization: `Bot ${config.discord.botToken}` } }
@@ -59,7 +75,7 @@ export async function fetchAllMembers (): Promise<DiscordMember[]> {
   return users
 }
 
-export async function fetchMember (memberId: string): Promise<DiscordMember> {
+export async function fetchMember (memberId: string): Promise<Member> {
   return fetch(
     `https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members/${memberId}`,
     { headers: { authorization: `Bot ${config.discord.botToken}` } }

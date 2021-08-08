@@ -22,10 +22,6 @@
 
 import type { FastifyReply } from 'fastify'
 
-export type DiscordUser = any // todo
-
-export type DiscordMember = any // todo
-
 export type ConfiguredReply<TFReply extends FastifyReply, TConfig> =
   TFReply extends FastifyReply<infer TServer, infer TRequest, infer TReply, infer TGeneric>
     ? FastifyReply<TServer, TRequest, TReply, TGeneric, TConfig>

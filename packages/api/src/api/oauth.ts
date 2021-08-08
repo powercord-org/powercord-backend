@@ -43,7 +43,7 @@ async function discord (this: FastifyInstance, request: FastifyRequest<OAuth>, r
   if (request.query.code) {
     const codes = await discordAuth.getToken(request.query.code)
     const user = await discordAuth.getCurrentUser(codes.access_token)
-    const collection = this.mongo.db!.collection('users')
+    const collection = this.mongo.db!.collection<User>('users')
     const banStatus = await this.mongo.db!.collection('userbans').findOne({ _id: user.id })
     if (banStatus && banStatus.account) {
       // todo: Notify the user why the auth failed instead of silently failing
@@ -164,7 +164,7 @@ async function unlinkDiscord (this: FastifyInstance, request: FastifyRequest<Aut
     ]
 
     const member = await fetchMember(request.user!._id)
-    const newRoles = member.roles.filter((r: string) => !toRevoke.includes(r))
+    const newRoles = member.roles.filter((r) => !toRevoke.includes(r))
     await setRoles(request.user!._id, newRoles, 'User deleted their powercord.dev account')
   } catch (e) {
     // Let it fail silently

@@ -46,7 +46,7 @@ export type User = {
       refreshToken: string
       expiryDate: number
     }
-    spotify: {
+    spotify?: {
       accessToken: string,
       refreshToken: string,
       expiryDate: number

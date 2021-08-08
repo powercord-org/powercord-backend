@@ -49,7 +49,7 @@ function plug (request: FastifyRequest<{ Params: { color: string } }>, reply: Fa
   reply.type('image/svg+xml').send(plugXml.replace(/7289DA/g, request.params.color))
 }
 
-async function getDiscordAvatar (user: User, update: (avatar: string) => void): Promise<Buffer> {
+async function getDiscordAvatar (user: User, update: (avatar: string | null) => void): Promise<Buffer> {
   if (!user.avatar) {
     return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 5}.png`).then((r) => r.buffer())
   }

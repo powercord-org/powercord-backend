@@ -206,7 +206,7 @@ function Homepage (_: Attributes) {
             <Feature
               icon={Coffee}
               title='Standard library'
-              description={'Don\'t struggle with basic setup or boilerplate code. Powercord provides already everything you need to get started and do your patchwork.'}
+              description={'Don\'t struggle with basic setup or boilerplate code. Powercord already provides everything you need to get started and do your patchwork.'}
               link={{ href: Routes.DOCS, label: 'Read the documentation' }}
             />
             <Feature
