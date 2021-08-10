@@ -48,4 +48,4 @@ export type User = {
   }
 }
 
-export default createContext<User | null | void>(void 0)
+export default createContext<User | null | undefined>(void 0)

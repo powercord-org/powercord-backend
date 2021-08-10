@@ -63,6 +63,7 @@ export const Routes = {
   STORE_PLUGINS: '/store/plugins',
   STORE_THEMES: '/store/themes',
   STORE_SUGGESTIONS: 'https://github.com/powercord-community/suggestions/issues?q=is%3Aissue+is%3Aopen+label%3A%22up+for+grabs%22',
+  STORE_MANAGE: '/store/manage',
   STORE_FORMS: '/store/forms',
   STORE_PUBLISH: '/store/forms/publish',
   STORE_VERIFICATION: '/store/forms/verification',

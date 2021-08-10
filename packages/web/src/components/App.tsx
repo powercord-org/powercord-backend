@@ -51,7 +51,7 @@ import { Routes } from '../constants'
 
 import logo from '../assets/powercord.png'
 
-type AppProps = { user?: void | null | User, url?: string, ctx?: Record<string, any> }
+type AppProps = { user?: null | User, url?: string, ctx?: Record<string, any> }
 
 export default function App (props: null | AppProps) {
   const change = useCallback(() => typeof document !== 'undefined' && document.getElementById('app')?.scrollTo(0, 0), [])
