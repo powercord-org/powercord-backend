@@ -77,7 +77,7 @@ export async function fetchHonkMessage (honk: string, message: string): Promise<
 
 export async function editHonkMessage (honk: string, message: string, payload: unknown): Promise<ApiMessage> {
   return fetch(`https://discord.com/api/v9/webhooks/${honk}/messages/${message}`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(payload),
   }).then((r) => r.json())
