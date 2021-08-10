@@ -128,7 +128,7 @@ export default function Stats (_: Attributes) {
     <main>
       <h1>Statistics</h1>
       <p>We love stats. So have stats. It's free. I think.</p>
-      <div style={{ display: 'none' }}>
+      <div className='sneaky'>
         <p>it just condemned an honest woman to do boring maths for a day</p>
         <p>and the story tells she then had to do more maths for displaying</p>
         <p>-- help me pls i'm just a stupid girl, it's painfullll - cynthia</p>

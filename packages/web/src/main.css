@@ -117,6 +117,10 @@ hr {
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
 }
 
+.sneaky {
+  display: none;
+}
+
 .no-js {
   height: 48px;
   display: flex;
