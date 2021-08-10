@@ -24,7 +24,7 @@ import type { User, Member, ApiMessage } from '@powercord/types/discord'
 import fetch from 'node-fetch'
 import config from '../config.js'
 
-/// Generic API stuff
+/// Users
 
 export async function fetchUser (userId: string): Promise<User> {
   return fetch(`https://discord.com/api/v9/users/${userId}`, { headers: { authorization: `Bot ${config.discord.botToken}` } })
@@ -36,8 +36,35 @@ export async function fetchCurrentUser (token: string): Promise<User> {
     .then((r) => r.json())
 }
 
-export async function dispatchHonk (honk: string, payload: unknown): Promise<ApiMessage> {
-  return fetch(`https://discord.com/api/v9/webhooks/${honk}`, {
+/// DM
+
+export async function sendDm (userId: string, message: string): Promise<boolean> {
+  const channel = await fetch('https://discord.com/api/v9/users/@me/channels', {
+    method: 'POST',
+    headers: {
+      authorization: `Bot ${config.discord.botToken}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ recipient_id: userId }),
+  }).then((r) => r.json())
+
+  if (!channel.id) return false
+  const res = await fetch(`https://discord.com/api/v9/channels/${channel.id}/messages`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bot ${config.discord.botToken}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ content: message.replace('$username', channel.recipients[0].username) }),
+  })
+
+  return res.status === 200
+}
+
+/// Honks
+
+export async function dispatchHonk (honk: string, payload: unknown, query?: string): Promise<ApiMessage> {
+  return fetch(`https://discord.com/api/v9/webhooks/${honk}?wait=true&${query ?? ''}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(payload),
@@ -45,11 +72,11 @@ export async function dispatchHonk (honk: string, payload: unknown): Promise<Api
 }
 
 export async function fetchHonkMessage (honk: string, message: string): Promise<ApiMessage> {
-  return fetch(`https://discord.com/api/v9/webhooks/${honk}/${message}`).then((r) => r.json())
+  return fetch(`https://discord.com/api/v9/webhooks/${honk}/messages/${message}`).then((r) => r.json())
 }
 
 export async function editHonkMessage (honk: string, message: string, payload: unknown): Promise<ApiMessage> {
-  return fetch(`https://discord.com/api/v9/webhooks/${honk}/${message}`, {
+  return fetch(`https://discord.com/api/v9/webhooks/${honk}/messages/${message}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(payload),

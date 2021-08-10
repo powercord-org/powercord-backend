@@ -20,8 +20,43 @@
  * SOFTWARE.
  */
 
-import type { FastifyInstance } from 'fastify'
+import type { User } from '@powercord/types/users'
+import type { StoreForm } from '@powercord/types/store'
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import { dispatchHonk, editHonkMessage, fetchHonkMessage, sendDm } from '../../utils/discord.js'
 import crudModule from './crud.js'
+import config from '../../config.js'
+
+const DmMessages = {
+  publish: {
+    approved: 'Your submission in the Powercord Store has been approved! You should see it appear in the "Manage my works" tab of the Powercord Store shortly.\n\nIf your submission is a plugin, you will receive an invitation to a repository in the powercord-community organization that will be the new home of your plugin. Make sure to push future updates to this repository!',
+    rejected: 'Unfortunately, your submission in the Powercord Store has been rejected for the following reason: $reason.\n\nMake sure your plugin follows the Powercord Guidelines available at <https://powercord.dev/guidelines> and that it is in a functional shape before submitting again.',
+  },
+  verification: {
+    approved: 'Your verification request has been approved! Your plugin now has the verified tickmark in the Store, and you have unlocked the Verified Developer role in our support server.',
+    rejected: 'Unfortunately, we rejected your verification request for the following reason: $reason.\n\nWe want verified works to be the best-of-the-best, and we tend to be nitpick-y in our review process. Make sure your work meets the eligibility criteria for verification, and make sure to solve the outlined points before submitting again.',
+  },
+  hosting: {
+    approved: 'Your request for hosting a backend has been approved. A Powercord Developer will get in touch soon to prepare your backend for hosting on our servers.',
+    rejected: 'Unfortunately, we rejected your request for hosting a backend for the following reason: $reason.',
+  },
+}
+
+const updateFormSchema = {
+  body: {
+    required: [ 'reviewed', 'approved', 'reviewer' ],
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      reviewed: { type: 'boolean' },
+      approved: { type: 'boolean' },
+      reviewer: { type: 'string', pattern: '^\\d{16,}$' },
+      reviewReason: { type: 'string', maxLength: 256 },
+    },
+    if: { properties: { approved: { const: false } } },
+    then: { required: [ 'reviewReason' ] },
+  },
+}
 
 async function getFormCount (this: FastifyInstance) {
   const res: Record<string, number> = {
@@ -35,6 +70,32 @@ async function getFormCount (this: FastifyInstance) {
   for (const form of forms) res[form._id] = form.count
 
   return res
+}
+
+async function finishFormUpdate (request: FastifyRequest, _reply: FastifyReply, form: StoreForm) {
+  const user = request.user as User
+  const message = await fetchHonkMessage(config.honks.formsChannel, form.messageId)
+
+  const modMessage = form.approved
+    ? `Form **approved** by ${user.username}#${user.discriminator}`
+    : `Form **rejected** by ${user.username}#${user.discriminator} for the following reason: ${form.reviewReason}`
+
+  const dmMessage = form.approved
+    ? DmMessages[form.kind].approved
+    : DmMessages[form.kind].rejected
+
+  if (message.thread) {
+    await dispatchHonk(config.honks.formsChannel, { content: modMessage }, `thread_id=${message.thread.id}`)
+  } else {
+    await editHonkMessage(config.honks.formsChannel, message.id, `${message.content}\n\n${modMessage}`)
+  }
+
+  const couldDm = await sendDm(
+    form.submitter as unknown as string,
+    `Hey $username,\n\n${dmMessage.replace('$reason', form.reviewReason ?? '')}\n\nCheers,\nPowercord Staff`
+  )
+
+  return { couldDm: couldDm }
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
@@ -61,6 +122,10 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       modules: {
         readAll: { filter: [ 'kind' ], all: true },
         create: false,
+        update: {
+          post: finishFormUpdate,
+          schema: updateFormSchema,
+        },
       },
     },
   })

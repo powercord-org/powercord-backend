@@ -35,6 +35,7 @@ import pawaKnockHead from '../../../assets/pawa-knock-head.png'
 import style from '../store.module.css'
 import sharedStyle from '../../shared.module.css'
 
+type FormProps = { children: VNode<any>[], onNext: () => void, onError: () => void, onLimit: () => void, id: string }
 type FormLayoutProps = Attributes & { id: string, title: string, children: VNode[], eligibility?: Eligibility }
 type PawaScreenProps = { headline: ComponentChild, text: ComponentChild }
 
@@ -64,7 +65,7 @@ function Intro ({ id, onNext }: { id: string, onNext: () => void }) {
   )
 }
 
-function Form ({ children, onNext, onError, id }: { children: VNode<any>[], onNext: () => void, onError: () => void, id: string }) {
+function Form ({ children, onNext, onError, onLimit, id }: FormProps) {
   // [Cynthia] this is used to force re-render of form fields, to help with errors sometimes not showing up
   const [ renderKey, setRenderKey ] = useState(0)
   const [ isSubmitting, setSubmitting ] = useState(false)
@@ -106,6 +107,11 @@ function Form ({ children, onNext, onError, id }: { children: VNode<any>[], onNe
 
     if (res.status >= 500) {
       onError()
+      return
+    }
+
+    if (res.status === 429) {
+      onLimit()
       return
     }
 
@@ -185,13 +191,22 @@ export default function FormLayout ({ id, title, children, eligibility }: FormLa
   let view: VNode
   switch (stage) {
     case 1:
-      view = <Form children={children} onNext={() => setStage(2)} onError={() => setStage(3)} id={id}/>
+      view = <Form children={children} onNext={() => setStage(2)} onError={() => setStage(3)} onLimit={() => setStage(429)} id={id}/>
       break
     case 2:
-      view = <PawaScreen headline='Received!' text='The Powercord Staff will give your form the attention it deserves soon.'/>
+      view = <PawaScreen
+        headline='Received!'
+        text={<>
+          The Powercord Staff will give your form the attention it deserves soon.<br/><br/>
+          We highly recommend joining the <a href={Routes.DICKSWORD} target='_blank' rel='noreferrer'>Powercord Support server</a> and opening your DMs, so we can contact you directly.
+        </>}
+      />
       break
     case 3:
       view = <PawaScreen headline='Uh, what happened?' text={'It seems like we\'re unable to process your request at this time. Please try again later!'}/>
+      break
+    case 429:
+      view = <PawaScreen headline='Woah, calm down!' text={'You have too many submissions currently pending review. Wait for the Powercord Staff to review them, and try again.'}/>
       break
     default:
       view = <PawaScreen headline='Hehe, how did you get there cutie?' text={'I\'d happily give you a cookie but I ate them all :3'}/>

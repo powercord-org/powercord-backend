@@ -27,6 +27,9 @@ import type { User } from '@powercord/types/users'
 import { lookup } from 'dns'
 import fetch from 'node-fetch'
 
+import { dispatchHonk } from '../../utils/discord.js'
+import config from '../../config.js'
+
 // todo: see if this can deduped easily, schemas also contain the structure
 type PublishBody = {
   repoUrl: string
@@ -61,6 +64,7 @@ const PLAIN_RE = /^[a-z0-9-]+$/i
 const publishSchema = {
   body: {
     required: [ 'repoUrl', 'bdAlternative', 'reviewNotes', 'complianceGuidelines' ],
+    additionalProperties: false,
     type: 'object',
     properties: {
       repoUrl: { type: 'string', maxLength: 256 },
@@ -75,6 +79,7 @@ const publishSchema = {
 const verificationSchema = {
   body: {
     required: [ 'workUrl', 'workAbout', 'developerAbout', 'workFuture', 'why', 'complianceCute' ],
+    additionalProperties: false,
     type: 'object',
     properties: {
       workUrl: { type: 'string', maxLength: 256 },
@@ -90,6 +95,7 @@ const verificationSchema = {
 const hostingSchema = {
   body: {
     required: [ 'repoUrl', 'purpose', 'technical', 'subdomain', 'reviewNotes', 'complianceSecurity', 'compliancePrivacy' ],
+    additionalProperties: false,
     type: 'object',
     properties: {
       repoUrl: { type: 'string', maxLength: 256 },
@@ -101,6 +107,20 @@ const hostingSchema = {
       compliancePrivacy: { type: 'boolean' },
     },
   },
+}
+
+const fieldToDescription: Record<string, string> = {
+  repoUrl: 'Repository URL',
+  reviewNotes: 'Notes for review',
+  bdAlternative: 'BD alternative',
+  workUrl: 'Work URL',
+  workAbout: 'About the work',
+  developerAbout: 'About the dev',
+  workFuture: 'The future',
+  why: 'Why they want it',
+  purpose: 'Purpose',
+  technical: 'Technical details',
+  subdomain: 'Desired subdomain',
 }
 
 // -- Helpers
@@ -127,12 +147,31 @@ async function isAvailable (subdomain: string): Promise<boolean> {
   return new Promise((resolve) => lookup(`${subdomain}.powercord.dev`, (e) => resolve(e?.code === 'ENOTFOUND')))
 }
 
+function stringifyForm (data: Record<string, unknown>): string {
+  const acc: string[] = []
+  for (const key in data) {
+    if (key in data && key in fieldToDescription) {
+      const value = (data[key] || 'N/A') as string
+      acc.push(`**${fieldToDescription[key]}**: ${value.length > 128 ? `${value.slice(128)}...` : value}`)
+    }
+  }
+
+  return acc.join('\n')
+}
+
 async function finalizeForm (db: Db, user: User, kind: string, data: Record<string, unknown>, reply: FastifyReply) {
   const collection = db.collection('forms')
   const pending = await collection.countDocuments({ submitter: user._id, kind: kind })
   if (pending > 5) return reply.code(429).send()
 
-  await collection.insertOne({ submitter: user._id, kind: kind, ...data })
+  const inserted = await collection.insertOne({ submitter: user._id, kind: kind, ...data })
+  const msg = await dispatchHonk(config.honks.formsChannel, {
+    content: `New ${kind} form submitted by <@${user._id}> (${user.username}#${user.discriminator})\n`
+      + `Form ID: ${inserted.insertedId.toHexString()}\n\n`
+      + `${stringifyForm(data)}`,
+  })
+
+  await collection.updateOne({ _id: inserted.insertedId }, { $set: { messageId: msg.id } })
   return reply.code(201).send()
 }
 

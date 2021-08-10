@@ -21,25 +21,28 @@
  */
 
 // todo: make safe enough and modular enough for usage in public routes
+// [Cynthia] As long as routes have a strict schema, they will be safe from mongo injections
 
 import type { Filter, Document } from 'mongodb'
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifySchema } from 'fastify'
 import type { ConfiguredReply } from '../../types.js'
+import { ObjectId } from 'mongodb'
 
-type CrudModule = boolean | { schema?: FastifySchema }
-type CrudReadAllModule = boolean | { schema?: FastifySchema, filter?: string[], all?: boolean }
-type CrudUpdateModule = boolean | { schema?: FastifySchema, upsert?: boolean }
+type CrudModule = { schema?: FastifySchema }
+type CrudReadAllModule = CrudModule & { filter?: string[], all?: boolean }
+type CrudUpdateModule = CrudModule & { upsert?: boolean, post?: (request: FastifyRequest, reply: FastifyReply, updated: any) => any }
 
-type CrudSettings = {
+export type CrudSettings = {
   collection: string
   projection: { [key: string]: 0 | 1 },
   aggregation?: object[],
+  idStr?: boolean
   modules?: {
-    create?: CrudModule
-    readAll?: CrudReadAllModule
-    read?: CrudModule
-    update?: CrudUpdateModule
-    delete?: CrudModule
+    create?: boolean | CrudModule
+    readAll?: boolean | CrudReadAllModule
+    read?: boolean | CrudModule
+    update?: boolean | CrudUpdateModule
+    delete?: boolean | CrudModule
   }
 }
 
@@ -59,9 +62,14 @@ const readQuerySchema = {
   },
 }
 
-const basicRouteSchema = {
+const basicRouteSchemaStr = {
   type: 'object',
   properties: { id: { type: 'string', pattern: '^\\d{16,}$' } },
+}
+
+const basicRouteSchemaOid = {
+  type: 'object',
+  properties: { id: { type: 'string', pattern: '^[a-f0-9]{24}$' } },
 }
 
 async function readAll (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadAllQuery }>, reply: Reply) {
@@ -123,15 +131,20 @@ async function readAll (this: FastifyInstance, request: FastifyRequest<{ Queryst
 // @ts-expect-error -- not implemented
 async function create (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const data = reply.context.config
+  // const opts = typeof data.modules?.create === 'object' ? data.modules.create : {}
+
   console.log(data)
   return {}
 }
 
 async function read (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const data = reply.context.config
+  // const opts = typeof data.modules?.read === 'object' ? data.modules.read : {}
+  const id = data.idStr ? request.params.id : new ObjectId(request.params.id)
+
   const collection = this.mongo.db!.collection(data.collection)
   const res = await collection.aggregate([
-    { $match: { _id: request.params.id } },
+    { $match: { _id: id } },
     ...data.aggregation || [],
     { $project: data.projection },
     { $set: { id: '$_id' } },
@@ -143,26 +156,49 @@ async function read (this: FastifyInstance, request: FastifyRequest<{ Params: Ro
 }
 
 async function update (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
-  // todo: mongo injection???!!!!!!
   const data = reply.context.config
   const collection = this.mongo.db!.collection(data.collection)
-  const upsert = typeof data.modules?.update === 'object' && data.modules.update.upsert
-  const res = await collection.updateOne({ _id: request.params.id }, { $set: request.body }, { upsert: upsert })
+  const opts = typeof data.modules?.update === 'object' ? data.modules.update : {}
+  const id = data.idStr ? request.params.id : new ObjectId(request.params.id)
 
+  if (opts.post) {
+    const res = await collection.findOneAndUpdate({ _id: id }, { $set: request.body as any }, {
+      upsert: opts.upsert,
+      returnDocument: 'after',
+      projection: data.projection,
+    })
+
+    if (!res.value) return reply.callNotFound()
+    const resp = await Promise.resolve(opts.post(request, reply, res.value))
+    if (resp) {
+      reply.code(200).send(resp)
+      return
+    }
+
+    reply.code(204).send()
+    return
+  }
+
+  const res = await collection.updateOne({ _id: id }, { $set: request.body }, { upsert: opts.upsert })
   if (res.matchedCount !== 1 && res.upsertedCount !== 1) return reply.callNotFound()
-  return reply.code(204).send()
+  reply.code(204).send()
 }
 
 async function del (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const data = reply.context.config
   const collection = this.mongo.db!.collection(data.collection)
-  const res = await collection.deleteOne({ _id: request.params.id })
+  // const opts = typeof data.modules?.delete === 'object' ? data.modules.delete : {}
+  const id = data.idStr ? request.params.id : new ObjectId(request.params.id)
+
+  const res = await collection.deleteOne({ _id: id })
 
   if (res.deletedCount !== 1) return reply.callNotFound()
-  return reply.code(204).send()
+  reply.code(204).send()
 }
 
 export default async function crudPlugin (fastify: FastifyInstance, { data }: { data: CrudSettings }) {
+  const basicRouteSchema = data.idStr ? basicRouteSchemaStr : basicRouteSchemaOid
+
   if (data.modules?.readAll !== false) {
     const schema = typeof data.modules?.readAll !== 'boolean' ? data.modules?.readAll?.schema ?? {} : {}
     schema.querystring = schema.querystring

@@ -54,6 +54,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   // Main routes
   fastify.register(crudModule, {
     data: {
+      idStr: true,
       collection: 'users',
       projection: { accounts: 0, settings: 0, 'banStatus._id': 0 },
       aggregation: [

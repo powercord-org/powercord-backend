@@ -3,7 +3,8 @@
   "honks": {
     "patreonSecret": "",
     "staffChannel": "",
-    "updootChannel": ""
+    "updootChannel": "",
+    "formsChannel": ""
   },
   "discord": {
     "clientID": "",
