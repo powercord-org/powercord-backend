@@ -65,7 +65,7 @@ export async function refreshUserData (fastify: FastifyInstance, user: User): Pr
         avatar: userData.avatar,
         'accounts.discord.accessToken': newTokens.access_token,
         'accounts.discord.refreshToken': newTokens.refresh_token,
-        'accounts.discord.expiryDate': Date.now() + newTokens.expires_in,
+        'accounts.discord.expiryDate': Date.now() + (newTokens.expires_in * 1000),
       },
     }, { returnDocument: 'after' })
 

@@ -77,14 +77,13 @@ async function discord (this: FastifyInstance, request: FastifyRequest<OAuth>, r
     } else {
       await collection.updateOne({ _id: user.id }, {
         $set: {
+          updatedAt: new Date(),
           username: user.username,
           discriminator: user.discriminator,
           avatar: user.avatar,
-          'accounts.discord': {
-            accessToken: codes.access_token,
-            refreshToken: codes.refresh_token,
-            expiryDate: Date.now() + (codes.expires_in * 1000),
-          },
+          'accounts.discord.accessToken': codes.access_token,
+          'accounts.discord.refreshToken': codes.refresh_token,
+          'accounts.discord.expiryDate': Date.now() + (codes.expires_in * 1000),
         },
       })
     }
