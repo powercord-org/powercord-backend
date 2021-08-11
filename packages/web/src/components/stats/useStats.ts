@@ -23,7 +23,7 @@
 import { useState, useEffect } from 'preact/hooks'
 import { Endpoints } from '../../constants'
 
-export type Point = { x: number, y: number }
+export type Point = { x: number, y: number, value: number }
 type RawDataset = Array<Record<string, number>>
 type Dataset = { [key: string]: { color: string, points: Point[] } }
 
@@ -47,13 +47,13 @@ function roundMinMax (all: number[]) {
   return [ Math.floor(min / roundTo) * roundTo, Math.ceil(max / roundTo) * roundTo ]
 }
 
-function placePoints (points: number[], min: number, max: number) {
+function placePoints (points: number[], min: number, max: number): Point[] {
   let xBuf = 0
   const xDelta = 1 / points.length
   const pointsPosition = []
   for (const point of points) {
     const y = max - min === 0 ? 0 : (point - min) / (max - min)
-    pointsPosition.push({ x: xBuf, y: y })
+    pointsPosition.push({ x: xBuf, y: y, value: point })
     xBuf += xDelta
   }
 
@@ -104,7 +104,7 @@ function stackedChart (dataset: RawDataset, keys: string[], colors: string[]): C
       }
 
       const y = (data[key] - min) / (max - min)
-      finalDataset[key].points.push({ x: xBuf, y: y })
+      finalDataset[key].points.push({ x: xBuf, y: y, value: data[key] })
     }
 
     xBuf += xDelta

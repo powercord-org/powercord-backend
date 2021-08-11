@@ -45,7 +45,7 @@
 }
 
 .align-center::before {
-  left: calc(50% - 7px);
+  left: calc(50% - 6px);
 }
 
 .align-right::before {

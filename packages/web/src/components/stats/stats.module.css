@@ -91,6 +91,10 @@
   margin-right: 32px;
 }
 
+.chart-dot:hover {
+  stroke-width: 12px;
+}
+
 .legend-entry svg {
   margin-right: 8px;
 }

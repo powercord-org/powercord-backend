@@ -40,7 +40,7 @@ export default function Tooltip ({ children, text, position, align, disabled }: 
   align = align ?? 'left'
 
   const elementRef = useRef<HTMLElement>(null)
-  const tooltipRef = useRef<HTMLDivElement>(null)
+  const [ tooltipElement, tooltipRef ] = useState<HTMLDivElement | null>(null)
   const [ display, setDisplay ] = useState(false)
   const ogOnMouseEnter = children.props.onMouseEnter
   const onMouseEnter = useCallback((e: MouseEvent) => {
@@ -83,17 +83,17 @@ export default function Tooltip ({ children, text, position, align, disabled }: 
     }
     if (align === 'center') {
       className.push(style.alignCenter)
-      const width = tooltipRef.current ? tooltipRef.current.getBoundingClientRect().width : 0
+      const width = tooltipElement ? tooltipElement.getBoundingClientRect().width : 0
       css.left = rect.x + ((rect.width - width) / 2)
     }
 
     if (position === 'top') {
       className.push(style.positionTop)
-      css.top = rect.y - (tooltipRef.current ? tooltipRef.current.getBoundingClientRect().height : 32) - 6
+      css.top = rect.y - (tooltipElement ? tooltipElement.getBoundingClientRect().height : 32) - 6
     }
     if (position === 'bottom') {
       className.push(style.positionBottom)
-      css.top = rect.y + rect.height + (tooltipRef.current ? tooltipRef.current.getBoundingClientRect().height : 32) + 6
+      css.top = rect.y + rect.height + (tooltipElement ? tooltipElement.getBoundingClientRect().height : 32) + 6
     }
 
     tooltip = createPortal(

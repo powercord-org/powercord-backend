@@ -25,6 +25,7 @@ import { h } from 'preact'
 import { useState, useRef, useEffect, useMemo } from 'preact/hooks'
 
 import style from './stats.module.css'
+import Tooltip from '../util/Tooltip'
 
 type Legend = Record<string, string>
 
@@ -175,7 +176,11 @@ function ChartLine ({ reduced, width, height, set, color, points }: ChartLinePro
     () =>
       points
         .filter((_, i) => !reduced || i % 2 === 0)
-        .map((p) => ({ x: (p.x * usableWidth) + widthMargin, y: usableHeight - (p.y * usableHeight) + heightMargin })),
+        .map((p) => ({
+          x: (p.x * usableWidth) + widthMargin,
+          y: usableHeight - (p.y * usableHeight) + heightMargin,
+          value: p.value,
+        })),
     [ width, height, points, reduced ]
   )
 
@@ -184,7 +189,11 @@ function ChartLine ({ reduced, width, height, set, color, points }: ChartLinePro
   return (
     <g data-dataset={set}>
       <polyline fill='none' stroke={color} stroke-width='2' points={linePath}/>
-      {mappedPoints.map(({ x, y }) => <circle key={`${x},${y}`} cx={x} cy={y} r={4} fill={color}/>)}
+      {mappedPoints.map(({ x, y, value }) => (
+        <Tooltip text={String(value)} position='top' align='center'>
+          <circle className={style.chartDot} key={`${x},${y}`} cx={x} cy={y} r={4} fill={color} stroke={`${color}50`}/>
+        </Tooltip>
+      ))}
     </g>
   )
 }
