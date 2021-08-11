@@ -51,7 +51,7 @@ function plug (request: FastifyRequest<{ Params: { color: string } }>, reply: Fa
 
 async function getDiscordAvatar (user: User, update: (avatar: string | null) => void): Promise<Buffer> {
   if (!user.avatar) {
-    return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 5}.png`).then((r) => r.buffer())
+    return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 6}.png`).then((r) => r.buffer())
   }
 
   const file = await remoteFile(new URL(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`))

@@ -32,13 +32,12 @@ export type EligibilityStatus = {
   reporting: Eligibility,
 }
 
-type PendingForm = { reviewed?: false, approved?: boolean, reviewer?: null, reviewReason?: null }
-type ReviewedForm = { reviewed: true, approved: boolean, reviewer: MinimalUser, reviewReason?: string }
+type PendingForm = { reviewed?: false, approved?: boolean, reviewer?: null, reviewReason?: null, submitter: MinimalUser }
+type ReviewedForm = { reviewed: true, approved: boolean, reviewer: MinimalUser, reviewReason?: string, submitter?: MinimalUser }
 
 export type Form = (PendingForm | ReviewedForm) & {
   id: string
   kind: 'publish' | 'verification' | 'hosting'
-  submitter: MinimalUser
   messageId: string
 }
 

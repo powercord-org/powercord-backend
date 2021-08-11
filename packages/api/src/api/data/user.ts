@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { MongoClient } from 'mongodb'
+import { MongoClient, ReadConcern, WriteConcern } from 'mongodb'
 import { URL } from 'url'
 import { existsSync } from 'fs'
 import { unlink } from 'fs/promises'
@@ -28,21 +28,46 @@ import { SETTINGS_STORAGE_FOLDER } from '../settings.js'
 
 export enum UserDeletionCause { AUTOMATIC, REQUESTED, ADMINISTRATOR }
 
-// @ts-ignore
+export async function updateUser () {
+  // todo: merge all different user updates
+}
+
 export async function deleteUser (mongo: MongoClient, userId: string, reason: UserDeletionCause) {
-  // Notes for account deletion handling
-  // Always delete user collection entry, sync data, pending forms submitted by this user
-  //
-  // Users cannot delete their account if they have store entries not marked as deprecated
-  // For admin deletions, wipe all collaborators on the repository as a safety measure
-  // For system deletion, open an issue on the repo and mark entry as deprecated if no updates after a month
-
-  const pending = []
-
-  // Delete sync files
+  // Wipe on-disk data
   const syncFile = new URL(userId, SETTINGS_STORAGE_FOLDER)
-  if (existsSync(syncFile)) pending.push(unlink(syncFile))
+  if (existsSync(syncFile)) await unlink(syncFile)
 
-  // Delete user entry
-  // Revoke user roles
+  // Database stuff
+  const database = mongo.db()
+  const session = mongo.startSession()
+  const formsQuery = { submitter: userId, reviewed: { $not: { $eq: true } } }
+
+  // Read data
+  const deletedForms = await database.collection('forms').find(formsQuery, { projection: { messageId: 1 }, session: session }).toArray()
+
+  session.startTransaction({
+    readConcern: new ReadConcern('majority'),
+    writeConcern: new WriteConcern(1, 0, true),
+  })
+
+  // Update store entries
+  await database.collection('forms').deleteMany(formsQuery, { session: session })
+  await database.collection('users').deleteOne({ _id: userId }, { session: session })
+
+  if (reason === UserDeletionCause.AUTOMATIC) {
+    // todo: open an issue on the repositories
+    // todo: schedule automatic deprecation within a month
+  } else if (reason === UserDeletionCause.ADMINISTRATOR) {
+    // todo: wipe all collaborators from repositories
+    // todo: open an issue on the repositories
+    // todo: mark as deprecated immediately
+  }
+
+  await session.commitTransaction()
+  await session.endSession()
+
+  // @ts-ignore
+  for (const { messageId } of deletedForms) { // eslint-disable-line
+    // todo: notify form has been voided
+  }
 }

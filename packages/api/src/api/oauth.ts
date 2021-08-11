@@ -179,7 +179,7 @@ async function unlinkSpotify (this: FastifyInstance, request: FastifyRequest<Aut
     return
   }
 
-  await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $set: { 'accounts.spotify': null } })
+  await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 } })
   reply.redirect('/me')
 }
 

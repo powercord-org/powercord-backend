@@ -41,22 +41,28 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
   const { spotify } = request.user!.accounts
   if (!spotify) return { token: null }
 
+  const users = this.mongo.db!.collection('users')
   if (!spotify.scopes || !config.spotify.scopes.every((key: string) => spotify.scopes.includes(key))) {
-    await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $set: { 'accounts.spotify': null } })
+    await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 } })
     return { token: null, revoked: 'SCOPES_UPDATED' }
   }
 
   if (Date.now() >= spotify.expiryDate) {
     try {
       const codes = await spotifyAuth.refreshToken(spotify.refreshToken)
-      const upd: Record<string, unknown> = {
-        'accounts.spotify.accessToken': codes.access_token,
-        'accounts.spotify.expiryDate': Date.now() + (codes.expires_in * 1000),
+      if (!codes.access_token) {
+        await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 } })
+        return { token: null, revoked: 'ACCESS_DENIED' }
       }
-      if (codes.refresh_token) {
-        upd['accounts.spotify.refreshToken'] = codes.refresh_token
-      }
-      await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $set: upd })
+
+      await users.updateOne({ _id: request.user!._id }, {
+        $set: {
+          'accounts.spotify.accessToken': codes.access_token,
+          'accounts.spotify.refreshToken': codes.refresh_token,
+          'accounts.spotify.expiryDate': Date.now() + (codes.expires_in * 1000),
+        },
+      })
+
       return { token: codes.access_token }
     } catch (e) {
       return { token: null, revoked: 'ACCESS_DENIED' }
