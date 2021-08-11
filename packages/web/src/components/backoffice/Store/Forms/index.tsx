@@ -88,7 +88,9 @@ function Form ({ form, canViewDiscussions }: FormProps) {
     <section className={style.section}>
       <header className={style.sectionHeader}>
         <span className={style.sectionTitle}>{form.kind[0].toUpperCase()}{form.kind.slice(1)} form</span>
-        <span className={style.sectionSubtitle}>Submitted by {form.submitter.username}#{form.submitter.discriminator}</span>
+        <span className={style.sectionSubtitle}>
+          Submitted by {form.submitter ? <>{form.submitter.username}#{form.submitter.discriminator}</> : 'Deleted User'}
+        </span>
       </header>
       <div className={style.sectionBody}>
         {body}

@@ -21,16 +21,17 @@
  */
 
 import { h, Fragment } from 'preact'
-import { useContext, useCallback } from 'preact/hooks'
+import { useContext, useState, useEffect } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
 
 import UserContext from './UserContext'
-import { Endpoints } from '../constants'
+import { Endpoints, Routes } from '../constants'
 
 import cutieSvg from '../assets/cutie.svg?file'
 
 import style from './account.module.css'
 import sharedStyle from './shared.module.css'
+import Modal from './util/Modal'
 
 const includes = [
   'A custom role in our server, custom badge color',
@@ -55,17 +56,14 @@ function Cutie ({ tier }: { tier: number }) {
 
 export default function Account () {
   useTitle('My Account')
-  const user = useContext(UserContext)
-  const yeetAccount = useCallback(() => {
-    // eslint-disable-next-line no-alert
-    if (confirm('Are you sure? This action is irreversible.')) {
-      location.pathname = Endpoints.YEET_ACCOUNT
-    }
-  }, [])
+  const user = useContext(UserContext)!
+  const [ canDeleteAccount, setCanDeleteAccount ] = useState(true)
+  const [ deletingAccount, setDeletingAccount ] = useState(false)
 
-  if (!user) {
-    return null
-  }
+  useEffect(() => {
+    // todo: check if the user can delete their account (or return in /@me?)
+    setCanDeleteAccount(true)
+  }, [ user.id ])
 
   return (
     <main>
@@ -81,15 +79,42 @@ export default function Account () {
         Linking your Spotify account gives you an enhanced experience with the Spotify plugin. It'll let you add songs
         to your Liked Songs, add songs to playlists, see private playlists and more.
       </p>
+
       <h3 className={style.header}>Delete my Powercord account</h3>
-      <p>
-        You can choose to permanently delete your Powercord account. This action is irreversible and will be in effect
-        immediately. We'll drop any data we have about you, and you'll no longer be able to benefit from features
-        requiring a Powercord account (such as enhanced Spotify plugin, settings sync, and more).
-      </p>
-      <p>
-        <button className={`${sharedStyle.buttonLink} ${sharedStyle.red}`} onClick={yeetAccount}>Delete my account</button>
-      </p>
+      {canDeleteAccount
+        ? <Fragment>
+          <p>
+            You can choose to permanently delete your Powercord account. This action is irreversible and will be in effect
+            immediately. We'll drop any data we have about you, and you'll no longer be able to benefit from features
+            requiring a Powercord account (such as enhanced Spotify plugin, settings sync, and more).
+          </p>
+          <p>
+            <button className={`${sharedStyle.buttonLink} ${sharedStyle.red}`} onClick={() => setDeletingAccount(true)}>
+              Delete my account
+            </button>
+          </p>
+        </Fragment>
+        : <Fragment>
+          <p>
+            You cannot delete your account as you still have items in the Store. You have to either transfer them to
+            someone else, or mark them as deprecated in order to delete your account.
+          </p>
+          <p>
+            <a href={Routes.STORE_MANAGE}>Go to the Powercord Store</a>
+          </p>
+        </Fragment>}
+
+      {deletingAccount && <Modal
+        title='Delete my account'
+        onClose={() => setDeletingAccount(false)}
+        onConfirm={() => (location.pathname = Endpoints.YEET_ACCOUNT)}
+        closeText='Cancel'
+        confirmText='Delete'
+        danger
+      >
+        <div>Are you sure you want to delete your account? This operation is irreversible!</div>
+        {Boolean(user.patronTier) && <p><b>Note:</b> You will lose your tier {user.patronTier} patron perks!</p>}
+      </Modal>}
     </main>
   )
 }
