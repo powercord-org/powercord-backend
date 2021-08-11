@@ -88,12 +88,6 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
     }
   }
 
-  if (!user.avatar) {
-    // todo: How to deal with those cases?
-    // this means default avatar has to be displayed
-    // but if we reach this state the avatar will never be updated to newer ones
-  }
-
   reply.type('image/png')
   return getDiscordAvatar(user, (newAvatar) => this.mongo.db!.collection('users').updateOne({ _id: request.params.id }, { $set: { avatar: newAvatar } }))
 }

@@ -30,6 +30,7 @@ import fastifyMongodb from 'fastify-mongodb'
 import fastifyTokenize from 'fastify-tokenize'
 
 import apiModule from './api/index.js'
+import { refreshUserData } from './oauth/discord.js'
 import config from './config.js'
 
 const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'development' ? 'info' : 'warn' } })
@@ -52,8 +53,9 @@ fastify.register(fastifyTokenize, {
   cookieSigned: true,
   fetchAccount: async (id: string) => {
     const user = await fastify.mongo.db!.collection('users').findOne({ _id: id })
-    if (user) user.lastTokenReset = 0
-    return user ?? {}
+    const updatedUser = user ? await refreshUserData(fastify, user as User) : null
+    if (updatedUser) (updatedUser as any).lastTokenReset = 0
+    return updatedUser
   },
 })
 

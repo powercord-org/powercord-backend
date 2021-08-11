@@ -23,6 +23,7 @@
 export type User = {
   _id: string
   createdAt: Date
+  updatedAt?: Date
   username: string
   discriminator: string
   avatar: string | null

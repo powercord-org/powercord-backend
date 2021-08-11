@@ -20,18 +20,20 @@
  * SOFTWARE.
  */
 
-import type { User } from '@powercord/types/discord'
+import type { FastifyInstance } from 'fastify'
+import type { User as DiscordUser } from '@powercord/types/discord'
+import type { User } from '@powercord/types/users'
 import OAuth from './oauth.js'
 import { fetchCurrentUser } from '../utils/discord.js'
 import config from '../config.js'
 
-class Discord extends OAuth<User> {
+class Discord extends OAuth<DiscordUser> {
   constructor () {
     super(
       config.discord.clientID,
       config.discord.clientSecret,
       'https://discord.com/oauth2/authorize',
-      'https://discord.com/api/v6/oauth2/token'
+      'https://discord.com/api/v9/oauth2/token'
     )
   }
 
@@ -46,4 +48,33 @@ class Discord extends OAuth<User> {
   }
 }
 
-export default new Discord()
+const discordOauth = new Discord()
+
+export async function refreshUserData (fastify: FastifyInstance, user: User): Promise<User | null> {
+  if (Date.now() < user.accounts.discord.expiryDate) return user
+
+  // Refresh account data
+  try {
+    const newTokens = await discordOauth.refreshToken(user.accounts.discord.refreshToken)
+    const userData = await discordOauth.getCurrentUser(newTokens.access_token)
+    const updatedUser = await fastify.mongo.db!.collection<User>('users').findOneAndUpdate({ _id: userData.id }, {
+      $set: {
+        updatedAt: new Date(),
+        username: userData.username,
+        discriminator: userData.discriminator,
+        avatar: userData.avatar,
+        'accounts.discord.accessToken': newTokens.access_token,
+        'accounts.discord.refreshToken': newTokens.refresh_token,
+        'accounts.discord.expiryDate': Date.now() + newTokens.expires_in,
+      },
+    }, { returnDocument: 'after' })
+
+    return updatedUser.value!
+  } catch {
+    // Do nothing
+  }
+
+  return null
+}
+
+export default discordOauth

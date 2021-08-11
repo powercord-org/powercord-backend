@@ -96,7 +96,7 @@ export async function fetchAllMembers (): Promise<Member[]> {
       { headers: { authorization: `Bot ${config.discord.botToken}` } }
     ).then((r) => r.json())
 
-    users.concat(res)
+    users.push(...res)
   } while (res.length === 1000)
 
   return users
