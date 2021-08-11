@@ -26,8 +26,17 @@ import { existsSync } from 'fs'
 import { unlink } from 'fs/promises'
 import { SETTINGS_STORAGE_FOLDER } from '../settings.js'
 
+export enum UserDeletionCause { AUTOMATIC, REQUESTED, ADMINISTRATOR }
+
 // @ts-ignore
-export async function deleteUser (mongo: MongoClient, userId: string) {
+export async function deleteUser (mongo: MongoClient, userId: string, reason: UserDeletionCause) {
+  // Notes for account deletion handling
+  // Always delete user collection entry, sync data, pending forms submitted by this user
+  //
+  // Users cannot delete their account if they have store entries not marked as deprecated
+  // For admin deletions, wipe all collaborators on the repository as a safety measure
+  // For system deletion, open an issue on the repo and mark entry as deprecated if no updates after a month
+
   const pending = []
 
   // Delete sync files

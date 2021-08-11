@@ -179,12 +179,12 @@ async function contributors (this: FastifyInstance): Promise<unknown> {
         _rank: {
           $cond: {
             if: '$badges.developer',
-            then: 'developer',
+            then: 'developers',
             else: {
               $cond: {
-                if: '$badges.contributor',
-                then: 'contributor',
-                else: 'staff',
+                if: { $or: [ '$badges.staff', '$badges.support' ] },
+                then: 'staff',
+                else: 'contributors',
               },
             },
           },
@@ -204,7 +204,7 @@ async function contributors (this: FastifyInstance): Promise<unknown> {
         },
       },
     },
-  ]).forEach((doc) => (res[`${doc._id}s`] = doc.users))
+  ]).forEach((doc) => (res[doc._id] = doc.users))
 
   return res
 }
