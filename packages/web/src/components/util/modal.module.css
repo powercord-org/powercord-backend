@@ -72,7 +72,7 @@
 }
 
 .inner {
-  padding: 16px 32px 32px;
+  padding: 24px 32px 32px;
   overflow-y: auto;
   flex: 1;
 }
@@ -82,21 +82,17 @@
   border-top-width: 1px;
   background-color: var(--background-secondary);
   justify-content: flex-end;
+  gap: 16px;
 }
 
 .footer button {
   color: inherit;
-  margin-left: 16px;
-}
-
-.danger {
-  background-color: var(--red);
 }
 
 @media screen and (min-width: 640px) {
   .container {
     margin: 64px;
-    width: 560px;
+    width: 530px;
     max-height: 75%;
     height: auto;
   }

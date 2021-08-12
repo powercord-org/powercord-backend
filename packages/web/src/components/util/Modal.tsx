@@ -40,7 +40,7 @@ type ModalProps = Attributes & {
   onClose: () => void
   onConfirm?: () => void
   processing?: boolean
-  danger?: boolean
+  color?: 'red' | 'green' | 'classic'
 }
 
 export default function Modal (props: ModalProps) {
@@ -48,7 +48,7 @@ export default function Modal (props: ModalProps) {
     // todo: a11y
   }, [])
 
-  const btnStyle = `${sharedStyle.button}${props.danger ? ` ${style.danger}` : ''}`
+  const btnStyle = `${sharedStyle.button}${props.color && props.color !== 'classic' ? ` ${sharedStyle[props.color]}` : ''}`
   return createPortal(
     <div className={style.overlay} onClick={props.onClose}>
       <div className={style.container} onClick={(e) => e.stopPropagation()}>

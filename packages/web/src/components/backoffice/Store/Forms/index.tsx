@@ -23,10 +23,12 @@
 import type { Attributes } from 'preact'
 import type { StoreForm } from '@powercord/types/store'
 import { h, Fragment } from 'preact'
-import { useState, useEffect } from 'preact/hooks'
+import { useState, useEffect, useCallback, useRef, useContext } from 'preact/hooks'
 
 import Tooltip from '../../../util/Tooltip'
 import Spinner from '../../../util/Spinner'
+import Modal from '../../../util/Modal'
+import { TextareaField } from '../../../util/Form'
 import { PublishForm, VerificationForm, HostingForm } from './Items'
 import { Endpoints } from '../../../../constants'
 
@@ -36,37 +38,139 @@ import X from 'feather-icons/dist/icons/x.svg'
 
 import style from '../../admin.module.css'
 import sharedStyle from '../../../shared.module.css'
+import UserContext from '../../../UserContext'
 
 type FormProps = {
   form: StoreForm
   canViewDiscussions: boolean
 }
 
-function ReviewButtons ({ form, canViewDiscussions }: FormProps) {
+type ModalProps = { onConfirm: (reason: string) => Promise<boolean>, onClose: () => void }
+
+function ApproveModal ({ onConfirm, onClose }: ModalProps) {
+  const onConfirmWithData = onConfirm.bind(null, '')
+
   return (
-    <div className={sharedStyle.buttons}>
-      <Tooltip text={'Can\'t connect to Powercord'} disabled={canViewDiscussions}>
-        <button className={sharedStyle.button} disabled={!canViewDiscussions}>
-          <ExternalLink className={sharedStyle.icon}/>
-          <span>View discussion</span>
-        </button>
-      </Tooltip>
-      {form.reviewed
-        ? <div className={style.alignCenter}>
-          {form.approved ? <Check className={sharedStyle.icon}/> : <X className={sharedStyle.icon}/>}
-          <span>{form.approved ? 'Approved' : 'Rejected'} by {form.reviewer.username}#{form.reviewer.discriminator}</span>
-        </div>
-        : <Fragment>
-          <button className={`${sharedStyle.button} ${sharedStyle.green}`}>
-            <Check className={sharedStyle.icon}/>
-            <span>Accept</span>
+    <Modal
+      title='Approve a form'
+      onConfirm={onConfirmWithData}
+      onClose={onClose}
+      confirmText='Approve'
+      color='green'
+    >
+      <div>Are you sure you want to approve this form?</div>
+    </Modal>
+  )
+}
+
+function RejectModal ({ onConfirm: onConfirmWithData, onClose }: ModalProps) {
+  const [ submitting, setSubmitting ] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+  const onSubmit = useCallback(() => {
+    if (!formRef.current) return
+    setSubmitting(true)
+    onConfirmWithData(formRef.current.reason.value).then((s) => {
+      if (!s) {
+        setSubmitting(false)
+      }
+    })
+  }, [ setSubmitting, onConfirmWithData ])
+
+  const onConfirm = useCallback(() => {
+    if (!formRef.current) return
+    formRef.current.requestSubmit()
+  }, [ formRef ])
+
+  return (
+    <Modal
+      processing={submitting}
+      title='Reject a form'
+      onConfirm={onConfirm}
+      onClose={onClose}
+      confirmText='Reject'
+      color='red'
+    >
+      <form ref={formRef} onSubmit={(e) => { e.preventDefault(); onSubmit() }} className={style.loneForm}>
+        <TextareaField
+          name='reason'
+          label='Reason'
+          note='Please specify a reason for the rejection. Maximum 256 chars.'
+          minLength={8}
+          maxLength={256}
+          required
+        />
+      </form>
+    </Modal>
+  )
+}
+
+function ReviewButtons ({ form, canViewDiscussions }: FormProps) {
+  const user = useContext(UserContext)!
+  const [ action, setAction ] = useState(0)
+  const closeModals = useCallback(() => setAction(0), [ setAction ])
+  const approveForm = useCallback(() => setAction(1), [ setAction ])
+  const rejectForm = useCallback(() => setAction(2), [ setAction ])
+  const reviewForm = useCallback(async (reason: string) => {
+    const resp = await fetch(Endpoints.BACKOFFICE_FORM(form.id), {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        reviewed: true,
+        approved: !reason,
+        reviewer: user.id,
+        reviewReason: reason || void 0,
+      }),
+    })
+
+    if (resp.status === 200) {
+      const res = await resp.json()
+      setAction(res.couldDm ? 0 : 3)
+    }
+
+    return resp.status === 200
+  }, [])
+
+  return (
+    <Fragment>
+      <div className={sharedStyle.buttons}>
+        <Tooltip text={'Can\'t connect to Powercord'} disabled={canViewDiscussions}>
+          <button className={sharedStyle.button} disabled={!canViewDiscussions}>
+            <ExternalLink className={sharedStyle.icon}/>
+            <span>View discussion</span>
           </button>
-          <button className={`${sharedStyle.button} ${sharedStyle.red}`}>
-            <X className={sharedStyle.icon}/>
-            <span>Reject</span>
-          </button>
-        </Fragment>}
-    </div>
+        </Tooltip>
+        {form.reviewed
+          ? <div className={style.alignCenter}>
+            {form.approved ? <Check className={sharedStyle.icon}/> : <X className={sharedStyle.icon}/>}
+            <span>{form.approved ? 'Approved' : 'Rejected'} by {form.reviewer.username}#{form.reviewer.discriminator}</span>
+          </div>
+          : <Fragment>
+            <button className={`${sharedStyle.button} ${sharedStyle.green}`} onClick={approveForm}>
+              <Check className={sharedStyle.icon}/>
+              <span>Approve</span>
+            </button>
+            <button className={`${sharedStyle.button} ${sharedStyle.red}`} onClick={rejectForm}>
+              <X className={sharedStyle.icon}/>
+              <span>Reject</span>
+            </button>
+          </Fragment>}
+      </div>
+
+      {action === 1 && <ApproveModal onConfirm={reviewForm} onClose={closeModals}/>}
+      {action === 2 && <RejectModal onConfirm={reviewForm} onClose={closeModals}/>}
+      {action === 3 && (
+        <Modal title='Could not DM the user' onClose={closeModals}>
+          <div>
+            Failed to send a DM to the user, they either are not in the Powercord server or have their DMs closed.
+            You need to contact them manually.
+          </div>
+          <ul>
+            <li>Discord ID: {form.submitter!.id}</li>
+            <li>Discord Tag: {form.submitter!.username}#{form.submitter!.discriminator}</li>
+          </ul>
+        </Modal>
+      )}
+    </Fragment>
   )
 }
 
@@ -118,7 +222,7 @@ export default function ManageForms (_: Attributes) {
 
       {forms
         ? !forms.length
-          ? <p>All clear!</p>
+          ? <div>All clear!</div>
           : forms.map((f) => <Form key={f.id} form={f} canViewDiscussions={false}/>)
         : <Spinner/>}
     </main>

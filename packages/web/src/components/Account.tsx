@@ -104,17 +104,19 @@ export default function Account () {
           </p>
         </Fragment>}
 
-      {deletingAccount && <Modal
-        title='Delete my account'
-        onClose={() => setDeletingAccount(false)}
-        onConfirm={() => (location.pathname = Endpoints.YEET_ACCOUNT)}
-        closeText='Cancel'
-        confirmText='Delete'
-        danger
-      >
-        <div>Are you sure you want to delete your account? This operation is irreversible!</div>
-        {Boolean(user.patronTier) && <p><b>Note:</b> You will lose your tier {user.patronTier} patron perks!</p>}
-      </Modal>}
+      {deletingAccount && (
+        <Modal
+          title='Delete my account'
+          onClose={() => setDeletingAccount(false)}
+          onConfirm={() => (location.pathname = Endpoints.YEET_ACCOUNT)}
+          closeText='Cancel'
+          confirmText='Delete'
+          color='red'
+        >
+          <div>Are you sure you want to delete your account? This operation is irreversible!</div>
+          {Boolean(user.patronTier) && <p><b>Note:</b> You will lose your tier {user.patronTier} patron perks!</p>}
+        </Modal>
+      )}
     </main>
   )
 }

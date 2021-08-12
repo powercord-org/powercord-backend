@@ -58,10 +58,12 @@
 }
 
 .button.green {
+  color: #fff;
   background-color: var(--green);
 }
 
 .button.red {
+  color: #fff;
   background-color: var(--red);
 }
 

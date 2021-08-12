@@ -270,7 +270,7 @@ export function ManageDelete ({ user, onClose }: ManageModalProps) {
   }, [])
 
   return (
-    <Modal title='Delete an account' onClose={onClose} onConfirm={onYeet} confirmText='Yeet' processing={processing} danger>
+    <Modal title='Delete an account' onClose={onClose} onConfirm={onYeet} confirmText='Yeet' processing={processing} color='red'>
       <div>Are you sure you want to delete {user.username}'s account? <b>This action is irreversible</b>!</div>
       <hr/>
       <form ref={formRef}>
