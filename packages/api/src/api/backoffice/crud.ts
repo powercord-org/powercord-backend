@@ -30,7 +30,7 @@ import { ObjectId } from 'mongodb'
 
 type CrudModule = { schema?: FastifySchema }
 type CrudReadAllModule = CrudModule & { filter?: string[], all?: boolean }
-type CrudUpdateModule = CrudModule & { upsert?: boolean, post?: (request: FastifyRequest, reply: FastifyReply, updated: any) => any }
+type CrudUpdateModule = CrudModule & { upsert?: boolean, hasUpdatedAt?: boolean, post?: (request: FastifyRequest, reply: FastifyReply, updated: any) => any }
 
 export type CrudSettings = {
   collection: string
@@ -161,8 +161,11 @@ async function update (this: FastifyInstance, request: FastifyRequest<{ Params: 
   const opts = typeof data.modules?.update === 'object' ? data.modules.update : {}
   const id = data.idStr ? request.params.id : new ObjectId(request.params.id)
 
+  const query = request.body as Record<string, unknown>
+  if (opts.hasUpdatedAt) query.updatedAt = new Date()
+
   if (opts.post) {
-    const res = await collection.findOneAndUpdate({ _id: id }, { $set: request.body as any }, {
+    const res = await collection.findOneAndUpdate({ _id: id }, { $set: query }, {
       upsert: opts.upsert,
       returnDocument: 'after',
       projection: data.projection,
@@ -179,7 +182,7 @@ async function update (this: FastifyInstance, request: FastifyRequest<{ Params: 
     return
   }
 
-  const res = await collection.updateOne({ _id: id }, { $set: request.body }, { upsert: opts.upsert })
+  const res = await collection.updateOne({ _id: id }, { $set: query }, { upsert: opts.upsert })
   if (res.matchedCount !== 1 && res.upsertedCount !== 1) return reply.callNotFound()
   reply.code(204).send()
 }

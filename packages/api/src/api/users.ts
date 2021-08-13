@@ -22,19 +22,35 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { User, RestUser } from '@powercord/types/users'
+import { createHash } from 'crypto'
 import spotifyAuth from '../oauth/spotify.js'
 import { formatUser } from '../utils/users.js'
 import settingsModule from './settings.js'
 import config from '../config.js'
 
-async function getSelf (request: FastifyRequest<{ TokenizeUser: User }>): Promise<RestUser> {
-  return formatUser(request.user!, true)
+const DATE_ZERO = new Date(0)
+
+async function sendUser (request: FastifyRequest, reply: FastifyReply, user: User, self?: boolean): Promise<RestUser | void> {
+  const etag = `"${createHash('sha1').update(config.secret).update(user._id).update((user.updatedAt ?? DATE_ZERO).toISOString()).digest('base64')}"`
+
+  reply.header('cache-control', 'public, max-age=3600')
+  if (request.headers['if-none-match'] === etag) {
+    reply.code(304).send()
+    return
+  }
+
+  reply.header('etag', etag)
+  return formatUser(user, self)
+}
+
+async function getSelf (request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply): Promise<RestUser | void> {
+  return sendUser(request, reply, request.user!, true)
 }
 
 async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply): Promise<RestUser | void> {
   const user = await this.mongo.db!.collection<User>('users').findOne({ _id: request.params.id })
   if (!user) return reply.callNotFound()
-  return formatUser(user!)
+  return sendUser(request, reply, user)
 }
 
 async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<unknown> {
@@ -43,7 +59,7 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
 
   const users = this.mongo.db!.collection('users')
   if (!spotify.scopes || !config.spotify.scopes.every((key: string) => spotify.scopes.includes(key))) {
-    await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 } })
+    await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1, updatedAt: new Date() } })
     return { token: null, revoked: 'SCOPES_UPDATED' }
   }
 
@@ -51,7 +67,7 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
     try {
       const codes = await spotifyAuth.refreshToken(spotify.refreshToken)
       if (!codes.access_token) {
-        await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 } })
+        await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1, updatedAt: new Date() } })
         return { token: null, revoked: 'ACCESS_DENIED' }
       }
 
@@ -60,6 +76,7 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
           'accounts.spotify.accessToken': codes.access_token,
           'accounts.spotify.refreshToken': codes.refresh_token,
           'accounts.spotify.expiryDate': Date.now() + (codes.expires_in * 1000),
+          updatedAt: new Date(),
         },
       })
 

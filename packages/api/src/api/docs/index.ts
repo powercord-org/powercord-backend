@@ -23,18 +23,28 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { Document } from './parser.js'
 import { URL } from 'url'
+import { createHash } from 'crypto'
 import { existsSync } from 'fs'
 import { readdir, readFile } from 'fs/promises'
 import fetch from 'node-fetch'
 import markdown from './parser.js'
+import config from '../../config.js'
 
 type GetDocParams = { category: string, document: string }
 type Category = { name: string, docs: Map<string, Document> }
 const docsStore = new Map<string, Category>()
 const remoteCache = new Map<string, Document>()
 const docsCategories: string[] = []
+let categoriesEtag: string = ''
 
-function listCategories (this: FastifyInstance, _: FastifyRequest, reply: FastifyReply): void {
+function listCategories (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply): void {
+  reply.header('cache-control', 'public, max-age=3600')
+  if (request.headers['if-none-match'] === categoriesEtag) {
+    reply.code(304).send()
+    return
+  }
+
+  reply.header('etag', categoriesEtag)
   reply.send(
     Array.from(docsStore.entries())
       .filter(([ catId ]) => docsCategories.includes(catId))
@@ -51,7 +61,17 @@ function getDocument (this: FastifyInstance, request: FastifyRequest<{ Params: G
   if (!docsStore.has(category)) return void reply.callNotFound()
   const cat = docsStore.get(category)!
   if (!cat.docs.has(document)) return void reply.callNotFound()
-  reply.send(cat.docs.get(document))
+
+  const doc = cat.docs.get(document)!
+  const etag = `"${doc.hash}"`
+  reply.header('cache-control', 'public, max-age=3600')
+  if (request.headers['if-none-match'] === etag) {
+    reply.code(304).send()
+    return
+  }
+
+  reply.header('etag', etag)
+  reply.send(doc)
 }
 
 async function getRemoteDocument (url: string): Promise<Document> {
@@ -80,16 +100,21 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   const docsUrl = findDocsFolder()
   if (!docsUrl) return
 
+  // Load docs data
+  const catHash = createHash('sha1').update(config.secret)
   for (const cat of await readdir(docsUrl)) {
     if (cat === 'LICENSE' || cat === 'README.md' || cat === '.git' || cat === '.DS_Store') continue
 
     const catId = cat.replace(/^\d+-/, '')
     const docs = new Map<string, Document>()
     const catUrl = new URL(`${cat}/`, docsUrl)
+    catHash.update(catId)
     for (const document of await readdir(catUrl)) {
+      const docId = document.split('.')[0].replace(/^\d+-/, '')
       const docUrl = new URL(document, catUrl)
       const md = await readFile(docUrl, 'utf8')
-      docs.set(document.split('.')[0].replace(/^\d+-/, ''), markdown(md))
+      catHash.update(docId).update(md)
+      docs.set(docId, markdown(md))
     }
 
     if (cat !== catId) docsCategories.push(catId)
@@ -98,10 +123,24 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       docs: docs,
     })
   }
+  categoriesEtag = `"${catHash.digest('base64')}"`
 
-  fastify.get('/installation', () => getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Installation.md'))
-  fastify.get('/guidelines', () => getRemoteDocument('https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md'))
-  fastify.get('/faq', () => getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Frequently-Asked-Questions.md'))
+  // Routes
+  fastify.get('/installation', (_request: FastifyRequest, reply: FastifyReply) => {
+    reply.header('cache-control', 'public, max-age=3600')
+    getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Installation.md')
+  })
+
+  fastify.get('/guidelines', (_request: FastifyRequest, reply: FastifyReply) => {
+    reply.header('cache-control', 'public, max-age=3600')
+    getRemoteDocument('https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md')
+  })
+
+  fastify.get('/faq', (_request: FastifyRequest, reply: FastifyReply) => {
+    reply.header('cache-control', 'public, max-age=3600')
+    getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Frequently-Asked-Questions.md')
+  })
+
   fastify.get('/categories', listCategories)
   fastify.get('/:category/:document', getDocument)
 }

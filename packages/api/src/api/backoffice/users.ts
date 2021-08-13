@@ -63,7 +63,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       ],
       modules: {
         create: false,
-        update: { schema: updateUserSchema },
+        update: { schema: updateUserSchema, hasUpdatedAt: true },
       },
     },
   })

@@ -39,6 +39,7 @@ async function retrieve (this: FastifyInstance, request: FastifyRequest<ReqProps
   const file = new URL(request.user!._id, SETTINGS_STORAGE_FOLDER)
   if (!existsSync(file)) return reply.callNotFound()
 
+  // todo: etag
   reply.header('content-type', 'application/octet-stream')
   reply.send(createReadStream(file))
 }
@@ -59,6 +60,7 @@ function upload (this: FastifyInstance, request: FastifyRequest<ReqProps>, reply
       // todo: maybe emit notification for abuse monitoring
     }
 
+    // todo: compute hash and store it for use as etag
     stream.close()
     rename(tmp, file)
       .then(() => {

@@ -23,9 +23,11 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { User } from '@powercord/types/users'
 import { URL } from 'url'
+import { createHash } from 'crypto'
 import fetch from 'node-fetch'
 import { fetchUser } from '../utils/discord.js'
 import { remoteFile } from '../utils/cache.js'
+import config from '../config.js'
 
 type AvatarRequest = { TokenizeUser: User, Params: { id: string } }
 
@@ -88,7 +90,17 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
     }
   }
 
+  const effectiveAvatarId = user.avatar ?? user.discriminator
+  const etag = `"${createHash('sha1').update(config.secret).update(user._id).update(effectiveAvatarId).digest('base64')}"`
+
   reply.type('image/png')
+  reply.header('cache-control', 'public, max-age=86400')
+  if (request.headers['if-none-match'] === etag) {
+    reply.code(304).send()
+    return
+  }
+
+  reply.header('etag', etag)
   return getDiscordAvatar(user, (newAvatar) => this.mongo.db!.collection('users').updateOne({ _id: request.params.id }, { $set: { avatar: newAvatar } }))
 }
 

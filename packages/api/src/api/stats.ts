@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-import { MinimalUser } from '@powercord/types/users'
-import type { FastifyInstance } from 'fastify'
+import type { MinimalUser } from '@powercord/types/users'
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import type { Db, ObjectId } from 'mongodb'
 import mongo from 'mongodb'
 import { getOrCompute } from '../utils/cache.js'
@@ -156,7 +156,7 @@ async function computeGuildStats (db: Db) {
   return formatPeriodicData(data as PeriodicData[])
 }
 
-async function contributors (this: FastifyInstance): Promise<unknown> {
+async function contributors (this: FastifyInstance, _request: FastifyRequest, reply: FastifyReply): Promise<unknown> {
   const res: Record<string, MinimalUser[]> = {
     developers: [],
     staff: [],
@@ -206,10 +206,13 @@ async function contributors (this: FastifyInstance): Promise<unknown> {
     },
   ]).forEach((doc) => (res[doc._id] = doc.users))
 
+  reply.header('cache-control', 'public, max-age=86400')
   return res
 }
 
-async function numbers (this: FastifyInstance): Promise<unknown> {
+async function numbers (this: FastifyInstance, _request: FastifyRequest, reply: FastifyReply): Promise<unknown> {
+  reply.header('cache-control', 'public, max-age=3600')
+
   return {
     users: await getOrCompute('account_stats', () => computeUsersOverTime(this.mongo.db!)),
     guild: await getOrCompute('guild_stats', () => computeGuildStats(this.mongo.db!), true),
