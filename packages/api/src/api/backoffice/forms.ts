@@ -29,7 +29,7 @@ import config from '../../config.js'
 
 const DmMessages = {
   publish: {
-    approved: 'Your submission in the Powercord Store has been approved! You should see it appear in the "Manage my works" tab of the Powercord Store shortly.\n\nIf your submission is a plugin, you will receive an invitation to a repository in the powercord-community organization that will be the new home of your plugin. Make sure to push future updates to this repository!',
+    approved: 'Your submission in the Powercord Store has been approved! You should see it appear in the "Management > My works" tab of the Powercord Store shortly, the time it\'ll take Powercord Staff to prepare everything.\n\nIf your submission is a plugin, you will receive an invitation to a repository in the powercord-community organization that will be the new home of your plugin. Make sure to push future updates to this repository!',
     rejected: 'Unfortunately, your submission in the Powercord Store has been rejected for the following reason: $reason\n\nMake sure your plugin follows the Powercord Guidelines available at <https://powercord.dev/guidelines> and that it is in a functional shape before submitting again.',
   },
   verification: {
@@ -96,7 +96,7 @@ async function finishFormUpdate (request: FastifyRequest, _reply: FastifyReply, 
   if (message.thread) {
     await dispatchHonk(config.honks.formsChannel, { content: modMessage }, `thread_id=${message.thread.id}`)
   } else {
-    await editHonkMessage(config.honks.formsChannel, message.id, `${message.content}\n\n${modMessage}`)
+    await editHonkMessage(config.honks.formsChannel, message.id, { content: `${message.content}\n\n${modMessage}` })
   }
 
   const couldDm = await sendDm(
