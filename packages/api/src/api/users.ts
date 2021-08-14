@@ -71,14 +71,15 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
         return { token: null, revoked: 'ACCESS_DENIED' }
       }
 
-      await users.updateOne({ _id: request.user!._id }, {
-        $set: {
-          'accounts.spotify.accessToken': codes.access_token,
-          'accounts.spotify.refreshToken': codes.refresh_token,
-          'accounts.spotify.expiryDate': Date.now() + (codes.expires_in * 1000),
-          updatedAt: new Date(),
-        },
-      })
+      const updatedFields: Record<string, unknown> = {
+        'accounts.spotify.accessToken': codes.access_token,
+        'accounts.spotify.expiryDate': Date.now() + (codes.expires_in * 1000),
+        updatedAt: new Date(),
+      }
+
+      // [Cynthia] Spotify docs says "A new refresh token MIGHT be returned"
+      if (codes.refresh_token) updatedFields['accounts.spotify.refreshToken'] = codes.refresh_token
+      await users.updateOne({ _id: request.user!._id }, { $set: updatedFields })
 
       return { token: codes.access_token }
     } catch (e) {
