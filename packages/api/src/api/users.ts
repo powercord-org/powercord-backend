@@ -33,7 +33,7 @@ const DATE_ZERO = new Date(0)
 async function sendUser (request: FastifyRequest, reply: FastifyReply, user: User, self?: boolean): Promise<RestUser | void> {
   const etag = `"${createHash('sha1').update(config.secret).update(user._id).update((user.updatedAt ?? DATE_ZERO).toISOString()).digest('base64')}"`
 
-  reply.header('cache-control', 'public, no-cache')
+  reply.header('cache-control', 'public, max-age=0, must-revalidate')
   if (request.headers['if-none-match'] === etag) {
     reply.code(304).send()
     return
