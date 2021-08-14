@@ -91,7 +91,7 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
   }
 
   const effectiveAvatarId = user.avatar ?? user.discriminator
-  const etag = `"${createHash('sha1').update(config.secret).update(user._id).update(effectiveAvatarId).digest('base64')}"`
+  const etag = `W/"${createHash('sha1').update(config.secret).update(user._id).update(effectiveAvatarId).digest('base64')}"`
 
   reply.type('image/png')
   reply.header('cache-control', 'public, max-age=86400')

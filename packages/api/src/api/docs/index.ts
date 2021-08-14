@@ -63,7 +63,7 @@ function getDocument (this: FastifyInstance, request: FastifyRequest<{ Params: G
   if (!cat.docs.has(document)) return void reply.callNotFound()
 
   const doc = cat.docs.get(document)!
-  const etag = `"${doc.hash}"`
+  const etag = `W/"${doc.hash}"`
   reply.header('cache-control', 'public, max-age=3600')
   if (request.headers['if-none-match'] === etag) {
     reply.code(304).send()
@@ -123,7 +123,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       docs: docs,
     })
   }
-  categoriesEtag = `"${catHash.digest('base64')}"`
+  categoriesEtag = `W/"${catHash.digest('base64')}"`
 
   // Routes
   fastify.get('/installation', (_request: FastifyRequest, reply: FastifyReply) => {
