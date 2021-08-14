@@ -128,17 +128,17 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   // Routes
   fastify.get('/installation', (_request: FastifyRequest, reply: FastifyReply) => {
     reply.header('cache-control', 'public, max-age=3600')
-    getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Installation.md')
+    return getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Installation.md')
   })
 
   fastify.get('/guidelines', (_request: FastifyRequest, reply: FastifyReply) => {
     reply.header('cache-control', 'public, max-age=3600')
-    getRemoteDocument('https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md')
+    return getRemoteDocument('https://raw.githubusercontent.com/powercord-community/guidelines/master/README.md')
   })
 
   fastify.get('/faq', (_request: FastifyRequest, reply: FastifyReply) => {
     reply.header('cache-control', 'public, max-age=3600')
-    getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Frequently-Asked-Questions.md')
+    return getRemoteDocument('https://raw.githubusercontent.com/wiki/powercord-org/powercord/Frequently-Asked-Questions.md')
   })
 
   fastify.get('/categories', listCategories)
