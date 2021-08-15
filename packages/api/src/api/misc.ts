@@ -21,10 +21,12 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import type { User as DiscordUser } from '@powercord/types/discord'
 import type { User } from '@powercord/types/users'
 import { URL } from 'url'
 import { createHash } from 'crypto'
 import fetch from 'node-fetch'
+import { updateUser } from './data/user.js'
 import { fetchUser } from '../utils/discord.js'
 import { remoteFile } from '../utils/cache.js'
 import config from '../config.js'
@@ -51,7 +53,7 @@ function plug (request: FastifyRequest<{ Params: { color: string } }>, reply: Fa
   reply.type('image/svg+xml').send(plugXml.replace(/7289DA/g, request.params.color))
 }
 
-async function getDiscordAvatar (user: User, update: (avatar: string | null) => void): Promise<Buffer> {
+async function getDiscordAvatar (user: User, update: (user: DiscordUser) => void): Promise<Buffer> {
   if (!user.avatar) {
     return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 6}.png`).then((r) => r.buffer())
   }
@@ -59,9 +61,10 @@ async function getDiscordAvatar (user: User, update: (avatar: string | null) => 
   const file = await remoteFile(new URL(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`))
   if (!file.success) {
     const discordUser = await fetchUser(user._id)
-    update(discordUser.avatar)
     // eslint-disable-next-line require-atomic-updates
     user.avatar = discordUser.avatar
+    update(discordUser)
+
     return getDiscordAvatar(user, update)
   }
 
@@ -101,7 +104,7 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
   }
 
   reply.header('etag', etag)
-  return getDiscordAvatar(user, (newAvatar) => this.mongo.db!.collection('users').updateOne({ _id: request.params.id }, { $set: { avatar: newAvatar } }))
+  return getDiscordAvatar(user, (newUser) => updateUser(this.mongo.client, newUser))
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {

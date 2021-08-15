@@ -20,6 +20,8 @@
  * SOFTWARE.
  */
 
+import type { User } from '@powercord/types/discord'
+import type { OAuthTokens } from '../../utils/oauth.js'
 import { MongoClient, ReadConcern, WriteConcern } from 'mongodb'
 import { URL } from 'url'
 import { existsSync } from 'fs'
@@ -28,8 +30,21 @@ import { SETTINGS_STORAGE_FOLDER } from '../settings.js'
 
 export enum UserDeletionCause { AUTOMATIC, REQUESTED, ADMINISTRATOR }
 
-export async function updateUser () {
-  // todo: merge all different user updates
+export async function updateUser (mongo: MongoClient, user: User, tokens?: OAuthTokens) {
+  const update: Record<string, unknown> = {
+    username: user.username,
+    discriminator: user.discriminator,
+    avatar: user.avatar,
+    updatedAt: new Date(),
+  }
+
+  if (tokens) {
+    update['accounts.discord.accessToken'] = tokens.access_token
+    update['accounts.discord.refreshToken'] = tokens.refresh_token
+    update['accounts.discord.expiryDate'] = Date.now() + (tokens.expires_in * 1e3)
+  }
+
+  return mongo.db().collection('users').updateOne({ _id: user.id }, { $set: update })
 }
 
 export async function deleteUser (mongo: MongoClient, userId: string, reason: UserDeletionCause) {
@@ -50,21 +65,31 @@ export async function deleteUser (mongo: MongoClient, userId: string, reason: Us
     writeConcern: new WriteConcern(1, 0, true),
   })
 
-  // Update store entries
-  await database.collection('forms').deleteMany(formsQuery, { session: session })
-  await database.collection('users').deleteOne({ _id: userId }, { session: session })
+  try {
+    // Update store entries
+    await database.collection('forms').deleteMany(formsQuery, { session: session })
+    await database.collection('users').deleteOne({ _id: userId }, { session: session })
 
-  if (reason === UserDeletionCause.AUTOMATIC) {
-    // todo: open an issue on the repositories
-    // todo: schedule automatic deprecation within a month
-  } else if (reason === UserDeletionCause.ADMINISTRATOR) {
-    // todo: wipe all collaborators from repositories
-    // todo: open an issue on the repositories
-    // todo: mark as deprecated immediately
+    if (reason === UserDeletionCause.AUTOMATIC) {
+      // todo: open an issue on the repositories
+      // todo: schedule automatic deprecation within a month
+    } else if (reason === UserDeletionCause.ADMINISTRATOR) {
+      // todo: wipe all collaborators from repositories
+      // todo: open an issue on the repositories
+      await database.collection('store-items').updateMany(
+        { owner: userId },
+        { $set: { deprecated: true, owner: null } },
+        { session: session }
+      )
+    }
+
+    await session.commitTransaction()
+    await session.endSession()
+  } catch (e) {
+    await session.abortTransaction()
+    await session.endSession()
+    throw e
   }
-
-  await session.commitTransaction()
-  await session.endSession()
 
   // @ts-ignore
   for (const { messageId } of deletedForms) { // eslint-disable-line

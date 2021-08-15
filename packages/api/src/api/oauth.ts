@@ -24,6 +24,7 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { User } from '@powercord/types/users'
+import { updateUser } from './data/user.js'
 import { fetchMember, addRole, setRoles } from '../utils/discord.js'
 import discordAuth from '../oauth/discord.js'
 import spotifyAuth from '../oauth/spotify.js'
@@ -71,22 +72,13 @@ async function discord (this: FastifyInstance, request: FastifyRequest<OAuth>, r
           },
         },
         badges: {},
-        createdAt: new Date(),
         patronTier: 0,
+        createdAt: new Date(),
       })
     } else {
-      await collection.updateOne({ _id: user.id }, {
-        $set: {
-          updatedAt: new Date(),
-          username: user.username,
-          discriminator: user.discriminator,
-          avatar: user.avatar,
-          'accounts.discord.accessToken': codes.access_token,
-          'accounts.discord.refreshToken': codes.refresh_token,
-          'accounts.discord.expiryDate': Date.now() + (codes.expires_in * 1000),
-        },
-      })
+      await updateUser(this.mongo.client, user, codes)
     }
+
     const token = this.tokenize.generate(user.id)
     reply.setCookie('token', token, {
       signed: true,
@@ -137,6 +129,7 @@ async function spotify (this: FastifyInstance, request: FastifyRequest<{ Tokeniz
     const user = await spotifyAuth.getCurrentUser(codes.access_token)
     await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, {
       $set: {
+        updatedAt: new Date(),
         'accounts.spotify': {
           accessToken: codes.access_token,
           refreshToken: codes.refresh_token,
@@ -179,7 +172,7 @@ async function unlinkSpotify (this: FastifyInstance, request: FastifyRequest<Aut
     return
   }
 
-  await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 } })
+  await this.mongo.db!.collection('users').updateOne({ _id: request.user!._id }, { $set: { updatedAt: new Date() }, $unset: { 'accounts.spotify': 1 } })
   reply.redirect('/me')
 }
 
