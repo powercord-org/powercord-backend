@@ -29,24 +29,27 @@ import { useTitle } from 'hoofd/preact'
 import Spinner from './util/Spinner'
 import Avatar from './util/Avatar'
 
-import { Endpoints } from '../constants'
+import { Routes, Endpoints } from '../constants'
 
 import style from './contributors.module.css'
 
+type ContributorUser = MinimalUser & { github?: string }
+
 type AllContributors = {
-  developers: MinimalUser[]
-  staff: MinimalUser[]
-  contributors: MinimalUser[]
+  developers: ContributorUser[]
+  staff: ContributorUser[]
+  contributors: ContributorUser[]
 }
 
-function Contributor ({ user }: { user: MinimalUser }) {
+function Contributor ({ user }: { user: ContributorUser }) {
   return (
     <div className={style.container}>
       <Avatar user={user}/>
       <div className={style.name}>
-        <h3 className={style.username}>
-          {user.username}<span className={style.discriminator} >#{user.discriminator}</span>
-        </h3>
+        <div className={style.username}>
+          {user.username}<span className={style.discriminator}>#{user.discriminator}</span>
+        </div>
+        {user.github && <a href={Routes.GITHUB_USER(user.github)}>GitHub</a>}
       </div>
     </div>
   )

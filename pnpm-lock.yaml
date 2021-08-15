@@ -158,6 +158,7 @@ importers:
       preact-router: ^3.2.1
       prismjs: ^1.24.1
       rollup-plugin-sri: ^1.3.4
+      simple-icons: ^5.10.0
       typescript: ^4.3.5
       vite: ^2.4.4
       vite-plugin-magical-svg: ^0.3.0
@@ -180,6 +181,7 @@ importers:
       eslint-plugin-deprecation: 1.2.1_eslint@7.31.0+typescript@4.3.5
       feather-icons: 4.28.0
       rollup-plugin-sri: 1.3.4
+      simple-icons: 5.10.0
       typescript: 4.3.5
       vite: 2.4.4
       vite-plugin-magical-svg: 0.3.0_vite@2.4.4
@@ -3579,6 +3581,10 @@ packages:
       shiki-themes: 0.2.7
       vscode-textmate: 5.4.0
     dev: false
+
+  /simple-icons/5.10.0:
+    resolution: {integrity: sha512-nM6tUZo1Jc/7wweg/RreDENIF7GAJ4V7jzDojV0DRdIKD1Fxvv0PnUxhV37ZCNuwM98fBa5nQfFNKuQRsNLtIQ==}
+    dev: true
 
   /slash/3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}

@@ -23,12 +23,14 @@
 import type { Attributes, JSX } from 'preact'
 import { h, cloneElement } from 'preact'
 
+import style from './soon.module.css'
+
 export default function Soon (_: any) {
   return (
-    <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 64, paddingBottom: 64 }}>
-      <img style={{ width: 400 }} src='https://discord.com/assets/ccf4c733929efd9762ab02cd65175377.svg' alt=''/>
-      <div style={{ fontSize: 32 }}>Coming soon, come back later!</div>
-      <div style={{ fontSize: 8, opacity: 0.4 }}>u cute uwu</div>
+    <main className={style.container}>
+      <img className={style.eyes} src='https://discord.com/assets/ccf4c733929efd9762ab02cd65175377.svg' alt=''/>
+      <div className={style.soon}>Coming soon, come back later!</div>
+      <div className={style.uwu}>u cute uwu</div>
     </main>
   )
 }

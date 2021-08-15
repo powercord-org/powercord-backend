@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-.cutie, .header {
+.cutie-old, .header-old {
   margin-top: 24px;
 }
 
-.cutie {
+.cutie-old {
   display: flex;
   height: 96px;
   align-items: center;
@@ -32,7 +32,7 @@
   background-color: var(--background-secondary);
 }
 
-.cutie::before {
+.cutie-old::before {
   content: '';
   display: block;
   position: relative;
@@ -42,23 +42,166 @@
   left: -32px;
 }
 
-.cutie-logo {
+.cutie-logo-old {
   height: 80%;
   margin-right: 32px;
 }
 
-.cutie-contents {
+.cutie-contents-old {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.cutie-contents span:first-child {
+.cutie-contents-old span:first-child {
   font-size: 22px;
   font-weight: 600;
 }
 
-.cutie-contents span:last-child {
+.cutie-contents-old span:last-child {
   font-size: 18px;
   font-weight: 500;
+}
+
+/* ------ */
+
+.columns {
+  margin-top: 16px;
+  gap: 40px;
+}
+
+.linked-accounts {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
+  min-width: 530px;
+  flex: 1 0;
+}
+
+.linked-accounts:first-child:last-child {
+  grid-column: 1 / 3;
+}
+
+.linked-account {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  padding: 16px;
+  gap: 24px;
+
+  background-color: var(--background-secondary);
+}
+
+.linked-account-icon {
+  width: 40px;
+  height: 40px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.linked-account-explainer {
+  margin-top: 8px;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.cutie-container {
+  width: 100%;
+}
+
+.cutie-ad {
+  border-radius: 5px;
+  background-color: var(--background-secondary);
+  overflow: hidden;
+  max-width: 440px;
+  margin: 0 auto;
+  flex: 1 0;
+}
+
+.cutie-ad-header {
+  height: 130px;
+  padding: 16px;
+  background: linear-gradient(45deg, #3e70dd, #b377f3);
+}
+
+.cutie-ad-logo {
+  height: 40px;
+  user-select: none;
+}
+
+.cutie-ad-body {
+  padding: 16px;
+}
+
+.cutie-ad-title {
+  text-align: center;
+  font-size: 1.3em;
+  margin: 0 0 4px;
+}
+
+.cutie-ad-subtitle {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.1em;
+  margin: 0 0 24px;
+}
+
+.cutie-ad-subtitle:before, .cutie-ad-subtitle:after {
+  content: '';
+  background-color: var(--background-light);
+  margin: 0 10px;
+  height: 1px;
+  flex: 1;
+}
+
+.cutie-ad-tier {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.cutie-ad-icon {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.cutie-ad-price {
+  font-size: 1.1em;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.cutie-ad-description {
+  margin: 0;
+  font-size: 1em;
+}
+
+.cutie-ad-description b {
+  font-weight: 600;
+}
+
+.cutie-ad-buttons {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--background-light);
+  padding: 16px 8px 4px;
+  width: 100%;
+}
+
+@media screen and (min-width: 1060px) {
+  .linked-accounts {
+    margin-bottom: 0;
+  }
+
+  .columns {
+    display: flex;
+  }
+
+  .cutie-container {
+    max-width: 440px;
+  }
 }

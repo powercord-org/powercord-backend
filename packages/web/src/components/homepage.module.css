@@ -153,6 +153,10 @@
   margin: 0 0 24px;
 }
 
+.feature {
+  margin-bottom: 32px;
+}
+
 .feature-icon {
   width: 56px;
   height: 56px;

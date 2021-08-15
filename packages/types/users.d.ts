@@ -22,8 +22,6 @@
 
 export type User = {
   _id: string
-  createdAt: Date
-  updatedAt?: Date
   username: string
   discriminator: string
   avatar: string | null
@@ -48,14 +46,20 @@ export type User = {
       expiryDate: number
     }
     spotify?: {
-      accessToken: string,
-      refreshToken: string,
+      accessToken: string
+      refreshToken: string
       expiryDate: number
-      name: string,
+      name: string
       scopes: string[]
+    }
+    github?: {
+      accessToken: string
+      name: string
     }
   }
   patronTier?: 0 | 1 | 2
+  createdAt: Date
+  updatedAt?: Date
 }
 
 export type UserBanStatus = {
@@ -72,6 +76,7 @@ export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
   id: User['_id']
   accounts?: {
     spotify?: string
+    github?: string
   }
 }
 

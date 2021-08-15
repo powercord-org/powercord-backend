@@ -20,18 +20,25 @@
  * SOFTWARE.
  */
 
+import type { JSX } from 'preact'
 import { h, Fragment } from 'preact'
-import { useContext, useState, useEffect } from 'preact/hooks'
+import { useContext, useState, useEffect, useMemo } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
+
+import Modal from './util/Modal'
 
 import UserContext from './UserContext'
 import { Endpoints, Routes } from '../constants'
 
-import cutieSvg from '../assets/cutie.svg?file'
+import Spotify from 'simple-icons/icons/spotify.svg'
+import GitHub from 'simple-icons/icons/github.svg'
+import cutieSvg from '../assets/donate/cutie.svg?file'
+import blobkiss from '../assets/donate/blobkiss.png'
+import blobsmilehearts from '../assets/donate/blobsmilehearts.png'
+import blobhug from '../assets/donate/blobhug.png'
 
 import style from './account.module.css'
 import sharedStyle from './shared.module.css'
-import Modal from './util/Modal'
 
 const includes = [
   'A custom role in our server, custom badge color',
@@ -39,12 +46,12 @@ const includes = [
   'A custom role in our server, custom badge color, custom profile badge, custom server badge',
 ]
 
-function Cutie ({ tier }: { tier: number }) {
+function CutieOld ({ tier }: { tier: number }) {
   return (
     <>
-      <div className={style.cutie}>
-        <img className={style.cutieLogo} src={cutieSvg} alt='Powercord Cutie'/>
-        <div className={style.cutieContents}>
+      <div className={style.cutieOld}>
+        <img className={style.cutieLogoOld} src={cutieSvg} alt='Powercord Cutie'/>
+        <div className={style.cutieContentsOld}>
           <span>Thank you for supporting Powercord! You are a tier {tier} patron.</span>
           <span>Includes: {includes[tier - 1]}.</span>
         </div>
@@ -54,7 +61,7 @@ function Cutie ({ tier }: { tier: number }) {
   )
 }
 
-export default function Account () {
+function AccountOld () {
   useTitle('My Account')
   const user = useContext(UserContext)!
   const [ canDeleteAccount, setCanDeleteAccount ] = useState(true)
@@ -68,19 +75,19 @@ export default function Account () {
   return (
     <main>
       <h1>Welcome back, {user.username}#{user.discriminator}</h1>
-      {Boolean(user.patronTier) && <Cutie tier={user.patronTier!}/>}
-      <h3 className={style.header}>Linked Spotify account</h3>
+      {Boolean(user.patronTier) && <CutieOld tier={user.patronTier!}/>}
+      <h3 className={style.headerOld}>Linked Spotify account</h3>
       {typeof user.accounts?.spotify === 'string'
         // @ts-expect-error
-        ? <p>{user.accounts.spotify} - <a href={Endpoints.UNLINK_SPOTIFY} native>Unlink</a></p>
+        ? <p>{user.accounts.spotify} - <a href={Endpoints.UNLINK_ACCOUNT('spotify')} native>Unlink</a></p>
         // @ts-expect-error
-        : <p>No account linked. <a href={Endpoints.LINK_SPOTIFY} native>Link it now!</a></p>}
+        : <p>No account linked. <a href={Endpoints.LINK_ACCOUNT('spotify')} native>Link it now!</a></p>}
       <p>
         Linking your Spotify account gives you an enhanced experience with the Spotify plugin. It'll let you add songs
         to your Liked Songs, add songs to playlists, see private playlists and more.
       </p>
 
-      <h3 className={style.header}>Delete my Powercord account</h3>
+      <h3 className={style.headerOld}>Delete my Powercord account</h3>
       {canDeleteAccount
         ? <Fragment>
           <p>
@@ -119,4 +126,173 @@ export default function Account () {
       )}
     </main>
   )
+}
+
+// ----
+
+type LinkedAccountProps = { platform: string, icon: typeof Spotify, account?: string, explainer: string | JSX.Element }
+
+const HEARTS = [ '❤️', '🧡', '💛', '💚', '💙', '💜', '💗', '💖', '💝' ]
+
+function PowercordCutie () {
+  const heart = useMemo(() => Math.floor(Math.random() * HEARTS.length), [])
+
+  return (
+    <div className={style.cutieContainer}>
+      <div className={style.cutieAd}>
+        <div className={style.cutieAdHeader}>
+          <img className={style.cutieAdLogo} src={cutieSvg} alt='Powercord Cutie'/>
+        </div>
+        <div className={style.cutieAdBody}>
+          <h3 className={style.cutieAdTitle}>Support Powercord's Development</h3>
+          <div className={style.cutieAdSubtitle}>And get sweet perks</div>
+
+          <div className={style.cutieAdTier}>
+            <img className={style.cutieAdIcon} src={blobkiss} alt='Tier 1 icon'/>
+            <div>
+              <div className={style.cutieAdPrice}>$1/month</div>
+              <p className={style.cutieAdDescription}>
+                Get a <b>fully customizable role</b> on Powercord's server, and <b>custom colors</b> for Powercord's
+                profile badges.
+              </p>
+            </div>
+          </div>
+          <div className={style.cutieAdTier}>
+            <img className={style.cutieAdIcon} src={blobsmilehearts} alt='Tier 2 icon'/>
+            <div>
+              <div className={style.cutieAdPrice}>$5/month</div>
+              <p className={style.cutieAdDescription}>
+                Get a <b>fully customizable</b> custom badge on your profile.
+              </p>
+            </div>
+          </div>
+          <div className={style.cutieAdTier}>
+            <img className={style.cutieAdIcon} src={blobhug} alt='Tier 3 icon'/>
+            <div>
+              <div className={style.cutieAdPrice}>$10/month</div>
+              <p className={style.cutieAdDescription}>
+                Get a <b>fully customizable</b> badge for <b>one</b> of your servers.
+              </p>
+            </div>
+          </div>
+
+          <div className={style.cutieAdButtons}>
+            <a href={Routes.PATREON} target='_blank' rel='noreferrer'>Donate on Patreon {HEARTS[heart]}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ManagePerks () {
+  return (
+    <div className={style.cutieContainer}>
+      <h2>Donator perks</h2>
+    </div>
+  )
+}
+
+function LinkedAccount ({ platform, icon, account, explainer }: LinkedAccountProps) {
+  return (
+    <div className={style.linkedAccount}>
+      {h(icon, { className: style.linkedAccountIcon })}
+      <div>
+        {account
+          // @ts-expect-error
+          ? <div>{account} - <a native href={Endpoints.UNLINK_ACCOUNT(platform)}>Unlink</a></div>
+          // @ts-expect-error
+          : <div>No account linked - <a native href={Endpoints.LINK_ACCOUNT(platform)}>Link it now</a></div>}
+        <div className={style.linkedAccountExplainer}>{explainer}</div>
+      </div>
+    </div>
+  )
+}
+
+function Account () {
+  useTitle('My Account')
+  const user = useContext(UserContext)!
+  const [ canDeleteAccount, setCanDeleteAccount ] = useState(true)
+  const [ deletingAccount, setDeletingAccount ] = useState(false)
+
+  useEffect(() => {
+    // todo: check if the user can delete their account
+    setCanDeleteAccount(true)
+  }, [ user.id ])
+
+  return (
+    <main>
+      <h1>Welcome back, {user.username}</h1>
+      <div className={style.columns}>
+        <div className={style.linkedAccounts}>
+          <h2>Linked accounts</h2>
+          <LinkedAccount
+            platform='spotify'
+            icon={Spotify}
+            account={user.accounts.spotify}
+            explainer={'Linking your Spotify account gives you an enhanced experience with the Spotify plugin. It\'ll let you add songs to your Liked Songs, add songs to playlists, see private playlists and more.'}
+          />
+          {import.meta.env.DEV && <LinkedAccount
+            platform='github'
+            icon={GitHub}
+            account={user.accounts.github}
+            explainer={<>
+              Linking your GitHub is required in order to publish works (or to be collaborator on someone's work) in
+              the <a href={Routes.STORE_PLUGINS}>Powercord Store</a>. If you are a contributor, it will be shown on
+              the <a href={Routes.CONTRIBUTORS}>contributors page</a>.
+            </>}
+          />}
+
+          <hr/>
+          <h2>Delete my account</h2>
+          {canDeleteAccount
+            ? <Fragment>
+              <p>
+                You can choose to permanently delete your Powercord account. Be careful, this action is irreversible and
+                will take effect immediately.
+              </p>
+              <p>
+                We will drop any data we have about you, and you'll no longer be able to benefit from features requiring
+                a Powercord account (such as enhanced Spotify plugin, settings sync, and more).
+              </p>
+              <p>
+                <button className={`${sharedStyle.buttonLink} ${sharedStyle.red}`} onClick={() => setDeletingAccount(true)}>
+                  Delete my account
+                </button>
+              </p>
+            </Fragment>
+            : <Fragment>
+              <p>
+                You cannot delete your account right now as you still have items in the Store. You have to either
+                transfer them to someone else, or mark them as deprecated in order to delete your account.
+              </p>
+              <p>
+                <a href={Routes.STORE_MANAGE}>Go to the Powercord Store</a>
+              </p>
+            </Fragment>}
+
+          {deletingAccount && (
+            <Modal
+              title='Delete my account'
+              onClose={() => setDeletingAccount(false)}
+              onConfirm={() => (location.pathname = Endpoints.YEET_ACCOUNT)}
+              closeText='Cancel'
+              confirmText='Delete'
+              color='red'
+            >
+              <div>Are you sure you want to delete your account? This operation is irreversible!</div>
+              {Boolean(user.patronTier) && <p><b>Note:</b> You will lose your tier {user.patronTier} patron perks!</p>}
+            </Modal>
+          )}
+        </div>
+        {user.patronTier ? <ManagePerks/> : <PowercordCutie/>}
+      </div>
+    </main>
+  )
+}
+
+export default function AccountWrapper () {
+  return import.meta.env.DEV
+    ? <Account/>
+    : <AccountOld/>
 }

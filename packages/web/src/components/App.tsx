@@ -73,11 +73,11 @@ export default function App (props: null | AppProps) {
         <Stats path={Routes.STATS}/>
         <Branding path={Routes.BRANDING}/>
         <SoonRoute path={`${Routes.STORE}/:path*`}>
-          <Storefront url={props?.url}/>
+          <Storefront path={`${Routes.STORE}/:path*`} url={props?.url}/>
         </SoonRoute>
 
         <SoonRoute path={Routes.DOCS_ITEM(':categoryId?', ':documentId?')}>
-          <Documentation/>
+          <Documentation path={Routes.DOCS_ITEM(':categoryId?', ':documentId?')}/>
         </SoonRoute>
         <Markdown document='faq' path={Routes.FAQ}/>
         <Markdown document='installation' path={Routes.INSTALLATION}/>

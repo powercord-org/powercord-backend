@@ -20,33 +20,23 @@
  * SOFTWARE.
  */
 
-import { createContext } from 'preact'
-
-export type User = {
-  id: string
-  username: string
-  discriminator: string
-  avatar: string
-  patronTier?: 0 | 1 | 2 | 3
-  badges: {
-    developer: boolean
-    staff: boolean
-    support: boolean
-    contributor: boolean
-    translator: boolean
-    hunter: boolean
-    early: boolean
-    custom: {
-      color: string
-      icon: string
-      white: string
-      name: string
-    }
-  }
-  accounts: {
-    spotify?: string
-    github?: string
-  }
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 64px;
+  padding-bottom: 64px;
 }
 
-export default createContext<User | null | undefined>(void 0)
+.eyes {
+  width: 400px;
+}
+
+.soon {
+  font-size: 32px;
+}
+
+.uwu {
+  font-size: 8px;
+  opacity: 0.4;
+}

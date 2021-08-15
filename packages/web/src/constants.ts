@@ -24,8 +24,8 @@ export const Endpoints = {
   LOGIN: '/api/v2/login',
   LOGOUT: '/api/v2/logout',
   USER_SELF: '/api/v2/users/@me',
-  LINK_SPOTIFY: '/api/v2/oauth/spotify',
-  UNLINK_SPOTIFY: '/api/v2/oauth/spotify/unlink',
+  LINK_ACCOUNT: (platform: string) => `/api/v2/oauth/${platform}`,
+  UNLINK_ACCOUNT: (platform: string) => `/api/v2/oauth/${platform}/unlink`,
   YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
   USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`,
   USER_AVATAR_DISCORD: (id: string, avatar: string) => `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=128`,
@@ -96,4 +96,5 @@ export const Routes = {
   DICKSWORD: 'https://discord.gg/powercord',
   PATREON: 'https://patreon.com/aetheryx',
   GITHUB: 'https://github.com/powercord-org',
+  GITHUB_USER: (user: string) => `https://github.com/${user}`,
 }
