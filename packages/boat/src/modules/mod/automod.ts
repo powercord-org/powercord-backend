@@ -47,43 +47,43 @@ const EMOJI_UNICODE_RE = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud80
 const EMOJI_RE = new RegExp(`${NAMES.map((n: string) => `:${n}:`).join('|').replace(/\+/g, '\\+')}|${EMOJI_UNICODE_RE.source}`, 'g')
 const MAX_EMOJI_THRESHOLD_MULTIPLIER = 0.3 // Amount of words * mult (floored) = max amount of emojis allowed
 const NORMALIZE: [ RegExp, string ][] = [
-  [ /АΑ/g, 'A' ],
-  [ /ВΒ/g, 'B' ],
-  [ /C/g, 'C' ],
-  [ /ЕЁΕ/g, 'E' ],
-  [ /НΗ/g, 'H' ],
-  [ /І/g, 'I' ],
-  [ /Κκ/g, 'K' ],
-  [ /МΜ/g, 'M' ],
-  [ /Ν/g, 'N' ],
-  [ /ОØΟ/g, 'O' ],
-  [ /РΡ/g, 'P' ],
-  [ /Ѕ/g, 'S' ],
-  [ /ТΤ/g, 'T' ],
-  [ /Ѵ/g, 'V' ],
-  [ /ХΧ/g, 'X' ],
-  [ /Υ/g, 'Y' ],
-  [ /Ζ/g, 'Z' ],
-  [ /аα/g, 'a' ],
-  [ /с/g, 'c' ],
-  [ /её/g, 'e' ],
-  [ /9/g, 'g' ],
-  [ /ıіι/g, 'i' ],
-  [ /с/g, 'c' ],
-  [ /оø0ο/g, 'o' ],
-  [ /рρ/g, 'p' ],
-  [ /υ/g, 'u' ],
-  [ /ѕ/g, 's' ],
-  [ /ѵν/g, 'v' ],
-  [ /х/g, 'x' ],
-  [ /Ууγ/g, 'y' ],
+  [ /[АΑ]/g, 'A' ],
+  [ /[ВΒ]/g, 'B' ],
+  [ /[C]/g, 'C' ],
+  [ /[ЕЁΕ]/g, 'E' ],
+  [ /[НΗ]/g, 'H' ],
+  [ /[І]/g, 'I' ],
+  [ /[Κκ]/g, 'K' ],
+  [ /[МΜ]/g, 'M' ],
+  [ /[Ν]/g, 'N' ],
+  [ /[ОØΟ]/g, 'O' ],
+  [ /[РΡ]/g, 'P' ],
+  [ /[Ѕ]/g, 'S' ],
+  [ /[ТΤ]/g, 'T' ],
+  [ /[Ѵ]/g, 'V' ],
+  [ /[ХΧ]/g, 'X' ],
+  [ /[Υ]/g, 'Y' ],
+  [ /[Ζ]/g, 'Z' ],
+  [ /[аα]/g, 'a' ],
+  [ /[с]/g, 'c' ],
+  [ /[её]/g, 'e' ],
+  [ /[9]/g, 'g' ],
+  [ /[ıіι]/g, 'i' ],
+  [ /[с]/g, 'c' ],
+  [ /[оø0ο]/g, 'o' ],
+  [ /[рρ]/g, 'p' ],
+  [ /[υ]/g, 'u' ],
+  [ /[ѕ]/g, 's' ],
+  [ /[ѵν]/g, 'v' ],
+  [ /[х]/g, 'x' ],
+  [ /[Ууγ]/g, 'y' ],
 ]
 
 export const BLACKLIST_CACHE: string[] = []
 
 const correctedPeople = new Map<string, number>()
 
-function takeAction (msg: Message, reason: string, warning: string, loose?: boolean) {
+function takeAction (msg: Message, reason: string, warning: string, attemptedBypass: boolean, loose?: boolean) {
   skipSnipe.add(msg.id)
   deleteMeta.set(msg.id, reason)
   msg.delete(reason)
@@ -96,7 +96,16 @@ function takeAction (msg: Message, reason: string, warning: string, loose?: bool
   }
 
   if (period === Period.RECENT) {
+    if (attemptedBypass) {
+      ban(msg.member.guild, msg.author.id, null, `Automod: ${reason} (Recent member, attempted bypass)`)
+      return
+    }
+
     mute(msg.member.guild, msg.author.id, null, `Automod: ${reason} (Recent member)`, 24 * 3600e3)
+  }
+
+  if (period === Period.KNOWN && attemptedBypass) {
+    mute(msg.member.guild, msg.author.id, null, `Automod: ${reason} (Attempted bypass with unicode)`, 12 * 3600e3)
   }
 
   msg.channel.createMessage({ content: warning, allowedMentions: { users: [ msg.author.id ] } })
@@ -106,10 +115,14 @@ function takeAction (msg: Message, reason: string, warning: string, loose?: bool
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (msg.guildID !== config.discord.ids.serverId || msg.author.bot || isStaff(msg.member)) return null
   let normalizedMessage = msg.content.normalize('NFD')
+  let attemptedBypass = false
   for (const [ re, rep ] of NORMALIZE) {
-    normalizedMessage = normalizedMessage.replace(re, rep)
+    const cleanerString = normalizedMessage.replace(re, rep)
+    attemptedBypass = attemptedBypass || normalizedMessage !== cleanerString
+    normalizedMessage = cleanerString
   }
-  const cleanMessage = msg.content.normalize('NFD').replace(CLEANER, '')
+
+  const cleanMessage = normalizedMessage.replace(CLEANER, '')
 
   // Filter bad words
   if (!BLACKLIST_CACHE.length) {
@@ -118,7 +131,12 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
   }
 
   if (BLACKLIST_CACHE.some((word) => cleanMessage.toLowerCase().includes(word))) {
-    takeAction(msg, 'Message contained a blacklisted word', `${msg.author.mention} Your message has been deleted because it contained a word blacklisted.`)
+    takeAction(
+      msg,
+      'Message contained a blacklisted word',
+      `${msg.author.mention} Your message has been deleted because it contained a word blacklisted.`,
+      attemptedBypass
+    )
     return // No need to keep checking for smth else
   }
 
@@ -132,7 +150,12 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
         if (inv && inv.guild?.id === config.discord.ids.serverId) continue
       }
 
-      takeAction(msg, 'Advertisement', `${msg.author.mention} **Rule #02**: Advertising of any kind is prohibited.`)
+      takeAction(
+        msg,
+        'Advertisement',
+        `${msg.author.mention} **Rule #02**: Advertising of any kind is prohibited.`,
+        false
+      )
       return // No need to keep checking for smth else
     }
   }
@@ -143,7 +166,13 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
     const words = msg.content.replace(EMOJI_RE, '').split(/\s+/g).filter(Boolean).length
     const max = Math.floor(words * MAX_EMOJI_THRESHOLD_MULTIPLIER)
     if (emojis > max) {
-      takeAction(msg, 'Emoji spam', `${msg.author.mention} **Rule #03**: Spam of any kind is prohibited.\nConsider reducing the amount of emojis in your message.`, true)
+      takeAction(
+        msg,
+        'Emoji spam',
+        `${msg.author.mention} **Rule #03**: Spam of any kind is prohibited.\nConsider reducing the amount of emojis in your message.`,
+        false,
+        true
+      )
       return // No need to keep checking for smth else
     }
   }
@@ -153,8 +182,8 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
     const count = (correctedPeople.get(msg.author.id) || 0) + 1
     skipSnipe.add(msg.id)
     deleteMeta.set(msg.id, 'Improper writing of Powercord')
-
     msg.delete('Improper writing of Powercord')
+
     if (count === 3) {
       msg.channel.createMessage({ content: 'I said: **There is no uppercase C**. "Powercord".', allowedMentions: {} })
       mute(msg.channel.guild, msg.author.id, null, 'Can\'t spell "Powercord" (3rd time)', 300e3)
