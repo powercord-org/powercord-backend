@@ -43,6 +43,7 @@ export type OAuthSettings = {
   selfUrl: string
   scopes: string[]
   isAuthentication?: boolean
+  locked?: boolean
 }
 
 type RequestProps = {
@@ -136,6 +137,11 @@ async function link (this: FastifyInstance, request: FastifyRequest<RequestProps
     return
   }
 
+  if (reply.context.config.locked && !request.user?.badges?.staff) {
+    reply.send('There are things that aren\'t meant to be accessed. This is one. Go away.')
+    return
+  }
+
   if (request.query.error) {
     reply.redirect('/')
     return
@@ -211,6 +217,11 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<RequestPro
   if (!request.user) {
     reply.redirect(`${AUTH_URL}?redirect=/api${request.url}`)
     reply.send()
+    return
+  }
+
+  if (reply.context.config.locked && !request.user?.badges?.staff) {
+    reply.send('There are things that aren\'t meant to be accessed. This is one. Go away.')
     return
   }
 

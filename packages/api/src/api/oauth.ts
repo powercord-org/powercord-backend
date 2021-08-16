@@ -86,4 +86,18 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       scopes: config.spotify.scopes,
     },
   })
+
+  fastify.register(oauthPlugin, {
+    prefix: '/github',
+    data: {
+      platform: 'github',
+      clientId: config.github.clientID,
+      clientSecret: config.github.clientSecret,
+      authorizeUrl: 'https://github.com/login/oauth/authorize',
+      tokenUrl: 'https://github.com/login/oauth/access_token',
+      selfUrl: 'https://api.github.com/user',
+      scopes: [],
+      locked: true,
+    },
+  })
 }

@@ -200,6 +200,7 @@ async function contributors (this: FastifyInstance, _request: FastifyRequest, re
             username: '$username',
             discriminator: '$discriminator',
             avatar: '$avatar',
+            github: '$accounts.github.name',
           },
         },
       },
