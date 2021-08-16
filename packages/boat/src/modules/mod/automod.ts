@@ -179,11 +179,12 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
 
   // Deal with people who can't write
   if (BAD_POWERCORD.test(cleanMessage)) {
-    const count = (correctedPeople.get(msg.author.id) || 0) + 1
     skipSnipe.add(msg.id)
     deleteMeta.set(msg.id, 'Improper writing of Powercord')
     msg.delete('Improper writing of Powercord')
+    if (msg.channel.id === config.discord.ids.channelMuted) return
 
+    const count = (correctedPeople.get(msg.author.id) || 0) + 1
     if (count === 3) {
       msg.channel.createMessage({ content: 'I said: **There is no uppercase C**. "Powercord".', allowedMentions: {} })
       mute(msg.channel.guild, msg.author.id, null, 'Can\'t spell "Powercord" (3rd time)', 300e3)
