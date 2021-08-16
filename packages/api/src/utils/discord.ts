@@ -102,11 +102,11 @@ export async function fetchAllMembers (): Promise<Member[]> {
   return users
 }
 
-export async function fetchMember (memberId: string): Promise<Member> {
+export async function fetchMember (memberId: string): Promise<Member | undefined> {
   return fetch(
     `https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members/${memberId}`,
     { headers: { authorization: `Bot ${config.discord.botToken}` } }
-  ).then((r) => r.json())
+  ).then((r) => r.status === 200 ? r.json() : void 0)
 }
 
 export async function setRoles (memberId: string, roleIds: string[], auditLogReason?: string): Promise<unknown> {

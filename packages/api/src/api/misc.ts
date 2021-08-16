@@ -26,7 +26,6 @@ import type { User } from '@powercord/types/users'
 import { URL } from 'url'
 import { createHash } from 'crypto'
 import fetch from 'node-fetch'
-import { updateUser } from './data/user.js'
 import { fetchUser } from '../utils/discord.js'
 import { remoteFile } from '../utils/cache.js'
 import config from '../config.js'
@@ -104,7 +103,17 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
   }
 
   reply.header('etag', etag)
-  return getDiscordAvatar(user, (newUser) => updateUser(this.mongo.client, newUser))
+  return getDiscordAvatar(user, (newUser) => this.mongo.db!.collection('users').updateOne(
+    { _id: newUser.id },
+    {
+      $set: {
+        username: user.username,
+        discriminator: user.discriminator,
+        avatar: user.avatar,
+        updatedAt: new Date(),
+      },
+    }
+  ))
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {

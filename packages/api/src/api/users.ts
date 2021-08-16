@@ -23,10 +23,10 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { User, RestUser } from '@powercord/types/users'
 import { createHash } from 'crypto'
-import spotifyAuth from '../oauth/spotify.js'
 import { formatUser } from '../utils/users.js'
 import settingsModule from './settings.js'
 import config from '../config.js'
+import { fetchTokens } from '../utils/oauth.js'
 
 const DATE_ZERO = new Date(0)
 
@@ -58,30 +58,34 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
   if (!spotify) return { token: null }
 
   const users = this.mongo.db!.collection('users')
-  if (!spotify.scopes || !config.spotify.scopes.every((key: string) => spotify.scopes.includes(key))) {
-    await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1, updatedAt: new Date() } })
-    return { token: null, revoked: 'SCOPES_UPDATED' }
-  }
-
   if (Date.now() >= spotify.expiryDate) {
     try {
-      const codes = await spotifyAuth.refreshToken(spotify.refreshToken)
-      if (!codes.access_token) {
+      const tokens = await fetchTokens(
+        'https://accounts.spotify.com/api/token',
+        config.spotify.clientID,
+        config.spotify.clientSecret,
+        '',
+        'refresh_token',
+        spotify.refreshToken
+      )
+
+      if (!tokens.access_token) {
         await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1, updatedAt: new Date() } })
         return { token: null, revoked: 'ACCESS_DENIED' }
       }
 
       const updatedFields: Record<string, unknown> = {
-        'accounts.spotify.accessToken': codes.access_token,
-        'accounts.spotify.expiryDate': Date.now() + (codes.expires_in * 1000),
+        'accounts.spotify.accessToken': tokens.access_token,
+        'accounts.spotify.expiryDate': Date.now() + (tokens.expires_in * 1000),
         updatedAt: new Date(),
       }
 
       // [Cynthia] Spotify docs says "A new refresh token MIGHT be returned"
-      if (codes.refresh_token) updatedFields['accounts.spotify.refreshToken'] = codes.refresh_token
+      if (tokens.refresh_token) updatedFields['accounts.spotify.refreshToken'] = tokens.refresh_token
+      console.log('new tokens', tokens)
       await users.updateOne({ _id: request.user!._id }, { $set: updatedFields })
 
-      return { token: codes.access_token }
+      return { token: tokens.access_token }
     } catch (e) {
       return { token: null, revoked: 'ACCESS_DENIED' }
     }

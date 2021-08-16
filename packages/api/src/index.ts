@@ -30,13 +30,13 @@ import fastifyMongodb from 'fastify-mongodb'
 import fastifyTokenize from 'fastify-tokenize'
 
 import apiModule from './api/index.js'
-import { refreshUserData } from './oauth/discord.js'
+import { refreshUserData } from './api/oauth.js'
 import config from './config.js'
 
 const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'development' ? 'info' : 'warn' } })
 
 function verifyAdmin (request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply, next: (e?: Error) => void) {
-  if (request.user?.badges.staff) return next()
+  if (request.user?.badges?.staff) return next()
 
   reply.code(403)
   next(new Error('Missing permissions'))

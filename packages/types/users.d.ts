@@ -25,20 +25,6 @@ export type User = {
   username: string
   discriminator: string
   avatar: string | null
-  badges: {
-    developer?: boolean
-    staff?: boolean
-    support?: boolean
-    contributor?: boolean
-    hunter?: boolean
-    early?: boolean
-    translator?: boolean // todo: array(?) of langs
-    custom?: {
-      color: string | null
-      icon: string | null
-      name: string | null
-    }
-  }
   accounts: {
     discord: {
       accessToken: string
@@ -55,6 +41,20 @@ export type User = {
     github?: {
       accessToken: string
       name: string
+    }
+  }
+  badges?: {
+    developer?: boolean
+    staff?: boolean
+    support?: boolean
+    contributor?: boolean
+    hunter?: boolean
+    early?: boolean
+    translator?: boolean // todo: array(?) of langs
+    custom?: {
+      color: string | null
+      icon: string | null
+      name: string | null
     }
   }
   patronTier?: 0 | 1 | 2
