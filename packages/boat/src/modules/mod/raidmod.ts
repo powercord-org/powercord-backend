@@ -63,9 +63,9 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
 
   if (isRaider(msg.author.id, msg.content, oldMember)) {
     if (await this.mongo.collection('raiders').countDocuments({ userId: msg.author.id }) > 0) {
-      ban(msg.channel.guild, msg.author.id, this.user, 'Repeat raider', 0, 1)
+      ban(msg.channel.guild, msg.author.id, this.user, 'Raidmod: Repeat raider', 0, 1)
     } else {
-      softBan(msg.channel.guild, msg.author.id, this.user, 'Detected raid spam', 1)
+      softBan(msg.channel.guild, msg.author.id, this.user, 'Raidmod: Detected raid spam', 1)
       this.mongo.collection('raiders').insertOne({ userId: msg.author.id })
     }
 
