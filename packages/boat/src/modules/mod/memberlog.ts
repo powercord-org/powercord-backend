@@ -32,8 +32,8 @@ const inviteCache = new Map<string, number>()
 
 async function fetchInvites (bot: CommandClient): Promise<PartialRawInvite[]> {
   const res: PartialRawInvite[] = await bot.getGuildInvites(config.discord.ids.serverId)
-  const vanity = await bot.getGuildVanity(config.discord.ids.serverId)
-  if (vanity) res.push({ code: vanity.code || 'powercord', uses: vanity.uses })
+  const vanity = await bot.getGuildVanity(config.discord.ids.serverId).catch(() => null)
+  if (vanity?.code) res.push({ code: vanity.code, uses: vanity.uses })
 
   return res
 }
