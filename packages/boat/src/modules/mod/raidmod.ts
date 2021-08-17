@@ -22,14 +22,13 @@
 
 import type { CommandClient, GuildTextableChannel, Message } from 'eris'
 import { createHash } from 'crypto'
-import { ban, softBan } from '../../mod.js'
+import { ban, getPeriod, Period, softBan } from '../../mod.js'
 import { enterRaidMode } from '../../raidMode.js'
 import config from '../../config.js'
 
 // Any new members who send more than THRESHOLD messages with the same content, will be kicked
 const THRESHOLD = 2
 const raiderBuffer = new Map<string, number>()
-const DAY_MS = 24 * 36e5
 
 let activeRaiders = 0
 
@@ -59,9 +58,7 @@ function isRaider (user: string, message: string, oldMember: boolean): boolean {
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>): Promise<void> {
   if (msg.guildID !== config.discord.ids.serverId || !msg.member) return
 
-  const oldMember = msg.member.joinedAt > Date.now() - (5 * DAY_MS)
-
-  if (isRaider(msg.author.id, msg.content, oldMember)) {
+  if (isRaider(msg.author.id, msg.content, getPeriod(msg.member) === Period.KNOWN)) {
     if (await this.mongo.collection('raiders').countDocuments({ userId: msg.author.id }) > 0) {
       ban(msg.channel.guild, msg.author.id, this.user, 'Raidmod: Repeat raider', 0, 1)
     } else {
