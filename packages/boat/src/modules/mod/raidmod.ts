@@ -44,24 +44,24 @@ function removeRaider (hash: string): void {
   }
 }
 
-function isRaider (user: string, message: string): boolean {
+function isRaider (user: string, message: string, oldMember: boolean): boolean {
   const raiderHash = createHash('sha1').update(`${user}${message}`).digest('base64').toString()
   let count = raiderBuffer.get(raiderHash) ?? 0
 
-  if (count >= THRESHOLD) return true
+  if (count >= THRESHOLD + (oldMember ? 2 : 0)) return true
 
   count++
   raiderBuffer.set(raiderHash, count)
-  setTimeout(() => removeRaider(raiderHash), 10e3)
+  setTimeout(() => removeRaider(raiderHash), oldMember ? 5e3 : 10e3)
   return false
 }
 
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>): Promise<void> {
-  if (msg.guildID !== config.discord.ids.serverId || !msg.member
-      || msg.member.joinedAt < Date.now() - DAY_MS
-      || msg.member.createdAt > Date.now() - (5 * DAY_MS)) return
+  if (msg.guildID !== config.discord.ids.serverId || !msg.member) return
 
-  if (isRaider(msg.author.id, msg.content)) {
+  const oldMember = msg.member.joinedAt > Date.now() - (5 * DAY_MS)
+
+  if (isRaider(msg.author.id, msg.content, oldMember)) {
     if (await this.mongo.collection('raiders').countDocuments({ userId: msg.author.id }) > 0) {
       ban(msg.channel.guild, msg.author.id, this.user, 'Repeat raider', 0, 1)
     } else {
