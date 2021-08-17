@@ -1,18 +1,22 @@
 .PHONY: web
 web:
-	docker-compose --profile website up -d
-
-.PHONY: boat
-boat:
-	docker-compose --profile bot up -d
+	mkdir packages/api/dist || true
+	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker-compose --profile website up -d
 
 .PHONY: web-build
 web-build:
-	docker-compose --profile website up --build -d
+	mkdir packages/api/dist || true
+	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker-compose --profile website up --build -d
+
+.PHONY: boat
+boat:
+	mkdir packages/boat/dist || true
+	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker-compose --profile bot up -d
 
 .PHONY: boat-build
 boat-build:
-	docker-compose --profile bot up --build -d
+	mkdir packages/boat/dist || true
+	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker-compose --profile bot up --build -d
 
 .PHONY: down
 down:

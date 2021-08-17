@@ -28,17 +28,17 @@
   "devDependencies": {
     "@borkenware/spoonfeed": "workspace:*",
     "@powercord/types": "workspace:*",
-    "@types/node": "^16.4.7",
+    "@types/node": "^16.6.1",
     "@types/prismjs": "^1.16.6",
-    "@typescript-eslint/eslint-plugin": "^4.28.5",
-    "@typescript-eslint/parser": "^4.28.5",
-    "eslint": "^7.31.0",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
+    "eslint": "^7.32.0",
     "eslint-plugin-deprecation": "^1.2.1",
     "feather-icons": "^4.28.0",
     "rollup-plugin-sri": "^1.3.4",
     "simple-icons": "^5.10.0",
     "typescript": "^4.3.5",
-    "vite": "^2.4.4",
+    "vite": "^2.5.0",
     "vite-plugin-magical-svg": "^0.3.0"
   }
 }

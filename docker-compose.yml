@@ -20,12 +20,15 @@ services:
 
   # Our shitcode
   bot:
+    user: ${USER_ID}:${GROUP_ID}
     environment:
       NODE_ENV: development
     build:
       context: .
       dockerfile: Dockerfile.dev
       args:
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
         PACKAGE_NAME: boat
     image: powercord-boat
     working_dir: /opt/porkord/packages/boat
@@ -39,12 +42,15 @@ services:
     profiles:
       - bot
   api:
+    user: ${USER_ID}:${GROUP_ID}
     environment:
       NODE_ENV: development
     build:
       context: .
       dockerfile: Dockerfile.dev
       args:
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
         PACKAGE_NAME: api
     image: powercord-api
     working_dir: /opt/porkord/packages/api
@@ -61,10 +67,13 @@ services:
     profiles:
       - website
   web:
+    user: ${USER_ID}:${GROUP_ID}
     build:
       context: .
       dockerfile: Dockerfile.dev
       args:
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
         PACKAGE_NAME: web
     image: powercord-web
     command: pnpm run dev -- --host
