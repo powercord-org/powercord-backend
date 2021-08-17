@@ -127,6 +127,7 @@
 .cutie-ad-logo {
   height: 40px;
   user-select: none;
+  -webkit-user-drag: none;
 }
 
 .cutie-ad-body {
@@ -167,6 +168,8 @@
   width: 56px;
   height: 56px;
   flex-shrink: 0;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .cutie-ad-price {

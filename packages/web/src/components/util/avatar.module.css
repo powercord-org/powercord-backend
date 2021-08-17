@@ -23,6 +23,8 @@
 .avatar {
   width: 56px;
   height: 56px;
-  border-radius: 50%;
   flex-shrink: 0;
+  border-radius: 50%;
+  user-select: none;
+  -webkit-user-drag: none;
 }

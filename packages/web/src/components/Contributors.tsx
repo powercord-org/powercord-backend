@@ -49,7 +49,7 @@ function Contributor ({ user }: { user: ContributorUser }) {
         <div className={style.username}>
           {user.username}<span className={style.discriminator}>#{user.discriminator}</span>
         </div>
-        {user.github && <a href={Routes.GITHUB_USER(user.github)}>GitHub</a>}
+        {user.github && <a href={Routes.GITHUB_USER(user.github)} target='_blank' rel='noreferrer'>GitHub</a>}
       </div>
     </div>
   )
