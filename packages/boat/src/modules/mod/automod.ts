@@ -47,29 +47,38 @@ const EMOJI_UNICODE_RE = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud80
 const EMOJI_RE = new RegExp(`${NAMES.map((n: string) => `:${n}:`).join('|').replace(/\+/g, '\\+')}|${EMOJI_UNICODE_RE.source}`, 'g')
 const MAX_EMOJI_THRESHOLD_MULTIPLIER = 0.3 // Amount of words * mult (floored) = max amount of emojis allowed
 const NORMALIZE: [ RegExp, string ][] = [
-  [ /[АΑ]/g, 'A' ],
-  [ /[ВΒ]/g, 'B' ],
-  [ /[CС]/g, 'C' ],
-  [ /[ЕЁΕ]/g, 'E' ],
-  [ /[НΗ]/g, 'H' ],
-  [ /[І]/g, 'I' ],
-  [ /[Κκ]/g, 'K' ],
-  [ /[МΜ]/g, 'M' ],
-  [ /[Ν]/g, 'N' ],
-  [ /[ОØΟ]/g, 'O' ],
-  [ /[РΡ]/g, 'P' ],
-  [ /[Ѕ]/g, 'S' ],
-  [ /[ТΤ]/g, 'T' ],
-  [ /[Ѵ]/g, 'V' ],
-  [ /[ХΧ]/g, 'X' ],
-  [ /[Υ]/g, 'Y' ],
-  [ /[Ζ]/g, 'Z' ],
+  [ /[АΑ]|\uD83C\uDDE6/g, 'A' ],
+  [ /[ВΒ]|\uD83C\uDDE7/g, 'B' ],
+  [ /[CСᏟ]|\uD83C\uDDE8/g, 'C' ],
+  [ /\uD83C\uDDE9/g, 'D' ],
+  [ /[ЕЁΕ]|\uD83C\uDDEA/g, 'E' ],
+  [ /\uD83C\uDDEB/g, 'F' ],
+  [ /\uD83C\uDDEC/g, 'G' ],
+  [ /[НΗ]|\uD83C\uDDED/g, 'H' ],
+  [ /[І]|\uD83C\uDDEE/g, 'I' ],
+  [ /\uD83C\uDDEF/g, 'J' ],
+  [ /[Κκ]|\uD83C\uDDF0/g, 'K' ],
+  [ /\uD83C\uDDF1/g, 'L' ],
+  [ /[МΜ]|\uD83C\uDDF2/g, 'M' ],
+  [ /[Ν]|\uD83C\uDDF3/g, 'N' ],
+  [ /[ОØΟ]|\uD83C\uDDF4/g, 'O' ],
+  [ /[РΡ]|\uD83C\uDDF5/g, 'P' ],
+  [ /\uD83C\uDDF6/g, 'Q' ],
+  [ /\uD83C\uDDF7/g, 'R' ],
+  [ /[Ѕ]|\uD83C\uDDF8/g, 'S' ],
+  [ /[ТΤ]|\uD83C\uDDF9/g, 'T' ],
+  [ /\uD83C\uDDFA/g, 'U' ],
+  [ /[Ѵ]|\uD83C\uDDFB/g, 'V' ],
+  [ /\uD83C\uDDFC/g, 'W' ],
+  [ /[ХΧ]|\uD83C\uDDFD/g, 'X' ],
+  [ /[Υ]|\uD83C\uDDFE/g, 'Y' ],
+  [ /[Ζ]|\uD83C\uDDFF/g, 'Z' ],
   [ /[аα]/g, 'a' ],
   [ /[с]|©️/g, 'c' ],
   [ /[đ]/g, 'd' ],
-  [ /[её]/g, 'e' ],
+  [ /[её3]/g, 'e' ],
   [ /[9]/g, 'g' ],
-  [ /[ıіι]/g, 'i' ],
+  [ /[ıіι¡]/g, 'i' ],
   [ /[с]/g, 'c' ],
   [ /[оø0ο]/g, 'o' ],
   [ /[рρ]/g, 'p' ],
@@ -123,7 +132,12 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
     normalizedMessage = cleanerString
   }
 
-  const cleanMessage = normalizedMessage.replace(CLEANER, '')
+  const cleanNormalizedMessage = normalizedMessage.replace(CLEANER, '')
+  const cleanMessage = msg.content.replace(CLEANER, '')
+
+  const lowercaseMessage = msg.content.toLowerCase()
+  const cleanLowercaseMessage = cleanMessage.toLowerCase()
+  const cleanNormalizedLowercaseMessage = cleanNormalizedMessage.toLowerCase()
 
   // Filter bad words
   if (!BLACKLIST_CACHE.length) {
@@ -131,14 +145,16 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
     BLACKLIST_CACHE.push(...b.map((e) => e.word))
   }
 
-  if (BLACKLIST_CACHE.some((word) => cleanMessage.toLowerCase().includes(word))) {
-    takeAction(
-      msg,
-      'Message contained a blacklisted word',
-      `${msg.author.mention} Your message has been deleted because it contained a word blacklisted.`,
-      attemptedBypass
-    )
-    return // No need to keep checking for smth else
+  for (const word of BLACKLIST_CACHE) {
+    const simpleContains = lowercaseMessage.includes(word)
+    if (simpleContains || cleanLowercaseMessage.includes(word) || cleanNormalizedLowercaseMessage.includes(word)) {
+      takeAction(
+        msg,
+        'Message contained a blacklisted word',
+        `${msg.author.mention} Your message has been deleted because it contained a word blacklisted.`,
+        !simpleContains
+      )
+    }
   }
 
   // Filter ads
@@ -179,7 +195,7 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
   }
 
   // Deal with people who can't write
-  if (BAD_POWERCORD.test(cleanMessage)) {
+  if (BAD_POWERCORD.test(cleanNormalizedMessage)) {
     skipSnipe.add(msg.id)
     deleteMeta.set(msg.id, 'Improper writing of Powercord')
     msg.delete('Improper writing of Powercord')
