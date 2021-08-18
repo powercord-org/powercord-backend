@@ -41,6 +41,9 @@ const updateUserSchema = {
       'badges.custom.color': { type: [ 'string', 'null' ] },
       'badges.custom.icon': { type: [ 'string', 'null' ] },
       'badges.custom.name': { type: [ 'string', 'null' ] },
+      'badges.guild.id': { type: [ 'string', 'null' ] },
+      'badges.guild.icon': { type: [ 'string', 'null' ] },
+      'badges.guild.name': { type: [ 'string', 'null' ] },
     },
   },
 }

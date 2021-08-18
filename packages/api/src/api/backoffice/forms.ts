@@ -76,7 +76,13 @@ const formsProjection: Record<string, 0 | 1> = {
   'submitter.accounts': 0,
   'submitter.badges': 0,
   'submitter.createdAt': 0,
+  'submitter.updatedAt': 0,
   'submitter.patronTier': 0,
+  'reviewer.accounts': 0,
+  'reviewer.badges': 0,
+  'reviewer.createdAt': 0,
+  'reviewer.updatedAt': 0,
+  'reviewer.patronTier': 0,
 }
 
 const pendingFormQuery = { $or: [ { reviewed: { $exists: false } }, { reviewed: { $eq: false } } ] }

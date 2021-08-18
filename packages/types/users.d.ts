@@ -56,6 +56,11 @@ export type User = {
       icon: string | null
       name: string | null
     }
+    guild?: {
+      id: string | null
+      icon: string | null
+      name: string | null
+    }
   }
   patronTier?: 0 | 1 | 2
   createdAt: Date

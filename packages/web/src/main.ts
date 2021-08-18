@@ -30,7 +30,7 @@ import './main.css'
 if (import.meta.env.DEV) {
   // eslint-disable-next-line no-inner-declarations
   function Wrapper () {
-    const [ user, setUser ] = useState<void | null | User>(void 0)
+    const [ user, setUser ] = useState<undefined | null | User>(void 0)
     useEffect(() => {
       if (document.cookie.includes('token=')) {
         fetch(Endpoints.USER_SELF)

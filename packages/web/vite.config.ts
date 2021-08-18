@@ -32,18 +32,18 @@ import magicalSvg from 'vite-plugin-magical-svg'
 function noJsxInject (): Plugin {
   return {
     name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = '')
+    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = ''),
   }
 }
 
 function moveIndex (): Plugin {
   return {
     name: 'move-index',
-    async closeBundle () {
+    closeBundle: async () => {
       if (process.argv.includes('--ssr')) {
         await rename(join(__dirname, 'dist', 'index.html'), join(__dirname, 'server', 'index.html'))
       }
-    }
+    },
   }
 }
 

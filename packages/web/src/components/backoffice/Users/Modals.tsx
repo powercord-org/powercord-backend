@@ -30,49 +30,49 @@ import { CheckboxField, SelectField, TextField } from '../../util/Form'
 import { Endpoints } from '../../../constants'
 
 import style from '../admin.module.css'
-import sharedStyle from '../../shared.module.css'
+import Tabs from '../../util/Tabs'
 
 type ManageModalProps = { user: RestAdminUser, onClose: () => void }
-type EditFormProps = { user: RestAdminUser, formRef: Ref<HTMLFormElement>, changeForm: () => void }
+type FormChunkProps = { user: RestAdminUser, formRef: Ref<HTMLFormElement> }
 
-function EditForm ({ user, formRef, changeForm }: EditFormProps) {
+function FormProperties ({ user, formRef, ...props }: FormChunkProps) {
   return (
-    <form ref={formRef} onSubmit={changeForm}>
+    <form ref={formRef} onSubmit={(e) => e.preventDefault()} {...props}>
       <div className={style.form2}>
         <CheckboxField
           name='badgeDeveloper'
           label='Developer'
-          value={user.badges.developer}
+          value={user.badges?.developer}
         />
         <CheckboxField
           name='badgeStaff'
           label='Staff'
-          value={user.badges.staff}
+          value={user.badges?.staff}
         />
         <CheckboxField
           name='badgeSupport'
           label='Support'
-          value={user.badges.support}
+          value={user.badges?.support}
         />
         <CheckboxField
           name='badgeContributor'
           label='Contributor'
-          value={user.badges.contributor}
+          value={user.badges?.contributor}
         />
         <CheckboxField
           name='badgeHunter'
           label='Hunter'
-          value={user.badges.hunter}
+          value={user.badges?.hunter}
         />
         <CheckboxField
           name='badgeEarly'
           label='Early'
-          value={user.badges.early}
+          value={user.badges?.early}
         />
         <CheckboxField
           name='badgeTranslator'
           label='Translator'
-          value={user.badges.translator}
+          value={user.badges?.translator}
         />
       </div>
       <SelectField
@@ -86,90 +86,115 @@ function EditForm ({ user, formRef, changeForm }: EditFormProps) {
           { id: '3', name: '$10 Donator' },
         ]}
       />
-      <button className={sharedStyle.buttonLink} onClick={changeForm} type='button'>Manage donator perks</button>
     </form>
   )
 }
 
-function EditPerks ({ user, formRef, changeForm }: EditFormProps) {
+function FormPerks ({ user, formRef, ...props }: FormChunkProps) {
   return (
-    <form ref={formRef} onSubmit={changeForm}>
+    <form ref={formRef} onSubmit={(e) => e.preventDefault()} {...props}>
       <TextField
         name='color'
         label='Badges color'
         note='Hex code without the #. Defaults to blurple.'
-        value={user.badges.custom?.color ?? ''}
+        value={user.badges?.custom?.color ?? ''}
       />
       <TextField
         name='icon'
         label='Custom Badge'
-        value={user.badges.custom?.icon ?? ''}
+        value={user.badges?.custom?.icon ?? ''}
       />
       <TextField
         name='tooltip'
         label='Custom Badge Tooltip'
-        value={user.badges.custom?.name ?? ''}
+        value={user.badges?.custom?.name ?? ''}
       />
-      <button className={sharedStyle.buttonLink} onClick={changeForm} type='button'>Manage user properties</button>
+    </form>
+  )
+}
+
+function FormGuildBadge ({ user, formRef, ...props }: FormChunkProps) {
+  return (
+    <form ref={formRef} onSubmit={(e) => e.preventDefault()} {...props}>
+      <TextField
+        name='color'
+        label='Guild ID'
+        value={user.badges?.guild?.id ?? ''}
+      />
+      <TextField
+        name='icon'
+        label='Guild Badge'
+        value={user.badges?.guild?.icon ?? ''}
+      />
+      <TextField
+        name='tooltip'
+        label='Guild Badge Tooltip'
+        value={user.badges?.guild?.name ?? ''}
+      />
     </form>
   )
 }
 
 export function ManageEdit ({ user, onClose }: ManageModalProps) {
   const [ processing, setProcessing ] = useState(false)
-  const [ editPerks, setEditPerks ] = useState(false)
-  const [ memoizedForm, setMemoizedForm ] = useState<Record<string, unknown>>({})
-  const formRef = useRef<HTMLFormElement>(null)
+  const formPropertiesRef = useRef<HTMLFormElement>(null)
+  const formPerksRef = useRef<HTMLFormElement>(null)
+  const formGuildPerksRef = useRef<HTMLFormElement>(null)
 
-  function processForm (): Record<string, unknown> {
-    if (!formRef.current) return {}
-
-    return {
-      patronTier: Number(formRef.current.patronTier.value),
-      'badges.developer': formRef.current.badgeDeveloper.checked,
-      'badges.staff': formRef.current.badgeStaff.checked,
-      'badges.support': formRef.current.badgeSupport.checked,
-      'badges.contributor': formRef.current.badgeContributor.checked,
-      'badges.hunter': formRef.current.badgeHunter.checked,
-      'badges.early': formRef.current.badgeEarly.checked,
-      'badges.translator': formRef.current.badgeTranslator.checked,
-    }
-  }
-
-  function processPerksForm (): Record<string, unknown> {
-    if (!formRef.current) return {}
-
-    return {
-      'badges.custom.color': formRef.current.color.value || null,
-      'badges.custom.icon': formRef.current.icon.value || null,
-      'badges.custom.name': formRef.current.tooltip.value || null,
-    }
-  }
-
-  const changeForm = useCallback((e?: Event) => {
-    if (e) e.preventDefault()
-    setMemoizedForm(editPerks ? processPerksForm() : processForm())
-    setEditPerks(!editPerks)
-  }, [ editPerks ])
-
-  const onSave = useCallback((e?: Event) => {
-    if (e) e.preventDefault()
-    if (!formRef.current) return
+  const onSave = useCallback(() => {
+    if (!formPropertiesRef.current && !formPerksRef.current && !formGuildPerksRef.current) return
+    const data: Record<string, unknown> = {}
     setProcessing(true)
-    const data = Object.assign({}, editPerks ? processPerksForm() : processForm(), memoizedForm)
+
+    if (formPropertiesRef.current) {
+      data.patronTier = Number(formPropertiesRef.current.patronTier.value)
+      data['badges.developer'] = formPropertiesRef.current.badgeDeveloper.checked
+      data['badges.staff'] = formPropertiesRef.current.badgeStaff.checked
+      data['badges.support'] = formPropertiesRef.current.badgeSupport.checked
+      data['badges.contributor'] = formPropertiesRef.current.badgeContributor.checked
+      data['badges.hunter'] = formPropertiesRef.current.badgeHunter.checked
+      data['badges.early'] = formPropertiesRef.current.badgeEarly.checked
+      data['badges.translator'] = formPropertiesRef.current.badgeTranslator.checked
+    }
+
+    if (formPerksRef.current) {
+      data['badges.custom.color'] = formPerksRef.current.color.value || null
+      data['badges.custom.icon'] = formPerksRef.current.icon.value || null
+      data['badges.custom.name'] = formPerksRef.current.tooltip.value || null
+    }
+
+    if (formGuildPerksRef.current) {
+      data['badges.guild.id'] = formGuildPerksRef.current.color.value || null
+      data['badges.guild.icon'] = formGuildPerksRef.current.icon.value || null
+      data['badges.guild.name'] = formGuildPerksRef.current.tooltip.value || null
+    }
 
     fetch(Endpoints.BACKOFFICE_USER(user.id), {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(data),
     }).then(() => onClose())
-  }, [ editPerks, memoizedForm ])
+  }, [])
 
   return (
-    <Modal title={`Modify user - ${user.username}#${user.discriminator}`} onClose={onClose} onConfirm={onSave} confirmText='Save' processing={processing}>
-      {editPerks
-        ? <EditPerks user={user} formRef={formRef} changeForm={changeForm}/>
-        : <EditForm user={user} formRef={formRef} changeForm={changeForm}/>}
+    <Modal
+      title={`Modify user - ${user.username}#${user.discriminator}`}
+      confirmText='Save'
+      onClose={onClose}
+      onConfirm={onSave}
+      processing={processing}
+    >
+      <Tabs>
+        <div data-tab-id='PROPERTIES' data-tab-name='Manage'>
+          <FormProperties user={user} formRef={formPropertiesRef}/>
+        </div>
+        <div data-tab-id='PERKS' data-tab-name='Perks'>
+          <FormPerks user={user} formRef={formPerksRef}/>
+        </div>
+        <div data-tab-id='GUILD' data-tab-name='Guild badge'>
+          <FormGuildBadge user={user} formRef={formGuildPerksRef}/>
+        </div>
+      </Tabs>
     </Modal>
   )
 }
