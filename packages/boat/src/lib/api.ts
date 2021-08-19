@@ -20,26 +20,25 @@
  * SOFTWARE.
  */
 
-import type { Response } from 'node-fetch'
-import fetch from './http.js'
+import type { Response } from './fetch.js'
+import fetch from './fetch.js'
 
 const API_BASE = 'https://discord.com/api/v9'
 
 class DiscordError extends Error {
-  constructor (message: string, public response: Response, public body: unknown) { super(message) }
+  constructor (message: string, public response: Response) { super(message) }
 }
 
 export async function createMessage (channelId: string, message: unknown): Promise<unknown> {
-  const res = await fetch(`${API_BASE}/channels/${channelId}/messages`, {
+  const res = await fetch({
+    url: `${API_BASE}/channels/${channelId}/messages`,
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(message),
+    body: message,
   })
 
-  const body = await res.json()
-  if (res.status !== 200) {
-    throw new DiscordError(`Discord API Error [${body.code}]: ${body.message}`, res, body)
+  if (res.statusCode !== 200) {
+    throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
   }
 
-  return body
+  return res.body
 }
