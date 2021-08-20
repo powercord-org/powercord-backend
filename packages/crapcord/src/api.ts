@@ -20,4 +20,39 @@
  * SOFTWARE.
  */
 
-export {}
+import type {
+  RESTPostAPIChannelMessageJSONBody as MessageJSONPayload,
+  APIMessage as Message,
+} from 'discord-api-types/v9'
+
+import type { Response } from './fetch.js'
+import fetch from './fetch.js'
+
+const API_BASE = 'https://discord.com/api/v9'
+
+export type DiscordToken = { type: 'Bot' | 'Bearer', token: string }
+
+class DiscordError extends Error {
+  constructor (message: string, public response: Response) { super(message) }
+}
+
+export async function createMessage (channelId: string, message: MessageJSONPayload, token: DiscordToken): Promise<Message> {
+  const res = await fetch({
+    method: 'POST',
+    url: `${API_BASE}/channels/${channelId}/messages`,
+    headers: { authorization: `${token.type} ${token.token}` },
+    body: message,
+  })
+
+  if (res.statusCode !== 200) {
+    throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
+  }
+
+  return res.body
+}
+
+export function withToken (token: DiscordToken) {
+  return {
+    createMessage: (channelId: string, message: MessageJSONPayload) => createMessage(channelId, message, token),
+  }
+}

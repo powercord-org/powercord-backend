@@ -21,11 +21,10 @@
  */
 
 import type { IncomingMessage } from 'http'
-import type { Deferred } from '../util.js'
+import type { Deferred } from './util.js'
 import { URL } from 'url'
 import https from 'https'
-import { makeDeferred } from '../util.js'
-import config from '../config.js'
+import { makeDeferred } from './util.js'
 
 // Ratelimit-aware fetch wrapper
 // note: the implementation is super poor and dumb but serves the purpose:tm:
@@ -96,7 +95,6 @@ export default async function fetch (request: RequestProps): Promise<Response> {
   // Execute the request
   // [Cynthia] We could accept gzip/deflate, but I'm unsure if it's worth. todo: measure impact?
   const req = https.request(request.url, { method: request.method, headers: request.headers })
-  req.setHeader('authorization', `Bot ${config.discord.botToken}`)
   req.setHeader('user-agent', 'DiscordBot (https://powercord.dev, RollingRelease)')
 
   if (request.body) {

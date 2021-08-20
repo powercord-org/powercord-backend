@@ -24,8 +24,6 @@ import type { Guild, GuildTextableChannel, Member, Message } from 'eris'
 import { readdir, stat } from 'fs/promises'
 import { URL } from 'url'
 
-export type Deferred = { promise: Promise<void>, resolve: Function, reject: Function }
-
 const DURATION_MAP = { m: 60e3, h: 3600e3, d: 86400e3 }
 const BYTE_UNITS = [ 'B', 'KB', 'MB', 'GB', 'TB' ]
 
@@ -169,10 +167,4 @@ export function prettyPrintBytes (bytes: number): string {
   }
 
   return `${bytes.toFixed(2)} ${BYTE_UNITS[unitIdx]}`
-}
-
-export function makeDeferred (): Deferred {
-  const deferred: Deferred = {} as Deferred
-  deferred.promise = new Promise((resolve, reject) => Object.assign(deferred, { resolve: resolve, reject: reject }))
-  return deferred
 }

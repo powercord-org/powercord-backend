@@ -20,25 +20,21 @@
  * SOFTWARE.
  */
 
-import type { Response } from './fetch.js'
-import fetch from './fetch.js'
+import type {} from 'discord-api-types'
+import { TypedEmitter as EventEmitter } from 'tiny-typed-emitter'
 
-const API_BASE = 'https://discord.com/api/v9'
-
-class DiscordError extends Error {
-  constructor (message: string, public response: Response) { super(message) }
+type Events = {
+  // todo: map all the event names to event data
 }
 
-export async function createMessage (channelId: string, message: unknown): Promise<unknown> {
-  const res = await fetch({
-    url: `${API_BASE}/channels/${channelId}/messages`,
-    method: 'POST',
-    body: message,
+class GatewayConnection extends EventEmitter<Events> {
+
+}
+
+export function connect (): Promise<GatewayConnection> {
+  return new Promise((resolve) => {
+    const gateway = new GatewayConnection()
+    // todo: identify & all
+    resolve(gateway)
   })
-
-  if (res.statusCode !== 200) {
-    throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
-  }
-
-  return res.body
 }
