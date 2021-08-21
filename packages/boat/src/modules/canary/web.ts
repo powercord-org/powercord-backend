@@ -36,10 +36,12 @@ const DISCORD_WEBAPP_ENDPOINT = 'https://canary.discord.com/assets/version.canar
 const STYLE_REGEX = /<link rel="stylesheet" href="([^"]+)/
 const SCRIPT_REGEX = /<script src="([^"]+)/
 const RESOURCE_REGEX = /\d+:"([^"]+)/
+const SUBSCRIPT_REGEX = /([a-f0-9]{16,}\.js)(?!\.map)/
 const EXPERIMENT_REGEX = /\.(default|createExperiment|register(?:User|Guild)Experiment)\)\(({.+?})\)(?:;|}|,[a-zA-Z_]{1,4}=)/
 
 const SCRIPT_REGEX_G = new RegExp(SCRIPT_REGEX, 'g')
 const RESOURCE_REGEX_G = new RegExp(RESOURCE_REGEX, 'g')
+const SUBSCRIPT_REGEX_G = new RegExp(SUBSCRIPT_REGEX, 'g')
 const EXPERIMENT_REGEX_G = new RegExp(EXPERIMENT_REGEX, 'g')
 
 function processExperiments (rawExperiments: Experiment[]): UpdatedExperiment[] {
@@ -83,8 +85,16 @@ function extractExperiments (js: string): UpdatedExperiment[] {
           .replace(/,clientFilter:.*/g, '}')
           .replace(/[a-zA-Z_]+\.ExperimentBuckets\.([A-Z0-9_]+)/g, (_, t) => t === 'CONTROL' ? 0 : t.slice(-1))
           .replace(/([:[{,]).(?:\.([a-zA-Z_]+))?\.([A-Z0-9_]+)/g, (_, prefix, namespace, constName) => {
-            const regex = new RegExp(`${constName}=(${namespace === 'Experiments' ? '"\\d{4}-\\d{2}' : '(?:"|\\d)'}[^,;]+)`)
+            if (!namespace) return `${prefix}"${constName}"`
+            const regex = new RegExp(`${constName}(?:=\\d+])?=(${namespace === 'Experiments' ? '"\\d{4}-\\d{2}' : '(?:"|\\d)'}[^,;]+)`)
             return prefix + js.match(regex)?.[1] ?? `"${constName}"`
+          })
+          .replace(/([a-zA-Z_]+:)([a-zA-Z_]+)([,}\]])/g, (og, prefix, identifier, suffix) => {
+            if (identifier === 'true' || identifier === 'false' || identifier === 'null') return og
+
+            const idx = js.indexOf(rawExperiment)
+            const regex = new RegExp(`var ${identifier}=([^;,]+)`)
+            return prefix + (js.substring(idx - 250, idx).match(regex)?.[1] ?? `"${identifier}"`) + suffix
           })
       )
 
@@ -115,17 +125,40 @@ function extractExperiments (js: string): UpdatedExperiment[] {
   return processExperiments(experiments)
 }
 
+async function downloadScript (script: string, seen: Set<string>): Promise<string> {
+  const all = []
+  const js = await fetch(`https://canary.discord.com/assets/${script}`)
+    .then((r) => r.text())
+    .then((t) => t.replace(/\n/g, ''))
+
+  all.push(js)
+  const newFiles = js.match(SUBSCRIPT_REGEX_G)
+  if (newFiles) {
+    for (const newFile of newFiles) {
+      if (!seen.has(newFile)) {
+        seen.add(newFile)
+        all.push(await downloadScript(newFile, seen))
+      }
+    }
+  }
+
+  return all.join('\n')
+}
+
 async function downloadAllScripts (resourcesScript: string): Promise<string> {
-  const jsResources = await fetch(`https://canary.discord.com${resourcesScript}`).then((r) => r.text())
+  const jsResources = await fetch(`https://canary.discord.com${resourcesScript}`)
+    .then((r) => r.text())
+    .then((t) => t.replace(/\n/g, ''))
+
   const resourcesMatch = jsResources.match(RESOURCE_REGEX_G)
   if (!resourcesMatch) return ''
 
-  const all = await Promise.all(
-    Array.from(new Set(resourcesMatch.map((r) => r.match(RESOURCE_REGEX)![1])))
-      .map((resource) => fetch(`https://canary.discord.com/assets/${resource}.js`).then((r) => r.text()))
-  )
+  const seen = new Set(resourcesMatch.map((r) => `${r.match(RESOURCE_REGEX)![1]}.js`))
+  const scripts = Array.from(seen)
 
-  return all.join('')
+  const all = await Promise.all(scripts.map((s) => downloadScript(s, seen)))
+
+  return all.join('\n')
 }
 
 async function extractWebappData (hash: string, date: Date): Promise<WebappUpdateInfo | null> {
@@ -157,7 +190,7 @@ async function extractWebappData (hash: string, date: Date): Promise<WebappUpdat
       id: buildId || '???',
       hash: hash,
     },
-    experiments: extractExperiments(jsBuffer.toString('utf8') + resources),
+    experiments: extractExperiments(jsBuffer.toString('utf8').replace(/\n/g, '') + resources),
     date: date,
   }
 }
