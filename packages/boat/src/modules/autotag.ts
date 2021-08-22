@@ -27,7 +27,7 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
   if (!msg.content.startsWith(config.discord.prefix)) return
 
   const command = msg.content.slice(config.discord.prefix.length).toLowerCase()
-  const tag = await this.mongo.collection('tags').findOne({ _id: command })
+  const tag = await this.mongo.collection('boat-tags').findOne({ _id: command })
   if (tag) msg.channel.createMessage(tag.content)
 }
 
