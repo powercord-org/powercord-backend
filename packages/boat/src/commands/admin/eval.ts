@@ -46,7 +46,7 @@ const SRC_PATH = new URL('../../', import.meta.url)
 const NODE_MODULES = new URL('node_modules/', BASE_PATH)
 
 const BASE_PATH_REGEX = new RegExp(BASE_PATH.href, 'g')
-const IMPORT_REGEX = /import(.*? ?from)? ?(['"])(.*?)\2(?:;|\n)/g
+const IMPORT_REGEX = /import(.*? *from)? *(['"])(.*?)\2(?:;|\n)/g
 const JS_REGEX = /```(?:js|javascript)|```/g
 const SECRETS_REGEX = RegExp(SECRETS.join('|'), 'g')
 
@@ -72,7 +72,7 @@ function resolve (mdl: string): string | null {
   const pkgFile = new URL('package.json', installedModule)
   const pkg = JSON.parse(readFileSync(pkgFile, 'utf8'))
   if (pkg.main) {
-    return new URL(pkg.main, installedModule).href
+    return new URL(pkg.main.endsWith('.js') ? pkg.main : `${pkg.main}.js`, installedModule).href
   }
 
   return null
