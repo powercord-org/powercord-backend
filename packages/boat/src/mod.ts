@@ -33,10 +33,15 @@ export enum Period {
 
 const PROBATIONARY_PERIOD = 24 * 3600e3 // 1 day
 const RECENT_PERIOD = 7 * 24 * 3600e3 // 7 days
+const NO_LOG_DURATION = 10 * 60e3 // 10 mins
 
 function formatReason (mod: User | null, reason?: string, duration?: number, soft: boolean = false) {
   let formatted = `${mod ? `[${mod.username}#${mod.discriminator}] ` : ''}${soft ? '[soft] ' : ''}${reason ?? 'No reason specified.'}`
-  if (duration) formatted += ` (duration: ${prettyPrintTimeSpan(duration)})`
+  if (duration) {
+    formatted += ` (duration: ${prettyPrintTimeSpan(duration)})`
+    if (duration <= NO_LOG_DURATION) formatted += ' [no log]'
+  }
+
   return formatted
 }
 
