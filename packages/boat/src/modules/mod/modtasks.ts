@@ -23,11 +23,11 @@
 import type { CommandClient, Guild, User } from 'eris'
 import type { InsertOneResult, ObjectId } from 'mongodb'
 import cron from 'node-cron'
-import { unmute, unban } from '../../mod.js'
+import { unmute, unban, shouldNotLog } from '../../mod.js'
 import { exitRaidMode } from '../../raidMode.js'
 
 export type Schedulable = 'unmute' | 'unban' | 'endRaid'
-type Scheduled = { _id: ObjectId, type: Schedulable, guild: string, target: string, mod: string | null, time: number }
+type Scheduled = { _id: ObjectId, type: Schedulable, guild: string, target: string, mod: string | null, time: number, noLog: boolean }
 
 function processTasks (bot: CommandClient) {
   const collection = bot.mongo.collection<Scheduled>('tasks')
@@ -35,13 +35,14 @@ function processTasks (bot: CommandClient) {
     if (task.time < Date.now()) {
       const guild = bot.guilds.get(task.guild)! // Should never be null in theory; need to check that
       const mod = task.mod ? bot.users.get(task.mod) || null : null
+      const suffix = task.noLog ? ' [no log]' : ''
 
       switch (task.type) {
         case 'unmute':
-          unmute(guild, task.target, mod, 'Automatically unmuted')
+          unmute(guild, task.target, mod, `Automatically unmuted${suffix}`)
           break
         case 'unban':
-          unban(guild, task.target, mod, 'Automatically unbanned')
+          unban(guild, task.target, mod, `Automatically unbanned${suffix}`)
           break
         case 'endRaid':
           exitRaidMode(guild, mod)
@@ -68,6 +69,7 @@ export async function schedule (task: Schedulable, guild: Guild, userId: string,
     target: userId,
     mod: mod?.id || null,
     time: Date.now() + time,
+    noLog: shouldNotLog(time),
   })
 }
 

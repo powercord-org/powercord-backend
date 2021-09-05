@@ -128,3 +128,8 @@ export function getPeriod (user: Member): Period {
 
   return Period.KNOWN
 }
+
+// As a function in case we want to expand it
+export function shouldNotLog (time: number): boolean {
+  return time <= NO_LOG_DURATION
+}
