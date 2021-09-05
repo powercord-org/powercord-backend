@@ -131,7 +131,7 @@ const NORMALIZE: [ RegExp, string ][] = [
 ]
 
 export const BLACKLIST_CACHE: string[] = []
-const SPAM_HINTS = [ 'discord', 'nitro', 'steam', 'cs:go', 'csgo' ]
+const SPAM_HINTS = [ 'discord', 'nitro', 'steam', 'cs:go', 'csgo', 'crypto', 'btc' ]
 
 const correctedPeople = new Map<string, number>()
 
