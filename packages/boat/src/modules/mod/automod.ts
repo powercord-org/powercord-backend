@@ -25,7 +25,7 @@ import { URL } from 'url'
 import { readFileSync } from 'fs'
 import { deleteMeta } from './logger.js'
 import { skipSnipe } from '../sniper.js'
-import { Period, getPeriod, ban, mute } from '../../mod.js'
+import { Period, getPeriod, ban, mute, softBan } from '../../mod.js'
 import { isStaff } from '../../util.js'
 import config from '../../config.js'
 
@@ -131,6 +131,7 @@ const NORMALIZE: [ RegExp, string ][] = [
 ]
 
 export const BLACKLIST_CACHE: string[] = []
+const SPAM_HINTS = [ 'discord', 'nitro', 'steam', 'cs:go', 'csgo' ]
 
 const correctedPeople = new Map<string, number>()
 
@@ -179,6 +180,16 @@ async function processMessage (this: CommandClient, msg: Message<GuildTextableCh
   const lowercaseMessage = msg.content.toLowerCase()
   const cleanLowercaseMessage = cleanMessage.toLowerCase()
   const cleanNormalizedLowercaseMessage = cleanNormalizedMessage.toLowerCase()
+
+  // Filter scams
+  if (
+    msg.content.includes('@everyone')
+    && (msg.content.includes('https://') || msg.content.includes('http://'))
+    && SPAM_HINTS.find((h) => cleanNormalizedLowercaseMessage.includes(h))
+  ) {
+    softBan(msg.channel.guild, msg.author.id, null, 'Automod: Detected scambot', 1)
+    return
+  }
 
   // Filter bad words
   if (!BLACKLIST_CACHE.length) {
