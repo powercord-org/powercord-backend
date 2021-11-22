@@ -25,7 +25,14 @@ import fetch from 'node-fetch'
 import { prettyPrintTimeSpan, stringifyDiscordMessage, sanitizeMarkdown } from '../../util.js'
 import config from '../../config.js'
 
-type MessagePartial = { id: string, channel: GuildTextableChannel }
+type MessagePartial = {
+  id: string,
+  channel: {
+    id: string,
+    guild: { id: string }
+  },
+  guildId: string
+}
 
 export const deleteMeta = new Map<string, string>()
 
@@ -42,14 +49,30 @@ Timestamp: $time ($duration ago)
 Message contents:
 $message`
 
-function format (template: string, message: Message<GuildTextableChannel>): string {
-  const attachments = message.attachments.length > 0
-    ? `Attachments:\n${message.attachments.map((attachment) => attachment.filename).join(', ')}`
-    : ''
+async function format (template: string, message: Message<GuildTextableChannel>, bulk: boolean = false): Promise<string> {
+  const cleanContent = stringifyDiscordMessage(message)
+  const escapedContent = cleanContent.replace(/`/g, `\`${ZWS}`)
+  let extra = ''
+
+  if (!bulk && escapedContent.length > 1700) {
+    const res = await fetch('https://haste.powercord.dev/documents', {
+      method: 'POST',
+      body: cleanContent,
+    }).then((r) => r.json())
+    extra += `<https://haste.powercord.dev/${res.key}.txt>\n\n`
+  }
+
+  if (message.attachments.length > 0) {
+    extra += `Attachments:\n${message.attachments.map((attachment) => attachment.filename).join(', ')}`
+  }
 
   const meta = deleteMeta.has(message.id)
     ? `\nReason: ${deleteMeta.get(message.id)}`
     : ''
+
+  const timestamp = bulk
+    ? new Date(message.timestamp).toUTCString()
+    : `<t:${Math.floor(message.timestamp / 1000)}>`
 
   deleteMeta.delete(message.id)
   return `${template
@@ -59,9 +82,12 @@ function format (template: string, message: Message<GuildTextableChannel>): stri
     .replace(/\$channel/g, message.channel.name)
     .replace(/\$username/g, sanitizeMarkdown(message.author.username))
     .replace(/\$discrim/g, message.author.discriminator)
-    .replace(/\$time/g, `<t:${Math.floor(message.timestamp / 1000)}>`)
+    .replace(/\$time/g, timestamp)
     .replace(/\$duration/g, prettyPrintTimeSpan(Date.now() - message.timestamp))
-    .replace(/\$message/g, stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`) || '*No contents*')}\n${attachments}`
+    .replace(/\$message/g, !bulk && escapedContent.length > 1700
+      ? '*Message too long*'
+      : escapedContent
+      || '*No contents*')}${extra}`
 }
 
 async function messageDelete (this: CommandClient, msg: Message<GuildTextableChannel>) {
@@ -70,24 +96,25 @@ async function messageDelete (this: CommandClient, msg: Message<GuildTextableCha
   }
 
   this.createMessage(config.discord.ids.channelMessageLogs, {
-    content: format(SINGLE_TEMPLATE, msg),
+    content: await format(SINGLE_TEMPLATE, msg),
     allowedMentions: {},
   })
 }
 
 async function messageDeleteBulk (this: CommandClient, msgs: Array<Message<GuildTextableChannel> | MessagePartial>) {
-  if (msgs[0].channel.id !== config.discord.ids.serverId) {
+  if (msgs[0].channel.guild.id !== config.discord.ids.serverId) {
     return // Let's just ignore
   }
+  const channelName = this.guilds.get(config.discord.ids.serverId)?.channels.get(msgs[0].channel.id)?.name || msgs[0].channel.id
 
-  const list = msgs.map(
-    (msg) =>
-      'author' in msg
-        ? format(LIST_TEMPLATE, msg)
-        : `A message in #${msg.channel.name} that was not cached`
-  ).join('\n\n')
+  const list = []
+  for (const msg of msgs) {
+    list.push('author' in msg
+      ? await format(LIST_TEMPLATE, msg, true)
+      : `A message in #${channelName} that was not cached`)
+  }
 
-  const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: list.trim() }).then((r) => r.json())
+  const res = await fetch('https://haste.powercord.dev/documents', { method: 'POST', body: list.join('\n\n').trim() }).then((r) => r.json())
   this.createMessage(config.discord.ids.channelMessageLogs, `${msgs.length} messages deleted:\n<https://haste.powercord.dev/${res.key}.txt>`)
 }
 
