@@ -50,10 +50,11 @@ Message contents:
 $message`
 
 async function format (template: string, message: Message<GuildTextableChannel>, bulk: boolean = false): Promise<string> {
-  const cleanContent = stringifyDiscordMessage(message).replace(/`/g, `\`${ZWS}`)
+  const cleanContent = stringifyDiscordMessage(message)
+  const escapedContent = cleanContent.replace(/`/g, `\`${ZWS}`)
   let extra = ''
 
-  if (!bulk && cleanContent.length > 1700) {
+  if (!bulk && escapedContent.length > 1700) {
     const res = await fetch('https://haste.powercord.dev/documents', {
       method: 'POST',
       body: cleanContent,
@@ -83,9 +84,9 @@ async function format (template: string, message: Message<GuildTextableChannel>,
     .replace(/\$discrim/g, message.author.discriminator)
     .replace(/\$time/g, timestamp)
     .replace(/\$duration/g, prettyPrintTimeSpan(Date.now() - message.timestamp))
-    .replace(/\$message/g, !bulk && cleanContent.length > 1700
+    .replace(/\$message/g, !bulk && escapedContent.length > 1700
       ? '*Message too long*'
-      : cleanContent
+      : escapedContent
       || '*No contents*')}${extra}`
 }
 
