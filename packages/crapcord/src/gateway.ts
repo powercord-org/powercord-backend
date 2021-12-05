@@ -20,21 +20,159 @@
  * SOFTWARE.
  */
 
-import type {} from 'discord-api-types'
+import type { GatewayDispatchPayload, GatewayReceivePayload, GatewaySendPayload } from 'discord-api-types'
+import type { Data } from 'ws'
+import { GatewayIntentBits, GatewayOpcodes } from 'discord-api-types'
 import { TypedEmitter as EventEmitter } from 'tiny-typed-emitter'
+import WebSocket from 'ws'
 
 type Events = {
   // todo: map all the event names to event data
+  error: (err: Error) => void
 }
+
+// "our clients are going to stop doing gateway discovery since its a waste of time lol" - jake
+const DISCORD_GATEWAY = 'wss://gateway.discord.gg/?v=9&encoding=json'
 
 class GatewayConnection extends EventEmitter<Events> {
+  #ws: WebSocket
 
+  #token: string
+
+  #sessionId: string | null = null
+
+  #sequence: number = 0
+
+  #pendingHeartbeats: number = 0
+
+  #heartbeatInterval: NodeJS.Timeout | null = null
+
+  #expectingShutdown: boolean = false
+
+  constructor (token: string) {
+    super()
+    this.#token = token
+    this.#ws = null as unknown as WebSocket // makes ts happy
+    this.#connect()
+  }
+
+  // todo: we probably don't even need to expose this in our impl
+  send (data: GatewaySendPayload) {
+    this.#ws.send(JSON.stringify(data))
+  }
+
+  #connect () {
+    this.#sequence = 0
+    this.#ws = new WebSocket(DISCORD_GATEWAY)
+    this.#ws.on('message', (m) => this.#handleMessage(m))
+    this.#ws.on('close', () => {
+      if (this.#heartbeatInterval) clearInterval(this.#heartbeatInterval)
+      if (!this.#expectingShutdown) {
+        setTimeout(() => this.#connect(), (4 * Math.random()) + 1)
+      }
+
+      this.#expectingShutdown = false
+    })
+  }
+
+  #identify () {
+    if (this.#sessionId) {
+      this.#resume()
+      return
+    }
+
+    this.send({
+      op: GatewayOpcodes.Identify,
+      d: {
+        token: this.#token,
+        properties: {
+          $os: process.platform,
+          $browser: 'Discord Client',
+          $device: 'Discord Client',
+        },
+        intents: GatewayIntentBits.GuildMembers
+          & GatewayIntentBits.GuildBans
+          & GatewayIntentBits.GuildInvites
+          & GatewayIntentBits.GuildMessages,
+      },
+    })
+  }
+
+  #resume () {
+    if (!this.#sessionId) {
+      this.#identify()
+      return
+    }
+
+    this.send({
+      op: GatewayOpcodes.Resume,
+      d: {
+        token: this.#token,
+        session_id: this.#sessionId,
+        seq: this.#sequence,
+      },
+    })
+  }
+
+  #heartbeat () {
+    this.#pendingHeartbeats++
+    if (this.#pendingHeartbeats === 3) {
+      console.log('Zombified gateway connection. Reconnecting.')
+      this.#expectingShutdown = true
+      this.#ws.close()
+      this.#connect()
+      return
+    }
+
+    this.send({
+      op: GatewayOpcodes.Heartbeat,
+      d: this.#sequence,
+    })
+  }
+
+  #handleMessage (message: Data) {
+    if (typeof message !== 'string') {
+      this.#ws.close()
+      this.emit('error', new Error('unexpected non-string payload'))
+      return
+    }
+
+    const data = JSON.parse(message) as GatewayReceivePayload
+    switch (data.op) {
+      case 0: // dispatch
+        this.#sequence = data.s
+        this.#handleDispatch(data)
+        break
+      case 1: // heartbeat
+        this.#heartbeat()
+        break
+      case 7: // reconnect
+        this.#expectingShutdown = true
+        this.#ws.close()
+        this.#connect()
+        break
+      case 9: // invalid session
+        if (!data.d) this.#sessionId = null
+        setTimeout(() => this.#identify, 1 + Math.random())
+        break
+      case 10: // henlo
+        this.#identify()
+        this.#heartbeatInterval = setTimeout(() => {
+          this.#heartbeat()
+          this.#heartbeatInterval = setInterval(() => this.#heartbeat(), data.d.heartbeat_interval)
+        }, data.d.heartbeat_interval * Math.random())
+        break
+      case 11: // heartbeat ack
+        this.#pendingHeartbeats--
+        break
+    }
+  }
+
+  #handleDispatch (payload: GatewayDispatchPayload) {
+    console.log(payload, this.#sequence)
+  }
 }
 
-export function connect (): Promise<GatewayConnection> {
-  return new Promise((resolve) => {
-    const gateway = new GatewayConnection()
-    // todo: identify & all
-    resolve(gateway)
-  })
+export function connect (token: string): GatewayConnection {
+  return new GatewayConnection(token)
 }
