@@ -20,50 +20,102 @@
  * SOFTWARE.
  */
 
+import type {
+  RESTPostAPIApplicationCommandsJSONBody as CreatePayload,
+  RESTPostAPIApplicationCommandsResult as CreateResponse,
+  RESTPatchAPIApplicationCommandJSONBody as UpdatePayload,
+  RESTPatchAPIApplicationCommandResult as UpdateResponse,
+  RESTPutAPIApplicationCommandsJSONBody as PushPayload,
+  RESTPutAPIApplicationCommandsResult as PushResponse,
+} from 'discord-api-types/v9'
 import type { DiscordToken } from './common.js'
 import { executeQuery } from './common.js'
 import { API_BASE } from '../constants.js'
 
-async function _createCommand (command: any, guildId: string | null, token: DiscordToken): Promise<void> {
-  // todo
+async function _fetchCommands (guildId: string | null, applicationId: string, token: DiscordToken): Promise<CreateResponse> {
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands`
+  return executeQuery({
+    method: 'GET',
+    url: endpoint,
+    headers: { authorization: `${token.type} ${token.token}` },
+  })
 }
 
-async function _updateCommand (commandId: string, command: any, guildId: string | null, token: DiscordToken): Promise<void> {
-  // todo
+async function _createCommand (command: CreatePayload, guildId: string | null, applicationId: string, token: DiscordToken): Promise<CreateResponse> {
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands`
+  return executeQuery({
+    method: 'POST',
+    url: endpoint,
+    headers: { authorization: `${token.type} ${token.token}` },
+    body: command,
+  })
 }
 
-async function _deleteCommand (commandId: string, guildId: string | null, token: DiscordToken): Promise<void> {
-  // todo
+async function _updateCommand (commandId: string, command: UpdatePayload, guildId: string | null, applicationId: string, token: DiscordToken): Promise<UpdateResponse> {
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands/${commandId}`
+  return executeQuery({
+    method: 'POST',
+    url: endpoint,
+    headers: { authorization: `${token.type} ${token.token}` },
+    body: command,
+  })
 }
 
-export function createCommand (command: any, token: DiscordToken) {
-  return _createCommand(command, null, token)
+async function _deleteCommand (commandId: string, guildId: string | null, applicationId: string, token: DiscordToken): Promise<void> {
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands/${commandId}`
+  return executeQuery({
+    method: 'DELETE',
+    url: endpoint,
+    headers: { authorization: `${token.type} ${token.token}` },
+  })
 }
 
-export function updateCommand (commandId: string, command: any, token: DiscordToken) {
-  return _updateCommand(commandId, command, null, token)
+async function _pushCommands (commands: PushPayload, guildId: string | null, applicationId: string, token: DiscordToken): Promise<PushResponse> {
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands`
+  return executeQuery({
+    method: 'PUT',
+    url: endpoint,
+    headers: { authorization: `${token.type} ${token.token}` },
+    body: commands,
+  })
 }
 
-export function deleteCommand (commandId: string, token: DiscordToken) {
-  return _deleteCommand(commandId, null, token)
+export function fetchCommand (applicationId: string, token: DiscordToken) {
+  return _fetchCommands(null, applicationId, token)
 }
 
-export function createGuildCommand (guildId: string, command: any, token: DiscordToken) {
-  return _createCommand(command, guildId, token)
+export function createCommand (command: CreatePayload, applicationId: string, token: DiscordToken) {
+  return _createCommand(command, null, applicationId, token)
 }
 
-export function updateGuildCommand (guildId: string, commandId: string, command: any, token: DiscordToken) {
-  return _updateCommand(commandId, command, guildId, token)
+export function updateCommand (commandId: string, command: UpdatePayload, applicationId: string, token: DiscordToken) {
+  return _updateCommand(commandId, command, null, applicationId, token)
 }
 
-export function deleteGuildCommand (guildId: string, commandId: string, token: DiscordToken) {
-  return _deleteCommand(commandId, guildId, token)
+export function deleteCommand (commandId: string, applicationId: string, token: DiscordToken) {
+  return _deleteCommand(commandId, null, applicationId, token)
 }
 
-export async function pushCommands (commands: any[], token: DiscordToken): Promise<void> {
-  // todo
+export function fetchGuildCommand (guildId: string, applicationId: string, token: DiscordToken) {
+  return _fetchCommands(guildId, applicationId, token)
 }
 
-export async function pushGuildCommands (guildId: string, commands: any[], token: DiscordToken): Promise<void> {
-  // todo
+export function createGuildCommand (guildId: string, command: CreatePayload, applicationId: string, token: DiscordToken) {
+  return _createCommand(command, guildId, applicationId, token)
+}
+
+export function updateGuildCommand (guildId: string, commandId: string, command: UpdatePayload, applicationId: string, token: DiscordToken) {
+  return _updateCommand(commandId, command, guildId, applicationId, token)
+}
+
+export function deleteGuildCommand (guildId: string, commandId: string, applicationId: string, token: DiscordToken) {
+  return _deleteCommand(commandId, guildId, applicationId, token)
+}
+
+export async function pushCommands (commands: PushPayload, applicationId: string, token: DiscordToken) {
+  return _pushCommands(commands, null, applicationId, token)
+}
+
+export async function pushGuildCommands (guildId: string, commands: PushPayload, applicationId: string, token: DiscordToken) {
+  return _pushCommands(commands, guildId, applicationId, token)
 }

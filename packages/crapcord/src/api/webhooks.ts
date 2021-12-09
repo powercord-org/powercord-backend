@@ -23,7 +23,9 @@
 import type {
   RESTPostAPIWebhookWithTokenJSONBody as ExecutePayload,
   RESTPostAPIWebhookWithTokenWaitResult as ExecuteResponse,
+  RESTGetAPIWebhookWithTokenMessageResult as FetchResponse,
   RESTPatchAPIWebhookWithTokenMessageJSONBody as UpdatePayload,
+  RESTPatchAPIWebhookWithTokenMessageResult as UpdateResponse,
 } from 'discord-api-types/v9'
 import type { DiscordToken } from './common.js'
 import { executeQuery } from './common.js'
@@ -42,7 +44,7 @@ export async function createMessage (message: ExecutePayload, hook: Webhook, tok
   })
 }
 
-export async function fetchMessage (messageId: string, hook: Webhook, token?: DiscordToken): Promise<void> {
+export async function fetchMessage (messageId: string, hook: Webhook, token?: DiscordToken): Promise<FetchResponse> {
   const headers: Record<string, string> = token ? { authorization: `${token.type} ${token.token}` } : {}
 
   return executeQuery({
@@ -52,7 +54,7 @@ export async function fetchMessage (messageId: string, hook: Webhook, token?: Di
   })
 }
 
-export async function updateMessage (messageId: string, message: UpdatePayload, hook: Webhook, token?: DiscordToken): Promise<void> {
+export async function updateMessage (messageId: string, message: UpdatePayload, hook: Webhook, token?: DiscordToken): Promise<UpdateResponse> {
   const headers: Record<string, string> = token ? { authorization: `${token.type} ${token.token}` } : {}
 
   return executeQuery({

@@ -32,7 +32,7 @@ export class DiscordError extends Error {
 export async function executeQuery (props: RequestProps): Promise<any> {
   const res = await fetch(props)
 
-  if (res.statusCode !== 200) {
+  if (res.statusCode >= 400) {
     throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
   }
 
