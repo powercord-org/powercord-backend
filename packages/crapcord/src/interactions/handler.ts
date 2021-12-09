@@ -20,10 +20,12 @@
  * SOFTWARE.
  */
 
-import type { APIInteraction, APIInteractionResponse } from 'discord-api-types/v9'
+import type { APIApplicationCommandInteraction, APIInteraction, APIInteractionResponse, APIMessageComponentInteraction } from 'discord-api-types/v9'
+import type { DiscordToken } from '../api/common.js'
 import { InteractionType } from 'discord-api-types/v9'
 import { verify } from 'crypto'
 
+import { CommandInteractionImpl, ComponentInteractionImpl } from './interaction.js'
 import { commandsRegistry, componentsRegistry } from './registry.js'
 
 export interface ErrorResponse {
@@ -33,13 +35,50 @@ export interface ErrorResponse {
 
 type Response = APIInteractionResponse | ErrorResponse
 
-function handleInteraction (interaction: APIGuildInteraction): Promise<Response> {
-  return new Promise((resolve) => {
-    // todo: grab handler, and pass the interaction
+function handleCommand (payload: APIApplicationCommandInteraction, token: DiscordToken): Promise<Response> | Response {
+  const handler = commandsRegistry.get(payload.data.name)
+  if (!handler) return { code: 400, message: 'unknown interaction' }
+
+  return new Promise<Response>((resolve) => {
+    const timeout = setTimeout(() => {
+      console.error('Warning: an interaction took more than 3 seconds to send a response and timed out.')
+      resolve({ code: 500, message: 'internal server error' })
+      resolve = () => void 0
+    }, 3e3)
+
+    function sendResponse (res: APIInteractionResponse) {
+      clearTimeout(timeout)
+      resolve(res)
+    }
+
+    try {
+      const interaction = new CommandInteractionImpl(payload, token, sendResponse)
+      handler(interaction)
+    } catch (e) {
+      clearTimeout(timeout)
+      console.error('Unexpected error while handling the interaction', e)
+      resolve({ code: 500, message: 'internal server error' })
+      resolve = () => void 0
+    }
   })
 }
 
-export function handlePayload (payload: string, signature: string, timestamp: string, key: string, parsed?: APIInteraction): Promise<Response> | Response {
+function handleComponent (payload: APIMessageComponentInteraction, token: DiscordToken): Promise<Response> | Response {
+  const handler = componentsRegistry.get(payload.data.custom_id)
+  if (!handler) return { code: 400, message: 'unknown interaction' }
+
+  return new Promise<Response>((resolve) => {
+    try {
+      const interaction = new ComponentInteractionImpl(payload, token, resolve)
+      handler(interaction)
+    } catch (e) {
+      console.error('Unexpected error while handling the interaction', e)
+      resolve({ code: 500, message: 'internal server error' })
+    }
+  })
+}
+
+export function handlePayload (payload: string, signature: string, timestamp: string, key: string, token: DiscordToken, parsed?: APIInteraction): Promise<Response> | Response {
   if (!verify(null, Buffer.from(timestamp + payload, 'utf8'), Buffer.from(key, 'hex'), Buffer.from(signature, 'hex'))) {
     return { code: 401, message: 'invalid request signature' }
   }
@@ -50,8 +89,10 @@ export function handlePayload (payload: string, signature: string, timestamp: st
       return { type: 1 }
 
     case InteractionType.ApplicationCommand:
+      return handleCommand(interaction, token)
+
     case InteractionType.MessageComponent:
-      return handleInteraction(interaction)
+      return handleComponent(interaction, token)
 
     case InteractionType.ApplicationCommandAutocomplete:
       return { code: 501, message: 'not implemented' }
