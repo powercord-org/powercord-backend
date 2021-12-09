@@ -23,15 +23,18 @@
 import type {
   RESTPostAPIInteractionCallbackJSONBody as InteractionResponse,
   APIInteractionResponseCallbackData as InteractionMessage,
-  APIApplicationCommandInteraction, APIGuildMember,
-  APIMessage, APIMessageComponentInteraction, APIUser,
+  APIApplicationCommandInteractionDataOption, APIApplicationCommandInteraction,
+  APIInteractionDataResolvedGuildMember, APIGuildMember, APIMessage,
+  APIMessageComponentInteraction, APIUser,
 } from 'discord-api-types/v9'
 import type { DiscordToken } from '../api/common.js'
 import type { Webhook } from '../api/webhooks.js'
-import { InteractionType, InteractionResponseType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, InteractionType, InteractionResponseType } from 'discord-api-types/v9'
 import { createMessage, updateMessage, deleteMessage } from '../api/webhooks.js'
 
 type GuildData = { id: string, member: APIGuildMember }
+
+type UserTarget = { user: APIUser, member?: APIInteractionDataResolvedGuildMember }
 
 export interface Interaction {
   type: number
@@ -63,10 +66,7 @@ export interface SlashCommand extends CommandInteraction {
 
 export interface UserCommand extends CommandInteraction {
   type: 2
-  target: {
-    user: APIUser,
-    member?: APIGuildMember
-  }
+  target: UserTarget
 }
 
 export interface MessageCommand extends CommandInteraction {
@@ -223,10 +223,45 @@ export class CommandInteractionImpl extends InteractionImpl implements CommandIn
 
   command: string
 
+  args?: Record<string, any>
+
+  target?: UserTarget | APIMessage
+
   constructor (payload: APIApplicationCommandInteraction, token: DiscordToken, sendResponse: SendResponseFunction) {
     super(payload, token, sendResponse)
     this.type = payload.data.type
     this.command = payload.data.name
+
+    switch (payload.data.type) {
+      case 1:
+        this.args = this.#parseOptions(payload.data.options)
+        break
+      case 2:
+        this.target = {
+          user: payload.data.resolved.users[payload.data.target_id],
+          member: payload.data.resolved.members?.[payload.data.target_id],
+        }
+        break
+      case 3:
+        this.target = payload.data.resolved.messages[payload.data.target_id]
+        break
+    }
+  }
+
+  #parseOptions (options?: APIApplicationCommandInteractionDataOption[]) {
+    if (!options) return {}
+
+    const parsed: Record<string, any> = {}
+    for (const option of options) {
+      if (option.type === ApplicationCommandOptionType.Subcommand || option.type === ApplicationCommandOptionType.SubcommandGroup) {
+        parsed[option.name] = this.#parseOptions(option.options)
+        continue
+      }
+
+      parsed[option.name] = option.value
+    }
+
+    return parsed
   }
 }
 
