@@ -61,7 +61,6 @@ class GatewayConnection extends EventEmitter<Events> {
   }
 
   #connect () {
-    this.#sequence = 0
     this.#ws = new WebSocket(DISCORD_GATEWAY)
     this.#ws.on('message', (m) => this.#handleMessage(m))
     this.#ws.on('close', () => {
@@ -131,8 +130,9 @@ class GatewayConnection extends EventEmitter<Events> {
 
   #handleMessage (message: Data) {
     if (typeof message !== 'string') {
-      this.#ws.close()
       this.emit('error', new Error('unexpected non-string payload'))
+      this.#expectingShutdown = true
+      this.#ws.close()
       return
     }
 
@@ -152,7 +152,7 @@ class GatewayConnection extends EventEmitter<Events> {
         break
       case 9: // invalid session
         if (!data.d) this.#sessionId = null
-        setTimeout(() => this.#identify, 1 + Math.random())
+        setTimeout(() => this.#identify(), 1 + Math.random())
         break
       case 10: // henlo
         this.#identify()
