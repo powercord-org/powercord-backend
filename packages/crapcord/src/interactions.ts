@@ -20,12 +20,12 @@
  * SOFTWARE.
  */
 
-const handlers = new Map<string, Function>()
+export {
+  Interaction, CommandInteraction, ComponentInteraction,
+  SlashCommand, UserCommand, MessageCommand,
+  ButtonComponent, SelectMenuComponent,
+  CommandHandler, ComponentHandler,
+} from './interactions/interaction.js'
 
-export function registerHandlers () {
-  // todo
-}
-
-export function handlePayload () {
-  // yes
-}
+export { registerCommands, registerComponent } from './interactions/registry.js'
+export { handlePayload } from './interactions/handler.js'

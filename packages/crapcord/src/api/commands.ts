@@ -21,9 +21,8 @@
  */
 
 import type { DiscordToken } from './common.js'
-import fetch from '../fetch.js'
+import { executeQuery } from './common.js'
 import { API_BASE } from '../constants.js'
-import { DiscordError } from './common.js'
 
 async function _createCommand (command: any, guildId: string | null, token: DiscordToken): Promise<void> {
   // todo

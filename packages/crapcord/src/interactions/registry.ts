@@ -20,11 +20,20 @@
  * SOFTWARE.
  */
 
-import type { DiscordToken } from './common.js'
-import fetch from '../fetch.js'
-import { API_BASE } from '../constants.js'
-import { DiscordError } from './common.js'
+import type { CommandHandler, ComponentHandler } from './interaction.js'
 
-export async function respond (response: any, token: DiscordToken): Promise<any> {
-  return null
+export const commandsRegistry = new Map<string, CommandHandler>()
+export const componentsRegistry = new Map<string, ComponentHandler>()
+
+export function registerCommands (commands: Record<string, CommandHandler>) {
+  commandsRegistry.clear()
+  for (const command in commands) {
+    if (command in commands) {
+      commandsRegistry.set(command, commands[command])
+    }
+  }
+}
+
+export function registerComponent (component: string, handler: ComponentHandler) {
+  componentsRegistry.set(component, handler)
 }

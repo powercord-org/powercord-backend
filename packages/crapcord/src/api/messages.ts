@@ -21,26 +21,20 @@
  */
 
 import type {
-  RESTPostAPIChannelMessageJSONBody as MessageJSONPayload,
-  APIMessage as Message,
+  RESTPostAPIChannelMessageJSONBody as MessagePayload,
+  RESTPostAPIChannelMessageResult as MessageResponse,
 } from 'discord-api-types/v9'
 
 import type { DiscordToken } from './common.js'
-import fetch from '../fetch.js'
+import { executeQuery } from './common.js'
 import { API_BASE } from '../constants.js'
-import { DiscordError } from './common.js'
 
-export async function createMessage (channelId: string, message: MessageJSONPayload, token: DiscordToken): Promise<Message> {
-  const res = await fetch({
+// todo: allow passing a function for components stuff and automatically register it behind the scenes
+export async function createMessage (channelId: string, message: MessagePayload, token: DiscordToken): Promise<MessageResponse> {
+  return executeQuery({
     method: 'POST',
     url: `${API_BASE}/channels/${channelId}/messages`,
     headers: { authorization: `${token.type} ${token.token}` },
     body: message,
   })
-
-  if (res.statusCode !== 200) {
-    throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
-  }
-
-  return res.body
 }

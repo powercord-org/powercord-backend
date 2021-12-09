@@ -20,10 +20,21 @@
  * SOFTWARE.
  */
 
-import type { Response } from '../fetch.js'
+import type { RequestProps, Response } from '../fetch.js'
+import fetch from '../fetch.js'
 
 export type DiscordToken = { type: 'Bot' | 'Bearer', token: string }
 
 export class DiscordError extends Error {
   constructor (message: string, public response: Response) { super(message) }
+}
+
+export async function executeQuery (props: RequestProps): Promise<any> {
+  const res = await fetch(props)
+
+  if (res.statusCode !== 200) {
+    throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
+  }
+
+  return res.body
 }

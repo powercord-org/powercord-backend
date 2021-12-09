@@ -23,8 +23,8 @@
 import type { DiscordToken } from './api/common.js'
 
 import * as messages from './api/messages.js'
+import * as webhooks from './api/webhooks.js'
 import * as commands from './api/commands.js'
-import * as interactions from './api/interactions.js'
 
 type ApiHelper = Record<string, (...args: any) => any>
 
@@ -44,12 +44,12 @@ function endpointsWithToken<T extends ApiHelper> (endpoints: T, token: DiscordTo
   return mappedEndpoints as WithToken<T>
 }
 
-export { messages, commands, interactions }
+export { messages, webhooks, commands }
 
 export function withToken (token: DiscordToken) {
   return {
     messages: endpointsWithToken(messages, token),
+    webhooks: endpointsWithToken(webhooks, token),
     commands: endpointsWithToken(commands, token),
-    interactions: endpointsWithToken(interactions, token),
   }
 }
