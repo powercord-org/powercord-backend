@@ -1,6 +1,7 @@
 packages:
   - 'packages/api'
   - 'packages/boat'
+  - 'packages/crapcord'
   - 'packages/spoonfeed'
   - 'packages/web'
   - 'packages/types'

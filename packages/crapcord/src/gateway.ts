@@ -26,13 +26,12 @@ import { GatewayIntentBits, GatewayOpcodes } from 'discord-api-types'
 import { TypedEmitter as EventEmitter } from 'tiny-typed-emitter'
 import WebSocket from 'ws'
 
+import { DISCORD_GATEWAY } from './constants.js'
+
 type Events = {
   // todo: map all the event names to event data
   error: (err: Error) => void
 }
-
-// "our clients are going to stop doing gateway discovery since its a waste of time lol" - jake
-const DISCORD_GATEWAY = 'wss://gateway.discord.gg/?v=9&encoding=json'
 
 class GatewayConnection extends EventEmitter<Events> {
   #ws: WebSocket

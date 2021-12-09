@@ -20,36 +20,10 @@
  * SOFTWARE.
  */
 
-import type { DiscordToken } from './api/common.js'
+import type { Response } from '../fetch.js'
 
-import * as messages from './api/messages.js'
-import * as commands from './api/commands.js'
-import * as interactions from './api/interactions.js'
+export type DiscordToken = { type: 'Bot' | 'Bearer', token: string }
 
-type ApiHelper = Record<string, (...args: any) => any>
-
-type WithToken<T extends ApiHelper> = {
-  [K in keyof T]: (...args: Parameters<T[K]> extends [ ...infer A, any ] ? A : never) => ReturnType<T[K]>
-}
-
-function endpointsWithToken<T extends ApiHelper> (endpoints: T, token: DiscordToken): WithToken<T> {
-  const mappedEndpoints: Record<string, Function> = {}
-  for (const key in endpoints) {
-    if (key in endpoints) {
-      const fn = endpoints[key]
-      mappedEndpoints[key] = (...args: any[]) => fn(...args, token)
-    }
-  }
-
-  return mappedEndpoints as WithToken<T>
-}
-
-export { messages, commands, interactions }
-
-export function withToken (token: DiscordToken) {
-  return {
-    messages: endpointsWithToken(messages, token),
-    commands: endpointsWithToken(commands, token),
-    interactions: endpointsWithToken(interactions, token),
-  }
+export class DiscordError extends Error {
+  constructor (message: string, public response: Response) { super(message) }
 }

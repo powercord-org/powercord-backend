@@ -20,36 +20,27 @@
  * SOFTWARE.
  */
 
-import type { DiscordToken } from './api/common.js'
+import type {
+  RESTPostAPIChannelMessageJSONBody as MessageJSONPayload,
+  APIMessage as Message,
+} from 'discord-api-types/v9'
 
-import * as messages from './api/messages.js'
-import * as commands from './api/commands.js'
-import * as interactions from './api/interactions.js'
+import type { DiscordToken } from './common.js'
+import fetch from '../fetch.js'
+import { API_BASE } from '../constants.js'
+import { DiscordError } from './common.js'
 
-type ApiHelper = Record<string, (...args: any) => any>
+export async function createMessage (channelId: string, message: MessageJSONPayload, token: DiscordToken): Promise<Message> {
+  const res = await fetch({
+    method: 'POST',
+    url: `${API_BASE}/channels/${channelId}/messages`,
+    headers: { authorization: `${token.type} ${token.token}` },
+    body: message,
+  })
 
-type WithToken<T extends ApiHelper> = {
-  [K in keyof T]: (...args: Parameters<T[K]> extends [ ...infer A, any ] ? A : never) => ReturnType<T[K]>
-}
-
-function endpointsWithToken<T extends ApiHelper> (endpoints: T, token: DiscordToken): WithToken<T> {
-  const mappedEndpoints: Record<string, Function> = {}
-  for (const key in endpoints) {
-    if (key in endpoints) {
-      const fn = endpoints[key]
-      mappedEndpoints[key] = (...args: any[]) => fn(...args, token)
-    }
+  if (res.statusCode !== 200) {
+    throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
   }
 
-  return mappedEndpoints as WithToken<T>
-}
-
-export { messages, commands, interactions }
-
-export function withToken (token: DiscordToken) {
-  return {
-    messages: endpointsWithToken(messages, token),
-    commands: endpointsWithToken(commands, token),
-    interactions: endpointsWithToken(interactions, token),
-  }
+  return res.body
 }

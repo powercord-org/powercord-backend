@@ -20,11 +20,10 @@
  * SOFTWARE.
  */
 
-export function registerCommands () {
-  // - fetch current commands
-  // - compute deltas
-  // - push state if needed
-  // - ID => handler
+const handlers = new Map<string, Function>()
+
+export function registerHandlers () {
+  // todo
 }
 
 export function handlePayload () {

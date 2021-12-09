@@ -25,7 +25,7 @@
     "@types/ws": "^7.4.7",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
-    "discord-api-types": "^0.22.0",
+    "discord-api-types": "^0.25.2",
     "eslint": "^7.32.0",
     "eslint-plugin-deprecation": "^1.2.1",
     "tsc-watch": "^4.4.0",

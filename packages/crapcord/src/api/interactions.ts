@@ -20,36 +20,11 @@
  * SOFTWARE.
  */
 
-import type { DiscordToken } from './api/common.js'
+import type { DiscordToken } from './common.js'
+import fetch from '../fetch.js'
+import { API_BASE } from '../constants.js'
+import { DiscordError } from './common.js'
 
-import * as messages from './api/messages.js'
-import * as commands from './api/commands.js'
-import * as interactions from './api/interactions.js'
-
-type ApiHelper = Record<string, (...args: any) => any>
-
-type WithToken<T extends ApiHelper> = {
-  [K in keyof T]: (...args: Parameters<T[K]> extends [ ...infer A, any ] ? A : never) => ReturnType<T[K]>
-}
-
-function endpointsWithToken<T extends ApiHelper> (endpoints: T, token: DiscordToken): WithToken<T> {
-  const mappedEndpoints: Record<string, Function> = {}
-  for (const key in endpoints) {
-    if (key in endpoints) {
-      const fn = endpoints[key]
-      mappedEndpoints[key] = (...args: any[]) => fn(...args, token)
-    }
-  }
-
-  return mappedEndpoints as WithToken<T>
-}
-
-export { messages, commands, interactions }
-
-export function withToken (token: DiscordToken) {
-  return {
-    messages: endpointsWithToken(messages, token),
-    commands: endpointsWithToken(commands, token),
-    interactions: endpointsWithToken(interactions, token),
-  }
+export async function respond (response: any, token: DiscordToken): Promise<any> {
+  return null
 }
