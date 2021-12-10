@@ -37,13 +37,13 @@ export type SneakCaseString<S extends string> = S extends `${infer C0}${infer R}
   ? `${C0 extends Lowercase<C0> ? '' : '_'}${Lowercase<C0>}${SneakCaseString<R>}`
   : Lowercase<S>
 
-export type CamelCase<T> = {
-  [K in keyof T as CamelCaseString<string &K>]: T[K] extends Record<string, any> ? CamelCase<T[K]> : T[K]
-}
+export type CamelCase<T> = T extends Array<any>
+  ? { [K in keyof T]: T[K] extends Record<string, any> ? CamelCase<T[K]> : T[K] }
+  : { [K in keyof T as CamelCaseString<string &K>]: T[K] extends Record<string, any> ? CamelCase<T[K]> : T[K] }
 
-export type SneakCase<T> = {
-  [K in keyof T as SneakCaseString<string &K>]: T[K] extends Record<string, any> ? SneakCase<T[K]> : T[K]
-}
+export type SneakCase<T> = T extends Array<any>
+  ? { [K in keyof T]: T[K] extends Record<string, any> ? SneakCase<T[K]> : T[K] }
+  : { [K in keyof T as SneakCaseString<string &K>]: T[K] extends Record<string, any> ? SneakCase<T[K]> : T[K] }
 
 export function toCamelCase<T extends string> (str: T): CamelCaseString<T> {
   let res = ''
@@ -64,13 +64,17 @@ export function toSneakCase<T extends string> (str: T): SneakCaseString<T> {
   return res as SneakCaseString<T>
 }
 
-export function objectToCamelCase<T extends Record<PropertyKey, any>> (object: T): CamelCase<T> {
+export function objectToCamelCase<T extends Record<PropertyKey, any> | any[]> (object: T): CamelCase<T> {
+  if (Array.isArray(object)) {
+    return object.map((item) => typeof item === 'object' ? objectToCamelCase(item) : item) as CamelCase<T>
+  }
+
   const res: Record<PropertyKey, any> = {}
   for (const key in object) {
     if (key in object) {
       const val = object[key]
       const newKey = typeof key === 'string' ? toCamelCase(key) : key
-      const newVal = typeof val === 'object' && !Array.isArray(val) ? objectToCamelCase(val) : val
+      const newVal = typeof val === 'object' ? objectToCamelCase(val) : val
       res[newKey] = newVal
     }
   }
@@ -78,13 +82,17 @@ export function objectToCamelCase<T extends Record<PropertyKey, any>> (object: T
   return res as CamelCase<T>
 }
 
-export function objectToSneakCase<T extends Record<PropertyKey, any>> (object: T): SneakCase<T> {
+export function objectToSneakCase<T extends Record<PropertyKey, any> | any[]> (object: T): SneakCase<T> {
+  if (Array.isArray(object)) {
+    return object.map((item) => typeof item === 'object' ? objectToSneakCase(item) : item) as SneakCase<T>
+  }
+
   const res: Record<PropertyKey, any> = {}
   for (const key in object) {
     if (key in object) {
       const val = object[key]
       const newKey = typeof key === 'string' ? toSneakCase(key) : key
-      const newVal = typeof val === 'object' && !Array.isArray(val) ? objectToSneakCase(val) : val
+      const newVal = typeof val === 'object' ? objectToSneakCase(val) : val
       res[newKey] = newVal
     }
   }
