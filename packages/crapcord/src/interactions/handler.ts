@@ -27,6 +27,7 @@ import { verify } from 'crypto'
 
 import { CommandInteractionImpl, ComponentInteractionImpl } from './interaction.js'
 import { commandsRegistry, componentsRegistry } from './registry.js'
+import { objectToSneakCase } from '../util.js'
 
 export interface ErrorResponse {
   code: number
@@ -48,7 +49,7 @@ function handleCommand (payload: APIApplicationCommandInteraction, token: Discor
 
     function sendResponse (res: APIInteractionResponse) {
       clearTimeout(timeout)
-      resolve(res)
+      resolve(objectToSneakCase(res))
     }
 
     try {

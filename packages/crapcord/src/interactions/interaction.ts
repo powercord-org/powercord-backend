@@ -29,22 +29,24 @@ import type {
 } from 'discord-api-types/v9'
 import type { DiscordToken } from '../api/common.js'
 import type { Webhook } from '../api/webhooks.js'
+import type { CamelCase } from '../util.js'
 import { ApplicationCommandOptionType, InteractionType, InteractionResponseType } from 'discord-api-types/v9'
 import { createMessage, updateMessage, deleteMessage } from '../api/webhooks.js'
+import { objectToCamelCase } from '../util.js'
 
-type GuildData = { id: string, member: APIGuildMember }
+type GuildData = { id: string, member: CamelCase<APIGuildMember> }
 
-type UserTarget = { user: APIUser, member?: APIInteractionDataResolvedGuildMember }
+type UserTarget = { user: CamelCase<APIUser>, member: CamelCase<APIInteractionDataResolvedGuildMember> | null }
 
 export interface Interaction {
   type: number
-  user: APIUser
+  user: CamelCase<APIUser>
   channelId: string
   guild?: GuildData
 
   defer (): void
-  createMessage (message: any): void
-  updateMessage (messageId: string, message: any): void
+  createMessage (message: CamelCase<InteractionMessage>, ephemeral?: boolean): Promise<CamelCase<APIMessage>> | void
+  updateMessage (messageId: string, message: CamelCase<InteractionMessage>): void
 }
 
 export interface CommandInteraction extends Interaction {
@@ -53,7 +55,7 @@ export interface CommandInteraction extends Interaction {
 
 export interface ComponentInteraction extends Interaction {
   id: string
-  message: APIMessage
+  message: CamelCase<APIMessage>
 
   deferUpdate (): void
 }
@@ -66,12 +68,12 @@ export interface SlashCommand extends CommandInteraction {
 
 export interface UserCommand extends CommandInteraction {
   type: 2
-  target: UserTarget
+  target: CamelCase<UserTarget>
 }
 
 export interface MessageCommand extends CommandInteraction {
   type: 3
-  target: APIMessage
+  target: CamelCase<APIMessage>
 }
 
 
@@ -90,14 +92,14 @@ export type ComponentHandler = (interaction: ComponentInteraction) => void
 
 type DiscordInteraction = APIApplicationCommandInteraction | APIMessageComponentInteraction
 
-type SendResponseFunction = (payload: InteractionResponse, interactionId: string, interactionToken: string, token: DiscordToken) => void
+type SendResponseFunction = (payload: CamelCase<InteractionResponse>, interactionId: string, interactionToken: string, token: DiscordToken) => void
 
 enum DeferState { NONE, CREATE, UPDATE }
 
 abstract class InteractionImpl implements Interaction {
   abstract type: number
 
-  user: APIUser
+  user: CamelCase<APIUser>
 
   channelId: string
 
@@ -116,7 +118,7 @@ abstract class InteractionImpl implements Interaction {
   #sendResponse: SendResponseFunction
 
   constructor (payload: DiscordInteraction, token: DiscordToken, sendResponse: SendResponseFunction) {
-    this.user = payload.member?.user ?? payload.user!
+    this.user = objectToCamelCase(payload.member?.user ?? payload.user!)
     this.channelId = payload.channel_id
 
     this.#isComponent = payload.type === InteractionType.MessageComponent
@@ -161,7 +163,7 @@ abstract class InteractionImpl implements Interaction {
     this.#sendResponse(payload, this.#credentials.id, this.#credentials.token, this.#token)
   }
 
-  createMessage (message: InteractionMessage, ephemeral?: boolean) {
+  createMessage (message: CamelCase<InteractionMessage>, ephemeral?: boolean) {
     if (this.#deferState === DeferState.CREATE) {
       // opinionated choice: after deferring, consider creating a message
       // the logical operation when done processing
@@ -188,7 +190,7 @@ abstract class InteractionImpl implements Interaction {
     return createMessage(message, this.#credentials, this.#token)
   }
 
-  updateMessage (messageId: string, message: InteractionMessage) {
+  updateMessage (messageId: string, message: CamelCase<InteractionMessage>) {
     this.#deferState = DeferState.NONE
     if (this.#processing && !this.#isComponent) {
       throw new Error('unexpected call to updateMessage during initial process for a non-component interaction')
@@ -225,7 +227,7 @@ export class CommandInteractionImpl extends InteractionImpl implements CommandIn
 
   args?: Record<string, any>
 
-  target?: UserTarget | APIMessage
+  target?: UserTarget | CamelCase<APIMessage>
 
   constructor (payload: APIApplicationCommandInteraction, token: DiscordToken, sendResponse: SendResponseFunction) {
     super(payload, token, sendResponse)
@@ -236,14 +238,16 @@ export class CommandInteractionImpl extends InteractionImpl implements CommandIn
       case 1:
         this.args = this.#parseOptions(payload.data.options)
         break
-      case 2:
+      case 2: {
+        const rawMember = payload.data.resolved.members?.[payload.data.target_id]
         this.target = {
-          user: payload.data.resolved.users[payload.data.target_id],
-          member: payload.data.resolved.members?.[payload.data.target_id],
+          user: objectToCamelCase(payload.data.resolved.users[payload.data.target_id]),
+          member: rawMember ? objectToCamelCase(rawMember) : null,
         }
         break
+      }
       case 3:
-        this.target = payload.data.resolved.messages[payload.data.target_id]
+        this.target = objectToCamelCase(payload.data.resolved.messages[payload.data.target_id])
         break
     }
   }
@@ -270,7 +274,7 @@ export class ComponentInteractionImpl extends InteractionImpl implements Compone
 
   id: string
 
-  message: APIMessage
+  message: CamelCase<APIMessage>
 
   values?: string[]
 
@@ -278,7 +282,7 @@ export class ComponentInteractionImpl extends InteractionImpl implements Compone
     super(payload, token, sendResponse)
     this.type = payload.data.component_type
     this.id = payload.data.custom_id
-    this.message = payload.message
+    this.message = objectToCamelCase(payload.message)
 
     if (payload.data.component_type === 3) {
       this.values = payload.data.values

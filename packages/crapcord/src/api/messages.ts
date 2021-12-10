@@ -21,13 +21,18 @@
  */
 
 import type {
-  RESTPostAPIChannelMessageJSONBody as MessagePayload,
-  RESTPostAPIChannelMessageResult as MessageResponse,
+  RESTPostAPIChannelMessageJSONBody as MessagePayloadSneak,
+  RESTPostAPIChannelMessageResult as MessageResponseSneak,
 } from 'discord-api-types/v9'
 
 import type { DiscordToken } from './common.js'
+import type { CamelCase } from '../util.js'
 import { executeQuery } from './common.js'
+import { objectToSneakCase } from '../util.js'
 import { API_BASE } from '../constants.js'
+
+type MessagePayload = CamelCase<MessagePayloadSneak>
+type MessageResponse = CamelCase<MessageResponseSneak>
 
 // todo: allow passing a function for components stuff and automatically register it behind the scenes
 export async function createMessage (channelId: string, message: MessagePayload, token: DiscordToken): Promise<MessageResponse> {
@@ -35,6 +40,6 @@ export async function createMessage (channelId: string, message: MessagePayload,
     method: 'POST',
     url: `${API_BASE}/channels/${channelId}/messages`,
     headers: { authorization: `${token.type} ${token.token}` },
-    body: message,
+    body: objectToSneakCase(message),
   })
 }

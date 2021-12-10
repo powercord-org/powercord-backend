@@ -21,6 +21,7 @@
  */
 
 import type { RequestProps, Response } from '../fetch.js'
+import { objectToCamelCase } from '../util.js'
 import fetch from '../fetch.js'
 
 export type DiscordToken = { type: 'Bot' | 'Bearer', token: string }
@@ -36,5 +37,5 @@ export async function executeQuery (props: RequestProps): Promise<any> {
     throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
   }
 
-  return res.body
+  return objectToCamelCase(res.body)
 }

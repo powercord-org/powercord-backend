@@ -27,3 +27,67 @@ export function makeDeferred (): Deferred {
   deferred.promise = new Promise((resolve, reject) => Object.assign(deferred, { resolve: resolve, reject: reject }))
   return deferred
 }
+
+
+export type CamelCaseString<S extends string> = S extends `${infer P1}_${infer P2}${infer P3}`
+  ? `${Lowercase<P1>}${Uppercase<P2>}${CamelCaseString<P3>}`
+  : Lowercase<S>
+
+export type SneakCaseString<S extends string> = S extends `${infer C0}${infer R}`
+  ? `${C0 extends Lowercase<C0> ? '' : '_'}${Lowercase<C0>}${SneakCaseString<R>}`
+  : Lowercase<S>
+
+export type CamelCase<T> = {
+  [K in keyof T as CamelCaseString<string &K>]: T[K] extends Record<string, any> ? CamelCase<T[K]> : T[K]
+}
+
+export type SneakCase<T> = {
+  [K in keyof T as SneakCaseString<string &K>]: T[K] extends Record<string, any> ? SneakCase<T[K]> : T[K]
+}
+
+export function toCamelCase<T extends string> (str: T): CamelCaseString<T> {
+  let res = ''
+  for (let i = 0; i < str.length; i++) {
+    res += str[i] === '_' ? str[++i].toUpperCase() : str[i]
+  }
+
+  return res as CamelCaseString<T>
+}
+
+export function toSneakCase<T extends string> (str: T): SneakCaseString<T> {
+  let res = ''
+  for (let i = 0; i < str.length; i++) {
+    const chr = str[i]
+    res += chr >= 'A' && chr <= 'Z' ? `_${chr.toLowerCase()}` : chr
+  }
+
+  return res as SneakCaseString<T>
+}
+
+export function objectToCamelCase<T extends Record<PropertyKey, any>> (object: T): CamelCase<T> {
+  const res: Record<PropertyKey, any> = {}
+  for (const key in object) {
+    if (key in object) {
+      const val = object[key]
+      const newKey = typeof key === 'string' ? toCamelCase(key) : key
+      const newVal = typeof val === 'object' && !Array.isArray(val) ? objectToCamelCase(val) : val
+      res[newKey] = newVal
+    }
+  }
+
+  return res as CamelCase<T>
+}
+
+export function objectToSneakCase<T extends Record<PropertyKey, any>> (object: T): SneakCase<T> {
+  const res: Record<PropertyKey, any> = {}
+  for (const key in object) {
+    if (key in object) {
+      const val = object[key]
+      const newKey = typeof key === 'string' ? toSneakCase(key) : key
+      const newVal = typeof val === 'object' && !Array.isArray(val) ? objectToSneakCase(val) : val
+      res[newKey] = newVal
+    }
+  }
+
+  return res as SneakCase<T>
+}

@@ -21,15 +21,23 @@
  */
 
 import type {
-  RESTPostAPIWebhookWithTokenJSONBody as ExecutePayload,
-  RESTPostAPIWebhookWithTokenWaitResult as ExecuteResponse,
-  RESTGetAPIWebhookWithTokenMessageResult as FetchResponse,
-  RESTPatchAPIWebhookWithTokenMessageJSONBody as UpdatePayload,
-  RESTPatchAPIWebhookWithTokenMessageResult as UpdateResponse,
+  RESTPostAPIWebhookWithTokenJSONBody as ExecutePayloadSneak,
+  RESTPostAPIWebhookWithTokenWaitResult as ExecuteResponseSneak,
+  RESTGetAPIWebhookWithTokenMessageResult as FetchResponseSneak,
+  RESTPatchAPIWebhookWithTokenMessageJSONBody as UpdatePayloadSneak,
+  RESTPatchAPIWebhookWithTokenMessageResult as UpdateResponseSneak,
 } from 'discord-api-types/v9'
 import type { DiscordToken } from './common.js'
+import type { CamelCase } from '../util.js'
 import { executeQuery } from './common.js'
+import { objectToSneakCase } from '../util.js'
 import { API_BASE } from '../constants.js'
+
+type ExecutePayload = CamelCase<ExecutePayloadSneak>
+type ExecuteResponse = CamelCase<ExecuteResponseSneak>
+type FetchResponse = CamelCase<FetchResponseSneak>
+type UpdatePayload = CamelCase<UpdatePayloadSneak>
+type UpdateResponse = CamelCase<UpdateResponseSneak>
 
 export type Webhook = { id: string, token: string }
 
@@ -40,7 +48,7 @@ export async function createMessage (message: ExecutePayload, hook: Webhook, tok
     method: 'POST',
     url: `${API_BASE}/webhooks/${hook.id}/${hook.token}?wait=true`,
     headers: headers,
-    body: message,
+    body: objectToSneakCase(message),
   })
 }
 
@@ -58,10 +66,10 @@ export async function updateMessage (messageId: string, message: UpdatePayload, 
   const headers: Record<string, string> = token ? { authorization: `${token.type} ${token.token}` } : {}
 
   return executeQuery({
-    method: 'POST',
+    method: 'PATCH',
     url: `${API_BASE}/webhooks/${hook.id}/${hook.token}/messages/${messageId}`,
     headers: headers,
-    body: message,
+    body: objectToSneakCase(message),
   })
 }
 

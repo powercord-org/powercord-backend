@@ -21,16 +21,25 @@
  */
 
 import type {
-  RESTPostAPIApplicationCommandsJSONBody as CreatePayload,
-  RESTPostAPIApplicationCommandsResult as CreateResponse,
-  RESTPatchAPIApplicationCommandJSONBody as UpdatePayload,
-  RESTPatchAPIApplicationCommandResult as UpdateResponse,
-  RESTPutAPIApplicationCommandsJSONBody as PushPayload,
-  RESTPutAPIApplicationCommandsResult as PushResponse,
+  RESTPostAPIApplicationCommandsJSONBody as CreatePayloadSneak,
+  RESTPostAPIApplicationCommandsResult as CreateResponseSneak,
+  RESTPatchAPIApplicationCommandJSONBody as UpdatePayloadSneak,
+  RESTPatchAPIApplicationCommandResult as UpdateResponseSneak,
+  RESTPutAPIApplicationCommandsJSONBody as PushPayloadSneak,
+  RESTPutAPIApplicationCommandsResult as PushResponseSneak,
 } from 'discord-api-types/v9'
 import type { DiscordToken } from './common.js'
+import type { CamelCase } from '../util.js'
 import { executeQuery } from './common.js'
+import { objectToSneakCase } from '../util.js'
 import { API_BASE } from '../constants.js'
+
+type CreatePayload = CamelCase<CreatePayloadSneak>
+type CreateResponse = CamelCase<CreateResponseSneak>
+type UpdatePayload = CamelCase<UpdatePayloadSneak>
+type UpdateResponse = CamelCase<UpdateResponseSneak>
+type PushPayload = CamelCase<PushPayloadSneak>
+type PushResponse = CamelCase<PushResponseSneak>
 
 async function _fetchCommands (guildId: string | null, applicationId: string, token: DiscordToken): Promise<CreateResponse> {
   const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands`
@@ -47,7 +56,7 @@ async function _createCommand (command: CreatePayload, guildId: string | null, a
     method: 'POST',
     url: endpoint,
     headers: { authorization: `${token.type} ${token.token}` },
-    body: command,
+    body: objectToSneakCase(command),
   })
 }
 
@@ -57,7 +66,7 @@ async function _updateCommand (commandId: string, command: UpdatePayload, guildI
     method: 'POST',
     url: endpoint,
     headers: { authorization: `${token.type} ${token.token}` },
-    body: command,
+    body: objectToSneakCase(command),
   })
 }
 
@@ -76,7 +85,7 @@ async function _pushCommands (commands: PushPayload, guildId: string | null, app
     method: 'PUT',
     url: endpoint,
     headers: { authorization: `${token.type} ${token.token}` },
-    body: commands,
+    body: objectToSneakCase(commands),
   })
 }
 

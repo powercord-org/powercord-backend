@@ -25,6 +25,7 @@ import type { DiscordToken } from './api/common.js'
 import * as messages from './api/messages.js'
 import * as webhooks from './api/webhooks.js'
 import * as commands from './api/commands.js'
+export { DiscordToken, DiscordError } from './api/common.js'
 
 type ApiHelper = Record<string, (...args: any) => any>
 
