@@ -20,23 +20,24 @@
  * SOFTWARE.
  */
 
-import type { RequestProps, Response } from '../fetch.js'
-import { toCamelCase, toSneakCase } from '../util.js'
-import fetch from '../fetch.js'
+import { URL } from 'url'
+import { existsSync, readFileSync } from 'fs'
 
-export type DiscordToken = { type: 'Bot' | 'Bearer', token: string }
-
-export class DiscordError extends Error {
-  constructor (message: string, public response: Response) { super(message) }
-}
-
-export async function executeQuery (props: RequestProps): Promise<any> {
-  if (props.body) props.body = toSneakCase(props.body)
-
-  const res = await fetch(props)
-  if (res.statusCode >= 400) {
-    throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
+let path = new URL('../', import.meta.url)
+let cfgFile = null
+while (!cfgFile && path.pathname !== '/') {
+  const attempt = new URL('config.json', path)
+  if (existsSync(attempt)) {
+    cfgFile = attempt
+  } else {
+    path = new URL('../', path)
   }
-
-  return toCamelCase(res.body)
 }
+
+if (!cfgFile) {
+  console.log('Unable to locate config file! Exiting.')
+  process.exit(1)
+}
+
+const blob = readFileSync(cfgFile, 'utf8')
+export default JSON.parse(blob)

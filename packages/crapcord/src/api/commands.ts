@@ -31,7 +31,6 @@ import type {
 import type { DiscordToken } from './common.js'
 import type { CamelCase } from '../util.js'
 import { executeQuery } from './common.js'
-import { objectToSneakCase } from '../util.js'
 import { API_BASE } from '../constants.js'
 
 type CreatePayload = CamelCase<CreatePayloadSneak>
@@ -42,7 +41,7 @@ type PushPayload = CamelCase<PushPayloadSneak>
 type PushResponse = CamelCase<PushResponseSneak>
 
 async function _fetchCommands (guildId: string | null, applicationId: string, token: DiscordToken): Promise<CreateResponse> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands`
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands`
   return executeQuery({
     method: 'GET',
     url: endpoint,
@@ -51,27 +50,27 @@ async function _fetchCommands (guildId: string | null, applicationId: string, to
 }
 
 async function _createCommand (command: CreatePayload, guildId: string | null, applicationId: string, token: DiscordToken): Promise<CreateResponse> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands`
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands`
   return executeQuery({
     method: 'POST',
     url: endpoint,
     headers: { authorization: `${token.type} ${token.token}` },
-    body: objectToSneakCase(command),
+    body: command,
   })
 }
 
 async function _updateCommand (commandId: string, command: UpdatePayload, guildId: string | null, applicationId: string, token: DiscordToken): Promise<UpdateResponse> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands/${commandId}`
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands/${commandId}`
   return executeQuery({
     method: 'POST',
     url: endpoint,
     headers: { authorization: `${token.type} ${token.token}` },
-    body: objectToSneakCase(command),
+    body: command,
   })
 }
 
 async function _deleteCommand (commandId: string, guildId: string | null, applicationId: string, token: DiscordToken): Promise<void> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands/${commandId}`
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands/${commandId}`
   return executeQuery({
     method: 'DELETE',
     url: endpoint,
@@ -80,12 +79,12 @@ async function _deleteCommand (commandId: string, guildId: string | null, applic
 }
 
 async function _pushCommands (commands: PushPayload, guildId: string | null, applicationId: string, token: DiscordToken): Promise<PushResponse> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `guilds/${guildId}` : ''}/commands`
+  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands`
   return executeQuery({
     method: 'PUT',
     url: endpoint,
     headers: { authorization: `${token.type} ${token.token}` },
-    body: objectToSneakCase(commands),
+    body: commands,
   })
 }
 

@@ -20,23 +20,15 @@
  * SOFTWARE.
  */
 
-import type { RequestProps, Response } from '../fetch.js'
-import { toCamelCase, toSneakCase } from '../util.js'
-import fetch from '../fetch.js'
+import type RawConfig from '../config.example.json'
 
-export type DiscordToken = { type: 'Bot' | 'Bearer', token: string }
-
-export class DiscordError extends Error {
-  constructor (message: string, public response: Response) { super(message) }
+type Config<TConfig = typeof RawConfig> = {
+  [TProperty in keyof TConfig]:
+  TConfig[TProperty] extends Record<PropertyKey, unknown>
+    ? Config<TConfig[TProperty]>
+    : TConfig[TProperty] extends never[]
+      ? string[] // We only have arrays of strings
+      : TConfig[TProperty]
 }
 
-export async function executeQuery (props: RequestProps): Promise<any> {
-  if (props.body) props.body = toSneakCase(props.body)
-
-  const res = await fetch(props)
-  if (res.statusCode >= 400) {
-    throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
-  }
-
-  return toCamelCase(res.body)
-}
+export default Config

@@ -28,7 +28,6 @@ import type {
 import type { DiscordToken } from './common.js'
 import type { CamelCase } from '../util.js'
 import { executeQuery } from './common.js'
-import { objectToSneakCase } from '../util.js'
 import { API_BASE } from '../constants.js'
 
 type MessagePayload = CamelCase<MessagePayloadSneak>
@@ -40,6 +39,6 @@ export async function createMessage (channelId: string, message: MessagePayload,
     method: 'POST',
     url: `${API_BASE}/channels/${channelId}/messages`,
     headers: { authorization: `${token.type} ${token.token}` },
-    body: objectToSneakCase(message),
+    body: message,
   })
 }

@@ -28,4 +28,4 @@ export {
 } from './interactions/interaction.js'
 
 export { registerCommands, registerComponent } from './interactions/registry.js'
-export { handlePayload } from './interactions/handler.js'
+export { processPayload, validateSignature, handlePayload } from './interactions/handler.js'

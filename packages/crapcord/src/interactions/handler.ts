@@ -21,13 +21,14 @@
  */
 
 import type { APIApplicationCommandInteraction, APIInteraction, APIInteractionResponse, APIMessageComponentInteraction } from 'discord-api-types/v9'
+import type { SendResponseFunction } from './interaction.js'
 import type { DiscordToken } from '../api/common.js'
 import { InteractionType } from 'discord-api-types/v9'
-import { verify } from 'crypto'
+import { webcrypto } from 'crypto'
 
 import { CommandInteractionImpl, ComponentInteractionImpl } from './interaction.js'
 import { commandsRegistry, componentsRegistry } from './registry.js'
-import { objectToSneakCase } from '../util.js'
+import { makeDeferred } from '../util.js'
 
 export interface ErrorResponse {
   code: number
@@ -36,55 +37,66 @@ export interface ErrorResponse {
 
 type Response = APIInteractionResponse | ErrorResponse
 
+const keyCache = new Map<string, any>()
+
+function prepareInteraction (): [ Promise<Response>, SendResponseFunction, () => void ] {
+  const deferred = makeDeferred<Response>()
+
+  const timeout = setTimeout(() => {
+    console.error('Warning: an interaction took more than 3 seconds to send a response and timed out.')
+    deferred.resolve({ code: 504, message: 'interaction handling timed out' })
+    deferred.resolve = () => void 0
+  }, 3e3)
+
+  return [
+    deferred.promise,
+    (res: APIInteractionResponse) => {
+      clearTimeout(timeout)
+      deferred.resolve(res)
+    },
+    () => {
+      clearTimeout(timeout)
+      deferred.resolve({ code: 500, message: 'internal server error' })
+      deferred.resolve = () => void 0
+    },
+  ]
+}
+
 function handleCommand (payload: APIApplicationCommandInteraction, token: DiscordToken): Promise<Response> | Response {
   const handler = commandsRegistry.get(payload.data.name)
   if (!handler) return { code: 400, message: 'unknown interaction' }
 
-  return new Promise<Response>((resolve) => {
-    const timeout = setTimeout(() => {
-      console.error('Warning: an interaction took more than 3 seconds to send a response and timed out.')
-      resolve({ code: 500, message: 'internal server error' })
-      resolve = () => void 0
-    }, 3e3)
+  const [ promise, sendResponse, onError ] = prepareInteraction()
+  const interaction = new CommandInteractionImpl(payload, token, sendResponse)
 
-    function sendResponse (res: APIInteractionResponse) {
-      clearTimeout(timeout)
-      resolve(objectToSneakCase(res))
-    }
+  try {
+    handler(interaction)
+  } catch (e) {
+    console.error('Unexpected error while handling the interaction', e)
+    onError()
+  }
 
-    try {
-      const interaction = new CommandInteractionImpl(payload, token, sendResponse)
-      handler(interaction)
-    } catch (e) {
-      clearTimeout(timeout)
-      console.error('Unexpected error while handling the interaction', e)
-      resolve({ code: 500, message: 'internal server error' })
-      resolve = () => void 0
-    }
-  })
+  return promise
 }
 
 function handleComponent (payload: APIMessageComponentInteraction, token: DiscordToken): Promise<Response> | Response {
   const handler = componentsRegistry.get(payload.data.custom_id)
   if (!handler) return { code: 400, message: 'unknown interaction' }
 
-  return new Promise<Response>((resolve) => {
-    try {
-      const interaction = new ComponentInteractionImpl(payload, token, resolve)
-      handler(interaction)
-    } catch (e) {
-      console.error('Unexpected error while handling the interaction', e)
-      resolve({ code: 500, message: 'internal server error' })
-    }
-  })
-}
+  const [ promise, sendResponse, onError ] = prepareInteraction()
+  const interaction = new ComponentInteractionImpl(payload, token, sendResponse)
 
-export function handlePayload (payload: string, signature: string, timestamp: string, key: string, token: DiscordToken, parsed?: APIInteraction): Promise<Response> | Response {
-  if (!verify(null, Buffer.from(timestamp + payload, 'utf8'), Buffer.from(key, 'hex'), Buffer.from(signature, 'hex'))) {
-    return { code: 401, message: 'invalid request signature' }
+  try {
+    handler(interaction)
+  } catch (e) {
+    console.error('Unexpected error while handling the interaction', e)
+    onError()
   }
 
-  const interaction: APIInteraction = parsed ? parsed : JSON.parse(payload)
+  return promise
+}
+
+export async function processPayload (interaction: APIInteraction, token: DiscordToken): Promise<Response> {
   switch (interaction.type) {
     case InteractionType.Ping:
       return { type: 1 }
@@ -101,4 +113,42 @@ export function handlePayload (payload: string, signature: string, timestamp: st
     default:
       return { code: 400, message: 'invalid interaction type' }
   }
+}
+
+export async function validateSignature (payload: string, signature: string, timestamp: string, key: string): Promise<boolean> {
+  if (!keyCache.has(key)) {
+    const keyBuf = Buffer.from(key, 'hex')
+    const importedKey = await webcrypto.subtle.importKey(
+      'raw',
+      keyBuf,
+      { name: 'NODE-ED25519', namedCurve: 'NODE-ED25519' },
+      false,
+      [ 'verify' ]
+    )
+
+    keyCache.set(key, importedKey)
+  }
+
+  return webcrypto.subtle.verify(
+    'NODE-ED25519',
+    keyCache.get(key)!,
+    Buffer.from(signature, 'hex'),
+    Buffer.from(timestamp + payload)
+  )
+}
+
+export async function handlePayload (payload: string, signature: string, timestamp: string, key: string, token: DiscordToken, parsed?: APIInteraction): Promise<Response> {
+  if (!await validateSignature(payload, signature, timestamp, key)) {
+    return { code: 401, message: 'invalid request signature' }
+  }
+
+  const interaction: APIInteraction = parsed ? parsed : JSON.parse(payload)
+  return processPayload(interaction, token)
+}
+
+export async function handleGatewayPayload (interaction: APIInteraction, token: DiscordToken) {
+  const res = await processPayload(interaction, token)
+  if ('code' in res) return
+
+  // todo: send response to the API
 }

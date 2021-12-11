@@ -1,0 +1,16 @@
+{
+  "name": "@powercord/shared",
+  "version": "2.0.0",
+  "description": "Shared code for the entire backend",
+  "repository": "git@github.com:powercord-org/powercord-backend.git",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">= 15",
+    "pnpm": ">= 5.13"
+  },
+  "exports": {
+    "./config": "./config.js"
+  }
+}

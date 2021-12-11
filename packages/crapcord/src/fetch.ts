@@ -43,7 +43,7 @@ export type Response = {
 }
 
 const remainingMap = new Map<string, number>()
-const deferredMap = new Map<string, Deferred>()
+const deferredMap = new Map<string, Deferred<void>>()
 
 async function prepareRequest (url: string): Promise<void> {
   let skipDeferred = false

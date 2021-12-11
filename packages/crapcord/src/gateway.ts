@@ -88,6 +88,7 @@ class GatewayConnection extends EventEmitter<Events> {
           $browser: 'Discord Client',
           $device: 'Discord Client',
         },
+        // todo: make an arg for it
         intents: GatewayIntentBits.GuildMembers
           & GatewayIntentBits.GuildBans
           & GatewayIntentBits.GuildInvites

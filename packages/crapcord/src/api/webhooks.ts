@@ -30,7 +30,6 @@ import type {
 import type { DiscordToken } from './common.js'
 import type { CamelCase } from '../util.js'
 import { executeQuery } from './common.js'
-import { objectToSneakCase } from '../util.js'
 import { API_BASE } from '../constants.js'
 
 type ExecutePayload = CamelCase<ExecutePayloadSneak>
@@ -41,6 +40,7 @@ type UpdateResponse = CamelCase<UpdateResponseSneak>
 
 export type Webhook = { id: string, token: string }
 
+// todo: allow passing a function for components stuff and automatically register it behind the scenes
 export async function createMessage (message: ExecutePayload, hook: Webhook, token?: DiscordToken): Promise<ExecuteResponse> {
   const headers: Record<string, string> = token ? { authorization: `${token.type} ${token.token}` } : {}
 
@@ -48,7 +48,7 @@ export async function createMessage (message: ExecutePayload, hook: Webhook, tok
     method: 'POST',
     url: `${API_BASE}/webhooks/${hook.id}/${hook.token}?wait=true`,
     headers: headers,
-    body: objectToSneakCase(message),
+    body: message,
   })
 }
 
@@ -62,6 +62,7 @@ export async function fetchMessage (messageId: string, hook: Webhook, token?: Di
   })
 }
 
+// todo: allow passing a function for components stuff and automatically register it behind the scenes
 export async function updateMessage (messageId: string, message: UpdatePayload, hook: Webhook, token?: DiscordToken): Promise<UpdateResponse> {
   const headers: Record<string, string> = token ? { authorization: `${token.type} ${token.token}` } : {}
 
@@ -69,7 +70,7 @@ export async function updateMessage (messageId: string, message: UpdatePayload, 
     method: 'PATCH',
     url: `${API_BASE}/webhooks/${hook.id}/${hook.token}/messages/${messageId}`,
     headers: headers,
-    body: objectToSneakCase(message),
+    body: message,
   })
 }
 

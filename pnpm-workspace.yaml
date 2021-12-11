@@ -5,3 +5,4 @@ packages:
   - 'packages/spoonfeed'
   - 'packages/web'
   - 'packages/types'
+  - 'shared'
