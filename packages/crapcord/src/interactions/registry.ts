@@ -25,15 +25,45 @@ import type { CommandHandler, ComponentHandler } from './interaction.js'
 export const commandsRegistry = new Map<string, CommandHandler>()
 export const componentsRegistry = new Map<string, ComponentHandler>()
 
+export function registerCommand (command: string, handler: CommandHandler) {
+  commandsRegistry.set(command, handler)
+}
+
 export function registerCommands (commands: Record<string, CommandHandler>) {
   commandsRegistry.clear()
   for (const command in commands) {
     if (command in commands) {
-      commandsRegistry.set(command, commands[command])
+      registerCommand(command, commands[command])
     }
   }
 }
 
+export function unregisterCommand (command: string) {
+  commandsRegistry.delete(command)
+}
+
+export function clearCommands () {
+  commandsRegistry.clear()
+}
+
+
 export function registerComponent (component: string, handler: ComponentHandler) {
   componentsRegistry.set(component, handler)
+}
+
+export function registerComponents (components: Record<string, ComponentHandler>) {
+  componentsRegistry.clear()
+  for (const component in components) {
+    if (component in components) {
+      registerComponent(component, components[component])
+    }
+  }
+}
+
+export function unregisterComponent (component: string) {
+  componentsRegistry.delete(component)
+}
+
+export function clearComponents () {
+  componentsRegistry.clear()
 }

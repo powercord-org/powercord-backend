@@ -27,5 +27,9 @@ export {
   CommandHandler, ComponentHandler,
 } from './interactions/interaction.js'
 
-export { registerCommands, registerComponent } from './interactions/registry.js'
+export {
+  registerCommand, registerCommands, unregisterCommand, clearCommands,
+  registerComponent, registerComponents, unregisterComponent, clearComponents
+} from './interactions/registry.js'
+
 export { processPayload, validateSignature, handlePayload } from './interactions/handler.js'

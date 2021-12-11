@@ -10,7 +10,7 @@
     "pnpm": ">= 6"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "node scripts/eventmap.js && tsc",
     "lint": "eslint --ext ts src"
   },
   "dependencies": {

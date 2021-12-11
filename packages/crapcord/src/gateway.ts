@@ -22,22 +22,23 @@
 
 import type { GatewayDispatchPayload, GatewayReceivePayload, GatewaySendPayload } from 'discord-api-types'
 import type { Inflate } from 'zlib'
+import type EventMap from './util/eventmap.js'
 import { createInflate, constants as ZlibConstants } from 'zlib'
-import { GatewayOpcodes } from 'discord-api-types'
+import { GatewayOpcodes, GatewayDispatchEvents } from 'discord-api-types'
 import { TypedEmitter as EventEmitter } from 'tiny-typed-emitter'
 import WebSocket from 'ws'
 
+import { handleGatewayPayload } from './interactions/handler.js'
+import { toCamelCase } from './util/case.js'
 import { DISCORD_GATEWAY } from './constants.js'
 
-type Events = {
-  // todo: map all the event names to event data
-
-  // Toggle-able events
-  payload: (payload: GatewayReceivePayload) => void
-
+type Events = EventMap & {
   // Lifecycle events
   reconnect: () => void
   zombie: () => void
+
+  // Toggle-able events
+  payload: (payload: GatewayReceivePayload) => void
 
   error: (err: Error) => void
 }
@@ -203,8 +204,14 @@ export default class GatewayConnection extends EventEmitter<Events> {
     }
   }
 
-  // @ts-expect-error
   #handleDispatch (payload: GatewayDispatchPayload) {
-    // console.log(payload, this.#sequence)
+    if (payload.t === GatewayDispatchEvents.InteractionCreate) {
+      handleGatewayPayload(payload.d, { type: 'Bot', token: this.#options.token })
+      return
+    }
+
+    // As easy as it gets, eh
+    // as any is required because TS is yelling
+    this.emit(payload.t, toCamelCase(payload.d) as any)
   }
 }
