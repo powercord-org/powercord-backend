@@ -28,7 +28,7 @@ import { webcrypto } from 'crypto'
 
 import { CommandInteractionImpl, ComponentInteractionImpl } from './interaction.js'
 import { commandsRegistry, componentsRegistry } from './registry.js'
-import { makeDeferred } from '../util.js'
+import { makeDeferred } from '../util/deferred.js'
 
 export interface ErrorResponse {
   code: number

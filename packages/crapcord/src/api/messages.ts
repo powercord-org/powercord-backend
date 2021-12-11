@@ -21,24 +21,34 @@
  */
 
 import type {
-  RESTPostAPIChannelMessageJSONBody as MessagePayloadSneak,
-  RESTPostAPIChannelMessageResult as MessageResponseSneak,
+  RESTPostAPIChannelMessageJSONBody as MessageCreatePayloadSneak,
+  RESTPostAPIChannelMessageResult as MessageCreateResponseSneak,
+  RESTGetAPIChannelMessageResult as MessageFetchResponseSneak,
 } from 'discord-api-types/v9'
 
 import type { DiscordToken } from './common.js'
-import type { CamelCase } from '../util.js'
+import type { CamelCase } from '../util/case.js'
 import { executeQuery } from './common.js'
 import { API_BASE } from '../constants.js'
 
-type MessagePayload = CamelCase<MessagePayloadSneak>
-type MessageResponse = CamelCase<MessageResponseSneak>
+type MessageCreatePayload = CamelCase<MessageCreatePayloadSneak>
+type MessageCreateResponse = CamelCase<MessageCreateResponseSneak>
+type MessageFetchResponse = CamelCase<MessageFetchResponseSneak>
 
 // todo: allow passing a function for components stuff and automatically register it behind the scenes
-export async function createMessage (channelId: string, message: MessagePayload, token: DiscordToken): Promise<MessageResponse> {
+export async function createMessage (channelId: string, message: MessageCreatePayload, token: DiscordToken): Promise<MessageCreateResponse> {
   return executeQuery({
     method: 'POST',
     url: `${API_BASE}/channels/${channelId}/messages`,
     headers: { authorization: `${token.type} ${token.token}` },
     body: message,
+  })
+}
+
+export async function fetchMessage (channelId: string, messageId: string, token: DiscordToken): Promise<MessageFetchResponse> {
+  return executeQuery({
+    method: 'GET',
+    url: `${API_BASE}/channels/${channelId}/messages/${messageId}`,
+    headers: { authorization: `${token.type} ${token.token}` }
   })
 }

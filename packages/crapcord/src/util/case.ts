@@ -20,15 +20,6 @@
  * SOFTWARE.
  */
 
-export type Deferred<T = unknown> = { promise: Promise<T>, resolve: (value: T) => void, reject: (reason: any) => void }
-
-export function makeDeferred<T = unknown> (): Deferred<T> {
-  const deferred: Deferred<T> = {} as Deferred<T>
-  deferred.promise = new Promise<T>((resolve, reject) => Object.assign(deferred, { resolve: resolve, reject: reject }))
-  return deferred
-}
-
-
 export type CamelCaseString<S extends string> = S extends `${infer P1}_${infer P2}${infer P3}`
   ? `${Lowercase<P1>}${Uppercase<P2>}${CamelCaseString<P3>}`
   : Lowercase<S>

@@ -28,7 +28,7 @@ import type {
   RESTPatchAPIWebhookWithTokenMessageResult as UpdateResponseSneak,
 } from 'discord-api-types/v9'
 import type { DiscordToken } from './common.js'
-import type { CamelCase } from '../util.js'
+import type { CamelCase } from '../util/case.js'
 import { executeQuery } from './common.js'
 import { API_BASE } from '../constants.js'
 

@@ -20,11 +20,16 @@
  * SOFTWARE.
  */
 
+// todo: this is very discord specific and could live under src/api maybe?
+// todo: consider migrating to https://github.com/nodejs/undici ?
+
 import type { IncomingMessage } from 'http'
-import type { Deferred } from './util.js'
-import { URL } from 'url'
+import type { Readable } from 'stream'
+import type { Deferred } from './deferred.js'
 import https from 'https'
-import { makeDeferred } from './util.js'
+import { createBrotliDecompress, createGunzip, createInflate } from 'zlib'
+import { URL } from 'url'
+import { makeDeferred } from './deferred.js'
 
 // Ratelimit-aware fetch wrapper
 // note: the implementation is super poor and dumb but serves the purpose:tm:
@@ -96,6 +101,7 @@ export default async function fetch (request: RequestProps): Promise<Response> {
   // [Cynthia] We could accept gzip/deflate, but I'm unsure if it's worth. todo: measure impact?
   const req = https.request(request.url, { method: request.method, headers: request.headers })
   req.setHeader('user-agent', 'DiscordBot (https://powercord.dev, RollingRelease)')
+  req.setHeader('accept-encoding', 'br, gzip, deflate')
 
   if (request.body) {
     req.setHeader('content-type', 'application/json')
@@ -109,9 +115,23 @@ export default async function fetch (request: RequestProps): Promise<Response> {
   // todo: check if status is 429 and add extra logic here too
   processResponse(request.url.toString(), res)
 
+  // Decompress response if necessary
+  let bodyStream: Readable = res
+  switch (res.headers['content-encoding']) {
+    case 'br':
+      bodyStream = res.pipe(createBrotliDecompress())
+      break
+    case 'gzip':
+      bodyStream = res.pipe(createGunzip())
+      break
+    case 'deflate':
+      bodyStream = res.pipe(createInflate())
+      break
+  }
+
   const chunks: Buffer[] = []
-  res.on('data', (chk) => chunks.push(chk))
-  await new Promise((resolve) => res.on('end', resolve))
+  bodyStream.on('data', (chk) => chunks.push(chk))
+  await new Promise((resolve) => bodyStream.on('end', resolve))
   const body = JSON.parse(Buffer.concat(chunks).toString('utf8'))
 
   return {

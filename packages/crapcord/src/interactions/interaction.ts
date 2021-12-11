@@ -33,10 +33,10 @@ import type {
 } from 'discord-api-types/v9'
 import type { DiscordToken } from '../api/common.js'
 import type { Webhook } from '../api/webhooks.js'
-import type { CamelCase } from '../util.js'
+import type { CamelCase } from '../util/case.js'
 import { ApplicationCommandOptionType, InteractionType, InteractionResponseType } from 'discord-api-types/v9'
 import { createMessage, updateMessage, deleteMessage } from '../api/webhooks.js'
-import { toCamelCase, toSneakCase } from '../util.js'
+import { toCamelCase, toSneakCase } from '../util/case.js'
 
 type InteractionMessage = CamelCase<InteractionMessageSneak>
 type ResolvedMember = CamelCase<ResolvedMemberSneak>

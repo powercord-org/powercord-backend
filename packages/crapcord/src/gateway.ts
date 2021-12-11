@@ -21,8 +21,9 @@
  */
 
 import type { GatewayDispatchPayload, GatewayReceivePayload, GatewaySendPayload } from 'discord-api-types'
-import type { Data } from 'ws'
-import { GatewayIntentBits, GatewayOpcodes } from 'discord-api-types'
+import type { Inflate } from 'zlib'
+import { createInflate, constants as ZlibConstants } from 'zlib'
+import { GatewayOpcodes } from 'discord-api-types'
 import { TypedEmitter as EventEmitter } from 'tiny-typed-emitter'
 import WebSocket from 'ws'
 
@@ -30,13 +31,30 @@ import { DISCORD_GATEWAY } from './constants.js'
 
 type Events = {
   // todo: map all the event names to event data
+
+  // Toggle-able events
+  payload: (payload: GatewayReceivePayload) => void
+
+  // Lifecycle events
+  reconnect: () => void
+  zombie: () => void
+
   error: (err: Error) => void
 }
 
-class GatewayConnection extends EventEmitter<Events> {
+type ConnectionOptions = {
+  token: string
+  intents: number
+  emitPayloads?: boolean
+}
+
+// todo: support sharding
+export default class GatewayConnection extends EventEmitter<Events> {
   #ws: WebSocket
 
-  #token: string
+  #inflate: Inflate
+
+  #options: ConnectionOptions
 
   #sessionId: string | null = null
 
@@ -48,11 +66,17 @@ class GatewayConnection extends EventEmitter<Events> {
 
   #expectingShutdown: boolean = false
 
-  constructor (token: string) {
+  #zlibChunks: Buffer[] = []
+
+  constructor (options: ConnectionOptions) {
     super()
-    this.#token = token
-    this.#ws = null as unknown as WebSocket // makes ts happy
-    this.#connect()
+    this.#options = { ...options }
+
+    this.#inflate = createInflate({ flush: ZlibConstants.Z_SYNC_FLUSH })
+    this.#inflate.on('data', (data) => this.#zlibChunks.push(data))
+
+    // Trick to make TS happy w/o ugly hacks
+    this.#ws = this.#connect()
   }
 
   // todo: we probably don't even need to expose this in our impl
@@ -61,8 +85,16 @@ class GatewayConnection extends EventEmitter<Events> {
   }
 
   #connect () {
+    this.#inflate.reset()
     this.#ws = new WebSocket(DISCORD_GATEWAY)
-    this.#ws.on('message', (m) => this.#handleMessage(m))
+
+    this.#ws.on('message', (data: Buffer) => {
+      this.#inflate.write(data)
+      if (data.length >= 4 && data.readUInt32BE(data.length - 4) === 0x0ffff) {
+        this.#inflate.flush(ZlibConstants.Z_SYNC_FLUSH, () => this.#handleFlushComplete())
+      }
+    })
+
     this.#ws.on('close', () => {
       if (this.#heartbeatInterval) clearInterval(this.#heartbeatInterval)
       if (!this.#expectingShutdown) {
@@ -71,6 +103,8 @@ class GatewayConnection extends EventEmitter<Events> {
 
       this.#expectingShutdown = false
     })
+
+    return this.#ws
   }
 
   #identify () {
@@ -82,17 +116,13 @@ class GatewayConnection extends EventEmitter<Events> {
     this.send({
       op: GatewayOpcodes.Identify,
       d: {
-        token: this.#token,
+        token: this.#options.token,
         properties: {
           $os: process.platform,
-          $browser: 'Discord Client',
-          $device: 'Discord Client',
+          $browser: 'Crapcord',
+          $device: 'Crapcord',
         },
-        // todo: make an arg for it
-        intents: GatewayIntentBits.GuildMembers
-          & GatewayIntentBits.GuildBans
-          & GatewayIntentBits.GuildInvites
-          & GatewayIntentBits.GuildMessages,
+        intents: this.#options.intents,
       },
     })
   }
@@ -106,7 +136,7 @@ class GatewayConnection extends EventEmitter<Events> {
     this.send({
       op: GatewayOpcodes.Resume,
       d: {
-        token: this.#token,
+        token: this.#options.token,
         session_id: this.#sessionId,
         seq: this.#sequence,
       },
@@ -116,7 +146,7 @@ class GatewayConnection extends EventEmitter<Events> {
   #heartbeat () {
     this.#pendingHeartbeats++
     if (this.#pendingHeartbeats === 3) {
-      console.log('Zombified gateway connection. Reconnecting.')
+      this.emit('zombie')
       this.#expectingShutdown = true
       this.#ws.close()
       this.#connect()
@@ -129,15 +159,19 @@ class GatewayConnection extends EventEmitter<Events> {
     })
   }
 
-  #handleMessage (message: Data) {
-    if (typeof message !== 'string') {
-      this.emit('error', new Error('unexpected non-string payload'))
-      this.#expectingShutdown = true
-      this.#ws.close()
-      return
-    }
+  #handleFlushComplete () {
+    const data = this.#zlibChunks.length > 1
+      ? Buffer.concat(this.#zlibChunks)
+      : this.#zlibChunks[0]
 
+    this.#zlibChunks = []
+    this.#handleMessage(data.toString())
+  }
+
+  #handleMessage (message: string) {
     const data = JSON.parse(message) as GatewayReceivePayload
+    if (this.#options.emitPayloads) this.emit('payload', data)
+
     switch (data.op) {
       case 0: // dispatch
         this.#sequence = data.s
@@ -147,6 +181,7 @@ class GatewayConnection extends EventEmitter<Events> {
         this.#heartbeat()
         break
       case 7: // reconnect
+        this.emit('reconnect')
         this.#expectingShutdown = true
         this.#ws.close()
         this.#connect()
@@ -168,11 +203,8 @@ class GatewayConnection extends EventEmitter<Events> {
     }
   }
 
+  // @ts-expect-error
   #handleDispatch (payload: GatewayDispatchPayload) {
-    console.log(payload, this.#sequence)
+    // console.log(payload, this.#sequence)
   }
-}
-
-export function connect (token: string): GatewayConnection {
-  return new GatewayConnection(token)
 }

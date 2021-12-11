@@ -20,23 +20,10 @@
  * SOFTWARE.
  */
 
-import type { RequestProps, Response } from '../util/fetch.js'
-import { toCamelCase, toSneakCase } from '../util/case.js'
-import fetch from '../util/fetch.js'
+export type Deferred<T = unknown> = { promise: Promise<T>, resolve: (value: T) => void, reject: (reason: any) => void }
 
-export type DiscordToken = { type: 'Bot' | 'Bearer', token: string }
-
-export class DiscordError extends Error {
-  constructor (message: string, public response: Response) { super(message) }
-}
-
-export async function executeQuery (props: RequestProps): Promise<any> {
-  if (props.body) props.body = toSneakCase(props.body)
-
-  const res = await fetch(props)
-  if (res.statusCode >= 400) {
-    throw new DiscordError(`Discord API Error [${res.body.code}]: ${res.body.message}`, res)
-  }
-
-  return toCamelCase(res.body)
+export function makeDeferred<T = unknown> (): Deferred<T> {
+  const deferred: Deferred<T> = {} as Deferred<T>
+  deferred.promise = new Promise<T>((resolve, reject) => Object.assign(deferred, { resolve: resolve, reject: reject }))
+  return deferred
 }
