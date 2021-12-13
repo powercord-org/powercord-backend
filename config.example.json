@@ -1,7 +1,6 @@
 {
   "bind": "127.0.0.1",
   "honks": {
-    "patreonSecret": "",
     "staffChannel": "",
     "updootChannel": "",
     "formsChannel": ""
@@ -10,6 +9,27 @@
     "clientID": "",
     "clientSecret": "",
     "botToken": "",
+    "botPublicKey": "",
+    "roles": {
+      "donator": "",
+      "contributor": "",
+      "translator": "",
+      "hunter": "",
+      "user": "",
+      "muted": ""
+    },
+    "channels": {
+      "starboard": "",
+      "cuteboard": "",
+      "modlogs": "",
+      "messagelogs": "",
+      "memberlogs": "",
+      "faq": "",
+      "staff": ""
+    },
+    "messages": {
+      "rules": [ "", "" ]
+    },
     "prefix": "pc/",
     "ids": {
       "serverId": "",
@@ -27,11 +47,7 @@
       "channelRules": "",
       "channelFaq": "",
       "channelStaff": "",
-      "channelMuted": "",
-      "shitstars": {
-        "users": [],
-        "channels": []
-      }
+      "channelMuted": ""
     }
   },
   "spotify": {

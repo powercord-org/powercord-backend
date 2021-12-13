@@ -20,16 +20,8 @@
  * SOFTWARE.
  */
 
-import type RawConfig from '../config.example.json'
+import type { CommandInteraction } from 'crapcord/interactions'
 
-type Config<TConfig = typeof RawConfig> = {
-  [TProperty in keyof TConfig]:
-  TConfig[TProperty] extends Record<PropertyKey, unknown>
-    ? Config<TConfig[TProperty]>
-    : TConfig[TProperty] extends never[]
-      ? string[] // We only have arrays of strings
-      : TConfig[TProperty]
+export default function guideline (interaction: CommandInteraction) {
+  interaction.createMessage({ content: 'it is what it is' }, true)
 }
-
-declare const config: Config
-export default config

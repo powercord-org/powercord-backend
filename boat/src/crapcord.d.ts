@@ -20,16 +20,25 @@
  * SOFTWARE.
  */
 
-import type RawConfig from '../config.example.json'
+// TS sux
+// ~Cynthia
 
-type Config<TConfig = typeof RawConfig> = {
-  [TProperty in keyof TConfig]:
-  TConfig[TProperty] extends Record<PropertyKey, unknown>
-    ? Config<TConfig[TProperty]>
-    : TConfig[TProperty] extends never[]
-      ? string[] // We only have arrays of strings
-      : TConfig[TProperty]
+declare module 'crapcord/api' {
+  export * from 'crapcord/types/api'
+  export { default } from 'crapcord/types/api'
 }
 
-declare const config: Config
-export default config
+declare module 'crapcord/gateway' {
+  export * from 'crapcord/types/gateway'
+  export { default } from 'crapcord/types/gateway'
+}
+
+declare module 'crapcord/interactions' {
+  export * from 'crapcord/types/interactions'
+  export { default } from 'crapcord/types/interactions'
+}
+
+declare module 'crapcord/helpers' {
+  export * from 'crapcord/types/helpers'
+  export { default } from 'crapcord/types/helpers'
+}

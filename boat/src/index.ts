@@ -20,16 +20,22 @@
  * SOFTWARE.
  */
 
-import type RawConfig from '../config.example.json'
+import { registerCommands } from 'crapcord/interactions'
+import { createInteractionServer } from 'crapcord/helpers'
+import config from '@powercord/shared/config'
 
-type Config<TConfig = typeof RawConfig> = {
-  [TProperty in keyof TConfig]:
-  TConfig[TProperty] extends Record<PropertyKey, unknown>
-    ? Config<TConfig[TProperty]>
-    : TConfig[TProperty] extends never[]
-      ? string[] // We only have arrays of strings
-      : TConfig[TProperty]
-}
+import { hydrateStore as hydrateLawStore } from './data/laws.js'
 
-declare const config: Config
-export default config
+import guidelineCommand from './commands/guideline.js'
+
+await hydrateLawStore()
+
+registerCommands({
+  guideline: guidelineCommand
+})
+
+createInteractionServer({
+  port: 4567, // todo: config
+  token: { type: 'Bot', token: config.discord.botToken },
+  key: config.discord.botPublicKey
+})
