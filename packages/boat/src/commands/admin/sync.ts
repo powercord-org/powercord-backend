@@ -21,6 +21,7 @@
  */
 
 import type { GuildTextableChannel, Message, Member } from 'eris'
+import type { User } from '@powercord/types/users'
 import config from '../../config.js'
 
 export async function executor (msg: Message<GuildTextableChannel>): Promise<void> {
@@ -33,7 +34,7 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
   const message = await msg.channel.createMessage('<a:loading:660094837437104138> Processing...')
 
   const { guild } = msg.channel
-  const users = await msg._client.mongo.collection('users').find({}).toArray()
+  const users = await msg._client.mongo.collection<User>('users').find({}).toArray()
   await guild.fetchAllMembers()
   const filteredUsers = users.map((user) => ({
     ...user,

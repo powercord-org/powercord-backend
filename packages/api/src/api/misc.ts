@@ -103,7 +103,7 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
   }
 
   reply.header('etag', etag)
-  return getDiscordAvatar(user, (newUser) => this.mongo.db!.collection('users').updateOne(
+  return getDiscordAvatar(user, (newUser) => this.mongo.db!.collection<User>('users').updateOne(
     { _id: newUser.id },
     {
       $set: {
