@@ -99,7 +99,7 @@ export default class GatewayConnection extends EventEmitter<Events> {
     this.#ws.on('close', () => {
       if (this.#heartbeatInterval) clearInterval(this.#heartbeatInterval)
       if (!this.#expectingShutdown) {
-        setTimeout(() => this.#connect(), (4 * Math.random()) + 1)
+        setTimeout(() => this.#connect(), ((4 * Math.random()) + 1) * 1e3)
       }
 
       this.#expectingShutdown = false
@@ -174,31 +174,31 @@ export default class GatewayConnection extends EventEmitter<Events> {
     if (this.#options.emitPayloads) this.emit('payload', data)
 
     switch (data.op) {
-      case 0: // dispatch
+      case GatewayOpcodes.Dispatch: // dispatch
         this.#sequence = data.s
         this.#handleDispatch(data)
         break
-      case 1: // heartbeat
+      case GatewayOpcodes.Heartbeat: // heartbeat
         this.#heartbeat()
         break
-      case 7: // reconnect
+      case GatewayOpcodes.Reconnect: // reconnect
         this.emit('reconnect')
         this.#expectingShutdown = true
         this.#ws.close()
         this.#connect()
         break
-      case 9: // invalid session
+      case GatewayOpcodes.InvalidSession: // invalid session
         if (!data.d) this.#sessionId = null
-        setTimeout(() => this.#identify(), 1 + Math.random())
+        setTimeout(() => this.#identify(), (1 + Math.random()) * 1e3)
         break
-      case 10: // henlo
+      case GatewayOpcodes.Hello: // henlo
         this.#identify()
         this.#heartbeatInterval = setTimeout(() => {
           this.#heartbeat()
           this.#heartbeatInterval = setInterval(() => this.#heartbeat(), data.d.heartbeat_interval)
         }, data.d.heartbeat_interval * Math.random())
         break
-      case 11: // heartbeat ack
+      case GatewayOpcodes.HeartbeatAck: // heartbeat ack
         this.#pendingHeartbeats--
         break
     }
@@ -210,8 +210,17 @@ export default class GatewayConnection extends EventEmitter<Events> {
       return
     }
 
-    // As easy as it gets, eh
     // as any is required because TS is yelling
-    this.emit(payload.t, toCamelCase(payload.d) as any)
+    const data = toCamelCase(payload.d) as any
+
+    // Idea yoinked from catnip
+    // https://github.com/mewna/catnip/blob/7634fc1/src/main/java/com/mewna/catnip/shard/DispatchEmitter.java#L121
+    if (payload.t === 'MESSAGE_UPDATE' && !payload.d.author) {
+      this.emit('MESSAGE_EMBED_UPDATE', data)
+      return
+    }
+
+    // As easy as it gets, eh
+    this.emit(payload.t, data)
   }
 }

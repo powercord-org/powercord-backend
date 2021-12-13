@@ -142,7 +142,14 @@ export async function handlePayload (payload: string, signature: string, timesta
     return { code: 401, message: 'invalid request signature' }
   }
 
-  const interaction: APIInteraction = parsed ? parsed : JSON.parse(payload)
+  let interaction: APIInteraction
+  try {
+    // JSON.parse is safe as we know for a fact the data is from Discord - no pollution to worry about here
+    interaction = parsed ? parsed : JSON.parse(payload)
+  } catch {
+    return { code: 400, message: 'malformed request' }
+  }
+
   return processPayload(interaction, token)
 }
 

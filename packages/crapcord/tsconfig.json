@@ -2,8 +2,10 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "isolatedModules": false,
+    "declaration": true,
     "outDir": "./dist",
+    "declarationDir": "./types",
     "typeRoots": [ "./node_modules/@types" ]
   },
-  "include": [ "./src/**/*" ]
+  "include": [ "./src/**/*", "./types" ]
 }
