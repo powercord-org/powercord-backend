@@ -210,12 +210,16 @@ export default class GatewayConnection extends EventEmitter<Events> {
       return
     }
 
+    if (payload.t === GatewayDispatchEvents.Ready) {
+      this.#sessionId = payload.d.session_id
+    }
+
     // as any is required because TS is yelling
     const data = toCamelCase(payload.d) as any
 
     // Idea yoinked from catnip
     // https://github.com/mewna/catnip/blob/7634fc1/src/main/java/com/mewna/catnip/shard/DispatchEmitter.java#L121
-    if (payload.t === 'MESSAGE_UPDATE' && !payload.d.author) {
+    if (payload.t === GatewayDispatchEvents.MessageUpdate && !payload.d.author) {
       this.emit('MESSAGE_EMBED_UPDATE', data)
       return
     }

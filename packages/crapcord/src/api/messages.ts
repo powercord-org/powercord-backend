@@ -49,6 +49,6 @@ export async function fetchMessage (channelId: string, messageId: string, token:
   return executeQuery({
     method: 'GET',
     url: `${API_BASE}/channels/${channelId}/messages/${messageId}`,
-    headers: { authorization: `${token.type} ${token.token}` }
+    headers: { authorization: `${token.type} ${token.token}` },
   })
 }

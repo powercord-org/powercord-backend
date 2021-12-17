@@ -121,7 +121,7 @@ export async function validateSignature (payload: string, signature: string, tim
     const importedKey = await webcrypto.subtle.importKey(
       'raw',
       keyBuf,
-      { name: 'NODE-ED25519', namedCurve: 'NODE-ED25519' },
+      { name: 'NODE-ED25519', namedCurve: 'NODE-ED25519', public: true },
       false,
       [ 'verify' ]
     )

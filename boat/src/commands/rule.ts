@@ -20,25 +20,29 @@
  * SOFTWARE.
  */
 
-import { registerCommands } from 'crapcord/interactions'
-import { createInteractionServer } from 'crapcord/helpers'
-import config from '@powercord/shared/config'
+import type { SlashCommand } from 'crapcord/interactions'
+import type { Penalties } from '../data/laws.js'
+import { getCivilLaw } from '../data/laws.js'
 
-import { hydrateStore as hydrateLawStore } from './data/laws.js'
+function formatActions (actions: Penalties) {
+  if (actions.type === 'branched') {
+    let res = 'Actions:\n'
+    for (const branch in actions.branches) {
+      if (branch in actions.branches) {
+        res += ` => ${branch}: ${actions.branches[branch].join(' -> ')}`
+      }
+    }
+    return res
+  }
 
-import guidelineCommand from './commands/guideline.js'
-import ruleCommand from './commands/rule.js'
+  return `Actions: ${actions.entries.join(' -> ')}`
+}
 
-await hydrateLawStore()
+export default function rule (interaction: SlashCommand) {
+  const law = getCivilLaw(interaction.args.rule)
+  const message = law
+    ? `**${law.law}**\n${law.article}${law.penalties ? `\n\n${formatActions(law.penalties)}` : ''}`
+    : 'This rule does not exist.'
 
-// todo: change whole register process on cc
-registerCommands({
-  guideline: guidelineCommand as any,
-  rule: ruleCommand as any,
-})
-
-createInteractionServer({
-  port: 4567, // todo: config
-  token: { type: 'Bot', token: config.discord.botToken },
-  key: config.discord.botPublicKey,
-})
+  interaction.createMessage({ content: message }, !law)
+}

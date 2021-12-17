@@ -22,6 +22,7 @@
 
 // todo: this is very discord specific and could live under src/api maybe?
 // todo: consider migrating to https://github.com/nodejs/undici ?
+// todo: enhance ratelimit handling + memory issues with maps
 
 import type { IncomingMessage } from 'http'
 import type { Readable } from 'stream'

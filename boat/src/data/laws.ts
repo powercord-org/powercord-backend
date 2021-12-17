@@ -24,7 +24,7 @@ import https from 'https'
 import { messages } from 'crapcord/api'
 import config from '@powercord/shared/config'
 
-type Penalties = |
+export type Penalties = |
   { type: 'simple', entries: string[] } |
   { type: 'branched', branches: Record<string, string[]> }
 
@@ -40,7 +40,7 @@ const civilLaws = new Map<number, Law>() // Rules
 const commerceLaws = new Map<number, Law>() // Guidelines
 
 const RULES_REGEX = /(\d{2}):: (.+)\n((?:.+\n)+?)(?: +Actions: ((?:=> )?.+(?:\n +=>.+)*))?\n[\n`]?/g
-const ACTIONS_REGEX = / *=> (.*?): ?(.*)/g
+const ACTIONS_BRANCH_REGEX = / *=> (.*?): ?(.*)/g
 
 async function fetchCivilCode (): Promise<void> {
   const [ channelId, messageId ] = config.discord.messages.rules
@@ -50,7 +50,7 @@ async function fetchCivilCode (): Promise<void> {
     if (actionsRaw) {
       if (actionsRaw.startsWith('=>')) {
         penalties = { type: 'branched', branches: {} }
-        for (const [ , branch, actions ] of actionsRaw.matchAll(ACTIONS_REGEX)) {
+        for (const [ , branch, actions ] of actionsRaw.matchAll(ACTIONS_BRANCH_REGEX)) {
           penalties.branches[branch] = actions.split(' -> ')
         }
       } else {

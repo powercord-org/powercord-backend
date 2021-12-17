@@ -20,8 +20,14 @@
  * SOFTWARE.
  */
 
-import type { CommandInteraction } from 'crapcord/interactions'
+import type { SlashCommand } from 'crapcord/interactions'
+import { getCommerceLaw } from '../data/laws.js'
 
-export default function guideline (interaction: CommandInteraction) {
-  interaction.createMessage({ content: 'it is what it is' }, true)
+export default function guideline (interaction: SlashCommand) {
+  const law = getCommerceLaw(interaction.args.guideline)
+  const message = law
+    ? `**${law.law}**\n${law.article}`
+    : 'This guideline does not exist.'
+
+  interaction.createMessage({ content: message }, !law)
 }
