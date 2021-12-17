@@ -38,7 +38,7 @@ function formatActions (actions: Penalties) {
   return `Actions: ${actions.entries.join(' -> ')}`
 }
 
-export default function rule (interaction: SlashCommand) {
+export default function rule (interaction: SlashCommand<{ rule: number }>) {
   const law = getCivilLaw(interaction.args.rule)
   const message = law
     ? `**${law.law}**\n${law.article}${law.penalties ? `\n\n${formatActions(law.penalties)}` : ''}`

@@ -45,8 +45,7 @@ type Message = CamelCase<MessageSneak>
 type User = CamelCase<UserSneak>
 
 type GuildData = { id: string, member: Member }
-
-type UserTarget = { user: User, member: ResolvedMember | null }
+type OptionValue = string | number | boolean
 
 export interface Interaction {
   type: number
@@ -57,10 +56,13 @@ export interface Interaction {
   defer (): void
   createMessage (message: InteractionMessage, ephemeral?: boolean): Promise<Message> | void
   updateMessage (messageId: string, message: InteractionMessage): void
+  deleteMessage (messageId: string): void
 }
 
 export interface CommandInteraction extends Interaction {
   command: string
+  subcommands: string[]
+  args: Record<string, any>
 }
 
 export interface ComponentInteraction extends Interaction {
@@ -71,19 +73,24 @@ export interface ComponentInteraction extends Interaction {
 }
 
 
-export interface SlashCommand extends CommandInteraction {
+export interface SlashCommand<TArgs extends Record<string, any> = Record<string, any>> extends CommandInteraction {
   type: 1
-  args: Record<string, any>
+  args: TArgs
 }
 
 export interface UserCommand extends CommandInteraction {
   type: 2
-  target: UserTarget
+  args: {
+    user: User
+    member: ResolvedMember | null
+  }
 }
 
 export interface MessageCommand extends CommandInteraction {
   type: 3
-  target: Message
+  args: {
+    target: Message
+  }
 }
 
 
@@ -96,8 +103,14 @@ export interface SelectMenuComponent extends ComponentInteraction {
   values: string[]
 }
 
+export type SlashCommandHandler<TArgs extends Record<string, OptionValue> = Record<string, OptionValue>> = (interaction: SlashCommand<TArgs>) => void
+export type UserCommandHandler = (interaction: UserCommand) => void
+export type MessageCommandHandler = (interaction: MessageCommand) => void
+export type CommandHandler = SlashCommandHandler | UserCommandHandler | MessageCommandHandler
+export type GenericCommandHandler = (interaction: CommandInteraction) => void
 
-export type CommandHandler = (interaction: CommandInteraction) => void
+export type ButtonComponentHandler = (interaction: ButtonComponent) => void
+export type SelectMenuComponentHandler = (interaction: SelectMenuComponent) => void
 export type ComponentHandler = (interaction: ComponentInteraction) => void
 
 export type SendResponseFunction = (response: InteractionResponse) => void
@@ -231,14 +244,15 @@ export class CommandInteractionImpl extends InteractionImpl implements CommandIn
 
   command: string
 
-  args?: Record<string, any>
+  subcommands: string[]
 
-  target?: UserTarget | Message
+  args: Record<string, any>
 
   constructor (payload: ApiCommandInteraction, token: DiscordToken, sendResponse: SendResponseFunction) {
     super(payload, token, sendResponse)
     this.type = payload.data.type
     this.command = payload.data.name
+    this.subcommands = []
 
     switch (payload.data.type) {
       case 1:
@@ -246,26 +260,29 @@ export class CommandInteractionImpl extends InteractionImpl implements CommandIn
         break
       case 2: {
         const rawMember = payload.data.resolved.members?.[payload.data.target_id]
-        this.target = {
+        this.args = {
           user: toCamelCase(payload.data.resolved.users[payload.data.target_id]),
           member: rawMember ? toCamelCase(rawMember) : null,
         }
         break
       }
       case 3:
-        this.target = toCamelCase(payload.data.resolved.messages[payload.data.target_id])
+        this.args = { message: toCamelCase(payload.data.resolved.messages[payload.data.target_id]) }
+        break
+      default:
+        this.args = {}
         break
     }
   }
 
-  #parseOptions (options?: InteractionOption[]) {
+  #parseOptions (options?: InteractionOption[]): Record<string, OptionValue> {
     if (!options) return {}
 
-    const parsed: Record<string, any> = {}
+    const parsed: Record<string, OptionValue> = {}
     for (const option of options) {
       if (option.type === ApplicationCommandOptionType.Subcommand || option.type === ApplicationCommandOptionType.SubcommandGroup) {
-        parsed[option.name] = this.#parseOptions(option.options)
-        continue
+        this.subcommands.push(option.name)
+        return this.#parseOptions(option.options)
       }
 
       parsed[option.name] = option.value

@@ -23,7 +23,7 @@
 import type { SlashCommand } from 'crapcord/interactions'
 import { getCommerceLaw } from '../data/laws.js'
 
-export default function guideline (interaction: SlashCommand) {
+export default function guideline (interaction: SlashCommand<{ guideline: number }>) {
   const law = getCommerceLaw(interaction.args.guideline)
   const message = law
     ? `**${law.law}**\n${law.article}`

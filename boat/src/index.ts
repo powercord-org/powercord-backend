@@ -32,10 +32,10 @@ import ruleCommand from './commands/rule.js'
 await hydrateLawStore()
 
 // todo: change whole register process on cc
-registerCommands({
-  guideline: guidelineCommand as any,
-  rule: ruleCommand as any,
-})
+registerCommands([
+  { command: 'guideline', handler: guidelineCommand },
+  { command: 'rule', handler: ruleCommand },
+])
 
 createInteractionServer({
   port: 4567, // todo: config

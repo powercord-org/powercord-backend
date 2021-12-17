@@ -21,9 +21,10 @@
  */
 
 import type { APIApplicationCommandInteraction, APIInteraction, APIInteractionResponse, APIMessageComponentInteraction } from 'discord-api-types/v9'
-import type { SendResponseFunction } from './interaction.js'
+import type { GenericCommandHandler, CommandHandler, SendResponseFunction } from './interaction.js'
+import type { CommandEntry } from './registry.js'
 import type { DiscordToken } from '../api/common.js'
-import { InteractionType } from 'discord-api-types/v9'
+import { InteractionType, ApplicationCommandType, ApplicationCommandOptionType as OptionType } from 'discord-api-types/v9'
 import { webcrypto } from 'crypto'
 
 import { CommandInteractionImpl, ComponentInteractionImpl } from './interaction.js'
@@ -37,7 +38,35 @@ export interface ErrorResponse {
 
 type Response = APIInteractionResponse | ErrorResponse
 
+enum CommandRouteError {
+  UndefinedSubCommand,
+  UnexpectedSubCommand,
+  SubCommandNotFound,
+  CommandTypeMismatch
+}
+
 const keyCache = new Map<string, any>()
+
+function routeCommand (command: CommandEntry, payload: APIApplicationCommandInteraction): CommandHandler | CommandRouteError {
+  if (payload.data.type === ApplicationCommandType.ChatInput) {
+    if ('handler' in command) return command.handler
+
+    const opt1 = payload.data.options?.[0]
+    if (!opt1 || (opt1.type !== OptionType.Subcommand && opt1.type !== OptionType.SubcommandGroup)) return CommandRouteError.UnexpectedSubCommand
+
+    if (!(opt1.name in command.sub)) return CommandRouteError.SubCommandNotFound
+    const sub = command.sub[opt1.name]
+
+    if (typeof sub === 'function') return sub
+    if (opt1.type !== OptionType.SubcommandGroup) return CommandRouteError.UnexpectedSubCommand
+
+    const opt2 = payload.data.options![1]!
+    if (!(opt2.name in sub)) return CommandRouteError.SubCommandNotFound
+    return sub[opt2.name]
+  }
+
+  return 'handler' in command ? command.handler : CommandRouteError.CommandTypeMismatch
+}
 
 function prepareInteraction (): [ Promise<Response>, SendResponseFunction, () => void ] {
   const deferred = makeDeferred<Response>()
@@ -63,8 +92,16 @@ function prepareInteraction (): [ Promise<Response>, SendResponseFunction, () =>
 }
 
 function handleCommand (payload: APIApplicationCommandInteraction, token: DiscordToken): Promise<Response> | Response {
-  const handler = commandsRegistry.get(payload.data.name)
-  if (!handler) return { code: 400, message: 'unknown interaction' }
+  const command = commandsRegistry.get(payload.data.name)
+  if (!command) return { code: 400, message: 'unknown interaction' }
+
+  // Route subcommands
+  const handler = routeCommand(command, payload) as GenericCommandHandler | CommandRouteError
+  if (typeof handler === 'number') {
+    // todo: better error message
+    console.error(`Error: failed to route command. Error code: ${handler}`)
+    return { code: 500, message: 'internal server error' }
+  }
 
   const [ promise, sendResponse, onError ] = prepareInteraction()
   const interaction = new CommandInteractionImpl(payload, token, sendResponse)
@@ -80,14 +117,14 @@ function handleCommand (payload: APIApplicationCommandInteraction, token: Discor
 }
 
 function handleComponent (payload: APIMessageComponentInteraction, token: DiscordToken): Promise<Response> | Response {
-  const handler = componentsRegistry.get(payload.data.custom_id)
-  if (!handler) return { code: 400, message: 'unknown interaction' }
+  const component = componentsRegistry.get(payload.data.custom_id)
+  if (!component) return { code: 400, message: 'unknown interaction' }
 
   const [ promise, sendResponse, onError ] = prepareInteraction()
   const interaction = new ComponentInteractionImpl(payload, token, sendResponse)
 
   try {
-    handler(interaction)
+    component.handler(interaction)
   } catch (e) {
     console.error('Unexpected error while handling the interaction', e)
     onError()

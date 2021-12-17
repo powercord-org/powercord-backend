@@ -20,22 +20,21 @@
  * SOFTWARE.
  */
 
-import type { CommandHandler, ComponentHandler } from './interaction.js'
+import type { SlashCommandHandler, CommandHandler, ComponentHandler } from './interaction.js'
 
-export const commandsRegistry = new Map<string, CommandHandler>()
-export const componentsRegistry = new Map<string, ComponentHandler>()
+type SlashCommandSub = { sub: Record<string, Record<string, SlashCommandHandler> | SlashCommandHandler> }
+export type CommandEntry = { command: string } & ({ handler: CommandHandler } | SlashCommandSub)
+export type ComponentEntry = { id: string, handler: ComponentHandler }
 
-export function registerCommand (command: string, handler: CommandHandler) {
-  commandsRegistry.set(command, handler)
+export const commandsRegistry = new Map<string, CommandEntry>()
+export const componentsRegistry = new Map<string, ComponentEntry>()
+
+export function registerCommand (command: CommandEntry) {
+  commandsRegistry.set(command.command, command)
 }
 
-export function registerCommands (commands: Record<string, CommandHandler>) {
-  commandsRegistry.clear()
-  for (const command in commands) {
-    if (command in commands) {
-      registerCommand(command, commands[command])
-    }
-  }
+export function registerCommands (commands: CommandEntry[]) {
+  commands.forEach(registerCommand)
 }
 
 export function unregisterCommand (command: string) {
@@ -47,17 +46,12 @@ export function clearCommands () {
 }
 
 
-export function registerComponent (component: string, handler: ComponentHandler) {
-  componentsRegistry.set(component, handler)
+export function registerComponent (component: ComponentEntry) {
+  componentsRegistry.set(component.id, component)
 }
 
-export function registerComponents (components: Record<string, ComponentHandler>) {
-  componentsRegistry.clear()
-  for (const component in components) {
-    if (component in components) {
-      registerComponent(component, components[component])
-    }
-  }
+export function registerComponents (components: ComponentEntry[]) {
+  components.forEach(registerComponent)
 }
 
 export function unregisterComponent (component: string) {
