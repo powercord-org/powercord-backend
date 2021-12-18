@@ -22,8 +22,11 @@
 
 import type { SlashCommandHandler, CommandHandler, ComponentHandler } from './interaction.js'
 
-type SlashCommandSub = { sub: Record<string, Record<string, SlashCommandHandler> | SlashCommandHandler> }
-export type CommandEntry = { command: string } & ({ handler: CommandHandler } | SlashCommandSub)
+type BasicHandle = { handler: CommandHandler }
+type SlashHandler = { handler: SlashCommandHandler, autocomplete?: never }
+
+type SlashCommandSub = { sub: Record<string, { sub: Record<string, SlashHandler> } | SlashHandler> }
+export type CommandEntry = { command: string } & (BasicHandle | SlashHandler | SlashCommandSub)
 export type ComponentEntry = { id: string, handler: ComponentHandler }
 
 export const commandsRegistry = new Map<string, CommandEntry>()

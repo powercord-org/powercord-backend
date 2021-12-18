@@ -23,13 +23,15 @@
 import type {
   RESTPostAPIInteractionCallbackJSONBody as InteractionResponse,
   APIApplicationCommandInteractionDataOption as InteractionOption,
+  APIChatInputApplicationCommandInteractionDataResolved as InteractionResolved,
   APIApplicationCommandInteraction as ApiCommandInteraction,
   APIMessageComponentInteraction as ApiComponentInteraction,
   APIInteractionResponseCallbackData as InteractionMessageSneak,
   APIInteractionDataResolvedGuildMember as ResolvedMemberSneak,
-  APIGuildMember as MemberSneak,
+  APIInteractionDataResolvedChannel as ResolvedChannelSneak,
   APIMessage as MessageSneak,
   APIUser as UserSneak,
+  APIRole as RoleSneak,
 } from 'discord-api-types/v9'
 import type { DiscordToken } from '../api/common.js'
 import type { Webhook } from '../api/webhooks.js'
@@ -40,18 +42,23 @@ import { toCamelCase, toSneakCase } from '../util/case.js'
 
 type InteractionMessage = CamelCase<InteractionMessageSneak>
 type ResolvedMember = CamelCase<ResolvedMemberSneak>
-type Member = CamelCase<MemberSneak>
+type ResolvedChannel = CamelCase<ResolvedChannelSneak>
 type Message = CamelCase<MessageSneak>
 type User = CamelCase<UserSneak>
+type Role = CamelCase<RoleSneak>
 
-type GuildData = { id: string, member: Member }
-type OptionValue = string | number | boolean
+type UserData = { user: User, member: ResolvedMember | null }
+
+export type OptionRole = Role
+export type OptionChannel = ResolvedChannel
+export type OptionUser = { user: User, member: ResolvedMember | null }
+export type OptionMentionable = { type: 'role', value: Role } | { type: 'user', value: UserData }
+export type OptionValue = string | number | boolean | OptionRole | OptionChannel | OptionUser | OptionMentionable
 
 export interface Interaction {
   type: number
   user: User
   channelId: string
-  guild?: GuildData
 
   defer (): void
   createMessage (message: InteractionMessage, ephemeral?: boolean): Promise<Message> | void
@@ -72,24 +79,19 @@ export interface ComponentInteraction extends Interaction {
   deferUpdate (): void
 }
 
-
-export interface SlashCommand<TArgs extends Record<string, any> = Record<string, any>> extends CommandInteraction {
-  type: 1
+export interface SlashCommand<TArgs extends Record<string, OptionValue> = Record<string, OptionValue>> extends CommandInteraction {
   args: TArgs
 }
 
 export interface UserCommand extends CommandInteraction {
   type: 2
-  args: {
-    user: User
-    member: ResolvedMember | null
-  }
+  args: UserData
 }
 
 export interface MessageCommand extends CommandInteraction {
   type: 3
   args: {
-    target: Message
+    message: Message
   }
 }
 
@@ -103,7 +105,8 @@ export interface SelectMenuComponent extends ComponentInteraction {
   values: string[]
 }
 
-export type SlashCommandHandler<TArgs extends Record<string, OptionValue> = Record<string, OptionValue>> = (interaction: SlashCommand<TArgs>) => void
+// this any is gross but I can't do much about it, or at least idk how
+export type SlashCommandHandler = (interaction: SlashCommand<any>) => void
 export type UserCommandHandler = (interaction: UserCommand) => void
 export type MessageCommandHandler = (interaction: MessageCommand) => void
 export type CommandHandler = SlashCommandHandler | UserCommandHandler | MessageCommandHandler
@@ -125,8 +128,6 @@ abstract class InteractionImpl implements Interaction {
   user: User
 
   channelId: string
-
-  guild?: GuildData
 
   #isComponent: boolean
 
@@ -256,7 +257,7 @@ export class CommandInteractionImpl extends InteractionImpl implements CommandIn
 
     switch (payload.data.type) {
       case 1:
-        this.args = this.#parseOptions(payload.data.options)
+        this.args = this.#parseOptions(payload.data.options, payload.data.resolved)
         break
       case 2: {
         const rawMember = payload.data.resolved.members?.[payload.data.target_id]
@@ -275,17 +276,46 @@ export class CommandInteractionImpl extends InteractionImpl implements CommandIn
     }
   }
 
-  #parseOptions (options?: InteractionOption[]): Record<string, OptionValue> {
+  #parseOptions (options?: InteractionOption[], resolved?: InteractionResolved): Record<string, OptionValue> {
     if (!options) return {}
 
     const parsed: Record<string, OptionValue> = {}
     for (const option of options) {
       if (option.type === ApplicationCommandOptionType.Subcommand || option.type === ApplicationCommandOptionType.SubcommandGroup) {
         this.subcommands.push(option.name)
-        return this.#parseOptions(option.options)
+        return this.#parseOptions(option.options, resolved)
       }
 
-      parsed[option.name] = option.value
+      switch (option.type) {
+        case ApplicationCommandOptionType.User:
+          parsed[option.name] = {
+            user: toCamelCase(resolved?.users?.[option.value]!),
+            member: resolved?.members?.[option.value] ? toCamelCase(resolved.members[option.value]) : null,
+          }
+          break
+        case ApplicationCommandOptionType.Channel:
+          parsed[option.name] = toCamelCase(resolved?.channels?.[option.value]!)
+          break
+        case ApplicationCommandOptionType.Role:
+          parsed[option.name] = toCamelCase(resolved?.roles?.[option.value]!)
+          break
+        case ApplicationCommandOptionType.Mentionable:
+          if (resolved?.roles?.[option.value]) {
+            parsed[option.name] = { type: 'role', value: toCamelCase(resolved.roles[option.value]) }
+          } else {
+            parsed[option.name] = {
+              type: 'user',
+              value: {
+                user: toCamelCase(resolved?.users?.[option.value]!),
+                member: resolved?.members?.[option.value] ? toCamelCase(resolved.members[option.value]) : null,
+              },
+            }
+          }
+          break
+        default:
+          parsed[option.name] = option.value
+          break
+      }
     }
 
     return parsed

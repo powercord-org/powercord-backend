@@ -25,11 +25,14 @@ export {
   SlashCommand, UserCommand, MessageCommand,
   ButtonComponent, SelectMenuComponent,
   CommandHandler, ComponentHandler,
+
+  OptionRole, OptionChannel, OptionUser,
+  OptionMentionable, OptionValue,
 } from './interactions/interaction.js'
 
 export {
   registerCommand, registerCommands, unregisterCommand, clearCommands,
-  registerComponent, registerComponents, unregisterComponent, clearComponents
+  registerComponent, registerComponents, unregisterComponent, clearComponents,
 } from './interactions/registry.js'
 
 export { processPayload, validateSignature, handlePayload } from './interactions/handler.js'

@@ -38,34 +38,43 @@ export interface ErrorResponse {
 
 type Response = APIInteractionResponse | ErrorResponse
 
-enum CommandRouteError {
-  UndefinedSubCommand,
-  UnexpectedSubCommand,
-  SubCommandNotFound,
-  CommandTypeMismatch
-}
-
 const keyCache = new Map<string, any>()
 
-function routeCommand (command: CommandEntry, payload: APIApplicationCommandInteraction): CommandHandler | CommandRouteError {
+function payloadToInvocation (payload: APIApplicationCommandInteraction) {
+  if (payload.data.type === ApplicationCommandType.ChatInput) {
+    const opt = payload.data.options?.[0]
+    if (opt?.type === OptionType.SubcommandGroup) {
+      return `/${payload.data.name} ${opt.name} ${opt.options[0].name}`
+    }
+
+    if (opt?.type === OptionType.Subcommand) {
+      return `/${payload.data.name} ${opt.name}`
+    }
+
+    return `/${payload.data.name}`
+  }
+
+  return payload.data.name
+}
+
+function routeCommand (command: CommandEntry, payload: APIApplicationCommandInteraction): CommandHandler | null {
   if (payload.data.type === ApplicationCommandType.ChatInput) {
     if ('handler' in command) return command.handler
 
-    const opt1 = payload.data.options?.[0]
-    if (!opt1 || (opt1.type !== OptionType.Subcommand && opt1.type !== OptionType.SubcommandGroup)) return CommandRouteError.UnexpectedSubCommand
+    let opt = payload.data.options?.[0]
+    if (!opt || (opt.type !== OptionType.Subcommand && opt.type !== OptionType.SubcommandGroup)) return null
 
-    if (!(opt1.name in command.sub)) return CommandRouteError.SubCommandNotFound
-    const sub = command.sub[opt1.name]
+    if (!(opt.name in command.sub)) return null
+    const sub = command.sub[opt.name]
 
-    if (typeof sub === 'function') return sub
-    if (opt1.type !== OptionType.SubcommandGroup) return CommandRouteError.UnexpectedSubCommand
+    if ('handler' in sub) return sub.handler
+    if (opt.type !== OptionType.SubcommandGroup) return null
 
-    const opt2 = payload.data.options![1]!
-    if (!(opt2.name in sub)) return CommandRouteError.SubCommandNotFound
-    return sub[opt2.name]
+    if (!(opt.options[0].name in sub.sub)) return null
+    return sub.sub[opt.options[0].name].handler
   }
 
-  return 'handler' in command ? command.handler : CommandRouteError.CommandTypeMismatch
+  return 'handler' in command ? command.handler : null
 }
 
 function prepareInteraction (): [ Promise<Response>, SendResponseFunction, () => void ] {
@@ -93,13 +102,15 @@ function prepareInteraction (): [ Promise<Response>, SendResponseFunction, () =>
 
 function handleCommand (payload: APIApplicationCommandInteraction, token: DiscordToken): Promise<Response> | Response {
   const command = commandsRegistry.get(payload.data.name)
-  if (!command) return { code: 400, message: 'unknown interaction' }
+  if (!command) {
+    console.error(`Error: failed to route command "${payloadToInvocation(payload)}". Base command has not been registered.`)
+    return { code: 400, message: 'unknown interaction' }
+  }
 
   // Route subcommands
-  const handler = routeCommand(command, payload) as GenericCommandHandler | CommandRouteError
-  if (typeof handler === 'number') {
-    // todo: better error message
-    console.error(`Error: failed to route command. Error code: ${handler}`)
+  const handler = routeCommand(command, payload) as GenericCommandHandler | null
+  if (!handler) {
+    console.error(`Error: failed to route command "${payloadToInvocation(payload)}". This may be due to an unregistered subcommand, or that you registered subcommands instead of a handler.`)
     return { code: 500, message: 'internal server error' }
   }
 

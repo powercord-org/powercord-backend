@@ -31,7 +31,6 @@ import ruleCommand from './commands/rule.js'
 
 await hydrateLawStore()
 
-// todo: change whole register process on cc
 registerCommands([
   { command: 'guideline', handler: guidelineCommand },
   { command: 'rule', handler: ruleCommand },
