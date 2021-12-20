@@ -36,3 +36,5 @@ export {
 } from './interactions/registry.js'
 
 export { processPayload, validateSignature, handlePayload } from './interactions/handler.js'
+
+export { registerErrorHandler, InteractionErrorCode, IInteractionError as InteractionError } from './interactions/error.js'

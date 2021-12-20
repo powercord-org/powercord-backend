@@ -1,7 +1,7 @@
 {
   "name": "crapcord",
   "version": "0.1.0",
-  "description": "Minimal Discord API/Gateway wrapper with interactions support",
+  "description": "Minimal Discord API/Gateway wrapper, with fully fledged interactions support",
   "repository": "git@github.com:powercord-org/powercord-backend.git",
   "license": "MIT",
   "type": "module",
