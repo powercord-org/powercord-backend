@@ -20,4 +20,18 @@
  * SOFTWARE.
  */
 
-export {}
+import type { Tag } from '../commands/tags/manage.js'
+import { MongoClient } from 'mongodb'
+import config from '@powercord/shared/config'
+
+export const client = new MongoClient(`${config.mango}?appName=Powercord%20Boat`)
+
+export const db = client.db('powercord')
+
+export const tags = db.collection<Tag>('tags')
+
+// Connect & prepare indexes
+await client.connect()
+await Promise.all([
+  tags.createIndex({ name: 1 }, { unique: true }),
+])

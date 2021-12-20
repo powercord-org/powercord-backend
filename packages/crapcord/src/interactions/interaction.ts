@@ -57,13 +57,17 @@ export type OptionValue = string | number | boolean | OptionRole | OptionChannel
 
 export interface Interaction {
   type: number
-  user: User
+  invoker: User
   channelId: string
+  guildId: string | null
 
-  defer (): void
+  applicationId: string
+  applicationToken: DiscordToken
+
+  defer (ephemeral?: boolean): void
   createMessage (message: InteractionMessage, ephemeral?: boolean): Promise<Message> | void
-  updateMessage (messageId: string, message: InteractionMessage): void
-  deleteMessage (messageId: string): void
+  updateMessage (messageId: string, message: InteractionMessage): Promise<Message> | void
+  deleteMessage (messageId: string): Promise<void>
 }
 
 export interface CommandInteraction extends Interaction {
@@ -125,9 +129,15 @@ enum DeferState { NONE, CREATE, UPDATE }
 abstract class InteractionImpl implements Interaction {
   abstract type: number
 
-  user: User
+  invoker: User
+
+  guildId: string | null
 
   channelId: string
+
+  applicationId: string
+
+  applicationToken: DiscordToken
 
   #isComponent: boolean
 
@@ -137,17 +147,18 @@ abstract class InteractionImpl implements Interaction {
 
   #credentials: Webhook
 
-  #token: DiscordToken
-
   #sendResponse: SendResponseFunction
 
   constructor (payload: ApiInteraction, token: DiscordToken, sendResponse: SendResponseFunction) {
-    this.user = toCamelCase(payload.member?.user ?? payload.user!)
+    this.invoker = toCamelCase(payload.member?.user ?? payload.user!)
+    this.guildId = payload.guild_id ?? null
     this.channelId = payload.channel_id
+
+    this.applicationId = payload.application_id
+    this.applicationToken = token
 
     this.#isComponent = payload.type === InteractionType.MessageComponent
     this.#credentials = { id: payload.application_id, token: payload.token }
-    this.#token = token
     this.#sendResponse = sendResponse
   }
 
@@ -187,8 +198,7 @@ abstract class InteractionImpl implements Interaction {
     if (this.#deferState === DeferState.CREATE) {
       // opinionated choice: after deferring, consider creating a message
       // the logical operation when done processing
-      this.updateMessage('@original', message)
-      return
+      return this.updateMessage('@original', message)
     }
 
     if (ephemeral) { // Helper
@@ -204,10 +214,10 @@ abstract class InteractionImpl implements Interaction {
       }
 
       this.#sendResponse(payload)
-      return
+      return // Only case where the message is not returned. Kinda annoying as it makes the return voidable :shrug:
     }
 
-    return createMessage(message, this.#credentials, this.#token)
+    return createMessage(message, this.#credentials, this.applicationToken)
   }
 
   updateMessage (messageId: string, message: InteractionMessage) {
@@ -224,11 +234,11 @@ abstract class InteractionImpl implements Interaction {
       }
 
       this.#sendResponse(payload)
-      return
+      return // Only case where the message is not returned. Kinda annoying as it makes the return voidable :shrug:
     }
 
     // @ts-expect-error -- See https://github.com/discordjs/discord-api-types/pull/263
-    updateMessage(messageId, message, this.#credentials, this.#token)
+    return updateMessage(messageId, message, this.#credentials, this.applicationToken)
   }
 
   deleteMessage (messageId: string) {
@@ -236,7 +246,7 @@ abstract class InteractionImpl implements Interaction {
       throw new Error('unexpected call to deleteMessage before initial processing has been completed')
     }
 
-    return deleteMessage(messageId, this.#credentials, this.#token)
+    return deleteMessage(messageId, this.#credentials, this.applicationToken)
   }
 }
 

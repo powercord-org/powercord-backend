@@ -20,9 +20,14 @@
  * SOFTWARE.
  */
 
-import type { SlashCommand } from 'crapcord/interactions'
+import type { SlashCommand, OptionUser } from 'crapcord/interactions'
 import type { Penalties } from '../data/laws.js'
 import { getCivilLaw } from '../data/laws.js'
+
+type RuleArgs = {
+  rule: number
+  target?: OptionUser
+}
 
 function formatActions (actions: Penalties) {
   if (actions.type === 'branched') {
@@ -38,11 +43,39 @@ function formatActions (actions: Penalties) {
   return `Actions: ${actions.entries.join(' -> ')}`
 }
 
-export default function rule (interaction: SlashCommand<{ rule: number }>) {
+export default function rule (interaction: SlashCommand<RuleArgs>) {
   const law = getCivilLaw(interaction.args.rule)
-  const message = law
-    ? `**${law.law}**\n${law.article}${law.penalties ? `\n\n${formatActions(law.penalties)}` : ''}`
-    : 'This rule does not exist.'
+  if (!law) {
+    interaction.createMessage({ content: 'This rule does not exist.' }, true)
+    return
+  }
 
-  interaction.createMessage({ content: message }, !law)
+  const formatted = `**${law.law}**\n${law.article}${law.penalties ? `\n\n${formatActions(law.penalties)}` : ''}`
+  if (interaction.args.target) {
+    const userId = interaction.args.target.user.id
+    interaction.createMessage({ content: `<@${userId}> ${formatted}`, allowedMentions: { users: [ userId ] } })
+    return
+  }
+
+  interaction.createMessage({ content: formatted })
+}
+
+export const commandPayload = {
+  type: 1,
+  name: 'rule',
+  description: 'Points out rules from the server',
+  options: [
+    {
+      type: 4,
+      name: 'rule',
+      description: 'Rule you wish to point out',
+      required: true,
+    },
+    {
+      type: 6,
+      name: 'target',
+      description: 'User to mention',
+      required: false,
+    },
+  ],
 }

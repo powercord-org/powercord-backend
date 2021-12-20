@@ -26,14 +26,65 @@ import config from '@powercord/shared/config'
 
 import { hydrateStore as hydrateLawStore } from './data/laws.js'
 
-import guidelineCommand from './commands/guideline.js'
 import ruleCommand from './commands/rule.js'
+import guidelineCommand from './commands/guideline.js'
+
+import { execute as executeTagCommand } from './commands/tags/executor.js'
+import { create as createTagCommand, edit as editTagCommand, remove as removeTagCommand } from './commands/tags/manage.js'
 
 await hydrateLawStore()
 
+// [Cynthia] yes we could make an autoloader for it, no i don't want to
 registerCommands([
-  { command: 'guideline', handler: guidelineCommand },
+  // Slash commands
   { command: 'rule', handler: ruleCommand },
+  { command: 'guideline', handler: guidelineCommand },
+  { command: 't', handler: executeTagCommand },
+  {
+    command: 'tag',
+    sub: {
+      create: { handler: createTagCommand },
+      edit: { handler: editTagCommand },
+      remove: { handler: removeTagCommand },
+    },
+    // autocomplete: console.log
+  },
+  {
+    command: 'filter',
+    sub: {
+      list: { handler: console.log },
+      add: { handler: console.log },
+      delete: { handler: console.log },
+    },
+    // autocomplete: console.log
+  },
+  {
+    command: 'mod',
+    sub: {
+      ban: { handler: console.log },
+      unban: { handler: console.log },
+      softban: { handler: console.log },
+      mute: { handler: console.log },
+
+      enforce: { handler: console.log },
+      lookup: { handler: console.log },
+      notes: {
+        sub: {
+          list: { handler: console.log },
+          add: { handler: console.log },
+          edit: { handler: console.log },
+          delete: { handler: console.log },
+        },
+      },
+    },
+  },
+  {
+    command: 'admin',
+    sub: {
+      ssh: { handler: console.log },
+      eval: { handler: console.log },
+    },
+  },
 ])
 
 createInteractionServer({
