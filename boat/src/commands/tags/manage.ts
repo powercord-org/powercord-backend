@@ -2,10 +2,12 @@ import type {
   APIApplicationCommandStringArgumentOptions as DiscordStringOption,
   APIApplicationCommandSubCommandOptions as DiscordSubcommand,
 } from 'discord-api-types'
-import type { ObjectId } from 'mongodb'
 import type { Interaction, SlashCommand } from 'crapcord/interactions'
 import type { TagChunk } from './format.js'
+
 import { commands } from 'crapcord/api'
+import config from '@powercord/shared/config'
+
 import { parse } from './format.js'
 import { commandPayload as tCommand } from './executor.js'
 import { tags } from '../../data/mongo.js'
@@ -15,19 +17,12 @@ type TagEditDescriptionArgs = { name: string, description: string }
 type TagEditContentArgs = { name: string, contents: string }
 type TagArgsRemove = { name: string }
 
-export type Tag = {
-  _id: ObjectId
-  name: string
-  description: string
-  contents: TagChunk[]
-}
-
 function chunksToArgs (chunks: TagChunk[]) {
   const res: DiscordStringOption[] = []
   for (const chunk of chunks) {
     if (chunk.type === 'argument') {
       res.push({
-        type: 3 as any,
+        type: 3,
         name: chunk.name,
         description: chunk.description,
         required: !chunk.default,
@@ -40,7 +35,7 @@ function chunksToArgs (chunks: TagChunk[]) {
 
 async function buildSubcommands (): Promise<DiscordSubcommand[]> {
   return tags.find()
-    .map<DiscordSubcommand>((tag) => ({
+    .map((tag) => ({
       type: 1,
       name: tag.name,
       description: tag.description,
@@ -50,20 +45,11 @@ async function buildSubcommands (): Promise<DiscordSubcommand[]> {
 }
 
 async function updateCommand (interaction: Interaction) {
-  if (!interaction.guildId) {
-    throw new Error('Attempted to update commands within DMs')
-  }
-
   const command = { ...tCommand, options: await buildSubcommands() }
-  commands.createGuildCommand(interaction.guildId, command, interaction.applicationId, interaction.applicationToken)
+  commands.createGuildCommand(config.discord.guildId, command, interaction.applicationId, interaction.applicationToken)
 }
 
 export async function create (interaction: SlashCommand<TagCreateArgs>) {
-  if (!interaction.guildId) {
-    interaction.createMessage({ content: 'This command cannot be used in DMs.' }, true)
-    return
-  }
-
   let tagContents
   try {
     tagContents = parse(interaction.args.contents)
@@ -72,22 +58,22 @@ export async function create (interaction: SlashCommand<TagCreateArgs>) {
     return
   }
 
-  await tags.insertOne({
-    name: interaction.args.name,
-    description: interaction.args.description,
-    contents: tagContents,
-  })
-
-  await updateCommand(interaction)
-  interaction.createMessage({ content: 'Tag successfully created' }, true)
-}
-
-export async function edit (interaction: SlashCommand<TagEditDescriptionArgs | TagEditContentArgs>) {
-  if (!interaction.guildId) {
-    interaction.createMessage({ content: 'This command cannot be used in DMs.' }, true)
+  try {
+    await tags.insertOne({
+      name: interaction.args.name,
+      description: interaction.args.description,
+      contents: tagContents,
+    })
+  } catch (e) {
+    interaction.createMessage({ content: 'A tag with the same name already exists.' }, true)
     return
   }
 
+  await updateCommand(interaction)
+  interaction.createMessage({ content: 'Tag successfully created.' }, true)
+}
+
+export async function edit (interaction: SlashCommand<TagEditDescriptionArgs | TagEditContentArgs>) {
   let dbEdit = {}
 
   try {
@@ -110,11 +96,6 @@ export async function edit (interaction: SlashCommand<TagEditDescriptionArgs | T
 }
 
 export async function remove (interaction: SlashCommand<TagArgsRemove>) {
-  if (!interaction.guildId) {
-    interaction.createMessage({ content: 'This command cannot be used in DMs.' }, true)
-    return
-  }
-
   const res = await tags.deleteOne({ name: interaction.args.name })
   if (!res.deletedCount) {
     interaction.createMessage({ content: 'This tag does not exist.' }, true)

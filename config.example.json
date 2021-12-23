@@ -10,6 +10,7 @@
     "clientSecret": "",
     "botToken": "",
     "botPublicKey": "",
+    "guildId": "",
     "roles": {
       "donator": "",
       "contributor": "",
@@ -30,6 +31,7 @@
     "messages": {
       "rules": [ "", "" ]
     },
+    "__note": "everything below is deprecated",
     "prefix": "pc/",
     "ids": {
       "serverId": "",

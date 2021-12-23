@@ -20,18 +20,32 @@
  * SOFTWARE.
  */
 
-import type { Tag } from '../commands/tags/manage.js'
+import type { ObjectId } from 'mongodb'
+import type { TagChunk } from '../commands/tags/format.js'
 import { MongoClient } from 'mongodb'
 import config from '@powercord/shared/config'
 
-export const client = new MongoClient(`${config.mango}?appName=Powercord%20Boat`)
+export type TagDocument = {
+  _id: ObjectId
+  name: string
+  description: string
+  contents: TagChunk[]
+}
 
+export type FilterDocument = {
+  _id: ObjectId
+  word: string
+}
+
+export const client = new MongoClient(`${config.mango}?appName=Powercord%20Boat`)
 export const db = client.db('powercord')
 
-export const tags = db.collection<Tag>('tags')
+export const tags = db.collection<TagDocument>('tags')
+export const filter = db.collection<FilterDocument>('filter')
 
 // Connect & prepare indexes
 await client.connect()
 await Promise.all([
   tags.createIndex({ name: 1 }, { unique: true }),
+  filter.createIndex({ word: 1 }, { unique: true }),
 ])
