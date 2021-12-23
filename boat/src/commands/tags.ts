@@ -1,55 +1,25 @@
-import type {
-  APIApplicationCommandStringArgumentOptions as DiscordStringOption,
-  APIApplicationCommandSubCommandOptions as DiscordSubcommand,
-} from 'discord-api-types'
-import type { Interaction, SlashCommand } from 'crapcord/interactions'
-import type { TagChunk } from './format.js'
+import type { SlashCommand } from 'crapcord/interactions'
 
-import { commands } from 'crapcord/api'
-import config from '@powercord/shared/config'
-
-import { parse } from './format.js'
-import { commandPayload as tCommand } from './executor.js'
-import { tags } from '../../data/mongo.js'
+import { parse, format } from './tags/format.js'
+import { updateTagExecutor } from './tags/executor.js'
+import { tags } from '../data/mongo.js'
 
 type TagCreateArgs = { name: string, description: string, contents: string }
 type TagEditDescriptionArgs = { name: string, description: string }
 type TagEditContentArgs = { name: string, contents: string }
 type TagArgsRemove = { name: string }
 
-function chunksToArgs (chunks: TagChunk[]) {
-  const res: DiscordStringOption[] = []
-  for (const chunk of chunks) {
-    if (chunk.type === 'argument') {
-      res.push({
-        type: 3,
-        name: chunk.name,
-        description: chunk.description,
-        required: !chunk.default,
-      })
-    }
+export async function executeTag (interaction: SlashCommand<Record<string, string>>) {
+  const tag = await tags.findOne({ name: interaction.subcommands[0] })
+  if (!tag) {
+    interaction.createMessage({ content: 'This tag does not exist. How did you even get there...' }, true)
+    return
   }
 
-  return res
+  interaction.createMessage({ content: format(tag.contents, interaction.args) })
 }
 
-async function buildSubcommands (): Promise<DiscordSubcommand[]> {
-  return tags.find()
-    .map((tag) => ({
-      type: 1,
-      name: tag.name,
-      description: tag.description,
-      options: chunksToArgs(tag.contents),
-    }))
-    .toArray()
-}
-
-async function updateCommand (interaction: Interaction) {
-  const command = { ...tCommand, options: await buildSubcommands() }
-  commands.createGuildCommand(config.discord.guildId, command, interaction.applicationId, interaction.applicationToken)
-}
-
-export async function create (interaction: SlashCommand<TagCreateArgs>) {
+export async function createTag (interaction: SlashCommand<TagCreateArgs>) {
   let tagContents
   try {
     tagContents = parse(interaction.args.contents)
@@ -69,11 +39,11 @@ export async function create (interaction: SlashCommand<TagCreateArgs>) {
     return
   }
 
-  await updateCommand(interaction)
+  await updateTagExecutor(interaction)
   interaction.createMessage({ content: 'Tag successfully created.' }, true)
 }
 
-export async function edit (interaction: SlashCommand<TagEditDescriptionArgs | TagEditContentArgs>) {
+export async function editTag (interaction: SlashCommand<TagEditDescriptionArgs | TagEditContentArgs>) {
   let dbEdit = {}
 
   try {
@@ -91,18 +61,18 @@ export async function edit (interaction: SlashCommand<TagEditDescriptionArgs | T
     return
   }
 
-  await updateCommand(interaction)
+  await updateTagExecutor(interaction)
   interaction.createMessage({ content: 'Tag successfully edited' }, true)
 }
 
-export async function remove (interaction: SlashCommand<TagArgsRemove>) {
+export async function removeTag (interaction: SlashCommand<TagArgsRemove>) {
   const res = await tags.deleteOne({ name: interaction.args.name })
   if (!res.deletedCount) {
     interaction.createMessage({ content: 'This tag does not exist.' }, true)
     return
   }
 
-  await updateCommand(interaction)
+  await updateTagExecutor(interaction)
   interaction.createMessage({ content: 'Tag successfully deleted' }, true)
 }
 

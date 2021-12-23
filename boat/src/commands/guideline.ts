@@ -54,6 +54,7 @@ export const commandPayload = {
       type: 4,
       name: 'guideline',
       description: 'Guideline you wish to point out',
+      minValue: 0,
       required: true,
     },
     {

@@ -3,11 +3,11 @@ import { filter } from '../data/mongo.js'
 
 type FilterArgs = { word: string }
 
-export async function list (interaction: SlashCommand<{}>) {
+export async function listFilters (interaction: SlashCommand<{}>) {
   interaction.createMessage({ content: 'This command cannot be used in DMs.' }, true)
 }
 
-export async function create (interaction: SlashCommand<FilterArgs>) {
+export async function addFilter (interaction: SlashCommand<FilterArgs>) {
   try {
     await filter.insertOne({ word: interaction.args.word })
   } catch (e) {
@@ -18,7 +18,7 @@ export async function create (interaction: SlashCommand<FilterArgs>) {
   interaction.createMessage({ content: 'Word successfully added to the filter.' }, true)
 }
 
-export async function remove (interaction: SlashCommand<FilterArgs>) {
+export async function removeFilter (interaction: SlashCommand<FilterArgs>) {
   const res = await filter.deleteOne({ word: interaction.args.word })
   if (!res.deletedCount) {
     interaction.createMessage({ content: 'This word is not in the filter.' }, true)

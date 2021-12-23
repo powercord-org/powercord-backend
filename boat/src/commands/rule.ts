@@ -69,6 +69,7 @@ export const commandPayload = {
       type: 4,
       name: 'rule',
       description: 'Rule you wish to point out',
+      minValue: 0,
       required: true,
     },
     {

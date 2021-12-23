@@ -28,9 +28,9 @@ import { hydrateStore as hydrateLawStore } from './data/laws.js'
 
 import ruleCommand from './commands/rule.js'
 import guidelineCommand from './commands/guideline.js'
-
-import { execute as executeTagCommand } from './commands/tags/executor.js'
-import { create as createTagCommand, edit as editTagCommand, remove as removeTagCommand } from './commands/tags/manage.js'
+import * as tagCommands from './commands/tags.js'
+import * as filterCommands from './commands/filter.js'
+import * as modCommands from './commands/mod.js'
 
 await hydrateLawStore()
 
@@ -39,41 +39,42 @@ registerCommands([
   // Slash commands
   { command: 'rule', handler: ruleCommand },
   { command: 'guideline', handler: guidelineCommand },
-  { command: 't', handler: executeTagCommand },
+  { command: 't', handler: tagCommands.executeTag },
   {
     command: 'tag',
     sub: {
-      create: { handler: createTagCommand },
-      edit: { handler: editTagCommand },
-      remove: { handler: removeTagCommand },
+      create: { handler: tagCommands.createTag },
+      edit: { handler: tagCommands.editTag },
+      remove: { handler: tagCommands.removeTag },
     },
     // autocomplete: console.log
   },
   {
     command: 'filter',
     sub: {
-      list: { handler: console.log },
-      add: { handler: console.log },
-      delete: { handler: console.log },
+      list: { handler: filterCommands.listFilters },
+      add: { handler: filterCommands.addFilter },
+      remove: { handler: filterCommands.removeFilter },
     },
     // autocomplete: console.log
   },
   {
     command: 'mod',
     sub: {
-      ban: { handler: console.log },
-      unban: { handler: console.log },
-      softban: { handler: console.log },
-      mute: { handler: console.log },
+      ban: { handler: modCommands.ban },
+      unban: { handler: modCommands.unban },
+      softban: { handler: modCommands.softban },
+      timeout: { handler: modCommands.timeout },
+      editcase: { handler: modCommands.editcase },
 
-      enforce: { handler: console.log },
-      lookup: { handler: console.log },
+      enforce: { handler: modCommands.enforce },
+      lookup: { handler: modCommands.lookup },
       notes: {
         sub: {
-          list: { handler: console.log },
-          add: { handler: console.log },
-          edit: { handler: console.log },
-          delete: { handler: console.log },
+          list: { handler: modCommands.listNotes },
+          add: { handler: modCommands.addNote },
+          edit: { handler: modCommands.editNote },
+          remove: { handler: modCommands.removeNote },
         },
       },
     },
@@ -85,6 +86,9 @@ registerCommands([
       eval: { handler: console.log },
     },
   },
+
+  // User commands
+  { command: 'soft-ban', handler: modCommands.softban },
 ])
 
 createInteractionServer({
