@@ -1,9 +1,23 @@
-import { SlashCommand } from 'crapcord/interactions'
+import { SlashCommand, OptionUser } from 'crapcord/interactions'
 
-type ListArgs = {}
-type AddArgs = {}
-type EditArgs = {}
-type RemoveArgs = {}
+type ListArgs = {
+  user: OptionUser
+}
+
+type AddArgs = {
+  user: OptionUser
+  note: string
+}
+type EditArgs = {
+  user: OptionUser
+  id: number
+  note: string
+}
+
+type RemoveArgs = {
+  user: OptionUser
+  id: number
+}
 
 export function listNotes (interaction: SlashCommand<ListArgs>) {
   interaction.createMessage({ content: '// todo:tm:' }, true)

@@ -1,7 +1,13 @@
-import { SlashCommand } from 'crapcord/interactions'
+import { SlashCommand, OptionUser } from 'crapcord/interactions'
 
-type EnforceArgs = {}
-type LookupArgs = {}
+type EnforceArgs = {
+  user: OptionUser
+  rule: number
+}
+
+type LookupArgs = {
+  user: OptionUser
+}
 
 export function enforce (interaction: SlashCommand<EnforceArgs>) {
   interaction.createMessage({ content: '// todo:tm:' }, true)

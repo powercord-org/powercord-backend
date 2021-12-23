@@ -128,7 +128,7 @@ export const slashPayload = {
           type: 3,
           name: 'reason',
           description: 'New reason',
-          required: false,
+          required: true,
         },
       ],
     },

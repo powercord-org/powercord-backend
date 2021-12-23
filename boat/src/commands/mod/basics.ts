@@ -1,10 +1,33 @@
-import { SlashCommand, UserCommand } from 'crapcord/interactions'
+import { SlashCommand, UserCommand, OptionUser } from 'crapcord/interactions'
 
-type BanArgs = {}
-type UnbanArgs = {}
-type SoftbanArgs = {}
-type TimeoutArgs = {}
-type EditCaseArgs = {}
+type BanArgs = {
+  user: OptionUser
+  reason?: string
+  delete?: number
+  duration?: string
+}
+
+type UnbanArgs = {
+  user: OptionUser
+  reason?: string
+}
+
+type SoftbanArgs = {
+  user: OptionUser
+  reason?: string
+  delete?: number
+}
+
+type TimeoutArgs = {
+  user: OptionUser
+  reason?: string
+  duration?: string
+}
+
+type EditCaseArgs = {
+  case: number
+  reason: string
+}
 
 export function ban (interaction: SlashCommand<BanArgs>) {
   interaction.createMessage({ content: '// todo:tm:' }, true)

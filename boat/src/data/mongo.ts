@@ -37,11 +37,28 @@ export type FilterDocument = {
   word: string
 }
 
+export type EnforceDocument = {
+  _id: ObjectId
+  target: string
+  moderator: string
+  rule: number
+}
+
+export type NoteDocument = {
+  _id: ObjectId
+  target: string
+  moderator: string
+  note: string
+}
+
+
 export const client = new MongoClient(`${config.mango}?appName=Powercord%20Boat`)
 export const db = client.db('powercord')
 
 export const tags = db.collection<TagDocument>('tags')
 export const filter = db.collection<FilterDocument>('filter')
+export const enforce = db.collection<NoteDocument>('enforce')
+export const notes = db.collection<NoteDocument>('notes')
 
 // Connect & prepare indexes
 await client.connect()
