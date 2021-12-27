@@ -23,7 +23,7 @@
 import type { APIApplicationCommandInteraction, APIInteraction, APIInteractionResponse, APIMessageComponentInteraction } from 'discord-api-types/v9'
 import type { GenericCommandHandler, CommandHandler, SendResponseFunction } from './interaction.js'
 import type { CommandEntry } from './registry.js'
-import type { DiscordToken } from '../api/common.js'
+import type { DiscordToken } from '../api/internal/common.js'
 import { InteractionType, ApplicationCommandType, ComponentType, ApplicationCommandOptionType as OptionType } from 'discord-api-types/v9'
 import { webcrypto } from 'crypto'
 

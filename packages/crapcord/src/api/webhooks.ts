@@ -27,10 +27,9 @@ import type {
   RESTPatchAPIWebhookWithTokenMessageJSONBody as UpdatePayloadSneak,
   RESTPatchAPIWebhookWithTokenMessageResult as UpdateResponseSneak,
 } from 'discord-api-types/v9'
-import type { DiscordToken } from './common.js'
+import type { DiscordToken } from './internal/common.js'
 import type { CamelCase } from '../util/case.js'
-import { executeQuery } from './common.js'
-import { API_BASE } from '../constants.js'
+import { route, executeQuery } from './internal/common.js'
 
 type ExecutePayload = CamelCase<ExecutePayloadSneak>
 type ExecuteResponse = CamelCase<ExecuteResponseSneak>
@@ -40,46 +39,37 @@ type UpdateResponse = CamelCase<UpdateResponseSneak>
 
 export type Webhook = { id: string, token: string }
 
-// todo: allow passing a function for components stuff and automatically register it behind the scenes
-export async function createMessage (message: ExecutePayload, hook: Webhook, token?: DiscordToken): Promise<ExecuteResponse> {
-  const headers: Record<string, string> = token ? { authorization: `${token.type} ${token.token}` } : {}
+const CREATE_MESSAGE = route`${'POST'}/webhooks/${'webhookId'}/${'webhookToken'}?wait=true`
+const FETCH_MESSAGE = route`${'GET'}/webhooks/${'webhookId'}/${'webhookToken'}/messages/${'messageId'}`
+const UPDATE_MESSAGE = route`${'PATCH'}/webhooks/${'webhookId'}/${'webhookToken'}/messages/${'messageId'}`
+const DELETE_MESSAGE = route`${'DELETE'}/webhooks/${'webhookId'}/${'webhookToken'}/messages/${'messageId'}`
 
+export async function createMessage (message: ExecutePayload, hook: Webhook, token?: DiscordToken): Promise<ExecuteResponse> {
   return executeQuery({
-    method: 'POST',
-    url: `${API_BASE}/webhooks/${hook.id}/${hook.token}?wait=true`,
-    headers: headers,
+    route: CREATE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token }),
     body: message,
+    token: token,
   })
 }
 
 export async function fetchMessage (messageId: string, hook: Webhook, token?: DiscordToken): Promise<FetchResponse> {
-  const headers: Record<string, string> = token ? { authorization: `${token.type} ${token.token}` } : {}
-
   return executeQuery({
-    method: 'GET',
-    url: `${API_BASE}/webhooks/${hook.id}/${hook.token}/messages/${messageId}`,
-    headers: headers,
+    route: FETCH_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }),
+    token: token,
   })
 }
 
-// todo: allow passing a function for components stuff and automatically register it behind the scenes
 export async function updateMessage (messageId: string, message: UpdatePayload, hook: Webhook, token?: DiscordToken): Promise<UpdateResponse> {
-  const headers: Record<string, string> = token ? { authorization: `${token.type} ${token.token}` } : {}
-
   return executeQuery({
-    method: 'PATCH',
-    url: `${API_BASE}/webhooks/${hook.id}/${hook.token}/messages/${messageId}`,
-    headers: headers,
+    route: UPDATE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }),
     body: message,
+    token: token,
   })
 }
 
 export async function deleteMessage (messageId: string, hook: Webhook, token?: DiscordToken): Promise<void> {
-  const headers: Record<string, string> = token ? { authorization: `${token.type} ${token.token}` } : {}
-
   return executeQuery({
-    method: 'DELETE',
-    url: `${API_BASE}/webhooks/${hook.id}/${hook.token}/messages/${messageId}`,
-    headers: headers,
+    route: DELETE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }),
+    token: token,
   })
 }

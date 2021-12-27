@@ -20,7 +20,9 @@
  * SOFTWARE.
  */
 
-export const API_BASE = 'https://discord.com/api/v9'
+export const API_HOST = 'https://discord.com:443'
+
+export const API_BASE = '/api/v9'
 
 // "our clients are going to stop doing gateway discovery since its a waste of time lol" - jake
 export const DISCORD_GATEWAY = 'wss://gateway.discord.gg/?v=9&encoding=json&compress=zlib-stream'

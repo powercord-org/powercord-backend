@@ -117,7 +117,7 @@
     "linebreak-style": [ "error", "unix" ],
     "lines-between-class-members": "error",
     "multiline-ternary": [ "error", "always-multiline" ],
-    "new-cap": [ "error", { "properties": false } ],
+    "new-cap": [ "error", { "properties": false, "capIsNewExceptionPattern": "^[A-Z_]+$" } ],
     "new-parens": "error",
     "no-array-constructor": "error",
     "no-lonely-if": "error",

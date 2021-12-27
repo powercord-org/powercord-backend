@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import type { DiscordToken } from './api/common.js'
+import type { DiscordToken } from './api/internal/common.js'
 
 import http from 'http'
 import { handlePayload } from './interactions/handler.js'

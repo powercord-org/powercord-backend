@@ -28,10 +28,9 @@ import type {
   RESTPutAPIApplicationCommandsJSONBody as PushPayloadSneak,
   RESTPutAPIApplicationCommandsResult as PushResponseSneak,
 } from 'discord-api-types/v9'
-import type { DiscordToken } from './common.js'
+import type { DiscordToken } from './internal/common.js'
 import type { CamelCase } from '../util/case.js'
-import { executeQuery } from './common.js'
-import { API_BASE } from '../constants.js'
+import { route, executeQuery } from './internal/common.js'
 
 type CreatePayload = CamelCase<CreatePayloadSneak>
 type CreateResponse = CamelCase<CreateResponseSneak>
@@ -40,52 +39,57 @@ type UpdateResponse = CamelCase<UpdateResponseSneak>
 type PushPayload = CamelCase<PushPayloadSneak>
 type PushResponse = CamelCase<PushResponseSneak>
 
+const FETCH_COMMANDS = route`${'GET'}/applications/${'applicationId'}/commands`
+const PUSH_COMMANDS = route`${'PUT'}/applications/${'applicationId'}/commands`
+const CREATE_COMMAND = route`${'POST'}/applications/${'applicationId'}/commands`
+const UPDATE_COMMAND = route`${'PATCH'}/applications/${'applicationId'}/commands/${'commandId'}`
+const DELETE_COMMAND = route`${'DELETE'}/applications/${'applicationId'}/commands/${'commandId'}`
+
+const FETCH_GUILD_COMMANDS = route`${'GET'}/applications/${'applicationId'}/guilds/${'guildId'}/commands`
+const PUSH_GUILD_COMMANDS = route`${'PUT'}/applications/${'applicationId'}/guilds/${'guildId'}/commands`
+const CREATE_GUILD_COMMAND = route`${'POST'}/applications/${'applicationId'}/guilds/${'guildId'}/commands`
+const UPDATE_GUILD_COMMAND = route`${'PATCH'}/applications/${'applicationId'}/guilds/${'guildId'}/commands/${'commandId'}`
+const DELETE_GUILD_COMMAND = route`${'DELETE'}/applications/${'applicationId'}/guilds/${'guildId'}/commands/${'commandId'}`
+
+
 async function _fetchCommands (guildId: string | null, applicationId: string, token: DiscordToken): Promise<CreateResponse> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands`
-  return executeQuery({
-    method: 'GET',
-    url: endpoint,
-    headers: { authorization: `${token.type} ${token.token}` },
-  })
+  const endpoint = guildId
+    ? FETCH_GUILD_COMMANDS({ applicationId: applicationId, guildId: guildId })
+    : FETCH_COMMANDS({ applicationId: applicationId })
+
+  return executeQuery({ route: endpoint, token: token })
 }
 
 async function _createCommand (command: CreatePayload, guildId: string | null, applicationId: string, token: DiscordToken): Promise<CreateResponse> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands`
-  return executeQuery({
-    method: 'POST',
-    url: endpoint,
-    headers: { authorization: `${token.type} ${token.token}` },
-    body: command,
-  })
+  const endpoint = guildId
+    ? CREATE_GUILD_COMMAND({ applicationId: applicationId, guildId: guildId })
+    : CREATE_COMMAND({ applicationId: applicationId })
+
+  return executeQuery({ route: endpoint, token: token, body: command })
 }
 
 async function _updateCommand (commandId: string, command: UpdatePayload, guildId: string | null, applicationId: string, token: DiscordToken): Promise<UpdateResponse> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands/${commandId}`
-  return executeQuery({
-    method: 'POST',
-    url: endpoint,
-    headers: { authorization: `${token.type} ${token.token}` },
-    body: command,
-  })
+  const endpoint = guildId
+    ? UPDATE_GUILD_COMMAND({ applicationId: applicationId, guildId: guildId, commandId: commandId })
+    : UPDATE_COMMAND({ applicationId: applicationId, commandId: commandId })
+
+  return executeQuery({ route: endpoint, token: token, body: command })
 }
 
 async function _deleteCommand (commandId: string, guildId: string | null, applicationId: string, token: DiscordToken): Promise<void> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands/${commandId}`
-  return executeQuery({
-    method: 'DELETE',
-    url: endpoint,
-    headers: { authorization: `${token.type} ${token.token}` },
-  })
+  const endpoint = guildId
+    ? DELETE_GUILD_COMMAND({ applicationId: applicationId, guildId: guildId, commandId: commandId })
+    : DELETE_COMMAND({ applicationId: applicationId, commandId: commandId })
+
+  return executeQuery({ route: endpoint, token: token })
 }
 
 async function _pushCommands (commands: PushPayload, guildId: string | null, applicationId: string, token: DiscordToken): Promise<PushResponse> {
-  const endpoint = `${API_BASE}/applications/${applicationId}${guildId ? `/guilds/${guildId}` : ''}/commands`
-  return executeQuery({
-    method: 'PUT',
-    url: endpoint,
-    headers: { authorization: `${token.type} ${token.token}` },
-    body: commands,
-  })
+  const endpoint = guildId
+    ? PUSH_GUILD_COMMANDS({ applicationId: applicationId, guildId: guildId })
+    : PUSH_COMMANDS({ applicationId: applicationId })
+
+  return executeQuery({ route: endpoint, token: token, body: commands })
 }
 
 export function fetchCommand (applicationId: string, token: DiscordToken) {

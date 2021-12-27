@@ -26,29 +26,28 @@ import type {
   RESTGetAPIChannelMessageResult as MessageFetchResponseSneak,
 } from 'discord-api-types/v9'
 
-import type { DiscordToken } from './common.js'
+import type { DiscordToken } from './internal/common.js'
 import type { CamelCase } from '../util/case.js'
-import { executeQuery } from './common.js'
-import { API_BASE } from '../constants.js'
+import { route, executeQuery } from './internal/common.js'
 
 type MessageCreatePayload = CamelCase<MessageCreatePayloadSneak>
 type MessageCreateResponse = CamelCase<MessageCreateResponseSneak>
 type MessageFetchResponse = CamelCase<MessageFetchResponseSneak>
 
-// todo: allow passing a function for components stuff and automatically register it behind the scenes
+const CREATE_MESSAGE_ROUTE = route`${'POST'}/channels/${'channelId'}/messages`
+const FETCH_MESSAGE_ROUTE = route`${'GET'}/channels/${'channelId'}/messages/${'messageId'}`
+
 export async function createMessage (channelId: string, message: MessageCreatePayload, token: DiscordToken): Promise<MessageCreateResponse> {
   return executeQuery({
-    method: 'POST',
-    url: `${API_BASE}/channels/${channelId}/messages`,
-    headers: { authorization: `${token.type} ${token.token}` },
+    route: CREATE_MESSAGE_ROUTE({ channelId: channelId }),
+    token: token,
     body: message,
   })
 }
 
 export async function fetchMessage (channelId: string, messageId: string, token: DiscordToken): Promise<MessageFetchResponse> {
   return executeQuery({
-    method: 'GET',
-    url: `${API_BASE}/channels/${channelId}/messages/${messageId}`,
-    headers: { authorization: `${token.type} ${token.token}` },
+    route: FETCH_MESSAGE_ROUTE({ channelId: channelId, messageId: messageId }),
+    token: token,
   })
 }

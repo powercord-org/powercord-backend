@@ -33,7 +33,7 @@ import type {
   APIUser as UserSneak,
   APIRole as RoleSneak,
 } from 'discord-api-types/v9'
-import type { DiscordToken } from '../api/common.js'
+import type { DiscordToken } from '../api/internal/common.js'
 import type { Webhook } from '../api/webhooks.js'
 import type { CamelCase } from '../util/case.js'
 import { ApplicationCommandOptionType, InteractionType, InteractionResponseType } from 'discord-api-types/v9'
