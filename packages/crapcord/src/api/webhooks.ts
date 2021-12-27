@@ -39,11 +39,32 @@ type UpdateResponse = CamelCase<UpdateResponseSneak>
 
 export type Webhook = { id: string, token: string }
 
+// todo: split up wait=true
+// todo: threads query parameter
 const CREATE_MESSAGE = route`${'POST'}/webhooks/${'webhookId'}/${'webhookToken'}?wait=true`
 const FETCH_MESSAGE = route`${'GET'}/webhooks/${'webhookId'}/${'webhookToken'}/messages/${'messageId'}`
 const UPDATE_MESSAGE = route`${'PATCH'}/webhooks/${'webhookId'}/${'webhookToken'}/messages/${'messageId'}`
 const DELETE_MESSAGE = route`${'DELETE'}/webhooks/${'webhookId'}/${'webhookToken'}/messages/${'messageId'}`
 
+// todo: Create Webhook
+
+// todo: Get Channel Webhooks
+
+// todo: Get Guild Webhooks
+
+// todo: Get Webhook
+
+// todo: Get Webhook with Token
+
+// todo: Modify Webhook
+
+// todo: Modify Webhook with Token
+
+// todo: Delete Webhook
+
+// todo: Delete Webhook with Token
+
+// Execute Webhook
 export async function createMessage (message: ExecutePayload, hook: Webhook, token?: DiscordToken): Promise<ExecuteResponse> {
   return executeQuery({
     route: CREATE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token }),
@@ -52,6 +73,7 @@ export async function createMessage (message: ExecutePayload, hook: Webhook, tok
   })
 }
 
+// Get Webhook Message
 export async function fetchMessage (messageId: string, hook: Webhook, token?: DiscordToken): Promise<FetchResponse> {
   return executeQuery({
     route: FETCH_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }),
@@ -59,6 +81,7 @@ export async function fetchMessage (messageId: string, hook: Webhook, token?: Di
   })
 }
 
+// Edit Webhook Message
 export async function updateMessage (messageId: string, message: UpdatePayload, hook: Webhook, token?: DiscordToken): Promise<UpdateResponse> {
   return executeQuery({
     route: UPDATE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }),
@@ -67,6 +90,7 @@ export async function updateMessage (messageId: string, message: UpdatePayload, 
   })
 }
 
+// Delete Webhook Message
 export async function deleteMessage (messageId: string, hook: Webhook, token?: DiscordToken): Promise<void> {
   return executeQuery({
     route: DELETE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }),

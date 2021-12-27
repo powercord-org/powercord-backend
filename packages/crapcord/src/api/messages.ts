@@ -37,6 +37,17 @@ type MessageFetchResponse = CamelCase<MessageFetchResponseSneak>
 const CREATE_MESSAGE_ROUTE = route`${'POST'}/channels/${'channelId'}/messages`
 const FETCH_MESSAGE_ROUTE = route`${'GET'}/channels/${'channelId'}/messages/${'messageId'}`
 
+// todo: Get Channel Messages
+
+// Get Channel Message
+export async function fetchMessage (channelId: string, messageId: string, token: DiscordToken): Promise<MessageFetchResponse> {
+  return executeQuery({
+    route: FETCH_MESSAGE_ROUTE({ channelId: channelId, messageId: messageId }),
+    token: token,
+  })
+}
+
+// Create Message
 export async function createMessage (channelId: string, message: MessageCreatePayload, token: DiscordToken): Promise<MessageCreateResponse> {
   return executeQuery({
     route: CREATE_MESSAGE_ROUTE({ channelId: channelId }),
@@ -45,9 +56,22 @@ export async function createMessage (channelId: string, message: MessageCreatePa
   })
 }
 
-export async function fetchMessage (channelId: string, messageId: string, token: DiscordToken): Promise<MessageFetchResponse> {
-  return executeQuery({
-    route: FETCH_MESSAGE_ROUTE({ channelId: channelId, messageId: messageId }),
-    token: token,
-  })
-}
+// todo: Crosspost Message
+
+// todo: Create Reaction
+
+// todo: Delete Own Reaction
+
+// todo: Delete User Reaction
+
+// todo: Get Reactions
+
+// todo: Delete All Reactions
+
+// todo: Delete All Reactions for Emoji
+
+// todo: Edit Message
+
+// todo: Delete Message
+
+// todo: Bulk Delete Messages
