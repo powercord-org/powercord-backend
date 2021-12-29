@@ -260,7 +260,7 @@ export const slashPayload = {
 
 export const userPayload = {
   type: 2,
-  name: 'soft-ban',
+  name: 'Softban',
   description: '', // "to avoid breaking changes, we did a stupid design choice. blends well with the rest of the api!"
   defaultPermission: false,
 }

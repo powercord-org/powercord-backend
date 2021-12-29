@@ -33,15 +33,19 @@ const DiscordClient = new Client(API_HOST)
 
 const DISCORD_MAJOR_PARAMS = [ 'guildId', 'channelId', 'webhookId', 'webhookToken' ]
 
-export type AuthenticationToken = { type: 'Bot' | 'Bearer', token: string }
-export type DiscordToken = AuthenticationToken // todo: | { type: 'Credentials', clientId: string, clientSecret: string }
+export type BotToken = { type: 'Bot', token: string }
+export type OAuthToken = { type: 'Bearer', token: string } | { type: 'Bearer', token: string, expiry: number, refresh: string }
+export type ClientCredentials = { type: 'Credentials', clientId: string, clientSecret: string }
+
+export type AuthenticationToken = BotToken | OAuthToken
+export type DiscordToken = BotToken | OAuthToken // todo: | ClientCredentials
 
 export type Route = { method: Dispatcher.HttpMethod, path: string, key: string }
 
 export type Query = {
   route: Route
   body?: any
-  reason?: string
+  reason?: string | null
   token?: DiscordToken
 }
 
@@ -49,7 +53,7 @@ export class DiscordError extends Error {
   constructor (message: string, public response: Dispatcher.ResponseData) { super(message) }
 }
 
-export type RouteFactory = (params: Record<string, string>) => Route
+export type RouteFactory = (params: Record<string, string>, query?: Record<string, string | void>) => Route
 export function route (chunks: TemplateStringsArray, method: Dispatcher.HttpMethod, ...params: string[]): RouteFactory {
   const parts: string[] = [ chunks[1] ]
   let routeKey = chunks[1]
@@ -64,7 +68,7 @@ export function route (chunks: TemplateStringsArray, method: Dispatcher.HttpMeth
   }
 
   const path = parts.filter(Boolean).join('')
-  return <RouteFactory> new Function('params', `return { method: '${method}', path: \`${API_BASE}${path}\`, key: \`${method}${routeKey}\` }`)
+  return <RouteFactory> new Function('params', 'query', `return { method: '${method}', path: \`${API_BASE}${path}\${query ? '?' + new URLSearchParams(query).toString() : ''}\`, key: \`${method}${routeKey}\` }`)
 }
 
 async function readBody (response: Dispatcher.ResponseData) {
@@ -89,7 +93,7 @@ export async function executeQuery (query: Query): Promise<any> {
     'user-agent': 'DiscordBot (https://www.youtube.com/watch?v=dQw4w9WgXcQ, 0.0.0)',
     'content-type': requestBody ? 'application/json' : void 0,
     'content-length': requestBody ? requestBody.length.toString(10) : void 0,
-    'x-audit-log-reason': query.reason,
+    'x-audit-log-reason': query.reason || void 0,
   }
 
   await acquireRequest(query.route.key)
@@ -104,6 +108,10 @@ export async function executeQuery (query: Query): Promise<any> {
   if (response.statusCode === 429) {
     // retry failed query
     return executeQuery(query)
+  }
+
+  if (response.statusCode === 204) {
+    return
   }
 
   const body = await readBody(response)

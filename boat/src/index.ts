@@ -88,7 +88,7 @@ registerCommands([
   },
 
   // User commands
-  { command: 'soft-ban', handler: modCommands.softban },
+  { command: 'Softban', handler: modCommands.softban },
 ])
 
 createInteractionServer({

@@ -11,3 +11,5 @@
 // todo: Modify Guild Template
 
 // todo: Delete Guild Template
+
+export {}

@@ -28,7 +28,6 @@ import { GatewayOpcodes, GatewayDispatchEvents } from 'discord-api-types'
 import { TypedEmitter as EventEmitter } from 'tiny-typed-emitter'
 import WebSocket from 'ws'
 
-import { handleGatewayPayload } from './interactions/handler.js'
 import { toCamelCase } from './util/case.js'
 import { DISCORD_GATEWAY } from './constants.js'
 
@@ -205,11 +204,6 @@ export default class GatewayConnection extends EventEmitter<Events> {
   }
 
   #handleDispatch (payload: GatewayDispatchPayload) {
-    if (payload.t === GatewayDispatchEvents.InteractionCreate) {
-      handleGatewayPayload(payload.d, { type: 'Bot', token: this.#options.token })
-      return
-    }
-
     if (payload.t === GatewayDispatchEvents.Ready) {
       this.#sessionId = payload.d.session_id
     }

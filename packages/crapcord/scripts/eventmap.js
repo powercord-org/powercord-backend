@@ -37,10 +37,6 @@ const imports = []
 const items = []
 
 for (const event of events) {
-  if (event[0] === 'InteractionCreate') {
-    continue
-  }
-
   if (event[0] === 'Resumed') {
     items.push('RESUMED: (data: never) => void')
     continue
@@ -48,8 +44,8 @@ for (const event of events) {
 
   if (event[0] === 'MessageUpdate') {
     imports.push('APIMessage,')
-    items.push(`MESSAGE_UPDATE: (data: CamelCase<APIMessage>) => void`)
-    items.push(`MESSAGE_EMBED_UPDATE: (data: CamelCase<Pick<APIMessage, 'id' | 'embeds' | 'channel_id' | 'guild_id'>>) => void`)
+    items.push('MESSAGE_UPDATE: (data: CamelCase<APIMessage>) => void')
+    items.push('MESSAGE_EMBED_UPDATE: (data: CamelCase<Pick<APIMessage, \'id\' | \'embeds\' | \'channel_id\' | \'guild_id\'>>) => void')
     continue
   }
 

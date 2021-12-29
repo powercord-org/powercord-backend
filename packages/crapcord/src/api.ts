@@ -22,9 +22,25 @@
 
 import type { DiscordToken } from './api/internal/common.js'
 
-import * as messages from './api/messages.js'
-import * as webhooks from './api/webhooks.js'
+import * as channels from './api/channels.js'
 import * as commands from './api/commands.js'
+import * as emojis from './api/emojis.js'
+import * as guilds from './api/guilds.js'
+import * as interactions from './api/interactions.js'
+import * as invites from './api/invites.js'
+import * as members from './api/members.js'
+import * as messages from './api/messages.js'
+import * as misc from './api/misc.js'
+import * as oauth from './api/oauth.js'
+import * as roles from './api/roles.js'
+import * as scheduledEvents from './api/scheduledEvents.js'
+import * as stages from './api/stages.js'
+import * as stickers from './api/stickers.js'
+import * as templates from './api/templates.js'
+import * as threads from './api/threads.js'
+import * as user from './api/user.js'
+import * as webhooks from './api/webhooks.js'
+
 export { DiscordToken, DiscordError } from './api/internal/common.js'
 
 type ApiHelper = Record<string, (...args: any) => any>
@@ -45,12 +61,44 @@ function endpointsWithToken<T extends ApiHelper> (endpoints: T, token: DiscordTo
   return mappedEndpoints as WithToken<T>
 }
 
-export { messages, webhooks, commands }
+export {
+  channels,
+  commands,
+  emojis,
+  guilds,
+  interactions,
+  invites,
+  members,
+  messages,
+  misc,
+  oauth,
+  roles,
+  scheduledEvents,
+  stages,
+  stickers,
+  templates,
+  threads,
+  user,
+  webhooks,
+}
 
 export function withToken (token: DiscordToken) {
   return {
-    messages: endpointsWithToken(messages, token),
-    webhooks: endpointsWithToken(webhooks, token),
+    channels: endpointsWithToken(channels, token),
     commands: endpointsWithToken(commands, token),
+    emojis: endpointsWithToken(emojis, token),
+    guilds: endpointsWithToken(guilds, token),
+    interactions: endpointsWithToken(interactions, token),
+    invites: endpointsWithToken(invites, token),
+    members: endpointsWithToken(members, token),
+    messages: endpointsWithToken(messages, token),
+    misc: endpointsWithToken(misc, token),
+    roles: endpointsWithToken(roles, token),
+    scheduledEvents: endpointsWithToken(scheduledEvents, token),
+    stages: endpointsWithToken(stages, token),
+    stickers: endpointsWithToken(stickers, token),
+    templates: endpointsWithToken(templates, token),
+    threads: endpointsWithToken(threads, token),
+    user: endpointsWithToken(user, token),
   }
 }

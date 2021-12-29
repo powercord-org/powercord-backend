@@ -34,10 +34,10 @@ import type {
   APIRole as RoleSneak,
 } from 'discord-api-types/v9'
 import type { DiscordToken } from '../api/internal/common.js'
-import type { Webhook } from '../api/webhooks.js'
+import type { InteractionCredentials } from '../api/interactions.js'
 import type { CamelCase } from '../util/case.js'
 import { ApplicationCommandOptionType, InteractionType, InteractionResponseType } from 'discord-api-types/v9'
-import { createMessage, updateMessage, deleteMessage } from '../api/webhooks.js'
+import { createMessage, updateMessage, deleteMessage } from '../api/interactions.js'
 import { toCamelCase, toSneakCase } from '../util/case.js'
 
 type InteractionMessage = CamelCase<InteractionMessageSneak>
@@ -84,6 +84,7 @@ export interface ComponentInteraction extends Interaction {
 }
 
 export interface SlashCommand<TArgs extends Record<string, OptionValue> = Record<string, OptionValue>> extends CommandInteraction {
+  type: 1
   args: TArgs
 }
 
@@ -145,7 +146,7 @@ abstract class InteractionImpl implements Interaction {
 
   #deferState: DeferState = DeferState.NONE
 
-  #credentials: Webhook
+  #credentials: InteractionCredentials
 
   #sendResponse: SendResponseFunction
 
@@ -158,7 +159,7 @@ abstract class InteractionImpl implements Interaction {
     this.applicationToken = token
 
     this.#isComponent = payload.type === InteractionType.MessageComponent
-    this.#credentials = { id: payload.application_id, token: payload.token }
+    this.#credentials = { applicationId: payload.application_id, interactionToken: payload.token }
     this.#sendResponse = sendResponse
   }
 
@@ -217,7 +218,7 @@ abstract class InteractionImpl implements Interaction {
       return // Only case where the message is not returned. Kinda annoying as it makes the return voidable :shrug:
     }
 
-    return createMessage(message, this.#credentials, this.applicationToken)
+    return createMessage(this.#credentials, message, this.applicationToken)
   }
 
   updateMessage (messageId: string, message: InteractionMessage) {
@@ -237,8 +238,7 @@ abstract class InteractionImpl implements Interaction {
       return // Only case where the message is not returned. Kinda annoying as it makes the return voidable :shrug:
     }
 
-    // @ts-expect-error -- See https://github.com/discordjs/discord-api-types/pull/263
-    return updateMessage(messageId, message, this.#credentials, this.applicationToken)
+    return updateMessage(this.#credentials, messageId, message, this.applicationToken)
   }
 
   deleteMessage (messageId: string) {
@@ -246,7 +246,7 @@ abstract class InteractionImpl implements Interaction {
       throw new Error('unexpected call to deleteMessage before initial processing has been completed')
     }
 
-    return deleteMessage(messageId, this.#credentials, this.applicationToken)
+    return deleteMessage(this.#credentials, messageId, this.applicationToken)
   }
 }
 

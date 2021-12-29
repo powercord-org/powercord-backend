@@ -30,6 +30,7 @@ import { webcrypto } from 'crypto'
 import { CommandInteractionImpl, ComponentInteractionImpl } from './interaction.js'
 import { commandsRegistry, componentsRegistry } from './registry.js'
 import { InteractionErrorCode, InteractionError, dispatchError } from './error.js'
+import { createResponse } from '../api/interactions.js'
 import { makeDeferred } from '../util/deferred.js'
 
 export type ErrorResponse = { code: number, message: string }
@@ -219,5 +220,5 @@ export async function handleGatewayPayload (interaction: APIInteraction, token: 
   const res = await processPayload(interaction, token)
   if ('code' in res) return
 
-  // todo: send response to the API
+  return createResponse({ id: interaction.id, token: interaction.token }, res, token)
 }

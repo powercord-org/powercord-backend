@@ -22,26 +22,23 @@
 
 import type {
   RESTPostAPIWebhookWithTokenJSONBody as ExecutePayloadSneak,
-  RESTPostAPIWebhookWithTokenWaitResult as ExecuteResponseSneak,
+  RESTPostAPIWebhookWithTokenWaitResult as ExecuteWaitResponseSneak,
   RESTGetAPIWebhookWithTokenMessageResult as FetchResponseSneak,
   RESTPatchAPIWebhookWithTokenMessageJSONBody as UpdatePayloadSneak,
   RESTPatchAPIWebhookWithTokenMessageResult as UpdateResponseSneak,
 } from 'discord-api-types/v9'
-import type { DiscordToken } from './internal/common.js'
 import type { CamelCase } from '../util/case.js'
 import { route, executeQuery } from './internal/common.js'
 
 type ExecutePayload = CamelCase<ExecutePayloadSneak>
-type ExecuteResponse = CamelCase<ExecuteResponseSneak>
+type ExecuteWaitResponse = CamelCase<ExecuteWaitResponseSneak>
 type FetchResponse = CamelCase<FetchResponseSneak>
 type UpdatePayload = CamelCase<UpdatePayloadSneak>
 type UpdateResponse = CamelCase<UpdateResponseSneak>
 
 export type Webhook = { id: string, token: string }
 
-// todo: split up wait=true
-// todo: threads query parameter
-const CREATE_MESSAGE = route`${'POST'}/webhooks/${'webhookId'}/${'webhookToken'}?wait=true`
+const EXECUTE_WEBHOOK = route`${'POST'}/webhooks/${'webhookId'}/${'webhookToken'}`
 const FETCH_MESSAGE = route`${'GET'}/webhooks/${'webhookId'}/${'webhookToken'}/messages/${'messageId'}`
 const UPDATE_MESSAGE = route`${'PATCH'}/webhooks/${'webhookId'}/${'webhookToken'}/messages/${'messageId'}`
 const DELETE_MESSAGE = route`${'DELETE'}/webhooks/${'webhookId'}/${'webhookToken'}/messages/${'messageId'}`
@@ -64,36 +61,36 @@ const DELETE_MESSAGE = route`${'DELETE'}/webhooks/${'webhookId'}/${'webhookToken
 
 // todo: Delete Webhook with Token
 
-// Execute Webhook
-export async function createMessage (message: ExecutePayload, hook: Webhook, token?: DiscordToken): Promise<ExecuteResponse> {
+// Execute Webhook (wait=false)
+export async function executeWebhook (hook: Webhook, message: ExecutePayload, thread?: string): Promise<void> {
   return executeQuery({
-    route: CREATE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token }),
+    route: EXECUTE_WEBHOOK({ webhookId: hook.id, webhookToken: hook.token }, { wait: 'false', thread: thread }),
     body: message,
-    token: token,
+  })
+}
+
+// Execute Webhook (wait=true)
+export async function executeWebhookAwaitMessage (hook: Webhook, message: ExecutePayload, thread?: string): Promise<ExecuteWaitResponse> {
+  return executeQuery({
+    route: EXECUTE_WEBHOOK({ webhookId: hook.id, webhookToken: hook.token }, { wait: 'true', thread: thread }),
+    body: message,
   })
 }
 
 // Get Webhook Message
-export async function fetchMessage (messageId: string, hook: Webhook, token?: DiscordToken): Promise<FetchResponse> {
-  return executeQuery({
-    route: FETCH_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }),
-    token: token,
-  })
+export async function fetchMessage (hook: Webhook, messageId: string): Promise<FetchResponse> {
+  return executeQuery({ route: FETCH_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }) })
 }
 
 // Edit Webhook Message
-export async function updateMessage (messageId: string, message: UpdatePayload, hook: Webhook, token?: DiscordToken): Promise<UpdateResponse> {
+export async function updateMessage (hook: Webhook, messageId: string, message: UpdatePayload): Promise<UpdateResponse> {
   return executeQuery({
     route: UPDATE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }),
     body: message,
-    token: token,
   })
 }
 
 // Delete Webhook Message
-export async function deleteMessage (messageId: string, hook: Webhook, token?: DiscordToken): Promise<void> {
-  return executeQuery({
-    route: DELETE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }),
-    token: token,
-  })
+export async function deleteMessage (hook: Webhook, messageId: string): Promise<void> {
+  return executeQuery({ route: DELETE_MESSAGE({ webhookId: hook.id, webhookToken: hook.token, messageId: messageId }) })
 }

@@ -1,7 +1,7 @@
 import type {
-  APIApplicationCommandStringArgumentOptions as DiscordStringOption,
-  APIApplicationCommandSubCommandOptions as DiscordSubcommand,
-} from 'discord-api-types'
+  APIApplicationCommandStringOption as DiscordStringOption,
+  APIApplicationCommandSubcommandOption as DiscordSubcommand,
+} from 'discord-api-types/v9'
 import type { Interaction } from 'crapcord/interactions'
 import type { TagChunk } from './format.js'
 
