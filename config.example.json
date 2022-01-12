@@ -1,4 +1,6 @@
 {
+  "port": 8080,
+  "interactionsPort": 4567,
   "bind": "127.0.0.1",
   "honks": {
     "staffChannel": "",

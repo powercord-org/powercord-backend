@@ -41,7 +41,6 @@ export const commandPayload = {
       type: 1,
       name: 'list',
       description: 'List words configured in the filter',
-      options: [],
     },
     {
       type: 1,

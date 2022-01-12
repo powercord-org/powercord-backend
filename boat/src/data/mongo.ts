@@ -46,6 +46,7 @@ export type EnforceDocument = {
 
 export type NoteDocument = {
   _id: ObjectId
+  id: number
   target: string
   moderator: string
   note: string
@@ -65,4 +66,5 @@ await client.connect()
 await Promise.all([
   tags.createIndex({ name: 1 }, { unique: true }),
   filter.createIndex({ word: 1 }, { unique: true }),
+  notes.createIndex({ id: 1, target: 1 }, { unique: true }),
 ])

@@ -10,9 +10,11 @@ type LookupArgs = {
 }
 
 export function enforce (interaction: SlashCommand<EnforceArgs>) {
-  interaction.createMessage({ content: '// todo:tm:' }, true)
+  // todo
+  interaction.createMessage({ content: 'Not implemented, use pc/enforce.' }, true)
 }
 
 export function lookup (interaction: SlashCommand<LookupArgs>) {
-  interaction.createMessage({ content: '// todo:tm:' }, true)
+  // todo
+  interaction.createMessage({ content: 'Not implemented, use pc/lookup.' }, true)
 }

@@ -6,7 +6,6 @@ import type { Interaction } from 'crapcord/interactions'
 import type { TagChunk } from './format.js'
 
 import { commands } from 'crapcord/api'
-import config from '@powercord/shared/config'
 
 import { tags } from '../../data/mongo.js'
 
@@ -38,6 +37,11 @@ async function buildSubcommands (): Promise<DiscordSubcommand[]> {
 }
 
 export async function updateTagExecutor (interaction: Interaction) {
+  if (!interaction.guildId) {
+    interaction.createMessage({ content: 'This command only works in servers.' }, true)
+    return
+  }
+
   const command = {
     type: 1,
     name: 't',
@@ -45,5 +49,5 @@ export async function updateTagExecutor (interaction: Interaction) {
     options: await buildSubcommands(),
   }
 
-  return commands.createGuildCommand(config.discord.guildId, command, interaction.applicationId, interaction.applicationToken)
+  return commands.createGuildCommand(interaction.guildId, command, interaction.applicationId, interaction.applicationToken)
 }

@@ -33,6 +33,8 @@ services:
     image: powercord-boat
     working_dir: /opt/porkord/packages/boat
     command: pnpm run dev
+    ports:
+      - 4567:4567
     volumes:
       - ./packages/boat/src:/opt/porkord/packages/boat/src
       - ./packages/boat/dist:/opt/porkord/packages/boat/dist
