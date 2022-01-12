@@ -25,7 +25,7 @@ import { URL } from 'url'
 import { readFileSync } from 'fs'
 import { deleteMeta } from './logger.js'
 import { skipSnipe } from '../sniper.js'
-import { Period, getPeriod, ban, mute } from '../../mod.js'
+import { Period, getPeriod, ban, mute, softBan } from '../../mod.js'
 import { isStaff } from '../../util.js'
 import config from '../../config.js'
 
@@ -41,55 +41,97 @@ const INVITE_CHECK_FOR = [
   'watchanimeattheoffice.com/invite',
 ]
 
-const CLEANER = /\s|[\u200B-\u200D\uFEFF]|[\u0300-\u036f]|[\u202A-\u202E]|[/\\]/g
-const BAD_POWERCORD = /[Pp]ower[-_.,;:!*]*[C(]ord/
+// todo: spaces
+const CLEANER = /[\u200B-\u200F\u2060-\u2063\uFEFF\u00AD\u180E]|[\u0300-\u036f]|[\u202A-\u202E]|[/\\]/g
+const BAD_POWERCORD = /[Pp]ower[-_.,;:!*\s+]*[C(]ord/
 const EMOJI_UNICODE_RE = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff]|(?:<a?:[^:]{2,}:\d{6,}>))/g
 const EMOJI_RE = new RegExp(`${NAMES.map((n: string) => `:${n}:`).join('|').replace(/\+/g, '\\+')}|${EMOJI_UNICODE_RE.source}`, 'g')
 const MAX_EMOJI_THRESHOLD_MULTIPLIER = 0.3 // Amount of words * mult (floored) = max amount of emojis allowed
+
+// todo: a "better" normalization with multi-pass, so things like numbers don't get replaced pass-1
 const NORMALIZE: [ RegExp, string ][] = [
-  [ /[АΑ]|\uD83C\uDDE6/g, 'A' ],
-  [ /[ВΒ]|\uD83C\uDDE7/g, 'B' ],
-  [ /[CСᏟ]|\uD83C\uDDE8/g, 'C' ],
-  [ /\uD83C\uDDE9/g, 'D' ],
-  [ /[ЕЁΕ]|\uD83C\uDDEA/g, 'E' ],
-  [ /\uD83C\uDDEB/g, 'F' ],
-  [ /\uD83C\uDDEC/g, 'G' ],
-  [ /[НΗ]|\uD83C\uDDED/g, 'H' ],
-  [ /[І]|\uD83C\uDDEE/g, 'I' ],
-  [ /\uD83C\uDDEF/g, 'J' ],
-  [ /[Κκ]|\uD83C\uDDF0/g, 'K' ],
-  [ /\uD83C\uDDF1/g, 'L' ],
-  [ /[МΜ]|\uD83C\uDDF2/g, 'M' ],
-  [ /[Ν]|\uD83C\uDDF3/g, 'N' ],
-  [ /[ОØΟ]|\uD83C\uDDF4/g, 'O' ],
-  [ /[РΡ]|\uD83C\uDDF5/g, 'P' ],
-  [ /\uD83C\uDDF6/g, 'Q' ],
-  [ /\uD83C\uDDF7/g, 'R' ],
-  [ /[Ѕ]|\uD83C\uDDF8/g, 'S' ],
-  [ /[ТΤ]|\uD83C\uDDF9/g, 'T' ],
-  [ /\uD83C\uDDFA/g, 'U' ],
-  [ /[Ѵ]|\uD83C\uDDFB/g, 'V' ],
-  [ /\uD83C\uDDFC/g, 'W' ],
-  [ /[ХΧ]|\uD83C\uDDFD/g, 'X' ],
-  [ /[Υ]|\uD83C\uDDFE/g, 'Y' ],
-  [ /[Ζ]|\uD83C\uDDFF/g, 'Z' ],
-  [ /[аα]/g, 'a' ],
-  [ /[с]|©️/g, 'c' ],
-  [ /[đ]/g, 'd' ],
-  [ /[её3]/g, 'e' ],
-  [ /[9]/g, 'g' ],
-  [ /[ıіι¡]/g, 'i' ],
-  [ /[с]/g, 'c' ],
-  [ /[оø0ο]/g, 'o' ],
-  [ /[рρ]/g, 'p' ],
-  [ /[υ]/g, 'u' ],
-  [ /[ѕ]/g, 's' ],
-  [ /[ѵν]/g, 'v' ],
-  [ /[х]/g, 'x' ],
-  [ /[Ууγ]/g, 'y' ],
+  [ /Α|А|₳|Ꭿ|Ꭺ|Λ|@|🅰|🅐|\uD83C\uDDE6/g, 'A' ],
+  [ /Β|В|в|฿|₿|Ᏸ|Ᏼ|🅱|🅑|\uD83C\uDDE7/g, 'B' ],
+  [ /С|Ⅽ|₡|₵|Ꮳ|Ꮯ|Ꮸ|ᑕ|🅲|🅒|\uD83C\uDDE8/g, 'C' ],
+  [ /Ⅾ|ↁ|ↇ|Ꭰ|🅳|🅓|\uD83C\uDDE9/g, 'D' ],
+  [ /Ε|Ξ|ξ|Е|Ꭼ|Ꮛ|℮|🅴|🅔|\uD83C\uDDEA/g, 'E' ],
+  [ /Ғ|ғ|₣|🅵|🅕|\uD83C\uDDEB/g, 'F' ],
+  [ /₲|Ꮆ|Ᏻ|Ᏽ|🅶|🅖|\uD83C\uDDEC/g, 'G' ],
+  [ /Η|Н|н|Ӊ|ӊ|Ң|ң|Ӈ|ӈ|Ҥ|ҥ|Ꮋ|🅷|🅗|\uD83C\uDDED/g, 'H' ],
+  [ /Ι|І|Ӏ|ӏ|Ⅰ|Ꮖ|Ꮠ|🅸|🅘|\uD83C\uDDEE/g, 'I' ],
+  [ /Ј|Ꭻ|🅹|🅙|\uD83C\uDDEF/g, 'J' ],
+  [ /Κ|κ|К|к|Қ|қ|Ҟ|ҟ|Ҡ|ҡ|Ӄ|ӄ|Ҝ|ҝ|₭|Ꮶ|🅺|🅚|\uD83C\uDDF0/g, 'K' ],
+  [ /Ⅼ|£|Ł|Ꮮ|🅻|🅛|\uD83C\uDDF1/g, 'L' ],
+  [ /Μ|М|м|Ӎ|ӎ|Ⅿ|Ꮇ|🅼|🅜|\uD83C\uDDF2/g, 'M' ],
+  [ /Ν|И|и|Ҋ|ҋ|₦|🅽|🅝|\uD83C\uDDF3/g, 'N' ],
+  [ /Θ|θ|Ο|О|Ө|Ø|Ꮎ|Ꮻ|Ꭴ|Ꮕ|🅾|🅞|\uD83C\uDDF4/g, 'O' ],
+  [ /Ρ|Р|Ҏ|₽|₱|Ꭾ|Ꮅ|Ꮲ|🅿|🆊|🅟|\uD83C\uDDF5/g, 'P' ],
+  [ /🆀|🅠|\uD83C\uDDF6/g, 'Q' ],
+  [ /Я|я|Ꭱ|Ꮢ|🆁|🅡|\uD83C\uDDF7/g, 'R' ],
+  [ /Ѕ|\$|Ꭶ|Ꮥ|Ꮪ|🆂|🅢|\uD83C\uDDF8/g, 'S' ],
+  [ /Τ|Т|т|Ҭ|ҭ|₮|₸|Ꭲ|🆃|🅣|\uD83C\uDDF9/g, 'T' ],
+  [ /🆄|🅤|\uD83C\uDDFA/g, 'U' ],
+  [ /Ⅴ|Ꮴ|Ꮙ|Ꮩ|🆅|🅥|\uD83C\uDDFB/g, 'V' ],
+  [ /₩|Ꮃ|Ꮤ|🆆|🅦|\uD83C\uDDFC/g, 'W' ],
+  [ /Χ|χ|Х|Ҳ|🆇|🅧|\uD83C\uDDFD/g, 'X' ],
+  [ /Υ|У|Ү|Ұ|¥|🆈|🅨|\uD83C\uDDFE/g, 'Y' ],
+  [ /Ζ|Ꮓ|🆉|🅩|\uD83C\uDDFF/g, 'Z' ],
+  [ /α|а/g, 'a' ],
+  [ /β|Ꮟ/g, 'b' ],
+  [ /ϲ|с|ⅽ|↻|¢|©️/g, 'c' ],
+  [ /đ|ⅾ|₫|Ꮷ|ժ|🆥/g, 'd' ],
+  [ /ε|е|Ҽ|ҽ|Ҿ|ҿ|Є|є|€/g, 'e' ],
+  [ /ƒ/g, 'f' ],
+  // [ //g, 'g' ],
+  [ /Ћ|ћ|Һ|һ|Ꮒ|Ꮵ/g, 'h' ],
+  [ /ι|і|ⅰ|Ꭵ|¡/g, 'i' ],
+  [ /ј/g, 'j' ],
+  // [ /|/g, 'k' ],
+  [ /ⅼ|£|₤/g, 'l' ],
+  [ /ⅿ|₥/g, 'm' ],
+  // [ /|/g, 'n' ],
+  [ /ο|о|օ|ө|ø|¤|๏/g, 'o' ],
+  [ /ρ|р|ҏ|Ꮘ|φ|ק/g, 'p' ],
+  // [ /|/g, 'q' ],
+  [ /ɾ/g, 'r' ],
+  [ /ѕ/g, 's' ],
+  [ /τ/g, 't' ],
+  [ /μ|υ/g, 'u' ],
+  [ /ν|ⅴ/g, 'v' ],
+  [ /ω|ա|山/g, 'w' ],
+  [ /х|ҳ|ⅹ/g, 'x' ],
+  [ /γ|у|ү|ұ|Ꭹ|Ꮍ/g, 'y' ],
+  // [ /|/g, 'z' ],
+  [ /⓿/g, '0' ],
+  [ /⓵/g, '1' ],
+  [ /⓶/g, '2' ],
+  [ /⓷/g, '3' ],
+  [ /Ꮞ|⓸/g, '4' ],
+  [ /⓹/g, '5' ],
+  [ /⓺/g, '6' ],
+  [ /⓻/g, '7' ],
+  [ /⓼/g, '8' ],
+  [ /⓽/g, '9' ],
+  [ /⓾/g, '10' ],
+  [ /⓫/g, '11' ],
+  [ /⓬/g, '12' ],
+  [ /⓭/g, '13' ],
+  [ /⓮/g, '14' ],
+  [ /⓯/g, '15' ],
+  [ /⓰/g, '16' ],
+  [ /⓱/g, '17' ],
+  [ /⓲/g, '18' ],
+  [ /⓳/g, '19' ],
+  [ /⓴/g, '20' ],
+  [ /1/g, 'i' ],
+  [ /3/g, 'e' ],
+  [ /4/g, 'a' ],
+  [ /9/g, 'g' ],
+  [ /0/g, 'o' ],
 ]
 
 export const BLACKLIST_CACHE: string[] = []
+const SPAM_HINTS = [ 'discord', 'nitro', 'steam', 'cs:go', 'csgo' ]
 
 const correctedPeople = new Map<string, number>()
 
@@ -115,16 +157,16 @@ function takeAction (msg: Message, reason: string, warning: string, attemptedByp
   }
 
   if (period === Period.KNOWN && attemptedBypass) {
-    mute(msg.member.guild, msg.author.id, null, `Automod: ${reason} (Attempted bypass with unicode)`, 12 * 3600e3)
+    mute(msg.member.guild, msg.author.id, null, `Automod: ${reason} (Attempted bypass)`, 12 * 3600e3)
   }
 
   msg.channel.createMessage({ content: warning, allowedMentions: { users: [ msg.author.id ] } })
     .then((m) => setTimeout(() => m.delete(), 10e3))
 }
 
-async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
+async function processMessage (this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (msg.guildID !== config.discord.ids.serverId || msg.author.bot || isStaff(msg.member)) return null
-  let normalizedMessage = msg.content.normalize('NFD')
+  let normalizedMessage = msg.content.normalize('NFKD')
   let attemptedBypass = false
   for (const [ re, rep ] of NORMALIZE) {
     const cleanerString = normalizedMessage.replace(re, rep)
@@ -139,9 +181,19 @@ async function process (this: CommandClient, msg: Message<GuildTextableChannel>)
   const cleanLowercaseMessage = cleanMessage.toLowerCase()
   const cleanNormalizedLowercaseMessage = cleanNormalizedMessage.toLowerCase()
 
+  // Filter scams
+  if (
+    msg.content.includes('@everyone')
+    && (msg.content.includes('https://') || msg.content.includes('http://'))
+    && SPAM_HINTS.find((h) => cleanNormalizedLowercaseMessage.includes(h))
+  ) {
+    softBan(msg.channel.guild, msg.author.id, null, 'Automod: Detected scambot', 1)
+    return
+  }
+
   // Filter bad words
   if (!BLACKLIST_CACHE.length) {
-    const b = await this.mongo.collection('blacklist').find().toArray()
+    const b = await this.mongo.collection('boat-blacklist').find().toArray()
     BLACKLIST_CACHE.push(...b.map((e) => e.word))
   }
 
@@ -239,7 +291,7 @@ function checkInvite (guild: Guild, invite: Invite) {
 }
 
 export default function (bot: CommandClient) {
-  bot.on('messageCreate', process)
-  bot.on('messageUpdate', process)
+  bot.on('messageCreate', processMessage)
+  bot.on('messageUpdate', processMessage)
   bot.on('inviteCreate', checkInvite)
 }

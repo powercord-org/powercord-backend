@@ -63,7 +63,7 @@ function extractEntryData (entry: GuildAuditLogEntry): [ string, string, string 
   let modName = ''
   let reason = ''
 
-  if (entry.user.id === config.discord.clientID && entry.reason?.startsWith('[')) {
+  if (entry.user.id === config.discord.clientID && entry.reason?.startsWith('[') && !entry.reason?.startsWith('[soft]')) {
     const splittedReason = entry.reason.split(' ')
     modName = splittedReason.shift()!.replace('[', '').replace(']', '')
     reason = splittedReason.join(' ')
@@ -94,6 +94,7 @@ function processBanFactory (type: 'add' | 'remove'): (guild: Guild, user: User) 
     if (!entry) return
 
     let [ modId, modName, reason ] = extractEntryData(entry)
+    if (reason?.includes('[no log]')) return
 
     const soft = reason.startsWith('[soft]')
     if (soft) {
@@ -121,6 +122,8 @@ async function processMemberLeave (this: CommandClient, guild: Guild, user: User
   const entry = logs.entries.find((auditEntry) => auditEntry.targetID === user.id)
   if (entry && Date.now() - Number((BigInt(entry.id) >> BigInt('22')) + BigInt('1420070400000')) < 5000) {
     const [ modId, modName, reason ] = extractEntryData(entry)
+    if (reason?.includes('[no log]')) return
+
     const caseId = await computeCaseId(channel)
 
     this.createMessage(config.discord.ids.channelModLogs, {
@@ -154,6 +157,8 @@ async function processMemberUpdate (this: CommandClient, guild: Guild, user: Use
     }
 
     const [ modId, modName, reason ] = extractEntryData(entry)
+    if (reason?.includes('[no log]')) return
+
     const caseId = await computeCaseId(channel)
 
     this.createMessage(config.discord.ids.channelModLogs, {

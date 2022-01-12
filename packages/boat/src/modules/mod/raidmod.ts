@@ -51,7 +51,7 @@ function isRaider (user: string, message: string, oldMember: boolean): boolean {
 
   count++
   raiderBuffer.set(raiderHash, count)
-  setTimeout(() => removeRaider(raiderHash), oldMember ? 5e3 : 10e3)
+  setTimeout(() => removeRaider(raiderHash), oldMember ? 7e3 : 10e3)
   return false
 }
 

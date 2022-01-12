@@ -41,7 +41,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
 
   switch (args.shift()) {
     case 'show': {
-      const list = await msg._client.mongo.collection('blacklist').find().toArray()
+      const list = await msg._client.mongo.collection('boat-blacklist').find().toArray()
       msg.channel.createMessage(list.length > 0 ? `\`${list.map((e) => e.word).join('`, `')}\`` : 'The blacklist has no entries.')
       break
     }
@@ -52,7 +52,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
         return
       }
 
-      await msg._client.mongo.collection('blacklist').insertOne({ word: args.join(' ').toLowerCase() })
+      await msg._client.mongo.collection('boat-blacklist').insertOne({ word: args.join(' ').toLowerCase() })
       msg.channel.createMessage(`Added \`${args.join(' ').toLowerCase()}\` to the blacklist.`)
       while (BLACKLIST_CACHE.length) BLACKLIST_CACHE.pop()
       break
@@ -64,7 +64,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
         return
       }
 
-      msg._client.mongo.collection('blacklist').findOneAndDelete({ word: args.join(' ').toLowerCase() })
+      msg._client.mongo.collection('boat-blacklist').findOneAndDelete({ word: args.join(' ').toLowerCase() })
         .then(({ value }) => {
           if (value) {
             while (BLACKLIST_CACHE.length) BLACKLIST_CACHE.pop()

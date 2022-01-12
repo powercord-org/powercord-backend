@@ -208,6 +208,7 @@ async function appUpdates () {
   const embeds: Embed[] = [ host, ...modules ].filter(Boolean) as Embed[]
 
   if (embeds.length) {
+    // todo: split if embeds.length > 10
     dispatchHonk(config.honks.updootChannel, { embeds: embeds })
   }
 
