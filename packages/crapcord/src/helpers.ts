@@ -58,7 +58,7 @@ export function createInteractionServer (props: ServerProps) {
 
       const data = JSON.stringify(res)
       response.setHeader('content-type', 'application/json')
-      response.setHeader('content-length', data.length)
+      response.setHeader('content-length', Buffer.from(data).length)
       response.end(data)
     })
   }).listen(props.port)
