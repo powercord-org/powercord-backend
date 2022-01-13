@@ -51,7 +51,7 @@ export async function fetchTokens (endpoint: string, clientId: string, clientSec
   body.set(type === 'authorization_code' ? 'code' : 'refresh_token', token)
   body.set('grant_type', type)
 
-  return fetch(endpoint, {
+  return <any> fetch(endpoint, {
     method: 'POST',
     headers: {
       accept: 'application/json',
@@ -147,7 +147,7 @@ async function link (this: FastifyInstance, request: FastifyRequest<RequestProps
       return
     }
 
-    const user = await fetch(reply.context.config.selfUrl, { headers: { authorization: `Bearer ${tokens.access_token}` } }).then((r) => r.json())
+    const user = await fetch(reply.context.config.selfUrl, { headers: { authorization: `Bearer ${tokens.access_token}` } }).then<any>((r) => r.json())
 
     if (reply.context.config.isAuthentication) {
       return finishAuthentication(this, reply, tokens, user, request.cookies.redirect)

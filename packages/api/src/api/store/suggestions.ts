@@ -47,7 +47,7 @@ async function fetchAll (): Promise<GithubIssue[]> {
       body: JSON.stringify({ query: query }),
     })
 
-    payload = await res.json()
+    payload = await res.json() as any
     items.push(...payload.data.repository.issues.nodes)
   } while (payload.data.repository.issues.pageInfo.hasNextPage)
   return items

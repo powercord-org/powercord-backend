@@ -3,7 +3,7 @@
  * Licensed under the Open Software License version 3.0
  */
 
-import type { Plugin, ESBuildOptions } from 'vite'
+import type { Plugin } from 'vite'
 
 import { defineConfig } from 'vite'
 import { rename } from 'fs/promises'
@@ -11,13 +11,6 @@ import { join } from 'path'
 import preact from '@preact/preset-vite'
 import magicalSvg from 'vite-plugin-magical-svg'
 // import sriPlugin from 'rollup-plugin-sri'
-
-function noJsxInject (): Plugin {
-  return {
-    name: 'no-jsx-inject',
-    config: (c) => void ((c.esbuild as ESBuildOptions).jsxInject = ''),
-  }
-}
 
 function moveIndex (): Plugin {
   return {
@@ -43,7 +36,6 @@ export default defineConfig({
   ssr: { noExternal: [ '@borkenware/spoonfeed' ] },
   plugins: [
     preact(),
-    noJsxInject(),
     magicalSvg({ target: 'preact' }),
     // {  __VITE_PRELOAD__ is a meme and it's not a fun one
     //   ...sriPlugin({ publicPath: '/', algorithms: [ 'sha256', 'sha512' ] }),

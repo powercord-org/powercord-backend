@@ -31,9 +31,9 @@ export async function remoteFile (url: URL): Promise<CacheResult> {
     }
   }
 
-  const res = await fetch(url)
+  const res = await fetch(url as any) // todo: report to node-fetch? mismatch between jsdoc and types
   if (res.status !== 200) return { success: false }
-  const buffer = await res.buffer()
+  const buffer = Buffer.from(await res.arrayBuffer())
   await writeFile(cacheFile, buffer)
   return {
     success: true,

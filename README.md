@@ -5,6 +5,7 @@ The backend for [powercord-org/powercord](https://github.com/powercord-org/power
  - `boat`: Discord bot for the Powercord server
  - `packages/api`: REST API
  - `packages/web`: Web UI & HTTP server for pre-rendering
+ - `shared`: Shared resources across backend packages
  - `packages/boat`: Discord bot for the Powercord server (legacy bot)
  - `packages/crapcord`: Library for interfacing with the Discord API
 

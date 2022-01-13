@@ -23,65 +23,48 @@ services:
     user: ${USER_ID}:${GROUP_ID}
     environment:
       NODE_ENV: development
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-      args:
-        USER_ID: ${USER_ID}
-        GROUP_ID: ${GROUP_ID}
-        PACKAGE_NAME: boat
-    image: powercord-boat
+    build: .
     working_dir: /opt/porkord/packages/boat
     command: pnpm run dev
     ports:
       - 4567:4567
     volumes:
+      - ./node_modules:/opt/porkord/node_modules
       - ./packages/boat/src:/opt/porkord/packages/boat/src
       - ./packages/boat/dist:/opt/porkord/packages/boat/dist
       - ./packages/boat/package.json:/opt/porkord/packages/boat/package.json
       - ./packages/boat/tsconfig.json:/opt/porkord/packages/boat/tsconfig.json
+      - ./shared:/opt/porkord/shared
       - ./config.json:/opt/porkord/config.json
+      - ./config.example.json:/opt/porkord/config.example.json
+      - ./tsconfig.json:/opt/porkord/tsconfig.json
     profiles:
       - bot
   api:
+    build: .
     user: ${USER_ID}:${GROUP_ID}
-    environment:
-      NODE_ENV: development
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-      args:
-        USER_ID: ${USER_ID}
-        GROUP_ID: ${GROUP_ID}
-        PACKAGE_NAME: api
-    image: powercord-api
     working_dir: /opt/porkord/packages/api
     command: pnpm run dev
     volumes:
       - settings-data:/var/lib/powercord
-      - ./packages/types:/opt/porkord/packages/types
-      - ./packages/api/src:/opt/porkord/packages/api/src
-      - ./packages/api/dist:/opt/porkord/packages/api/dist
-      - ./packages/api/package.json:/opt/porkord/packages/api/package.json
-      - ./packages/api/tsconfig.json:/opt/porkord/packages/api/tsconfig.json
+      - ./node_modules:/opt/porkord/node_modules
+      - ./packages:/opt/porkord/packages
+      - ./shared:/opt/porkord/shared
       - ./documentation:/opt/porkord/documentation
       - ./config.json:/opt/porkord/config.json
+      - ./config.example.json:/opt/porkord/config.example.json
+      - ./tsconfig.json:/opt/porkord/tsconfig.json
     profiles:
       - website
   web:
+    build: .
     user: ${USER_ID}:${GROUP_ID}
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-      args:
-        USER_ID: ${USER_ID}
-        GROUP_ID: ${GROUP_ID}
-        PACKAGE_NAME: web
-    image: powercord-web
-    command: pnpm run dev -- --host
     working_dir: /opt/porkord/packages/web
+    command: pnpm run dev -- --host
     volumes:
-      - ./packages/web:/opt/porkord/packages/web
+      - ./node_modules:/opt/porkord/node_modules
+      - ./packages:/opt/porkord/packages
+      - ./tsconfig.json:/opt/porkord/tsconfig.json
     profiles:
       - website
 

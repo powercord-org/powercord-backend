@@ -16,7 +16,7 @@ import config from '@powercord/shared/config'
  */
 export async function fetchUser (userId: string): Promise<User> {
   return fetch(`https://discord.com/api/v9/users/${userId}`, { headers: { authorization: `Bot ${config.discord.botToken}` } })
-    .then((r) => r.json())
+    .then<any>((r) => r.json())
 }
 
 /**
@@ -24,7 +24,7 @@ export async function fetchUser (userId: string): Promise<User> {
  */
 export async function fetchCurrentUser (token: string): Promise<User> {
   return fetch('https://discord.com/api/v9/users/@me', { headers: { authorization: `Bearer ${token}` } })
-    .then((r) => r.json())
+    .then<any>((r) => r.json())
 }
 
 /// DM
@@ -40,7 +40,7 @@ export async function sendDm (userId: string, message: string): Promise<boolean>
       'content-type': 'application/json',
     },
     body: JSON.stringify({ recipient_id: userId }),
-  }).then((r) => r.json())
+  }).then<any>((r) => r.json())
 
   if (!channel.id) return false
   const res = await fetch(`https://discord.com/api/v9/channels/${channel.id}/messages`, {
@@ -65,14 +65,14 @@ export async function dispatchHonk (honk: string, payload: unknown, query?: stri
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(payload),
-  }).then((r) => r.json())
+  }).then<any>((r) => r.json())
 }
 
 /**
  * @deprecated
  */
 export async function fetchHonkMessage (honk: string, message: string): Promise<ApiMessage> {
-  return fetch(`https://discord.com/api/v9/webhooks/${honk}/messages/${message}`).then((r) => r.json())
+  return fetch(`https://discord.com/api/v9/webhooks/${honk}/messages/${message}`).then<any>((r) => r.json())
 }
 
 /**
@@ -83,7 +83,7 @@ export async function editHonkMessage (honk: string, message: string, payload: u
     method: 'PATCH',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(payload),
-  }).then((r) => r.json())
+  }).then<any>((r) => r.json())
 }
 
 /// Members management
@@ -100,7 +100,7 @@ export async function fetchAllMembers (): Promise<Member[]> {
     res = await fetch(
       `https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members?limit=1000&after=${after}`,
       { headers: { authorization: `Bot ${config.discord.botToken}` } }
-    ).then((r) => r.json())
+    ).then<any>((r) => r.json())
 
     users.push(...res)
   } while (res.length === 1000)
@@ -115,7 +115,7 @@ export async function fetchMember (memberId: string): Promise<Member | undefined
   return fetch(
     `https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members/${memberId}`,
     { headers: { authorization: `Bot ${config.discord.botToken}` } }
-  ).then((r) => r.status === 200 ? r.json() : void 0)
+  ).then<any>((r) => r.status === 200 ? r.json() : void 0)
 }
 
 /**
