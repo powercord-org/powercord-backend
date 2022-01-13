@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2018-2022 Powercord Developers
+ * Licensed under the Open Software License version 3.0
+ */
+
 import type { SlashCommand, UserCommand, OptionUser } from 'crapcord/interactions'
 import { guilds, members } from 'crapcord/api'
 import { PermissionFlagsBits } from 'discord-api-types/v9'

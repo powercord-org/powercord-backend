@@ -1,23 +1,6 @@
 /*
- * Copyright (c) 2018-2021 aetheryx & Cynthia K. Rey
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) 2018-2022 Powercord Developers
+ * Licensed under the Open Software License version 3.0
  */
 
 import type { Attributes, ComponentChildren } from 'preact'
@@ -31,15 +14,18 @@ type TabProps = Attributes & {
 }
 
 export default function Tabs ({ children: rawChildren }: TabProps) {
-  const [ selected, setSelected ] = useState(null)
+  const [ selected, setSelected ] = useState<string | null>(null)
   const children = toChildArray(rawChildren)
 
   const tabs = useMemo(() => {
     const res = []
     for (const child of children) {
       if (typeof child !== 'object') continue
+      // @ts-ignore -- todo
       if (!('data-tab-id' in child.props) || typeof child.props['data-tab-id'] !== 'string') continue
+      // @ts-ignore -- todo
       if (!('data-tab-name' in child.props) || typeof child.props['data-tab-name'] !== 'string') continue
+      // @ts-ignore -- todo
       res.push({ id: child.props['data-tab-id'], name: child.props['data-tab-name'], element: child })
     }
 

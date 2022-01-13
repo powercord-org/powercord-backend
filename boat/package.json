@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "description": "Discord bot for the Powercord guild",
   "repository": "git@github.com:powercord-org/powercord-backend.git",
-  "license": "MIT",
+  "license": "OSL-3.0",
   "private": true,
   "type": "module",
   "engines": {

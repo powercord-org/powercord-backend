@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "Frontend for powercord.dev",
   "repository": "git@github.com:powercord-org/powercord-backend.git",
-  "license": "MIT",
+  "license": "OSL-3.0",
   "private": true,
   "engines": {
     "node": ">= 15",

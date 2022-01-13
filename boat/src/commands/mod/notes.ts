@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2018-2022 Powercord Developers
+ * Licensed under the Open Software License version 3.0
+ */
+
 import type { SlashCommand, OptionUser } from 'crapcord/interactions'
 import { notes } from '../../data/mongo.js'
 

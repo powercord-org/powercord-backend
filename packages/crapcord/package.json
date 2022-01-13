@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Minimal Discord API/Gateway wrapper, with fully fledged interactions support",
   "repository": "git@github.com:powercord-org/powercord-backend.git",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "type": "module",
   "engines": {
     "node": ">= 15",

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2018-2022 Powercord Developers
+ * Licensed under the Open Software License version 3.0
+ */
+
 type TagString = { type: 'string', value: string }
 type TagArgument = { type: 'argument', name: string, description: string, default?: string }
 export type TagChunk = TagString | TagArgument
