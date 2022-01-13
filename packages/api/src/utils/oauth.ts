@@ -80,7 +80,7 @@ export async function fetchTokens (endpoint: string, clientId: string, clientSec
 
 async function finishAuthentication (fastify: FastifyInstance, reply: Reply, tokens: OAuthTokens, user: DiscordUser, redirect?: string) {
   const collection = fastify.mongo.db!.collection<User>('users')
-  const banStatus = await fastify.mongo.db!.collection('userbans').findOne({ _id: user.id })
+  const banStatus = await fastify.mongo.db!.collection<any>('userbans').findOne({ _id: user.id })
   if (banStatus?.account) {
     // todo: Notify the user why the auth failed instead of silently failing
     reply.redirect('/')
@@ -182,7 +182,7 @@ async function link (this: FastifyInstance, request: FastifyRequest<RequestProps
 
     if (tokens.refresh_token) account.refreshToken = tokens.refresh_token
     if (tokens.expires_in) account.expiryDate = Date.now() + (tokens.expires_in * 1000)
-    await this.mongo.db!.collection('users').updateOne(
+    await this.mongo.db!.collection<User>('users').updateOne(
       { _id: request.user!._id },
       { $set: { updatedAt: new Date(), [`accounts.${reply.context.config.platform}`]: account } }
     )
@@ -232,7 +232,7 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<RequestPro
     return
   }
 
-  await this.mongo.db!.collection('users').updateOne(
+  await this.mongo.db!.collection<User>('users').updateOne(
     { _id: request.user!._id },
     { $set: { updatedAt: new Date() }, $unset: { [`accounts.${reply.context.config.platform}`]: 1 } }
   )

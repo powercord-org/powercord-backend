@@ -57,7 +57,7 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
   const { spotify } = request.user!.accounts
   if (!spotify) return { token: null }
 
-  const users = this.mongo.db!.collection('users')
+  const users = this.mongo.db!.collection<User>('users')
   if (Date.now() >= spotify.expiryDate) {
     try {
       const tokens = await fetchTokens(
@@ -70,7 +70,7 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
       )
 
       if (!tokens.access_token) {
-        await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1, updatedAt: new Date() } })
+        await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 }, $set: { updatedAt: new Date() } })
         return { token: null, revoked: 'ACCESS_DENIED' }
       }
 
