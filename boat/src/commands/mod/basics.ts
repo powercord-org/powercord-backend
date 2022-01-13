@@ -83,8 +83,16 @@ export async function softban (interaction: SlashCommand<SoftbanArgs> | UserComm
     return
   }
 
-  const member = interaction.type === 2 ? interaction.args.member : interaction.args.user.member
-  const user = interaction.type === 2 ? interaction.args.user : interaction.args.user.user
+  const isUserCommand = interaction.type === 2
+
+  const member = isUserCommand
+    ? interaction.args.member
+    : interaction.args.user.member
+
+  const user = isUserCommand
+    ? interaction.args.user
+    : interaction.args.user.user
+
 
   if (member) {
     // Permission check
@@ -95,7 +103,10 @@ export async function softban (interaction: SlashCommand<SoftbanArgs> | UserComm
     }
   }
 
-  const reason = interaction.type === 2 ? 'No reason given' : interaction.args.reason || 'No reason given'
+  const reason = isUserCommand
+    ? 'No reason given'
+    : interaction.args.reason || 'No reason given'
+
   await guilds.createGuildBan(
     interaction.guildId,
     user.id,
@@ -122,6 +133,13 @@ export async function timeout (interaction: SlashCommand<TimeoutArgs>) {
 
   if (!interaction.args.user.member) {
     interaction.createMessage({ content: 'This user is not a server member.' }, true)
+    return
+  }
+
+  // Permission check
+  const permissions = BigInt(interaction.args.user.member.permissions)
+  if (permissions & PermissionFlagsBits.ManageMessages) {
+    interaction.createMessage({ content: 'Are you sure about that one?' }, true)
     return
   }
 
