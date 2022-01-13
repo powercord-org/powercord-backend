@@ -57,7 +57,7 @@ export async function executor (msg: Message<GuildTextableChannel>, args: string
   const infractions: Array<{ rule: string, count: number, occurrences: string[] }> = []
   await msg._client.mongo.collection('enforce').find({ userId: member.id }).forEach((doc) => {
     const infraction = infractions.find((inf) => inf.rule === doc.rule)
-    const timestamp = Math.floor(doc._id.getTimestamp() / 1000)
+    const timestamp = Math.floor(doc._id.getTimestamp().getTime() / 1000)
 
     if (infraction) {
       infractions[infractions.indexOf(infraction)].count++

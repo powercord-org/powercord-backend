@@ -21,13 +21,14 @@
  */
 
 import type { CommandClient, GuildTextableChannel, Message } from 'eris'
+import type { DatabaseTag } from '../db.js'
 import config from '../config.js'
 
 async function process (this: CommandClient, msg: Message<GuildTextableChannel>) {
   if (!msg.content.startsWith(config.discord.prefix)) return
 
   const command = msg.content.slice(config.discord.prefix.length).toLowerCase()
-  const tag = await this.mongo.collection('boat-tags').findOne({ _id: command })
+  const tag = await this.mongo.collection<DatabaseTag>('boat-tags').findOne({ _id: command })
   if (tag) msg.channel.createMessage(tag.content)
 }
 

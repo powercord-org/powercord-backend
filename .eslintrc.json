@@ -4,7 +4,7 @@
     "node": true
   },
   "extends": [ "eslint:recommended" ],
-  "plugins": [ "@typescript-eslint", "deprecation" ],
+  "plugins": [ "@typescript-eslint" ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 12,
@@ -76,7 +76,6 @@
     "no-unmodified-loop-condition": "error",
     "no-unused-expressions": "error",
     "no-warning-comments": "warn",
-    "deprecation/deprecation": "warn",
     "prefer-promise-reject-errors": "error",
     "radix": "error",
     "wrap-iife": "error",
@@ -118,7 +117,7 @@
     "linebreak-style": [ "error", "unix" ],
     "lines-between-class-members": "error",
     "multiline-ternary": [ "error", "always-multiline" ],
-    "new-cap": [ "error", { "properties": false } ],
+    "new-cap": [ "error", { "properties": false, "capIsNewExceptionPattern": "^[A-Z_]+$" } ],
     "new-parens": "error",
     "no-array-constructor": "error",
     "no-lonely-if": "error",

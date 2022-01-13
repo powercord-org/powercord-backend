@@ -27,7 +27,7 @@ import usersModule from './users.js'
 import guildsModule from './guilds.js'
 import statsModule from './stats.js'
 import docsModule from './docs/index.js'
-import honksModule from './honks.js'
+// import honksModule from './honks.js'
 import oauthModule from './oauth.js'
 import miscModule from './misc.js'
 import legacyLinkingModule from './legacyLinking.js'
@@ -46,7 +46,7 @@ export default async function (fastify: FastifyInstance) {
   fastify.register(guildsModule, { prefix: '/guilds' })
   fastify.register(statsModule, { prefix: '/stats' })
   fastify.register(docsModule, { prefix: '/docs' })
-  fastify.register(honksModule, { prefix: '/honks' })
+  // fastify.register(honksModule, { prefix: '/honks' })
   fastify.register(oauthModule, { prefix: '/oauth' })
   fastify.register(miscModule)
   fastify.register(legacyLinkingModule) // todo: remove (v3)

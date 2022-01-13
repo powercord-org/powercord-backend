@@ -30,7 +30,6 @@ import config from '../../config.js'
 
 
 const SECRETS = [
-  config.honks.patreonSecret,
   config.honks.staffChannel,
   config.honks.updootChannel,
   config.discord.clientSecret,

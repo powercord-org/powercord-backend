@@ -52,8 +52,8 @@ fastify.register(fastifyTokenize, {
   fastifyAuth: true,
   cookieSigned: true,
   fetchAccount: async (id: string) => {
-    const user = await fastify.mongo.db!.collection('users').findOne({ _id: id })
-    const updatedUser = user ? await refreshUserData(fastify, user as User) : null
+    const user = await fastify.mongo.db!.collection<User>('users').findOne({ _id: id })
+    const updatedUser = user ? await refreshUserData(fastify, user) : null
     if (updatedUser) (updatedUser as any).lastTokenReset = 0
     return updatedUser
   },

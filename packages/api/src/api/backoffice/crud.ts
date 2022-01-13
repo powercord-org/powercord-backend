@@ -157,7 +157,7 @@ async function read (this: FastifyInstance, request: FastifyRequest<{ Params: Ro
 
 async function update (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const data = reply.context.config
-  const collection = this.mongo.db!.collection(data.collection)
+  const collection = this.mongo.db!.collection<any>(data.collection)
   const opts = typeof data.modules?.update === 'object' ? data.modules.update : {}
   const id = data.idStr ? request.params.id : new ObjectId(request.params.id)
 
@@ -189,7 +189,7 @@ async function update (this: FastifyInstance, request: FastifyRequest<{ Params: 
 
 async function del (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const data = reply.context.config
-  const collection = this.mongo.db!.collection(data.collection)
+  const collection = this.mongo.db!.collection<any>(data.collection)
   // const opts = typeof data.modules?.delete === 'object' ? data.modules.delete : {}
   const id = data.idStr ? request.params.id : new ObjectId(request.params.id)
 

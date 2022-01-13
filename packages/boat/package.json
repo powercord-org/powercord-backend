@@ -7,7 +7,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">= 14",
+    "node": ">= 15",
     "pnpm": ">= 6"
   },
   "scripts": {
@@ -24,6 +24,7 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
+    "@powercord/types": "workspace:*",
     "@types/node": "^16.6.1",
     "@types/node-cron": "^2.0.4",
     "@types/node-fetch": "^2.5.12",

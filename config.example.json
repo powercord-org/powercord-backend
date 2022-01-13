@@ -1,7 +1,8 @@
 {
+  "port": 8080,
+  "interactionsPort": 4567,
   "bind": "127.0.0.1",
   "honks": {
-    "patreonSecret": "",
     "staffChannel": "",
     "updootChannel": "",
     "formsChannel": ""
@@ -10,6 +11,29 @@
     "clientID": "",
     "clientSecret": "",
     "botToken": "",
+    "botPublicKey": "",
+    "guildId": "",
+    "roles": {
+      "donator": "",
+      "contributor": "",
+      "translator": "",
+      "hunter": "",
+      "user": "",
+      "muted": ""
+    },
+    "channels": {
+      "starboard": "",
+      "cuteboard": "",
+      "modlogs": "",
+      "messagelogs": "",
+      "memberlogs": "",
+      "faq": "",
+      "staff": ""
+    },
+    "messages": {
+      "rules": [ "", "" ]
+    },
+    "__note": "everything below is deprecated",
     "prefix": "pc/",
     "ids": {
       "serverId": "",
@@ -27,11 +51,7 @@
       "channelRules": "",
       "channelFaq": "",
       "channelStaff": "",
-      "channelMuted": "",
-      "shitstars": {
-        "users": [],
-        "channels": []
-      }
+      "channelMuted": ""
     }
   },
   "spotify": {

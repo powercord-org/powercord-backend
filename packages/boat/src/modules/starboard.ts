@@ -23,13 +23,20 @@
 import type { CommandClient, EmbedImage, EmbedVideo, PartialEmoji, GuildTextableChannel, Message, User } from 'eris'
 import config from '../config.js'
 
+type StarboardEntry = {
+  _id: string
+  messageId: string
+  stars: number
+  cute?: boolean
+}
+
 type BoardDecoration = Array<[ number, string, number ]>
 type HasId = { id: string }
 
 const BOARD_MINIMUM = 3
 const CUTEBOARD_EMOTE = '🌺'
 const STARBOARD_EMOTE = '⭐'
-const GENERIC_STAR_OBJ = { messageId: null, stars: 0 }
+const GENERIC_STAR_OBJ = { messageId: '', stars: 0 }
 const CUTE: BoardDecoration = [
   [ 0, CUTEBOARD_EMOTE, 0xffffff ],
   [ 5, CUTEBOARD_EMOTE, 0xfc32dc ],
@@ -43,13 +50,10 @@ const EMOTES: BoardDecoration = [
   [ 20, '✨', 0xffff00 ],
 ]
 
-function isProcessable (msg: Message<GuildTextableChannel>, stargazer: HasId) {
+function isProcessable (msg: Message<GuildTextableChannel>) {
   return !msg.channel.nsfw
     && msg.channel.id !== config.discord.ids.channelCuteboard
     && msg.channel.id !== config.discord.ids.channelStarboard
-    && !config.discord.ids.shitstars.channels.includes(msg.channel.id)
-    && !config.discord.ids.shitstars.users.includes(msg.author.id)
-    && !config.discord.ids.shitstars.users.includes(stargazer.id)
     && !(msg.content.length === 0 && msg.attachments.length === 0 && (!msg.embeds[0] || msg.embeds[0].type !== 'image'))
 }
 
@@ -100,7 +104,7 @@ async function updateStarCount (msg: Message<GuildTextableChannel>, count: numbe
   if (!msg.author) msg = await msg.channel.getMessage(msg.id)
 
   const channel = cute ? config.discord.ids.channelCuteboard : config.discord.ids.channelStarboard
-  const entry = await msg._client.mongo.collection('starboard').findOne({ _id: msg.id }) || {
+  const entry = await msg._client.mongo.collection<StarboardEntry>('starboard').findOne({ _id: msg.id }) || {
     ...GENERIC_STAR_OBJ,
     cute: cute,
   }
@@ -108,7 +112,7 @@ async function updateStarCount (msg: Message<GuildTextableChannel>, count: numbe
 
   if (entry.stars < BOARD_MINIMUM) {
     if (entry.messageId) {
-      msg._client.mongo.collection('starboard').deleteOne({ _id: msg.id })
+      msg._client.mongo.collection<StarboardEntry>('starboard').deleteOne({ _id: msg.id })
       msg._client.deleteMessage(channel, entry.messageId)
     }
     return
@@ -121,7 +125,7 @@ async function updateStarCount (msg: Message<GuildTextableChannel>, count: numbe
     msg._client.editMessage(channel, entry.messageId, generateMessage(entry.stars, msg, cute))
   }
 
-  msg._client.mongo.collection('starboard').updateOne(
+  msg._client.mongo.collection<StarboardEntry>('starboard').updateOne(
     { _id: msg.id },
     { $set: { ...entry } },
     { upsert: true }
@@ -141,13 +145,13 @@ async function process (msg: Message<GuildTextableChannel>, emoji: PartialEmoji,
     return
   }
 
-  const filter = (u: User) => u.id !== msg.author.id && !config.discord.ids.shitstars.users.includes(u.id)
-  if (emoji.name === STARBOARD_EMOTE && isProcessable(msg, user)) {
+  const filter = (u: User) => u.id !== msg.author.id
+  if (emoji.name === STARBOARD_EMOTE && isProcessable(msg)) {
     const reactions = await getAllReactions(msg, STARBOARD_EMOTE)
     updateStarCount(msg, reactions.filter(filter).length, false)
   }
 
-  if (emoji.name === CUTEBOARD_EMOTE && isProcessable(msg, user)) {
+  if (emoji.name === CUTEBOARD_EMOTE && isProcessable(msg)) {
     const reactions = await getAllReactions(msg, CUTEBOARD_EMOTE)
     updateStarCount(msg, reactions.filter(filter).length, true)
   }

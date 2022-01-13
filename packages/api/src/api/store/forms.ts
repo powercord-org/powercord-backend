@@ -126,7 +126,7 @@ const fieldToDescription: Record<string, string> = {
 // -- Helpers
 async function fetchEligibility (db: Db, user?: User | null): Promise<EligibilityStatus> {
   if (user) {
-    const banStatus = await db.collection('userbans').findOne({ _id: user!._id })
+    const banStatus = await db.collection<any>('userbans').findOne({ _id: user!._id })
     return {
       publish: banStatus?.publish ? 2 : 0,
       verification: banStatus?.verification ? 2 : 0,

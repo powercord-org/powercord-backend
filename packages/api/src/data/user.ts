@@ -21,6 +21,7 @@
  */
 
 import type { MongoClient } from 'mongodb'
+import type { User } from '@powercord/types/users'
 import { URL } from 'url'
 import { existsSync } from 'fs'
 import { unlink } from 'fs/promises'
@@ -51,7 +52,7 @@ export async function deleteUser (mongo: MongoClient, userId: string, reason: Us
 
   // Update store entries
   await database.collection('forms').deleteMany(formsQuery)
-  await database.collection('users').deleteOne({ _id: userId })
+  await database.collection<User>('users').deleteOne({ _id: userId })
 
   if (reason === UserDeletionCause.AUTOMATIC) {
     // todo: open an issue on the repositories
