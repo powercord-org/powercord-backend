@@ -11,16 +11,20 @@
   --background-secondary: #252525;
   --background-tertiary: #151515;
 
+  --red: #f04747;
+  --orange: #e19517;
+  /* --yellow: #f7f48b; */
+  --green: #3ba55c;
+  /* --blue: #70a1d7; */
+  /* --purple: #957dad; */
+  --blurple: #7289da;
+
   --text-color: #efefef;
   --text-dark: #aaa;
-  --blurple: #7289da;
-  --green: #3ba55c;
-  --orange: #e19517;
-  --red: #f04747;
 
-  --blurple-t: #7289da20;
-  --orange-t: #e1951720;
   --red-t: #f0474720;
+  --orange-t: #e1951720;
+  --blurple-t: #7289da20;
 }
 
 * { box-sizing: border-box; }
@@ -110,7 +114,7 @@ hr {
   align-items: center;
   justify-content: center;
   background-color: var(--red);
-  color: #fff;
+  color: var(--background-tertiary);
 }
 
 ::-webkit-scrollbar {

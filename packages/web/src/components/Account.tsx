@@ -14,8 +14,12 @@ import UserContext from './UserContext'
 import { Endpoints, Routes } from '../constants'
 
 import Spotify from 'simple-icons/icons/spotify.svg'
+import Patreon from 'simple-icons/icons/patreon.svg'
 import GitHub from 'simple-icons/icons/github.svg'
+import PowercordCutieBanner from '../assets/donate/banner.svg?sprite=cutie'
+import Hibiscus from '../assets/hibiscus.svg?sprite=cutie'
 import cutieSvg from '../assets/donate/cutie.svg?file'
+
 import blobkiss from '../assets/donate/blobkiss.png'
 import blobsmilehearts from '../assets/donate/blobsmilehearts.png'
 import blobhug from '../assets/donate/blobhug.png'
@@ -124,7 +128,10 @@ function PowercordCutie () {
     <div className={style.cutieContainer}>
       <div className={style.cutieAd}>
         <div className={style.cutieAdHeader}>
-          <img className={style.cutieAdLogo} src={cutieSvg} alt='Powercord Cutie'/>
+          <PowercordCutieBanner className={style.cutieAdBanner}/>
+          <Hibiscus className={style.cutieAdHibiscusLeft}/>
+          <Hibiscus className={style.cutieAdHibiscusCenter}/>
+          <Hibiscus className={style.cutieAdHibiscusRight}/>
         </div>
         <div className={style.cutieAdBody}>
           <h3 className={style.cutieAdTitle}>Support Powercord's Development</h3>
@@ -220,10 +227,16 @@ function Account () {
             icon={GitHub}
             account={user.accounts.github}
             explainer={<>
-              Linking your GitHub is required in order to publish works (or to be collaborator on someone's work) in
+              Linking your GitHub is required in order to publish works in
               the <a href={Routes.STORE_PLUGINS}>Powercord Store</a>. If you are a contributor, it will be shown on
               the <a href={Routes.CONTRIBUTORS}>contributors page</a>.
             </>}
+          />}
+          {import.meta.env.DEV && <LinkedAccount
+            platform='patreon'
+            icon={Patreon}
+            account={user.accounts.patreon}
+            explainer={'Link your Patreon account to benefit from the Powercord Cutie perks, and manage them from here.'}
           />}
 
           <hr/>

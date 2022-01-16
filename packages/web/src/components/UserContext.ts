@@ -28,6 +28,7 @@ export type User = {
   }
   accounts: {
     spotify?: string
+    patreon?: string
     github?: string
   }
 }

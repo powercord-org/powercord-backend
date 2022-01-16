@@ -11,7 +11,8 @@ import Avatar from './util/Avatar'
 import Hamburger from './util/Hamburger'
 import { Endpoints, Routes } from '../constants'
 
-import powercordPlug from '../assets/powercord.svg?file'
+import PowercordPlug from '../assets/powercord.svg'
+import PowercordWordmark from '../assets/wordmark.svg'
 import spookycordPlug from '../assets/spookycord.svg?file'
 import Staff from '../assets/staff.svg'
 
@@ -54,8 +55,10 @@ export default function Header () {
   return (
     <header className={`${style.container}${opened ? ` ${style.opened}` : ''}`}>
       <a className={style.logo} href={Routes.HOME}>
-        <img className={style.plug} src={isOctober ? spookycordPlug : powercordPlug} alt='Powercord Logo'/>
-        <div className={style.title}>Powercord</div>
+        {isOctober
+          ? <img className={style.plug} src={spookycordPlug} alt='Powercord Logo'/>
+          : <PowercordPlug className={style.plug}/>}
+        <PowercordWordmark className={style.wordmark}/>
       </a>
 
       <nav className={style.nav}>

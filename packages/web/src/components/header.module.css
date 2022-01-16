@@ -27,9 +27,10 @@
 .plug {
   height: 100%;
   margin-right: 8px;
+  flex-shrink: 0;
 }
 
-.title {
+.wordmark {
   display: none;
 }
 
@@ -107,15 +108,10 @@
 }
 
 @media screen and (min-width: 560px) {
-  .title {
+  .wordmark {
     display: block;
-    margin: 0;
-    padding: 0;
-    margin-top: 4px;
-    font-size: 26px;
-    font-family: 'Discord', sans-serif;
+    height: 20px;
     margin-right: 8px;
-    font-weight: inherit;
   }
 }
 

@@ -3,12 +3,6 @@
  * Licensed under the Open Software License version 3.0
  */
 
- @font-face {
-  font-family: 'Discord';
-  font-display: swap;
-  src: url(./discord-font.otf);
-}
-
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;

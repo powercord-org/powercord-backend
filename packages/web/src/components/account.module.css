@@ -90,31 +90,65 @@
 
 .cutie-container {
   width: 100%;
+  padding: 0 48px;
 }
 
 .cutie-ad {
-  border-radius: 5px;
-  background-color: var(--background-secondary);
-  overflow: hidden;
-  max-width: 440px;
+  width: 440px;
   margin: 0 auto;
+  border-radius: 5px;
   flex: 1 0;
 }
 
 .cutie-ad-header {
-  height: 130px;
-  padding: 16px;
-  background: linear-gradient(45deg, #3e70dd, #b377f3);
+  position: relative;
 }
 
-.cutie-ad-logo {
+.cutie-ad-banner {
+  width: 532px;
+  margin-left: -46px;
+  position: relative;
+  z-index: 1;
+}
+
+.cutie-ad-hibiscus-left {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  bottom: 18px;
+  left: calc(37% - 16px);
+}
+
+.cutie-ad-hibiscus-center {
+  position: absolute;
+  width: 40px;
   height: 40px;
-  user-select: none;
-  -webkit-user-drag: none;
+  bottom: 14px;
+  left: calc(50% - 20px);
+}
+
+.cutie-ad-hibiscus-right {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  bottom: 18px;
+  left: calc(63% - 16px);
+}
+
+.cutie-ad-header::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--background-secondary);
 }
 
 .cutie-ad-body {
-  padding: 16px;
+  margin-top: -4px;
+  padding: 0 16px 16px;
+  background-color: var(--background-secondary);
 }
 
 .cutie-ad-title {
@@ -188,6 +222,6 @@
   }
 
   .cutie-container {
-    max-width: 440px;
+    width: calc(440px + 16px + 16px);
   }
 }
