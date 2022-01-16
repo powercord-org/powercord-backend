@@ -17,6 +17,16 @@ import licensePlugin from 'rollup-plugin-license'
 const baseLicensePath = join('dist', 'assets', 'third-party-licenses.txt')
 let finalLicensePath
 
+const additionalLicenses = [
+  [ 'Open Sans Font Family (https://www.opensans.com/)', 'open-sans.txt' ],
+  [ 'JetBrains Mono Font Family (https://www.jetbrains.com/mono)', 'open-sans.txt' ],
+  [ 'Material Icons (https://fonts.google.com/icons)', 'material-icons.txt' ],
+  [ 'Heroicons (https://heroicons.com/)', 'heroicons.txt' ],
+  [ 'Twemoji (https://twemoji.twitter.com/)', 'twemoji.txt' ],
+  [ 'Spookycord logo by Ozzymand', 'spookycord.txt' ],
+  [ 'Pawa Kodo Graphics by Algoinde (https://github.com/Algoinde)', 'pawa-graphics.txt' ],
+]
+
 function renderLicense (deps) {
   let str = 'Licenses for open-source software used in this website are reproduced below.\n=========================\n\n'
   for (const dep of deps) {
@@ -25,13 +35,11 @@ function renderLicense (deps) {
     str += `${dep.name}${home ? ` (${home})` : ''}\nThis software is licensed under the following terms:\n\n${dep.licenseText.trim()}\n\n----------\n\n`
   }
 
-  // Open Sans
-  const osLicense = readFileSync(join(__dirname, 'src', 'fonts', 'Open-Sans-LICENSE.txt'), 'utf8')
-  str += `Open Sans Font Family (https://www.opensans.com/)\nThis software is licensed under the following terms:\n\n${osLicense.trim()}\n\n----------\n\n`
-
-  // JetBrains Mono
-  const jbmLicense = readFileSync(join(__dirname, 'src', 'fonts', 'JetBrains-Mono-LICENSE.txt'), 'utf8')
-  str += `JetBrains Mono Font Family (https://www.jetbrains.com/mono)\nThis software is licensed under the following terms:\n\n${jbmLicense.trim()}\n\n----------\n\n`
+  // Additional licenses
+  for (const [ name, file ] of additionalLicenses) {
+    const licenseText = readFileSync(join(__dirname, '..', '..', 'licenses', file), 'utf8')
+    str += `${name}\nThis software is licensed under the following terms:\n\n${licenseText}\n\n----------\n\n`
+  }
 
   // Create hash
   str += 'u cute'

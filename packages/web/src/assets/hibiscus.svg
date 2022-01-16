@@ -1,3 +1,9 @@
+<!--
+  Copyright (c) Twitter Inc.
+  This file is part of the Twemoji project (https://twemoji.twitter.com/)
+  Licensed under the Creative Commons Attribution 4.0 International license.
+  https://creativecommons.org/licenses/by/4.0/
+-->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
   <path fill="#77B255" d="M19.602 32.329c6.509 6.506 17.254-7.669 15.72-7.669-7.669 0-22.227 1.161-15.72 7.669z"/>
   <path fill="#77B255" d="M15.644 33.372C9.612 39.404-.07 26.263 1.352 26.263c3.81 0 9.374-.348 12.79.867 2.958 1.052 4.304 3.442 1.502 6.242z"/>
