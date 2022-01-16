@@ -21,13 +21,13 @@
  */
 
 import type { CommandClient, Guild, User } from 'eris'
-import type { InsertOneResult, ObjectId } from 'mongodb'
+import type { InsertOneResult } from 'mongodb'
 import cron from 'node-cron'
 import { unmute, unban, shouldNotLog } from '../../mod.js'
 import { exitRaidMode } from '../../raidMode.js'
 
 export type Schedulable = 'unmute' | 'unban' | 'endRaid'
-type Scheduled = { _id: ObjectId, type: Schedulable, guild: string, target: string, mod: string | null, time: number, noLog: boolean }
+type Scheduled = { type: Schedulable, guild: string, target: string, mod: string | null, time: number, noLog: boolean }
 
 function processTasks (bot: CommandClient) {
   const collection = bot.mongo.collection<Scheduled>('tasks')
