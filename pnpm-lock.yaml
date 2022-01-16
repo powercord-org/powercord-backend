@@ -211,7 +211,6 @@ importers:
       preact-router: ^4.0.0
       prismjs: ^1.26.0
       rollup-plugin-license: ^2.6.1
-      rollup-plugin-sri: ^1.3.4
       simple-icons: ^6.6.0
       typescript: ^4.5.4
       vite: ^2.7.12
@@ -234,7 +233,6 @@ importers:
       eslint: 8.6.0
       feather-icons: 4.28.0
       rollup-plugin-license: 2.6.1
-      rollup-plugin-sri: 1.3.4
       simple-icons: 6.6.0
       typescript: 4.5.4
       vite: 2.7.12
@@ -2240,29 +2238,6 @@ packages:
       supports-color: 7.2.0
     dev: true
 
-  /cheerio-select/1.5.0:
-    resolution: {integrity: sha512-qocaHPv5ypefh6YNxvnbABM07KMxExbtbfuJoIie3iZXX1ERwYmJcIiRrr9H05ucQP1k28dav8rpdDgjQd8drg==}
-    dependencies:
-      css-select: 4.2.1
-      css-what: 5.1.0
-      domelementtype: 2.2.0
-      domhandler: 4.3.0
-      domutils: 2.8.0
-    dev: true
-
-  /cheerio/1.0.0-rc.10:
-    resolution: {integrity: sha512-g0J0q/O6mW8z5zxQ3A8E8J1hUgp4SMOvEoW/x84OwyHKe/Zccz83PVT4y5Crcr530FV6NgmKI1qvGTKVl9XXVw==}
-    engines: {node: '>= 6'}
-    dependencies:
-      cheerio-select: 1.5.0
-      dom-serializer: 1.3.2
-      domhandler: 4.3.0
-      htmlparser2: 6.1.0
-      parse5: 6.0.1
-      parse5-htmlparser2-tree-adapter: 6.0.1
-      tslib: 2.3.1
-    dev: true
-
   /chokidar/3.5.2:
     resolution: {integrity: sha512-ekGhOnNVPgT77r4K/U3GDhu+FQ2S8TnK/s2KbIGXi0SZWuwkZ2QNyfWdZW+TVfn84DpEP7rLeCt2UI6bJ8GwbQ==}
     engines: {node: '>= 8.10.0'}
@@ -3282,15 +3257,6 @@ packages:
       react: '>= 16.8.0'
     dev: false
 
-  /htmlparser2/6.1.0:
-    resolution: {integrity: sha512-gyyPk6rgonLFEDGoeRgQNaEUvdJ4ktTmmUh/h2t7s+M8oPpIPxgNACWa+6ESR57kXstwqPiCut0V8NRpcwgU7A==}
-    dependencies:
-      domelementtype: 2.2.0
-      domhandler: 4.3.0
-      domutils: 2.8.0
-      entities: 2.2.0
-    dev: true
-
   /http-errors/1.8.1:
     resolution: {integrity: sha512-Kpk9Sm7NmI+RHhnj6OIWDI1d6fIoFAtFt9RLaTMRlg/8w49juAStsrBgp0Dp4OdxdVbRIeKhtCUvoi/RuAhO4g==}
     engines: {node: '>= 0.6'}
@@ -3654,6 +3620,7 @@ packages:
     engines: {node: 4.x || >=6.0.0}
     dependencies:
       whatwg-url: 5.0.0
+    dev: false
 
   /node-fetch/3.1.0:
     resolution: {integrity: sha512-QU0WbIfMUjd5+MUzQOYhenAazakV7Irh1SGkWCsRzBwvm4fAhzEUaHMJ6QLP7gWT6WO9/oH2zhKMMGMuIrDyKw==}
@@ -3746,16 +3713,6 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       callsites: 3.1.0
-    dev: true
-
-  /parse5-htmlparser2-tree-adapter/6.0.1:
-    resolution: {integrity: sha512-qPuWvbLgvDGilKc5BoicRovlT4MtYT6JfJyBOMDsKoiT+GiuP5qyrPCnR9HcPECIJJmZh5jRndyNThnhhb/vlA==}
-    dependencies:
-      parse5: 6.0.1
-    dev: true
-
-  /parse5/6.0.1:
-    resolution: {integrity: sha512-Ofn/CTFzRGTTxwpNEs9PP93gXShHcTq255nzRYSKe8AkVpZY7e1fpmTfOyoIvjP5HG7Z2ZM7VS9PPhQGW2pOpw==}
     dev: true
 
   /path-is-absolute/1.0.1:
@@ -4044,13 +4001,6 @@ packages:
       package-name-regex: 2.0.5
       spdx-expression-validate: 2.0.0
       spdx-satisfies: 5.0.1
-    dev: true
-
-  /rollup-plugin-sri/1.3.4:
-    resolution: {integrity: sha512-EkDZi6rQwTx/D8e9MisAVUw0avb24ZKixb8CypIsqJ1EySPP5ESTTm6IaBY29TBaYI/S+S85so0BNboRufyAyg==}
-    dependencies:
-      cheerio: 1.0.0-rc.10
-      node-fetch: 2.6.6
     dev: true
 
   /rollup-plugin-terser/7.0.2_rollup@2.63.0:
@@ -4454,6 +4404,7 @@ packages:
 
   /tr46/0.0.3:
     resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=}
+    dev: false
 
   /tr46/3.0.0:
     resolution: {integrity: sha512-l7FvfAHlcmulp8kr+flpQZmVwtu7nfRV7NZujtN0OqES8EL4O4e0qqzL0DC5gAvx/ZC/9lk6rhcUwYvkBnBnYA==}
@@ -4623,6 +4574,7 @@ packages:
 
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=}
+    dev: false
 
   /webidl-conversions/7.0.0:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
@@ -4642,6 +4594,7 @@ packages:
     dependencies:
       tr46: 0.0.3
       webidl-conversions: 3.0.1
+    dev: false
 
   /which/2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}

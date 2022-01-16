@@ -13,7 +13,6 @@ import { join } from 'path'
 import preact from '@preact/preset-vite'
 import magicalSvg from 'vite-plugin-magical-svg'
 import licensePlugin from 'rollup-plugin-license'
-// import sriPlugin from 'rollup-plugin-sri'
 
 const baseLicensePath = join('dist', 'assets', 'third-party-licenses.txt')
 let finalLicensePath
@@ -118,10 +117,6 @@ export default defineConfig({
         },
     }),
     licenseInformation(),
-    // {  __VITE_PRELOAD__ is a meme and it's not a fun one
-    //   ...sriPlugin({ publicPath: '/', algorithms: [ 'sha256', 'sha512' ] }),
-    //   enforce: 'post',
-    // },
     moveIndex(),
   ],
 })

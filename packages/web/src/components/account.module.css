@@ -50,14 +50,13 @@
 
 .columns {
   margin-top: 16px;
-  gap: 40px;
+  gap: 16px;
 }
 
 .linked-accounts {
   display: flex;
   flex-direction: column;
   margin-bottom: 40px;
-  min-width: 530px;
   flex: 1 0;
 }
 
@@ -89,8 +88,8 @@
 }
 
 .cutie-container {
-  width: 100%;
-  padding: 0 48px;
+  width: calc(100% + 4em);
+  margin: 0 -2em;
 }
 
 .cutie-ad {
@@ -212,7 +211,7 @@
   width: 100%;
 }
 
-@media screen and (min-width: 1060px) {
+@media screen and (min-width: 1090px) {
   .linked-accounts {
     margin-bottom: 0;
   }
@@ -223,5 +222,7 @@
 
   .cutie-container {
     width: calc(440px + 16px + 16px);
+    padding: 0 48px;
+    margin: 0;
   }
 }
