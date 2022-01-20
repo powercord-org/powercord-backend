@@ -1,9 +1,9 @@
 packages:
   - 'packages/api'
   - 'packages/boat'
-  - 'packages/crapcord'
-  - 'packages/spoonfeed'
+  - 'packages/boat-legacy'
   - 'packages/web'
   - 'packages/types'
-  - 'boat'
+  - 'packages/spoonfeed'
+  - 'packages/crapcord'
   - 'shared'

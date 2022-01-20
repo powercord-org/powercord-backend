@@ -3,12 +3,11 @@
  * Licensed under the Open Software License version 3.0
  */
 
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import type { FastifyInstance, FastifyRequest, FastifyReply, ConfiguredReply } from 'fastify'
 import type { User as DiscordUser } from '@powercord/types/discord'
 import type { User } from '@powercord/types/users'
-import type { ConfiguredReply } from '../types.js'
 import { URLSearchParams } from 'url'
-import fetch from 'node-fetch'
+import { fetch } from 'undici'
 import config from '@powercord/shared/config'
 import { addRole } from './discord.js'
 import { deleteUser, UserDeletionCause } from '../data/user.js'
@@ -43,6 +42,7 @@ type Reply = ConfiguredReply<FastifyReply, OAuthSettings>
 
 const AUTH_URL = '/api/v2/oauth/discord'
 
+/** @deprecated */
 export async function fetchTokens (endpoint: string, clientId: string, clientSecret: string, redirect: string, type: 'authorization_code' | 'refresh_token', token: string): Promise<OAuthTokens> {
   const body = new URLSearchParams()
   body.set('client_id', clientId)
@@ -223,9 +223,83 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<RequestPro
   reply.redirect('/me')
 }
 
+/** @deprecated */
 export default async function oauthPlugin (fastify: FastifyInstance, { data }: { data: OAuthSettings }) {
   fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]))
 
   fastify.get('/', { config: data }, link)
   fastify.get('/unlink', { config: data }, unlink)
+}
+
+export type OAuthKeys = {
+  tokenType: string
+  accessToken: string
+  // Refresh tokens during refreshes MAY be present, but this is not a requirement.
+  refreshToken?: string
+  expiresIn: number
+  scopes: string[]
+}
+
+export const OAuthEndpoints = <const> {
+  discord: {
+    AUTHORIZE_URL: 'https://discord.com/oauth2/authorize',
+    TOKEN_URL: 'https://discord.com/api/v9/oauth2/token',
+  },
+  spotify: {
+    AUTHORIZE_URL: 'https://accounts.spotify.com/authorize',
+    TOKEN_URL: 'https://accounts.spotify.com/api/token',
+  },
+  github: {
+    AUTHORIZE_URL: 'https://github.com/login/oauth/authorize',
+    TOKEN_URL: 'https://github.com/login/oauth/access_token',
+  },
+  patreon: {
+    AUTHORIZE_URL: 'https://patreon.com/oauth2/authorize',
+    TOKEN_URL: 'https://patreon.com/api/oauth2/token',
+  },
+}
+
+type OAuthProvider = keyof typeof OAuthEndpoints
+
+async function fetchToken (url: string, params: URLSearchParams): Promise<OAuthTokens> {
+  return <OAuthTokens>
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+    }).then((r) => r.json())
+}
+
+export function getAuthorizationUrl (provider: OAuthProvider, redirect: string, scopes: string[], state: string): string {
+  const params = new URLSearchParams()
+  params.set('state', state)
+  params.set('response_type', 'code')
+  params.set('redirect_uri', redirect)
+  params.set('client_id', config[provider].clientID)
+  params.set('scope', scopes.join(' '))
+  return `${OAuthEndpoints[provider].AUTHORIZE_URL}?${params.toString()}`
+}
+
+export async function getAuthTokens (provider: OAuthProvider, redirect: string, code: string): Promise<OAuthTokens> {
+  const body = new URLSearchParams()
+  body.set('grant_type', 'authorization_code')
+  body.set('client_id', config[provider].clientID)
+  body.set('client_secret', config[provider].clientSecret)
+  body.set('redirect_uri', redirect)
+  body.set('code', code)
+
+  return fetchToken(OAuthEndpoints[provider].TOKEN_URL, body)
+}
+
+export async function refreshAuthTokens (provider: OAuthProvider, refresh: string): Promise<OAuthTokens> {
+  const body = new URLSearchParams()
+  body.set('grant_type', 'refresh_token')
+  body.set('client_id', config[provider].clientID)
+  body.set('client_secret', config[provider].clientSecret)
+  body.set('refresh_token', refresh)
+
+  return fetchToken(OAuthEndpoints[provider].TOKEN_URL, body)
 }

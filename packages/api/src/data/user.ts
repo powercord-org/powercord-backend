@@ -12,7 +12,16 @@ import config from '@powercord/shared/config'
 import { SETTINGS_STORAGE_FOLDER } from '../api/settings.js'
 import { fetchMember, setRoles } from '../utils/discord.js'
 
-export enum UserDeletionCause { AUTOMATIC, REQUESTED, ADMINISTRATOR }
+export enum UserDeletionCause {
+  // User initiated account deletion manually
+  REQUESTED,
+
+  // Account deletion scheduled due to inactivity
+  AUTOMATIC,
+
+  // Account banned by an administrator
+  ADMINISTRATOR,
+}
 
 const ROLES_TO_REVOKE = [
   config.discord.ids.roleUser,
@@ -37,12 +46,11 @@ export async function deleteUser (mongo: MongoClient, userId: string, reason: Us
   await database.collection('forms').deleteMany(formsQuery)
   await database.collection<User>('users').deleteOne({ _id: userId })
 
-  if (reason === UserDeletionCause.AUTOMATIC) {
-    // todo: open an issue on the repositories
-    // todo: schedule automatic deprecation within a month
-  } else if (reason === UserDeletionCause.ADMINISTRATOR) {
-    // todo: wipe all collaborators from repositories
-    // todo: open an issue on the repositories
+  // When a user is deleted, there should be no published plugins or theme
+  // However when done by an administrator, items may still be in the store
+  // For these cases, flag the package as owner-less and tell the update server to not ingest future updates
+  if (reason === UserDeletionCause.ADMINISTRATOR) {
+    // todo: revisit this
     await database.collection('store-items').updateMany(
       { owner: userId },
       { $set: { deprecated: true, owner: null } }

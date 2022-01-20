@@ -11,17 +11,13 @@ import config from '@powercord/shared/config'
 
 /// Users
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function fetchUser (userId: string): Promise<User> {
   return fetch(`https://discord.com/api/v9/users/${userId}`, { headers: { authorization: `Bot ${config.discord.botToken}` } })
     .then<any>((r) => r.json())
 }
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function fetchCurrentUser (token: string): Promise<User> {
   return fetch('https://discord.com/api/v9/users/@me', { headers: { authorization: `Bearer ${token}` } })
     .then<any>((r) => r.json())
@@ -29,9 +25,7 @@ export async function fetchCurrentUser (token: string): Promise<User> {
 
 /// DM
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function sendDm (userId: string, message: string): Promise<boolean> {
   const channel = await fetch('https://discord.com/api/v9/users/@me/channels', {
     method: 'POST',
@@ -57,9 +51,7 @@ export async function sendDm (userId: string, message: string): Promise<boolean>
 
 /// Honks
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function dispatchHonk (honk: string, payload: unknown, query?: string): Promise<ApiMessage> {
   return fetch(`https://discord.com/api/v9/webhooks/${honk}?wait=true&${query ?? ''}`, {
     method: 'POST',
@@ -68,16 +60,12 @@ export async function dispatchHonk (honk: string, payload: unknown, query?: stri
   }).then<any>((r) => r.json())
 }
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function fetchHonkMessage (honk: string, message: string): Promise<ApiMessage> {
   return fetch(`https://discord.com/api/v9/webhooks/${honk}/messages/${message}`).then<any>((r) => r.json())
 }
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function editHonkMessage (honk: string, message: string, payload: unknown): Promise<ApiMessage> {
   return fetch(`https://discord.com/api/v9/webhooks/${honk}/messages/${message}`, {
     method: 'PATCH',
@@ -88,9 +76,7 @@ export async function editHonkMessage (honk: string, message: string, payload: u
 
 /// Members management
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function fetchAllMembers (): Promise<Member[]> {
   const users: Member[] = []
   let res: Member[] = []
@@ -108,9 +94,7 @@ export async function fetchAllMembers (): Promise<Member[]> {
   return users
 }
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function fetchMember (memberId: string): Promise<Member | undefined> {
   return fetch(
     `https://discord.com/api/v9/guilds/${config.discord.ids.serverId}/members/${memberId}`,
@@ -118,9 +102,7 @@ export async function fetchMember (memberId: string): Promise<Member | undefined
   ).then<any>((r) => r.status === 200 ? r.json() : void 0)
 }
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function setRoles (memberId: string, roleIds: string[], auditLogReason?: string): Promise<unknown> {
   const headers: Record<string, string> = { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
   if (auditLogReason) headers['X-Audit-Log-Reason'] = auditLogReason
@@ -132,9 +114,7 @@ export async function setRoles (memberId: string, roleIds: string[], auditLogRea
   })
 }
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function addRole (memberId: string, roleId: string, auditLogReason?: string): Promise<unknown> {
   const headers: Record<string, string> = { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
   if (auditLogReason) headers['X-Audit-Log-Reason'] = auditLogReason
@@ -145,9 +125,7 @@ export async function addRole (memberId: string, roleId: string, auditLogReason?
   })
 }
 
-/**
- * @deprecated
- */
+/** @deprecated */
 export async function removeRole (memberId: string, roleId: string, auditLogReason?: string): Promise<unknown> {
   const headers: Record<string, string> = { authorization: `Bot ${config.discord.botToken}`, 'content-type': 'application/json' }
   if (auditLogReason) headers['X-Audit-Log-Reason'] = auditLogReason

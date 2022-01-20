@@ -46,7 +46,7 @@ fastify.register(apiModule)
 
 fastify.ready()
   .then(
-    () => fastify.listen(process.env.PORT || 8080, config.bind),
+    () => fastify.listen(config.port, config.bind),
     (e) => {
       fastify.log.error(e)
       process.exit(1)

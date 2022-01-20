@@ -1,6 +1,6 @@
 {
   "name": "@powercord/api",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Powercord backend API",
   "repository": "git@github.com:powercord-org/powercord-backend.git",
   "license": "OSL-3.0",
@@ -27,7 +27,8 @@
     "fastify-raw-body": "^3.2.0",
     "fastify-tokenize": "^1.3.1",
     "mongodb": "^4.3.0",
-    "node-fetch": "^3.1.0"
+    "node-fetch": "^3.1.0",
+    "undici": "^4.12.2"
   },
   "devDependencies": {
     "@types/node": "^17.0.8",

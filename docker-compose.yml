@@ -48,6 +48,22 @@ services:
     volumes:
       - settings-data:/var/lib/powercord
       - ./node_modules:/opt/porkord/node_modules
+      - ./api:/opt/porkord/api
+      - ./shared:/opt/porkord/shared
+      - ./documentation:/opt/porkord/documentation
+      - ./config.json:/opt/porkord/config.json
+      - ./config.example.json:/opt/porkord/config.example.json
+      - ./tsconfig.json:/opt/porkord/tsconfig.json
+    profiles:
+      - website
+  api-legacy:
+    build: .
+    user: ${USER_ID}:${GROUP_ID}
+    working_dir: /opt/porkord/packages/api
+    command: pnpm run dev
+    volumes:
+      - settings-data:/var/lib/powercord
+      - ./node_modules:/opt/porkord/node_modules
       - ./packages:/opt/porkord/packages
       - ./shared:/opt/porkord/shared
       - ./documentation:/opt/porkord/documentation

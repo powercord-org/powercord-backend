@@ -27,8 +27,7 @@ function handler (req: IncomingMessage, res: ServerResponse) {
 
   // Security headers
   // Note: HSTS is assumed setup by Cloudflare
-  // todo: csp nonce
-  res.setHeader('content-security-policy', 'default-src \'self\'; img-src \'self\' https://cdn.discordapp.com https://discord.com;')
+  res.setHeader('content-security-policy', 'default-src \'self\'; img-src \'self\' https://cdn.discordapp.com;')
   res.setHeader('permissions-policy', 'interest-cohort=()')
   res.setHeader('x-frame-options', 'DENY')
 

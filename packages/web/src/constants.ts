@@ -4,34 +4,34 @@
  */
 
 export const Endpoints = {
-  LOGIN: '/api/v2/login',
-  LOGOUT: '/api/v2/logout',
-  USER_SELF: '/api/v2/users/@me',
-  LINK_ACCOUNT: (platform: string) => `/api/v2/oauth/${platform}`,
-  UNLINK_ACCOUNT: (platform: string) => `/api/v2/oauth/${platform}/unlink`,
-  YEET_ACCOUNT: '/api/v2/oauth/discord/unlink',
-  USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`,
+  LOGIN: '/api/v3/login',
+  LOGOUT: '/api/v3/logout',
+  USER_SELF: '/api/v3/users/@me',
+  LINK_ACCOUNT: (platform: string) => `/api/v3/oauth/${platform}`,
+  UNLINK_ACCOUNT: (platform: string) => `/api/v3/oauth/${platform}/unlink`,
+  YEET_ACCOUNT: '/api/v3/oauth/discord/unlink',
+  USER_AVATAR: (id: string) => `/api/v3/avatar/${id}.png`,
   USER_AVATAR_DISCORD: (id: string, avatar: string) => `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=128`,
   DEFAULT_AVATAR_DISCORD: (dicrim: number) => `https://cdn.discordapp.com/embed/avatars/${dicrim % 6}.png?size=128`,
 
-  STORE_FORM_ELIGIBILITY: '/api/v2/store/forms/eligibility',
-  STORE_FORM: (id: string) => `/api/v2/store/forms/${id}`,
+  STORE_FORM_ELIGIBILITY: '/api/v3/store/forms/eligibility',
+  STORE_FORM: (id: string) => `/api/v3/store/forms/${id}`,
 
-  DOCS_CATEGORIES: '/api/v2/docs/categories',
-  DOCS_DOCUMENT: (doc: string) => `/api/v2/docs/${doc}`,
-  DOCS_CATEGORIZED: (cat: string, doc: string) => `/api/v2/docs/${cat}/${doc}`,
+  DOCS_CATEGORIES: '/api/v3/docs/categories',
+  DOCS_DOCUMENT: (doc: string) => `/api/v3/docs/${doc}`,
+  DOCS_CATEGORIZED: (cat: string, doc: string) => `/api/v3/docs/${cat}/${doc}`,
 
-  CONTRIBUTORS: '/api/v2/stats/contributors',
-  STATS: '/api/v2/stats/numbers',
+  CONTRIBUTORS: '/api/v3/stats/contributors',
+  STATS: '/api/v3/stats/numbers',
 
-  BACKOFFICE_USERS: '/api/v2/backoffice/users',
-  BACKOFFICE_USER: (id: string) => `/api/v2/backoffice/users/${id}`,
-  BACKOFFICE_BANS: '/api/v2/backoffice/bans/',
-  BACKOFFICE_BAN: (id: string) => `/api/v2/backoffice/bans/${id}`,
-  BACKOFFICE_FORMS: '/api/v2/backoffice/forms?kind=hosting&kind=publish&kind=verification',
-  BACKOFFICE_FORMS_COUNT: '/api/v2/backoffice/forms/count',
-  BACKOFFICE_FORM: (id: string) => `/api/v2/backoffice/forms/${id}`,
-  BACKOFFICE_REPORTS: '/api/v2/backoffice/forms?kind=reports',
+  BACKOFFICE_USERS: '/api/v3/backoffice/users',
+  BACKOFFICE_USER: (id: string) => `/api/v3/backoffice/users/${id}`,
+  BACKOFFICE_BANS: '/api/v3/backoffice/bans/',
+  BACKOFFICE_BAN: (id: string) => `/api/v3/backoffice/bans/${id}`,
+  BACKOFFICE_FORMS: '/api/v3/backoffice/forms?kind=hosting&kind=publish&kind=verification',
+  BACKOFFICE_FORMS_COUNT: '/api/v3/backoffice/forms/count',
+  BACKOFFICE_FORM: (id: string) => `/api/v3/backoffice/forms/${id}`,
+  BACKOFFICE_REPORTS: '/api/v3/backoffice/forms?kind=reports',
 }
 
 export const Routes = {

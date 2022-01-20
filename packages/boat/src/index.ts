@@ -1,75 +1,81 @@
 /*
- * Copyright (c) 2018-2021 aetheryx & Cynthia K. Rey
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) 2018-2022 Powercord Developers
+ * Licensed under the Open Software License version 3.0
  */
 
-import { URL } from 'url'
-import { basename } from 'path'
-import { CommandClient } from 'eris'
-import { MongoClient } from 'mongodb'
+import { registerCommands } from 'crapcord/interactions'
+import { createInteractionServer } from 'crapcord/helpers'
+import config from '@powercord/shared/config'
 
-import { readdirRecursive } from './util.js'
-import { loadLaws } from './laws.js'
-import { initRaidMode } from './raidMode.js'
-import config from './config.js'
+import { hydrateStore as hydrateLawStore } from './data/laws.js'
 
-const bot = new CommandClient(
-  config.discord.botToken,
-  { intents: [ 'guilds', 'guildBans', 'guildMembers', 'guildPresences', 'guildMessages', 'guildMessageReactions', 'guildInvites' ] },
-  { defaultHelpCommand: false, prefix: config.discord.prefix }
-)
+import ruleCommand from './commands/rule.js'
+import guidelineCommand from './commands/guideline.js'
+import * as tagCommands from './commands/tags.js'
+import * as filterCommands from './commands/filter.js'
+import * as modCommands from './commands/mod.js'
 
-async function loadModule (module: string) {
-  if (!module.endsWith('.js')) return
+await hydrateLawStore()
 
-  const mdl = await import(module)
-  if (mdl.__skip) return
+// [Cynthia] yes we could make an autoloader for it, no i don't want to
+registerCommands([
+  // Slash commands
+  { command: 'rule', handler: ruleCommand },
+  { command: 'guideline', handler: guidelineCommand },
+  { command: 't', handler: tagCommands.executeTag },
+  {
+    command: 'tag',
+    sub: {
+      create: { handler: tagCommands.createTag },
+      edit: { handler: tagCommands.editTag },
+      remove: { handler: tagCommands.removeTag },
+    },
+    // autocomplete: console.log
+  },
+  {
+    command: 'filter',
+    sub: {
+      list: { handler: filterCommands.listFilters },
+      add: { handler: filterCommands.addFilter },
+      remove: { handler: filterCommands.removeFilter },
+    },
+    // autocomplete: console.log
+  },
+  {
+    command: 'mod',
+    sub: {
+      ban: { handler: modCommands.ban },
+      unban: { handler: modCommands.unban },
+      softban: { handler: modCommands.softban },
+      timeout: { handler: modCommands.timeout },
+      editcase: { handler: modCommands.editcase },
 
-  if (typeof mdl.default !== 'function') throw new TypeError(`Invalid module: ${basename(module)}`)
-  mdl.default(bot)
-}
+      enforce: { handler: modCommands.enforce },
+      lookup: { handler: modCommands.lookup },
+      notes: {
+        sub: {
+          list: { handler: modCommands.listNotes },
+          add: { handler: modCommands.addNote },
+          edit: { handler: modCommands.editNote },
+          remove: { handler: modCommands.removeNote },
+        },
+      },
+    },
+  },
+  {
+    command: 'admin',
+    sub: {
+      ssh: { handler: console.log },
+      eval: { handler: console.log },
+    },
+  },
 
-async function loadCommand (command: string) {
-  if (!command.endsWith('.js')) return
+  // User commands
+  { command: 'Softban', handler: modCommands.softban },
+])
 
-  const cmd = await import(command)
-  if (cmd.__skip) return
-
-  if (typeof cmd.executor !== 'function') throw new TypeError(`Invalid command: ${basename(command)}`)
-  bot.registerCommand(basename(command, '.js'), cmd.executor, { description: cmd.description, aliases: cmd.aliases })
-}
-
-Promise.resolve(new MongoClient(`${config.mango}?appName=Powercord%20Boat`))
-  .then((client) => client.connect())
-  .then((client) => (bot.mongo = client.db('powercord')))
-  .then(() => readdirRecursive(new URL('./modules/', import.meta.url)))
-  .then((modules: string[]) => Promise.all(modules.map(loadModule)))
-  .then(() => readdirRecursive(new URL('./commands/', import.meta.url)))
-  .then((commands: string[]) => Promise.all(commands.map(loadCommand)))
-  .then(() => bot.connect())
-  .then(() => loadLaws(bot))
-  .then(() => initRaidMode(bot))
-  .catch((e: Error) => console.error('An error occurred during startup', e))
-
-bot.on('ready', () => {
-  console.log('Bot logged in (%s#%s)', bot.user.username, bot.user.discriminator)
+createInteractionServer({
+  port: config.interactionsPort,
+  token: { type: 'Bot', token: config.discord.botToken },
+  key: config.discord.botPublicKey,
 })
-
-bot.on('error', (e) => console.error('Bot encountered an error', e))

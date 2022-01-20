@@ -6,16 +6,24 @@
 import type { FastifyInstance } from 'fastify'
 import type { User } from '@powercord/types/users'
 import config from '@powercord/shared/config'
-import oauthPlugin, { fetchTokens } from '../utils/oauth.js'
+import oauthPlugin, { fetchTokens, OAuthEndpoints } from '../utils/oauth.js'
 import { fetchCurrentUser } from '../utils/discord.js'
 
+// todo: oauth state & schema
+
+// SELF_URL: 'https://discord.com/api/v9/users/@me',
+// SELF_URL: 'https://api.spotify.com/v1/me',
+// SELF_URL: 'https://api.github.com/user',
+// SELF_URL: 'https://patreon.com/api/oauth2/v2/identity',
+
+/** @deprecated */
 export async function refreshUserData (fastify: FastifyInstance, user: User): Promise<User | null> {
   if (Date.now() < user.accounts.discord.expiryDate) return user
 
   // Refresh account data
   try {
     const newTokens = await fetchTokens(
-      'https://discord.com/api/v9/oauth2/token',
+      OAuthEndpoints.discord.TOKEN_URL,
       config.discord.clientID,
       config.discord.clientSecret,
       '',
@@ -49,8 +57,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       platform: 'discord',
       clientId: config.discord.clientID,
       clientSecret: config.discord.clientSecret,
-      authorizeUrl: 'https://discord.com/oauth2/authorize',
-      tokenUrl: 'https://discord.com/api/v9/oauth2/token',
+      authorizeUrl: OAuthEndpoints.discord.AUTHORIZE_URL,
+      tokenUrl: OAuthEndpoints.discord.TOKEN_URL,
       selfUrl: 'https://discord.com/api/v9/users/@me',
       scopes: [ 'identify' ],
       isAuthentication: true,
@@ -63,24 +71,41 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       platform: 'spotify',
       clientId: config.spotify.clientID,
       clientSecret: config.spotify.clientSecret,
-      authorizeUrl: 'https://accounts.spotify.com/authorize',
-      tokenUrl: 'https://accounts.spotify.com/api/token',
+      authorizeUrl: OAuthEndpoints.spotify.AUTHORIZE_URL,
+      tokenUrl: OAuthEndpoints.spotify.TOKEN_URL,
       selfUrl: 'https://api.spotify.com/v1/me',
       scopes: config.spotify.scopes,
     },
   })
 
-  fastify.register(oauthPlugin, {
-    prefix: '/github',
-    data: {
-      platform: 'github',
-      clientId: config.github.clientID,
-      clientSecret: config.github.clientSecret,
-      authorizeUrl: 'https://github.com/login/oauth/authorize',
-      tokenUrl: 'https://github.com/login/oauth/access_token',
-      selfUrl: 'https://api.github.com/user',
-      scopes: [],
-      locked: true,
-    },
-  })
+  // api:v2
+  if (fastify.prefix.startsWith('/v3')) {
+    fastify.register(oauthPlugin, {
+      prefix: '/github',
+      data: {
+        platform: 'github',
+        clientId: config.github.clientID,
+        clientSecret: config.github.clientSecret,
+        authorizeUrl: OAuthEndpoints.github.AUTHORIZE_URL,
+        tokenUrl: OAuthEndpoints.github.TOKEN_URL,
+        selfUrl: 'https://api.github.com/user',
+        scopes: [],
+        locked: true,
+      },
+    })
+
+    fastify.register(oauthPlugin, {
+      prefix: '/patreon',
+      data: {
+        platform: 'patreon',
+        clientId: config.patreon.clientID,
+        clientSecret: config.patreon.clientSecret,
+        authorizeUrl: OAuthEndpoints.patreon.AUTHORIZE_URL,
+        tokenUrl: OAuthEndpoints.patreon.TOKEN_URL,
+        selfUrl: 'https://patreon.com/api/oauth2/v2/identity',
+        scopes: [],
+        locked: true,
+      },
+    })
+  }
 }

@@ -8,7 +8,7 @@
 
 declare module 'crapcord/api' {
   export * from 'crapcord/types/api'
-  export { default } from 'crapcord/types/api'
+  // export { default } from 'crapcord/types/api'
 }
 
 declare module 'crapcord/gateway' {
@@ -18,10 +18,10 @@ declare module 'crapcord/gateway' {
 
 declare module 'crapcord/interactions' {
   export * from 'crapcord/types/interactions'
-  export { default } from 'crapcord/types/interactions'
+  // export { default } from 'crapcord/types/interactions'
 }
 
 declare module 'crapcord/helpers' {
   export * from 'crapcord/types/helpers'
-  export { default } from 'crapcord/types/helpers'
+  // export { default } from 'crapcord/types/helpers'
 }

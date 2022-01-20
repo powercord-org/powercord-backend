@@ -3,6 +3,8 @@
  * Licensed under the Open Software License version 3.0
  */
 
+// api:v2
+
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 
 const html = (jwt: string): string => `<!doctype html>
