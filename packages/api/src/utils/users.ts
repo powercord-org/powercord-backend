@@ -16,6 +16,7 @@ function paywallify (customBadges: CustomBadges, tier: number): Exclude<CustomBa
   }
 }
 
+/** @deprecated */
 export function formatUser (user: User, bypassVisibility?: boolean): RestUser {
   return {
     id: user._id,

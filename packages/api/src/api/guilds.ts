@@ -19,6 +19,7 @@ async function badges (this: FastifyInstance, _request: FastifyRequest, reply: F
     }, {}))
 }
 
+/** @deprecated */
 export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get('/badges', badges)
 }

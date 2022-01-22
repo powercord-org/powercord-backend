@@ -32,6 +32,7 @@ function legacy (request: FastifyRequest, reply: FastifyReply): void {
   reply.type('text/html').send(html(cookie.value!))
 }
 
+/** @deprecated */
 export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get('/users/@me/link/legacy', { preHandler: fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]) }, legacy)
 }

@@ -43,6 +43,7 @@ fastify.register(fastifyTokenize, {
 })
 
 fastify.register(apiModule)
+fastify.setNotFoundHandler((_: FastifyRequest, reply: FastifyReply) => void reply.code(404).send({ error: 404, message: 'Not Found' }))
 
 fastify.ready()
   .then(

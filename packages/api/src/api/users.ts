@@ -14,7 +14,7 @@ import { fetchTokens } from '../utils/oauth.js'
 const DATE_ZERO = new Date(0)
 
 async function sendUser (request: FastifyRequest, reply: FastifyReply, user: User, self?: boolean): Promise<RestUser | void> {
-  const etag = `W/"${createHash('sha1').update(config.secret).update(user._id).update((user.updatedAt ?? DATE_ZERO).toISOString()).digest('base64')}"`
+  const etag = `W/"${createHash('sha256').update(config.secret).update(user._id).update((user.updatedAt ?? DATE_ZERO).toISOString()).digest('base64url')}"`
 
   reply.header('cache-control', 'public, max-age=0, must-revalidate')
   if (request.headers['if-none-match'] === etag) {
@@ -30,8 +30,10 @@ async function getSelf (request: FastifyRequest<{ TokenizeUser: User }>, reply: 
   return sendUser(request, reply, request.user!, true)
 }
 
-async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply): Promise<RestUser | void> {
+/** @deprecated */
+async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
   const user = await this.mongo.db!.collection<User>('users').findOne({ _id: request.params.id })
+
   if (!user) return reply.callNotFound()
   return sendUser(request, reply, user)
 }
@@ -78,8 +80,14 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
-  fastify.register(settingsModule, { prefix: '/@me/settings' })
   fastify.get<{ TokenizeUser: User }>('/@me', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSelf)
   fastify.get<{ TokenizeUser: User }>('/@me/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSpotifyToken)
-  fastify.get('/:id(\\d+)', getUser)
+
+  if (!fastify.prefix.startsWith('/v3')) {
+    fastify.get('/:id(\\d+)', getUser)
+  } else {
+    // todo: implement
+    fastify.get('/avatar/:id(\\d{17,}).png', () => void 0)
+    fastify.register(settingsModule, { prefix: '/@me/settings' })
+  }
 }

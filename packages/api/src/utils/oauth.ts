@@ -280,6 +280,7 @@ export function getAuthorizationUrl (provider: OAuthProvider, redirect: string, 
   params.set('redirect_uri', redirect)
   params.set('client_id', config[provider].clientID)
   params.set('scope', scopes.join(' '))
+
   return `${OAuthEndpoints[provider].AUTHORIZE_URL}?${params.toString()}`
 }
 

@@ -25,5 +25,4 @@ export default async function (fastify: FastifyInstance) {
   fastify.register(oauthModule, { prefix: '/oauth' })
   fastify.register(miscModule)
   fastify.register(legacyLinkingModule)
-  fastify.setNotFoundHandler((_: FastifyRequest, reply: FastifyReply) => void reply.code(404).send({ error: 404, message: 'Not Found' }))
 }

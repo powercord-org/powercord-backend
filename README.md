@@ -7,7 +7,7 @@ The backend for [powercord-org/powercord](https://github.com/powercord-org/power
  - `packages/web`: Web UI & HTTP server for pre-rendering
  - `packages/boat`: Discord bot for the Powercord server
  - `packages/boat-legacy`: Legacy version of the Discord bot
- - `packages/grid`: Power Grid service, responsible for ingesting plugins and themes and distribution
+ - `packages/grid`: Power Grid service, responsible for ingesting plugins and themes, and their distribution
  - `packages/crapcord`: Library for interfacing with the Discord API (soon to be moved away)
 
 ## License

@@ -3,6 +3,8 @@
  * Licensed under the Open Software License version 3.0
  */
 
+// api:v2
+
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { User as DiscordUser } from '@powercord/types/discord'
 import type { User } from '@powercord/types/users'
@@ -99,6 +101,7 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
   ))
 }
 
+/** @deprecated */
 export default async function (fastify: FastifyInstance): Promise<void> {
   const optionalAuth = fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ])
 

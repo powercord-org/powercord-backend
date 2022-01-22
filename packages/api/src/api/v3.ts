@@ -7,11 +7,10 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import backofficeModule from './backoffice/index.js'
 import storeModule from './store/index.js'
 import usersModule from './users.js'
-import guildsModule from './guilds.js'
+import badgesModule from './badges.js'
 import statsModule from './stats.js'
 import docsModule from './docs/index.js'
 import oauthModule from './oauth.js'
-import miscModule from './misc.js'
 
 function logout (_: FastifyRequest, reply: FastifyReply): void {
   reply.setCookie('token', '', { maxAge: 0, path: '/' }).redirect('/')
@@ -24,10 +23,8 @@ export default async function (fastify: FastifyInstance) {
   fastify.register(backofficeModule, { prefix: '/backoffice' })
   fastify.register(storeModule, { prefix: '/store' })
   fastify.register(usersModule, { prefix: '/users' })
-  fastify.register(guildsModule, { prefix: '/guilds' })
+  fastify.register(badgesModule, { prefix: '/badges' })
   fastify.register(statsModule, { prefix: '/stats' })
   fastify.register(docsModule, { prefix: '/docs' })
   fastify.register(oauthModule, { prefix: '/oauth' })
-  fastify.register(miscModule)
-  fastify.setNotFoundHandler((_: FastifyRequest, reply: FastifyReply) => void reply.code(404).send({ error: 404, message: 'Not Found' }))
 }
