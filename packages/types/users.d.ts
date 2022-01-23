@@ -3,28 +3,24 @@
  * Licensed under the Open Software License version 3.0
  */
 
+type ExternalAccount = {
+  tokenType: string
+  accessToken: string
+  refreshToken: string
+  expiresAt: number
+  name: string
+}
+
 export type User = {
   _id: string
   username: string
   discriminator: string
   avatar: string | null
   accounts: {
-    discord: {
-      accessToken: string
-      refreshToken: string
-      expiryDate: number
-    }
-    spotify?: {
-      accessToken: string
-      refreshToken: string
-      expiryDate: number
-      name: string
-      scopes: string[]
-    }
-    github?: {
-      accessToken: string
-      name: string
-    }
+    discord: Omit<ExternalAccount, 'name'>
+    spotify?: ExternalAccount
+    github?: ExternalAccount
+    patreon?: ExternalAccount
   }
   badges?: {
     developer?: boolean
@@ -51,6 +47,7 @@ export type User = {
 }
 
 export type UserBanStatus = {
+  _id: string
   account: boolean
   publish: boolean
   verification: boolean
@@ -65,6 +62,7 @@ export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
   accounts?: {
     spotify?: string
     github?: string
+    patreon?: string
   }
 }
 

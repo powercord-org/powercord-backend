@@ -43,7 +43,7 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
   if (!spotify) return { token: null }
 
   const users = this.mongo.db!.collection<User>('users')
-  if (Date.now() >= spotify.expiryDate) {
+  if (Date.now() >= spotify.expiresAt) {
     try {
       const tokens = await fetchTokens(
         'https://accounts.spotify.com/api/token',

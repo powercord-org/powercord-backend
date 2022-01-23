@@ -10,7 +10,7 @@ export const Endpoints = {
   LINK_ACCOUNT: (platform: string) => `/api/v3/oauth/${platform}`,
   UNLINK_ACCOUNT: (platform: string) => `/api/v3/oauth/${platform}/unlink`,
   YEET_ACCOUNT: '/api/v3/oauth/discord/unlink',
-  USER_AVATAR: (id: string) => `/api/v3/users/avatar/${id}.png`,
+  USER_AVATAR: (id: string) => `/api/v2/avatar/${id}.png`,
   USER_AVATAR_DISCORD: (id: string, avatar: string) => `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=128`,
   DEFAULT_AVATAR_DISCORD: (dicrim: number) => `https://cdn.discordapp.com/embed/avatars/${dicrim % 6}.png?size=128`,
 

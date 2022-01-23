@@ -38,6 +38,7 @@ export function formatUser (user: User, bypassVisibility?: boolean): RestUser {
       ? {
         spotify: user.accounts.spotify?.name || void 0,
         github: user.accounts.github?.name || void 0,
+        patreon: user.accounts.patreon?.name || void 0,
       }
       : void 0,
   }
