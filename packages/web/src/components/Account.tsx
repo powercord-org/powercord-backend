@@ -142,8 +142,8 @@ function PowercordCutie () {
             <div>
               <div className={style.cutieAdPrice}>$1/month</div>
               <p className={style.cutieAdDescription}>
-                Get a <b>fully customizable role</b> on Powercord's server, and <b>custom colors</b> for Powercord's
-                profile badges.
+                Get a <b>permanent hibiscus badge</b>, <b>custom badge colors</b> on your profile, and a custom role
+                in our Discord server.
               </p>
             </div>
           </div>
@@ -152,7 +152,7 @@ function PowercordCutie () {
             <div>
               <div className={style.cutieAdPrice}>$5/month</div>
               <p className={style.cutieAdDescription}>
-                Get a <b>fully customizable</b> custom badge on your profile.
+                Get a <b>customizable badge</b> (icon &amp; hover text) on your profile, instead of a simple hibiscus.
               </p>
             </div>
           </div>
@@ -161,7 +161,7 @@ function PowercordCutie () {
             <div>
               <div className={style.cutieAdPrice}>$10/month</div>
               <p className={style.cutieAdDescription}>
-                Get a <b>fully customizable</b> badge for <b>one</b> of your servers.
+                Get a <b>fully customizable</b> badge for <b>one</b> of your servers, shown next to its name.
               </p>
             </div>
           </div>
