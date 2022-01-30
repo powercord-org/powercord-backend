@@ -11,7 +11,7 @@ import style from './soon.module.css'
 export default function Soon (_: any) {
   return (
     <main className={style.container}>
-      <img className={style.eyes} src='https://discord.com/assets/ccf4c733929efd9762ab02cd65175377.svg' alt=''/>
+      <img className={style.eyes} src='https://cdn.discordapp.com/emojis/649415462186254362.webp' alt=''/>
       <div className={style.soon}>Coming soon, come back later!</div>
       <div className={style.uwu}>u cute uwu</div>
     </main>
