@@ -61,17 +61,15 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
 
       const updatedFields: Record<string, unknown> = {
         'accounts.spotify.accessToken': tokens.access_token,
-        'accounts.spotify.expiryDate': Date.now() + (tokens.expires_in * 1000),
+        'accounts.spotify.refreshToken': tokens.refresh_token || spotify.refreshToken,
+        'accounts.spotify.expiresAt': Date.now() + (tokens.expires_in * 1000),
         updatedAt: new Date(),
       }
 
-      // [Cynthia] Spotify docs says "A new refresh token MIGHT be returned"
-      if (tokens.refresh_token) updatedFields['accounts.spotify.refreshToken'] = tokens.refresh_token
-      console.log('new tokens', tokens)
       await users.updateOne({ _id: request.user!._id }, { $set: updatedFields })
-
       return { token: tokens.access_token }
-    } catch (e) {
+    } catch {
+      // todo: analyze the error? unlink the account?
       return { token: null, revoked: 'ACCESS_DENIED' }
     }
   }
@@ -87,7 +85,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     fastify.get('/:id(\\d+)', getUser)
   } else {
     // todo: implement
-    fastify.get('/avatar/:id(\\d{17,}).png', () => void 0)
+    fastify.get('/avatar/:id(\\d{17,}).webp', () => void 0)
     fastify.register(settingsModule, { prefix: '/@me/settings' })
   }
 }

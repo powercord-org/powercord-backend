@@ -192,7 +192,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
     const token = this.tokenize.generate(account.id)
     reply.setCookie('token', token, {
       signed: true,
-      // todo: http only
+      // todo: http only?
       sameSite: 'lax',
       path: '/',
       secure: process.env.NODE_ENV === 'production',
@@ -203,12 +203,20 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
     return
   }
 
+  const accountId = account.data?.id || account.id
   const accountName = account.data?.attributes.email || account.login || account.display_name
+  const accountOwner = await this.mongo.db!.collection<User>('users').findOne({ [`accounts.${reply.context.config.platform}.id`]: accountId })
+  if (accountOwner && accountOwner._id !== request.user!._id) {
+    reply.redirect(`${redirectCookie?.value ?? returnPath}?error=already_linked`)
+    return
+  }
+
   await this.mongo.db!.collection<User>('users').updateOne(
     { _id: request.user!._id },
     {
       $set: {
         updatedAt: new Date(),
+        [`accounts.${reply.context.config.platform}.id`]: accountId,
         [`accounts.${reply.context.config.platform}.name`]: accountName,
         ...toMongoFields(oauthToken),
       },
@@ -223,6 +231,7 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<{ Tokenize
     // todo: check if user is allowed to delete account
     await deleteUser(this.mongo.client, request.user!._id, UserDeletionCause.REQUESTED)
     reply.setCookie('token', '', { maxAge: 0, path: '/' }).redirect('/')
+    reply.redirect('/')
     return
   }
 
@@ -237,9 +246,6 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<{ Tokenize
   )
 
   reply.redirect('/me')
-  console.log(request)
-  console.log(reply.context)
-  reply.send(null)
 }
 
 async function oauthPlugin (fastify: FastifyInstance, options: OAuthOptions) {
@@ -251,7 +257,6 @@ async function oauthPlugin (fastify: FastifyInstance, options: OAuthOptions) {
   if (fastify.prefix.startsWith('/v2')) {
     fastify.get<{ TokenizeUser: User }, OAuthConfig>('/unlink', { config: options.data, preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlink)
   } else {
-    // todo: DELETE
     fastify.get<{ TokenizeUser: User }, OAuthConfig>('/unlink', { config: options.data, preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlink)
   }
 }
