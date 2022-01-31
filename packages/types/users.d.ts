@@ -3,12 +3,18 @@
  * Licensed under the Open Software License version 3.0
  */
 
-type ExternalAccount = {
+export type ExternalAccount = {
   tokenType: string
   accessToken: string
   refreshToken: string
   expiresAt: number
   name: string
+}
+
+export type PatreonData = {
+  donated: boolean
+  pledgeTier: number
+  perksExpireAt: number
 }
 
 export type User = {
@@ -20,7 +26,7 @@ export type User = {
     discord: Omit<ExternalAccount, 'name'>
     spotify?: ExternalAccount
     github?: ExternalAccount
-    patreon?: ExternalAccount
+    patreon?: ExternalAccount & PatreonData
   }
   badges?: {
     developer?: boolean
@@ -41,9 +47,11 @@ export type User = {
       name: string | null
     }
   }
-  patronTier?: 0 | 1 | 2
   createdAt: Date
   updatedAt?: Date
+
+  /** @deprecated */
+  patronTier?: number
 }
 
 export type UserBanStatus = {
@@ -59,6 +67,7 @@ export type UserBanStatus = {
 
 export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
   id: User['_id']
+  donatorTier?: number
   accounts?: {
     spotify?: string
     github?: string

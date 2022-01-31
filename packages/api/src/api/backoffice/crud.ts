@@ -7,8 +7,7 @@
 // [Cynthia] As long as routes have a strict schema, they will be safe from mongo injections
 
 import type { Filter, Document } from 'mongodb'
-import type { FastifyInstance, FastifyRequest, FastifyReply, FastifySchema } from 'fastify'
-import type { ConfiguredReply } from '../../types.js'
+import type { FastifyInstance, FastifyRequest, FastifyReply, FastifySchema, ConfiguredReply } from 'fastify'
 import { ObjectId } from 'mongodb'
 
 type CrudModule = { schema?: FastifySchema }

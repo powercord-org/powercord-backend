@@ -12,6 +12,7 @@ import { OAuthEndpoints, getAuthorizationUrl, getAuthTokens, fetchAccount, toMon
 import { deleteUser, UserDeletionCause } from '../data/user.js'
 import { fetchTokens } from '../utils/oauth.js'
 import { fetchCurrentUser, addRole } from '../utils/discord.js'
+import { fetchPledgeStatus } from '../utils/patreon.js'
 
 /** @deprecated */
 export async function refreshUserData (fastify: FastifyInstance, user: User): Promise<User | null> {
@@ -50,7 +51,6 @@ export async function refreshUserData (fastify: FastifyInstance, user: User): Pr
 type OAuthConfig = {
   platform: OAuthProvider
   scopes: string[]
-  isAuthentication?: boolean
   isRestricted?: boolean
 }
 
@@ -80,7 +80,7 @@ type CallbackRequestProps = {
 type Reply = ConfiguredReply<FastifyReply, OAuthConfig>
 
 async function authorize (this: FastifyInstance, request: FastifyRequest<AuthorizationRequestProps>, reply: Reply) {
-  if (reply.context.config.isAuthentication && request.user) {
+  if (reply.context.config.platform === 'discord' && request.user) {
     reply.redirect('/me')
     return
   }
@@ -100,7 +100,7 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
     maxAge: 300,
   }
 
-  if (!reply.context.config.isAuthentication && !request.user) {
+  if (reply.context.config.platform !== 'discord' && !request.user) {
     reply.setCookie('redirect', `/api${request.url}`, cookieSettings)
     reply.redirect(`/api/${apiVersion}/login`)
   }
@@ -127,8 +127,8 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
 }
 
 async function callback (this: FastifyInstance, request: FastifyRequest<CallbackRequestProps>, reply: Reply) {
-  const returnPath = reply.context.config.isAuthentication ? '/' : '/me'
-  const authStatus = Boolean(reply.context.config.isAuthentication) !== Boolean(request.user)
+  const returnPath = reply.context.config.platform === 'discord' ? '/' : '/me'
+  const authStatus = Boolean(reply.context.config.platform === 'discord') !== Boolean(request.user)
   if (!authStatus || !request.query.state) {
     reply.redirect(returnPath)
     return
@@ -161,7 +161,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
     return
   }
 
-  if (reply.context.config.isAuthentication) {
+  if (reply.context.config.platform === 'discord') {
     const banStatus = await this.mongo.db!.collection<UserBanStatus>('userbans').findOne({ _id: account.id })
     if (banStatus?.account) {
       reply.redirect(`${redirectCookie?.value ?? returnPath}?error=auth_banned`)
@@ -177,7 +177,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
           discriminator: account.discriminator,
           avatar: account.avatar,
           updatedAt: new Date(),
-          ...toMongoFields(oauthToken),
+          ...toMongoFields(oauthToken, 'discord'),
         },
       },
       { upsert: true }
@@ -211,23 +211,26 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
     return
   }
 
-  await this.mongo.db!.collection<User>('users').updateOne(
-    { _id: request.user!._id },
-    {
-      $set: {
-        updatedAt: new Date(),
-        [`accounts.${reply.context.config.platform}.id`]: accountId,
-        [`accounts.${reply.context.config.platform}.name`]: accountName,
-        ...toMongoFields(oauthToken),
-      },
-    }
-  )
+  const update = {
+    updatedAt: new Date(),
+    [`accounts.${reply.context.config.platform}.id`]: accountId,
+    [`accounts.${reply.context.config.platform}.name`]: accountName,
+    ...toMongoFields(oauthToken, reply.context.config.platform),
+  }
 
+  if (reply.context.config.platform === 'patreon' && !('patreon' in request.user!.accounts)) {
+    const pledge = await fetchPledgeStatus(oauthToken)
+    update['accounts.patreon.donated'] = pledge.donated
+    update['accounts.patreon.pledgeTier'] = pledge.pledgeTier
+    update['accounts.patreon.perksExpireAt'] = pledge.perksExpireAt
+  }
+
+  await this.mongo.db!.collection<User>('users').updateOne({ _id: request.user!._id }, { $set: update })
   reply.redirect(redirectCookie?.value ?? '/me')
 }
 
 async function unlink (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: Reply) {
-  if (reply.context.config.isAuthentication) {
+  if (reply.context.config.platform === 'discord') {
     // todo: check if user is allowed to delete account
     await deleteUser(this.mongo.client, request.user!._id, UserDeletionCause.REQUESTED)
     reply.setCookie('token', '', { maxAge: 0, path: '/' }).redirect('/')
@@ -267,7 +270,6 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     data: {
       platform: 'discord',
       scopes: [ 'identify' ],
-      isAuthentication: true,
     },
   })
 

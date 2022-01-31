@@ -7,11 +7,13 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import type { User } from '@powercord/types/users'
 import { createHash } from 'crypto'
 import config from '@powercord/shared/config'
+import { refreshDonatorState } from '../utils/patreon.js'
 
 type Badge = { _id: string, name: string, icon: string }
 type RestBadge = Omit<Badge, '_id'>
 
 async function getGuildBadges (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) {
+  // todo: revise storage method and check donator status of badge manager
   const hash = createHash('sha256')
   const cursor = this.mongo.db!.collection<Badge>('badges').find()
   const badges: Record<string, RestBadge> = {}
@@ -33,8 +35,9 @@ async function getGuildBadges (this: FastifyInstance, request: FastifyRequest, r
 
 async function getUserBadges (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
   const user = await this.mongo.db!.collection<User>('users').findOne({ _id: request.params.id })
-  const etag = `W/"${createHash('sha256').update(config.secret).update(request.params.id).update(user?.updatedAt?.toISOString() ?? '0').digest('base64url')}"`
+  if (user) await refreshDonatorState(this.mongo.client, user)
 
+  const etag = `W/"${createHash('sha256').update(config.secret).update(request.params.id).update(user?.updatedAt?.toISOString() ?? '0').digest('base64url')}"`
   reply.header('cache-control', 'public, max-age=300')
   if (request.headers['if-none-match'] === etag) {
     reply.code(304).send()
@@ -42,9 +45,21 @@ async function getUserBadges (this: FastifyInstance, request: FastifyRequest<{ P
   }
 
   reply.header('etag', etag)
-  const tier = user?.patronTier ?? 0
+  const donated = user?.accounts.patreon?.donated ?? false
+  const currentTier = user?.accounts.patreon?.pledgeTier ?? 0
   const badges = user?.badges ?? {}
-  const custom = badges.custom ?? { color: null, icon: 'default', name: 'default' }
+
+  const donatorBadge: { icon: string | null, text: string | null } = { icon: null, text: null }
+  if (currentTier >= 2 || badges.staff) {
+    donatorBadge.icon = badges.custom?.icon || 'default'
+    donatorBadge.text = badges.custom?.name || 'Powercord Cutie'
+  } else if (currentTier === 1) {
+    donatorBadge.icon = 'default'
+    donatorBadge.text = 'Powercord Cutie'
+  } else if (donated) {
+    donatorBadge.icon = 'default'
+    donatorBadge.text = 'Former Powercord Cutie'
+  }
 
   return {
     developer: Boolean(badges.developer),
@@ -55,13 +70,8 @@ async function getUserBadges (this: FastifyInstance, request: FastifyRequest<{ P
     hunter: Boolean(badges.hunter),
     early: Boolean(badges.early),
     properties: {
-      badgeColors: tier < 1 ? null : custom.color || null,
-      customBadge: tier < 1
-        ? null
-        : {
-          icon: tier < 2 ? 'default' : custom.icon ?? 'default',
-          text: tier < 2 ? 'default' : custom.name ?? 'default',
-        },
+      badgeColors: currentTier < 1 ? null : badges.custom?.color || null,
+      donatorBadge: donatorBadge,
       languages: [],
     },
   }

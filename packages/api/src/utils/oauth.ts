@@ -32,7 +32,6 @@ export async function fetchTokens (endpoint: string, clientId: string, clientSec
 }
 
 export type OAuthToken = {
-  platform: string
   tokenType: string
   accessToken: string
   // Refresh tokens during refreshes MAY be present, but this is not a requirement.
@@ -82,7 +81,6 @@ async function fetchToken (provider: OAuthProvider, params: URLSearchParams): Pr
 
   const rawToken = <any> await response.json()
   const token: OAuthToken = {
-    platform: provider,
     tokenType: rawToken.token_type,
     accessToken: rawToken.access_token,
     expiresAt: Date.now() + (rawToken.expires_in * 1e3),
@@ -134,15 +132,15 @@ export async function fetchAccount<TAccount = unknown> (provider: OAuthProvider,
       .then((r) => r.json())
 }
 
-export function toMongoFields (token: OAuthToken) {
+export function toMongoFields (token: OAuthToken, platform: string) {
   const res = {
-    [`accounts.${token.platform}.tokenType`]: token.tokenType,
-    [`accounts.${token.platform}.accessToken`]: token.accessToken,
-    [`accounts.${token.platform}.expiresAt`]: token.expiresAt,
+    [`accounts.${platform}.tokenType`]: token.tokenType,
+    [`accounts.${platform}.accessToken`]: token.accessToken,
+    [`accounts.${platform}.expiresAt`]: token.expiresAt,
   }
 
   if (token.refreshToken) {
-    res[`accounts.${token.platform}.refreshToken`] = token.refreshToken
+    res[`accounts.${platform}.refreshToken`] = token.refreshToken
   }
 
   return res

@@ -7,17 +7,33 @@ import type { User, RestUser } from '@powercord/types/users'
 
 type CustomBadges = Exclude<User['badges'], undefined>['custom']
 
-function paywallify (customBadges: CustomBadges, tier: number): Exclude<CustomBadges, undefined> {
-  tier = 69 // todo: we don't keep track of patreon tier yet
-  return {
-    color: tier < 1 ? null : customBadges?.color || null,
-    icon: tier < 2 ? null : customBadges?.icon || null,
-    name: tier < 2 ? null : customBadges?.name || null,
+function formatBadges (user: User): Exclude<CustomBadges, undefined> {
+  // todo: drop fallback
+  const pledgeInfo = user.accounts.patreon ?? { donated: false, pledgeTier: 69 }
+  const badges = user.badges?.custom
+  const donatorBadge: CustomBadges = {
+    color: pledgeInfo.pledgeTier >= 1 ? badges?.color || null : null,
+    icon: null,
+    name: null,
   }
+
+  const appliedColor = donatorBadge.color ?? '7289da'
+  if (pledgeInfo.pledgeTier >= 2 || user.badges?.staff) {
+    donatorBadge.icon = badges?.icon || `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg`
+    donatorBadge.name = badges?.name || 'Powercord Cutie'
+  } else if (pledgeInfo.pledgeTier === 1) {
+    donatorBadge.icon = `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg`
+    donatorBadge.name = 'Powercord Cutie'
+  } else if (pledgeInfo.donated) {
+    donatorBadge.icon = 'https://powercord.dev/api/v2/hibiscus/7289da.svg'
+    donatorBadge.name = 'Former Powercord Cutie'
+  }
+
+  return donatorBadge
 }
 
 /** @deprecated */
-export function formatUser (user: User, bypassVisibility?: boolean): RestUser {
+export async function formatUser (user: User, bypassVisibility?: boolean): Promise<RestUser> {
   return {
     id: user._id,
     username: user.username,
@@ -31,9 +47,9 @@ export function formatUser (user: User, bypassVisibility?: boolean): RestUser {
       translator: user.badges?.translator || false, // Array of langs or false
       hunter: Boolean(user.badges?.hunter),
       early: Boolean(user.badges?.early),
-      custom: paywallify(user.badges?.custom, user.patronTier || 0),
+      custom: formatBadges(user),
     },
-    patronTier: bypassVisibility ? user.patronTier : void 0,
+    donatorTier: bypassVisibility ? user.accounts.patreon?.pledgeTier : 0,
     accounts: bypassVisibility
       ? {
         spotify: user.accounts.spotify?.name || void 0,

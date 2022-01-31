@@ -7,8 +7,9 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { User, RestUser } from '@powercord/types/users'
 import { createHash } from 'crypto'
 import config from '@powercord/shared/config'
-import { formatUser } from '../utils/users.js'
 import settingsModule from './settings.js'
+import { refreshDonatorState } from '../utils/patreon.js'
+import { formatUser } from '../utils/users.js'
 import { fetchTokens } from '../utils/oauth.js'
 
 const DATE_ZERO = new Date(0)
@@ -26,15 +27,17 @@ async function sendUser (request: FastifyRequest, reply: FastifyReply, user: Use
   return formatUser(user, self)
 }
 
-async function getSelf (request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply): Promise<RestUser | void> {
+async function getSelf (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply): Promise<RestUser | void> {
+  await refreshDonatorState(this.mongo.client, request.user!)
   return sendUser(request, reply, request.user!, true)
 }
 
 /** @deprecated */
 async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
   const user = await this.mongo.db!.collection<User>('users').findOne({ _id: request.params.id })
-
   if (!user) return reply.callNotFound()
+
+  await refreshDonatorState(this.mongo.client, user)
   return sendUser(request, reply, user)
 }
 
@@ -85,7 +88,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     fastify.get('/:id(\\d+)', getUser)
   } else {
     // todo: implement
-    fastify.get('/avatar/:id(\\d{17,}).webp', () => void 0)
+    fastify.get('/avatar/:id(\\d{17,}).png', () => void 0)
     fastify.register(settingsModule, { prefix: '/@me/settings' })
   }
 }
