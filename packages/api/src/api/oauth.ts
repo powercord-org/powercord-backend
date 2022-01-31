@@ -86,7 +86,7 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
   }
 
   if (reply.context.config.isRestricted && !request.user?.badges?.staff) {
-    reply.redirect('/me')
+    reply.redirect('/')
     return
   }
 
@@ -103,6 +103,7 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
   if (reply.context.config.platform !== 'discord' && !request.user) {
     reply.setCookie('redirect', `/api${request.url}`, cookieSettings)
     reply.redirect(`/api/${apiVersion}/login`)
+    return
   }
 
   // api:v2

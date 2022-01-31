@@ -7,6 +7,7 @@ import type { User, PatreonData } from '@powercord/types/users'
 import type { MongoClient } from 'mongodb'
 import type { OAuthToken } from './oauth.js'
 import { fetch } from 'undici'
+import { refreshAuthTokens, toMongoFields } from './oauth.js'
 
 const DONATION_TIERS = [ 100, 500, 1000 ]
 const GRACE_PERIOD = 5 * 24 * 3600e3 // 5 days
@@ -15,7 +16,6 @@ export async function fetchPledgeStatus (token: OAuthToken): Promise<PatreonData
   const query = new URLSearchParams()
   query.set('include', 'memberships')
   query.set('fields[member]', 'patron_status,currently_entitled_amount_cents,next_charge_date')
-
   const url = `https://patreon.com/api/oauth2/v2/identity?${query.toString()}`
   const response = await fetch(url, { headers: { authorization: `${token.tokenType} ${token.accessToken}` } })
     .then((r) => <any> r.json())
@@ -38,21 +38,29 @@ export async function fetchPledgeStatus (token: OAuthToken): Promise<PatreonData
 
 export async function refreshDonatorState (mongo: MongoClient, user: User) {
   const patreonAccount = user.accounts.patreon
-  if (!patreonAccount || patreonAccount.perksExpireAt > Date.now()) return
+  if (!patreonAccount) return
 
-  user.updatedAt = new Date()
-  const pledge = await fetchPledgeStatus(patreonAccount)
-  Object.assign(patreonAccount, pledge)
+  const needsAccountRefresh = Date.now() > patreonAccount.expiresAt
+  const needsPerksRefresh = Date.now() > patreonAccount.perksExpireAt
+  if (!needsAccountRefresh && !needsPerksRefresh) return
 
-  await mongo.db().collection<User>('users').updateOne(
-    { _id: user._id },
-    {
-      $set: {
-        'accounts.patreon.donated': pledge.donated,
-        'accounts.patreon.pledgeTier': pledge.pledgeTier,
-        'accounts.patreon.perksExpireAt': pledge.perksExpireAt,
-        updatedAt: user.updatedAt,
-      },
-    }
-  )
+  const updateData = { updatedAt: new Date() }
+  user.updatedAt = updateData.updatedAt
+  if (needsAccountRefresh) {
+    const newToken = await refreshAuthTokens('patreon', patreonAccount.refreshToken)
+    Object.assign(updateData, toMongoFields(newToken, 'patreon'))
+    Object.assign(patreonAccount, newToken)
+  }
+
+  if (needsPerksRefresh) {
+    const pledge = await fetchPledgeStatus(patreonAccount)
+    Object.assign(patreonAccount, pledge)
+    Object.assign(updateData, {
+      'accounts.patreon.donated': pledge.donated,
+      'accounts.patreon.pledgeTier': pledge.pledgeTier,
+      'accounts.patreon.perksExpireAt': pledge.perksExpireAt,
+    })
+  }
+
+  await mongo.db().collection<User>('users').updateOne({ _id: user._id }, { $set: updateData })
 }

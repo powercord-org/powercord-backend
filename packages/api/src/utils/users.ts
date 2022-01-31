@@ -12,15 +12,16 @@ function formatBadges (user: User): Exclude<CustomBadges, undefined> {
   const pledgeInfo = user.accounts.patreon ?? { donated: false, pledgeTier: 69 }
   const badges = user.badges?.custom
   const donatorBadge: CustomBadges = {
-    color: pledgeInfo.pledgeTier >= 1 ? badges?.color || null : null,
+    color: pledgeInfo.pledgeTier >= 1 || user.badges?.staff ? badges?.color || null : null,
     icon: null,
     name: null,
   }
 
+  const isLegit = pledgeInfo.pledgeTier !== 69 && (!user.badges?.staff || pledgeInfo.pledgeTier)
   const appliedColor = donatorBadge.color ?? '7289da'
   if (pledgeInfo.pledgeTier >= 2 || user.badges?.staff) {
-    donatorBadge.icon = badges?.icon || `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg`
-    donatorBadge.name = badges?.name || 'Powercord Cutie'
+    donatorBadge.icon = badges?.icon || (isLegit ? `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg` : null)
+    donatorBadge.name = badges?.name || (isLegit ? 'Powercord Cutie' : null)
   } else if (pledgeInfo.pledgeTier === 1) {
     donatorBadge.icon = `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg`
     donatorBadge.name = 'Powercord Cutie'
@@ -49,7 +50,7 @@ export async function formatUser (user: User, bypassVisibility?: boolean): Promi
       early: Boolean(user.badges?.early),
       custom: formatBadges(user),
     },
-    donatorTier: bypassVisibility ? user.accounts.patreon?.pledgeTier : 0,
+    donatorTier: bypassVisibility ? user.accounts.patreon?.pledgeTier || 0 : void 0,
     accounts: bypassVisibility
       ? {
         spotify: user.accounts.spotify?.name || void 0,
