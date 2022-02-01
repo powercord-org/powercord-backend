@@ -36,31 +36,42 @@ export async function fetchPledgeStatus (token: OAuthToken): Promise<PatreonData
   return data
 }
 
+async function updateDonatorState (mongo: MongoClient, user: User) {
+  const patreonAccount = user.accounts.patreon!
+  const userUpdate: Partial<User['accounts']['patreon']> = {}
+  const mongoUpdate = { updatedAt: new Date() }
+
+  if (Date.now() > patreonAccount.expiresAt) {
+    const newToken = await refreshAuthTokens('patreon', patreonAccount.refreshToken)
+    Object.assign(mongoUpdate, toMongoFields(newToken, 'patreon'))
+    Object.assign(userUpdate, newToken)
+  }
+
+  const pledge = await fetchPledgeStatus(patreonAccount)
+  Object.assign(userUpdate, pledge)
+  Object.assign(mongoUpdate, {
+    'accounts.patreon.donated': pledge.donated,
+    'accounts.patreon.pledgeTier': pledge.pledgeTier,
+    'accounts.patreon.perksExpireAt': pledge.perksExpireAt,
+  })
+
+  await mongo.db().collection<User>('users').updateOne({ _id: user._id }, { $set: mongoUpdate })
+  return userUpdate
+}
+
+// The queue avoids tripping multiple updates if a query arrives during an ongoing update
+const queue = new Map<string, Promise<Partial<User['accounts']['patreon']>>>()
 export async function refreshDonatorState (mongo: MongoClient, user: User) {
   const patreonAccount = user.accounts.patreon
-  if (!patreonAccount) return
+  if (!patreonAccount || !patreonAccount.perksExpireAt || patreonAccount.perksExpireAt > Date.now()) return
 
-  const needsAccountRefresh = Date.now() > patreonAccount.expiresAt
-  const needsPerksRefresh = Date.now() > patreonAccount.perksExpireAt
-  if (!needsAccountRefresh && !needsPerksRefresh) return
-
-  const updateData = { updatedAt: new Date() }
-  user.updatedAt = updateData.updatedAt
-  if (needsAccountRefresh) {
-    const newToken = await refreshAuthTokens('patreon', patreonAccount.refreshToken)
-    Object.assign(updateData, toMongoFields(newToken, 'patreon'))
-    Object.assign(patreonAccount, newToken)
+  let promise = queue.get(user._id)
+  if (!promise) {
+    promise = updateDonatorState(mongo, user)
+    promise.finally(() => queue.delete(user._id))
+    queue.set(user._id, promise)
   }
 
-  if (needsPerksRefresh) {
-    const pledge = await fetchPledgeStatus(patreonAccount)
-    Object.assign(patreonAccount, pledge)
-    Object.assign(updateData, {
-      'accounts.patreon.donated': pledge.donated,
-      'accounts.patreon.pledgeTier': pledge.pledgeTier,
-      'accounts.patreon.perksExpireAt': pledge.perksExpireAt,
-    })
-  }
-
-  await mongo.db().collection<User>('users').updateOne({ _id: user._id }, { $set: updateData })
+  const update = await promise
+  Object.assign(patreonAccount, update)
 }
