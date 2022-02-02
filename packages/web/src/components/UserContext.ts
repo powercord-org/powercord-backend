@@ -3,34 +3,9 @@
  * Licensed under the Open Software License version 3.0
  */
 
+import type { SelfRestUser } from '@powercord/types/users'
 import { createContext } from 'preact'
 
-export type User = {
-  id: string
-  username: string
-  discriminator: string
-  avatar: string
-  patronTier?: 0 | 1 | 2 | 3
-  badges: {
-    developer: boolean
-    staff: boolean
-    support: boolean
-    contributor: boolean
-    translator: boolean
-    hunter: boolean
-    early: boolean
-    custom: {
-      color: string
-      icon: string
-      white: string
-      name: string
-    }
-  }
-  accounts: {
-    spotify?: string
-    patreon?: string
-    github?: string
-  }
-}
+export type User = SelfRestUser & { patch: (user: Partial<SelfRestUser>) => void }
 
 export default createContext<User | null | undefined>(void 0)

@@ -7,7 +7,7 @@ import { URLSearchParams } from 'url'
 import { fetch } from 'undici'
 import config from '@powercord/shared/config'
 
-// todo: oauth state & schema
+// todo: schema
 
 /** @deprecated */
 export type OAuthTokenLegacy = { access_token: string, refresh_token?: string, expires_in: number }

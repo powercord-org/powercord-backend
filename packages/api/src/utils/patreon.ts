@@ -36,7 +36,7 @@ export async function fetchPledgeStatus (token: OAuthToken): Promise<CutieStatus
   return data
 }
 
-export async function prepareUpdateData (patreonAccount: OAuthToken) {
+export async function prepareUpdateData (patreonAccount: OAuthToken): Promise<[ CutieStatus, Partial<User['accounts']['patreon']>, Record<string, any> ]> {
   const userUpdate: Partial<User['accounts']['patreon']> = {}
   const mongoUpdate = { updatedAt: new Date() }
 
@@ -46,35 +46,37 @@ export async function prepareUpdateData (patreonAccount: OAuthToken) {
     Object.assign(userUpdate, newToken)
   }
 
-  const pledge = await fetchPledgeStatus(patreonAccount)
-  Object.assign(userUpdate, pledge)
+  const cutieStatus = await fetchPledgeStatus(patreonAccount)
   Object.assign(mongoUpdate, {
-    'cutieStatus.donated': pledge.donated,
-    'cutieStatus.pledgeTier': pledge.pledgeTier,
-    'cutieStatus.perksExpireAt': pledge.perksExpireAt,
+    'cutieStatus.donated': cutieStatus.donated,
+    'cutieStatus.pledgeTier': cutieStatus.pledgeTier,
+    'cutieStatus.perksExpireAt': cutieStatus.perksExpireAt,
   })
 
-  return [ userUpdate, mongoUpdate ]
+  return [ cutieStatus, userUpdate, mongoUpdate ]
 }
 
-export async function updateDonatorState (mongo: MongoClient, user: User) {
+export async function updateDonatorState (mongo: MongoClient, user: User, manual?: boolean) {
   const patreonAccount = user.accounts.patreon
   if (!patreonAccount) return
 
-  const [ userUpdate, mongoUpdate ] = await prepareUpdateData(patreonAccount)
+  const [ cutieStatus, userUpdate, mongoUpdate ] = await prepareUpdateData(patreonAccount)
+  if (manual) mongoUpdate['cutieStatus.lastManualRefresh'] = Date.now()
+
   await mongo.db().collection<User>('users').updateOne({ _id: user._id }, { $set: mongoUpdate })
   Object.assign(patreonAccount, userUpdate)
+  Object.assign(user, { cutieStatus: cutieStatus })
 }
 
 // The queue avoids tripping multiple updates if a query arrives during an ongoing update
 const queue = new Map<string, Promise<void>>()
-export async function refreshDonatorState (mongo: MongoClient, user: User) {
+export async function refreshDonatorState (mongo: MongoClient, user: User, manual?: boolean) {
   const patreonAccount = user.accounts.patreon
-  if (!patreonAccount || (user.cutieStatus?.perksExpireAt ?? 0) > Date.now()) return
+  if (!patreonAccount || (!manual && (user.cutieStatus?.perksExpireAt ?? 0) > Date.now())) return
 
   let promise = queue.get(user._id)
   if (!promise) {
-    promise = updateDonatorState(mongo, user)
+    promise = updateDonatorState(mongo, user, manual)
     promise.finally(() => queue.delete(user._id))
     queue.set(user._id, promise)
   }

@@ -3,7 +3,7 @@
  * Licensed under the Open Software License version 3.0
  */
 
-import type { User, RestUser } from '@powercord/types/users'
+import type { User, RestUser, SelfRestUser } from '@powercord/types/users'
 
 type CustomBadges = Exclude<User['badges'], undefined>['custom']
 
@@ -39,7 +39,7 @@ function formatBadges (user: User): Exclude<CustomBadges, undefined> {
 }
 
 /** @deprecated */
-export async function formatUser (user: User, bypassVisibility?: boolean): Promise<RestUser> {
+export async function formatUser (user: User, bypassVisibility?: boolean): Promise<RestUser | SelfRestUser> {
   return {
     id: user._id,
     username: user.username,
@@ -55,7 +55,15 @@ export async function formatUser (user: User, bypassVisibility?: boolean): Promi
       early: Boolean(user.badges?.early),
       custom: formatBadges(user),
     },
-    donatorTier: bypassVisibility ? user.cutieStatus?.pledgeTier || 0 : void 0,
+    // todo: bind logic
+    canDeleteAccount: bypassVisibility ? true : void 0,
+    cutieStatus: bypassVisibility
+      ? {
+        donated: user.cutieStatus?.donated ?? false,
+        pledgeTier: user.cutieStatus?.pledgeTier ?? 0,
+        perksExpireAt: user.cutieStatus?.perksExpireAt ?? 0,
+      }
+      : void 0,
     accounts: bypassVisibility
       ? {
         spotify: user.accounts.spotify?.name || void 0,

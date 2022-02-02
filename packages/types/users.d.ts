@@ -15,6 +15,7 @@ export type CutieStatus = {
   donated: boolean
   pledgeTier: number
   perksExpireAt: number
+  lastManualRefresh?: number
 }
 
 export type User = {
@@ -65,13 +66,14 @@ export type UserBanStatus = {
   events: boolean
 }
 
-export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt'> & {
-  id: User['_id']
-  donatorTier?: number
-  accounts?: {
-    spotify?: string
-    github?: string
-    patreon?: string
+export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt' | 'cutieStatus'> & { id: User['_id'] }
+
+export type SelfRestUser = RestUser & {
+  cutieStatus: CutieStatus
+  canDeleteAccount: boolean
+  accounts: {
+    spotify: string | undefined
+    patreon: string | undefined
   }
 }
 

@@ -221,7 +221,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
 
   if (reply.context.config.platform === 'patreon' && !('patreon' in request.user!.accounts)) {
     const data = await prepareUpdateData(oauthToken)
-    Object.assign(update, data[1])
+    Object.assign(update, data[2])
   }
 
   await this.mongo.db!.collection<User>('users').updateOne({ _id: request.user!._id }, { $set: update })

@@ -7,6 +7,7 @@ export const Endpoints = {
   LOGIN: '/api/v3/login',
   LOGOUT: '/api/v3/logout',
   USER_SELF: '/api/v3/users/@me',
+  USER_REFRESH_PLEDGE: '/api/v3/users/@me/refresh-pledge',
   LINK_ACCOUNT: (platform: string) => `/api/v3/oauth/${platform}`,
   UNLINK_ACCOUNT: (platform: string) => `/api/v3/oauth/${platform}/unlink`,
   YEET_ACCOUNT: '/api/v3/oauth/discord/unlink',

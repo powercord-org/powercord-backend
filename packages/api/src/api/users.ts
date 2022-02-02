@@ -80,6 +80,24 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
   return { token: spotify.accessToken }
 }
 
+async function refreshPledge (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply) {
+  const patreonAccount = request.user!.accounts.patreon
+  const lastManualRefresh = request.user!.cutieStatus?.lastManualRefresh ?? 0
+  if (!patreonAccount) {
+    reply.code(422).send({ error: 422, message: 'This operation requires a linked Patreon account' })
+    return
+  }
+
+  // 1 refresh per hour
+  if (Date.now() - lastManualRefresh < 3600e3) {
+    reply.code(429).send({ error: 429, message: 'A refresh already was requested within the previous hour. Try again later.' })
+    return
+  }
+
+  await refreshDonatorState(this.mongo.client, request.user!, true)
+  reply.send(request.user!.cutieStatus || null)
+}
+
 export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get<{ TokenizeUser: User }>('/@me', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSelf)
   fastify.get<{ TokenizeUser: User }>('/@me/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSpotifyToken)
@@ -89,6 +107,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   } else {
     // todo: implement
     fastify.get('/avatar/:id(\\d{17,}).png', () => void 0)
+    fastify.post<{ TokenizeUser: User }>('/@me/refresh-pledge', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, refreshPledge)
     fastify.register(settingsModule, { prefix: '/@me/settings' })
   }
 }

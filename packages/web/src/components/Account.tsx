@@ -5,17 +5,21 @@
 
 import type { JSX } from 'preact'
 import { h, Fragment } from 'preact'
-import { useContext, useState, useEffect, useMemo } from 'preact/hooks'
+import { useContext, useState, useEffect, useMemo, useCallback } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
 
 import Modal from './util/Modal'
+import Spinner from './util/Spinner'
 
 import UserContext from './UserContext'
 import { Endpoints, Routes } from '../constants'
 
 import Spotify from 'simple-icons/icons/spotify.svg'
 import Patreon from 'simple-icons/icons/patreon.svg'
-import GitHub from 'simple-icons/icons/github.svg'
+import Link from 'feather-icons/dist/icons/link.svg'
+import Remove from 'feather-icons/dist/icons/x-circle.svg'
+import Refresh from 'feather-icons/dist/icons/rotate-cw.svg'
+import AlertCircle from 'feather-icons/dist/icons/alert-circle.svg'
 import PowercordCutieBanner from '../assets/donate/banner.svg?sprite=cutie'
 import Hibiscus from '../assets/hibiscus.svg?sprite=cutie'
 import cutieSvg from '../assets/donate/cutie.svg?file'
@@ -117,7 +121,13 @@ function AccountOld () {
 
 // ----
 
-type LinkedAccountProps = { platform: string, icon: typeof Spotify, account?: string, explainer: string | JSX.Element }
+type LinkedAccountProps = {
+  platform: string,
+  icon: typeof Spotify,
+  account?: string,
+  explainer: string | JSX.Element
+  refreshEndpoint?: string
+}
 
 const HEARTS = [ '❤️', '🧡', '💛', '💚', '💙', '💜', '💗', '💖', '💝' ]
 
@@ -183,17 +193,65 @@ function ManagePerks () {
   )
 }
 
-function LinkedAccount ({ platform, icon, account, explainer }: LinkedAccountProps) {
+function LinkedAccount ({ platform, icon, account, explainer, refreshEndpoint }: LinkedAccountProps) {
+  const user = useContext(UserContext)
+  const [ refreshing, setRefreshing ] = useState(false)
+  const [ refreshError, setRefreshError ] = useState<string | null>(null)
+  const refresh = useCallback(async () => {
+    if (!refreshEndpoint || !user) return
+
+    setRefreshing(true)
+    setRefreshError(null)
+    const resp = await fetch(refreshEndpoint, { method: 'POST' })
+    const body = await resp.json()
+    setRefreshing(false)
+
+    if (!resp.ok) {
+      setRefreshError(body.message)
+      return
+    }
+
+    user.patch({ cutieStatus: body })
+  }, [ refreshEndpoint ])
+
   return (
     <div className={style.linkedAccount}>
       {h(icon, { className: style.linkedAccountIcon })}
       <div>
-        {account
-          // @ts-expect-error
-          ? <div>{account} - <a native href={Endpoints.UNLINK_ACCOUNT(platform)}>Unlink</a></div>
-          // @ts-expect-error
-          : <div>No account linked - <a native href={Endpoints.LINK_ACCOUNT(platform)}>Link it now</a></div>}
+        <div className={style.linkedAccountInfo}>
+          <span>{account ?? 'No account linked'}</span>
+          <div className={style.linkedAccountActions}>
+            {!account && (
+              // @ts-expect-error
+              <a native href={Endpoints.LINK_ACCOUNT(platform)} className={style.linkedAccountAction}>
+                <Link/>
+                <span>Link accounts</span>
+              </a>
+            )}
+            {!refreshing && account && (
+              // @ts-expect-error
+              <a native href={Endpoints.UNLINK_ACCOUNT(platform)} className={style.linkedAccountAction}>
+                <Remove/>
+                <span>Unlink</span>
+              </a>
+            )}
+            {!refreshing && account && refreshEndpoint && (
+              <button className={`${sharedStyle.buttonLink} ${style.linkedAccountAction}`} onClick={refresh}>
+                <Refresh/>
+                <span>Refresh</span>
+              </button>
+            )}
+            {refreshing && <div className={style.linkedAccountAction}>
+              <Spinner balls/>
+              <span>Refreshing...</span>
+            </div>}
+          </div>
+        </div>
         <div className={style.linkedAccountExplainer}>{explainer}</div>
+        {refreshError && <div className={style.linkedAccountError}>
+          <AlertCircle/>
+          <span>{refreshError}</span>
+        </div>}
       </div>
     </div>
   )
@@ -222,7 +280,7 @@ function Account () {
             account={user.accounts.spotify}
             explainer={'Linking your Spotify account gives you an enhanced experience with the Spotify plugin. It\'ll let you add songs to your Liked Songs, add songs to playlists, see private playlists and more.'}
           />
-          {import.meta.env.DEV && <LinkedAccount
+          {/* import.meta.env.DEV && <LinkedAccount
             platform='github'
             icon={GitHub}
             account={user.accounts.github}
@@ -231,12 +289,13 @@ function Account () {
               the <a href={Routes.STORE_PLUGINS}>Powercord Store</a>. If you are a contributor, it will be shown on
               the <a href={Routes.CONTRIBUTORS}>contributors page</a>.
             </>}
-          />}
+          /> */}
           {import.meta.env.DEV && <LinkedAccount
             platform='patreon'
             icon={Patreon}
             account={user.accounts.patreon}
             explainer={'Link your Patreon account to benefit from the Powercord Cutie perks, and manage them from here.'}
+            refreshEndpoint={Endpoints.USER_REFRESH_PLEDGE}
           />}
 
           <hr/>
@@ -281,7 +340,7 @@ function Account () {
             </Modal>
           )}
         </div>
-        {user.patronTier ? <ManagePerks/> : <PowercordCutie/>}
+        {user.cutieStatus.pledgeTier ? <ManagePerks/> : <PowercordCutie/>}
       </div>
     </main>
   )
