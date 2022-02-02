@@ -11,7 +11,7 @@ export type ExternalAccount = {
   name: string
 }
 
-export type PatreonData = {
+export type CutieStatus = {
   donated: boolean
   pledgeTier: number
   perksExpireAt: number
@@ -25,8 +25,7 @@ export type User = {
   accounts: {
     discord: Omit<ExternalAccount, 'name'>
     spotify?: ExternalAccount
-    github?: ExternalAccount
-    patreon?: ExternalAccount & PatreonData
+    patreon?: ExternalAccount
   }
   badges?: {
     developer?: boolean
@@ -35,7 +34,7 @@ export type User = {
     contributor?: boolean
     hunter?: boolean
     early?: boolean
-    translator?: boolean // todo: array(?) of langs
+    translator?: boolean
     custom?: {
       color: string | null
       icon: string | null
@@ -47,6 +46,7 @@ export type User = {
       name: string | null
     }
   }
+  cutieStatus?: CutieStatus
   createdAt: Date
   updatedAt?: Date
 

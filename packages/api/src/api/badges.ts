@@ -45,8 +45,8 @@ async function getUserBadges (this: FastifyInstance, request: FastifyRequest<{ P
   }
 
   reply.header('etag', etag)
-  const donated = user?.accounts.patreon?.donated ?? false
-  const currentTier = user?.accounts.patreon?.pledgeTier ?? 0
+  const donated = user?.cutieStatus?.donated ?? false
+  const currentTier = (user?.cutieStatus?.perksExpireAt ?? 0) > Date.now() ? user?.cutieStatus?.pledgeTier ?? 0 : 0
   const badges = user?.badges ?? {}
 
   const donatorBadge: { icon: string | null, text: string | null } = { icon: null, text: null }

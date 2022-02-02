@@ -12,7 +12,7 @@ import { OAuthEndpoints, getAuthorizationUrl, getAuthTokens, fetchAccount, toMon
 import { deleteUser, UserDeletionCause } from '../data/user.js'
 import { fetchTokens } from '../utils/oauth.js'
 import { fetchCurrentUser, addRole } from '../utils/discord.js'
-import { fetchPledgeStatus } from '../utils/patreon.js'
+import { prepareUpdateData } from '../utils/patreon.js'
 
 /** @deprecated */
 export async function refreshUserData (fastify: FastifyInstance, user: User): Promise<User | null> {
@@ -220,10 +220,8 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
   }
 
   if (reply.context.config.platform === 'patreon' && !('patreon' in request.user!.accounts)) {
-    const pledge = await fetchPledgeStatus(oauthToken)
-    update['accounts.patreon.donated'] = pledge.donated
-    update['accounts.patreon.pledgeTier'] = pledge.pledgeTier
-    update['accounts.patreon.perksExpireAt'] = pledge.perksExpireAt
+    const data = await prepareUpdateData(oauthToken)
+    Object.assign(update, data[1])
   }
 
   await this.mongo.db!.collection<User>('users').updateOne({ _id: request.user!._id }, { $set: update })

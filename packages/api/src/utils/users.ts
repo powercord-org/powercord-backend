@@ -7,25 +7,30 @@ import type { User, RestUser } from '@powercord/types/users'
 
 type CustomBadges = Exclude<User['badges'], undefined>['custom']
 
+// note: code should be dropped once enforce code kicked in
+const ENFORCE_LINKING = new Date('2022-03-01').getTime()
+const VIRTUAL_STATUS = { donated: false, pledgeTier: 69, perksExpireAt: Infinity }
+
 function formatBadges (user: User): Exclude<CustomBadges, undefined> {
-  // todo: drop fallback
-  const pledgeInfo = user.accounts.patreon ?? { donated: false, pledgeTier: 69 }
   const badges = user.badges?.custom
+  const pledgeInfo = user.cutieStatus ?? (ENFORCE_LINKING > Date.now() ? VIRTUAL_STATUS : null)
+  const effectiveTier = pledgeInfo && pledgeInfo.perksExpireAt > Date.now() ? pledgeInfo.pledgeTier : 0
+
+  const isLegit = effectiveTier !== VIRTUAL_STATUS.pledgeTier
+  const appliedColor = badges?.color ?? '7289da'
   const donatorBadge: CustomBadges = {
-    color: pledgeInfo.pledgeTier >= 1 || user.badges?.staff ? badges?.color || null : null,
+    color: effectiveTier >= 1 ? badges?.color || null : null,
     icon: null,
     name: null,
   }
 
-  const isLegit = pledgeInfo.pledgeTier !== 69 && (!user.badges?.staff || pledgeInfo.pledgeTier)
-  const appliedColor = donatorBadge.color ?? '7289da'
-  if (pledgeInfo.pledgeTier >= 2 || user.badges?.staff) {
+  if (effectiveTier >= 2) {
     donatorBadge.icon = badges?.icon || (isLegit ? `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg` : null)
     donatorBadge.name = badges?.name || (isLegit ? 'Powercord Cutie' : null)
-  } else if (pledgeInfo.pledgeTier === 1) {
+  } else if (effectiveTier === 1) {
     donatorBadge.icon = `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg`
     donatorBadge.name = 'Powercord Cutie'
-  } else if (pledgeInfo.donated) {
+  } else if (pledgeInfo?.donated) {
     donatorBadge.icon = 'https://powercord.dev/api/v2/hibiscus/7289da.svg'
     donatorBadge.name = 'Former Powercord Cutie'
   }
@@ -45,16 +50,15 @@ export async function formatUser (user: User, bypassVisibility?: boolean): Promi
       staff: Boolean(user.badges?.staff),
       support: Boolean(user.badges?.support),
       contributor: Boolean(user.badges?.contributor),
-      translator: user.badges?.translator || false, // Array of langs or false
+      translator: Boolean(user.badges?.translator),
       hunter: Boolean(user.badges?.hunter),
       early: Boolean(user.badges?.early),
       custom: formatBadges(user),
     },
-    donatorTier: bypassVisibility ? user.accounts.patreon?.pledgeTier || 0 : void 0,
+    donatorTier: bypassVisibility ? user.cutieStatus?.pledgeTier || 0 : void 0,
     accounts: bypassVisibility
       ? {
         spotify: user.accounts.spotify?.name || void 0,
-        github: user.accounts.github?.name || void 0,
         patreon: user.accounts.patreon?.name || void 0,
       }
       : void 0,
