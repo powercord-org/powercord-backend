@@ -41,18 +41,10 @@ export type User = {
       icon: string | null
       name: string | null
     }
-    guild?: {
-      id: string | null
-      icon: string | null
-      name: string | null
-    }
   }
   cutieStatus?: CutieStatus
   createdAt: Date
   updatedAt?: Date
-
-  /** @deprecated */
-  patronTier?: number
 }
 
 export type UserBanStatus = {
@@ -66,7 +58,10 @@ export type UserBanStatus = {
   events: boolean
 }
 
-export type RestUser = Omit<User, '_id' | 'accounts' | 'createdAt' | 'cutieStatus'> & { id: User['_id'] }
+export type RestUser = Omit<User, '_id' | 'badges' | 'accounts' | 'cutieStatus' | 'createdAt' | 'updatedAt'> & {
+  id: User['_id']
+  badges: Required<Exclude<User['badges'], undefined>>
+}
 
 export type SelfRestUser = RestUser & {
   cutieStatus: CutieStatus

@@ -13,6 +13,11 @@ declare module '*.svg?sprite=cutie' {
   export default function (props: JSX.SVGAttributes): JSX.Element
 }
 
+declare module '*.svg?sprite=badges' {
+  import type { JSX } from 'preact'
+  export default function (props: JSX.SVGAttributes): JSX.Element
+}
+
 declare module '*.svg?file' {
   const asset: string
   export default asset

@@ -28,7 +28,7 @@ import Package from 'feather-icons/dist/icons/package.svg'
 import Plugin from '../../assets/icons/plugin.svg'
 import Theme from '../../assets/icons/brush.svg'
 import Yifi from '../../assets/icons/bulb.svg' // private jokes best jokes alexclickYifi
-import Staff from '../../assets/staff.svg'
+import Staff from '../../assets/badges/staff.svg?sprite=badges'
 import Verified from '../../assets/icons/verified.svg'
 
 import style from './store.module.css'

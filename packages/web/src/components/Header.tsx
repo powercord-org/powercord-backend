@@ -14,7 +14,7 @@ import { Endpoints, Routes } from '../constants'
 import PowercordPlug from '../assets/powercord.svg'
 import PowercordWordmark from '../assets/wordmark.svg'
 import spookycordPlug from '../assets/spookycord.svg?file'
-import Staff from '../assets/staff.svg'
+import Staff from '../assets/badges/staff.svg?sprite=badges'
 
 import style from './header.module.css'
 import sharedStyle from './shared.module.css'

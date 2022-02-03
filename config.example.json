@@ -5,7 +5,8 @@
   "honks": {
     "staffChannel": "",
     "updootChannel": "",
-    "formsChannel": ""
+    "formsChannel": "",
+    "badgesChannel": ""
   },
   "discord": {
     "clientID": "",

@@ -11,9 +11,9 @@ import { Endpoints } from '../../constants'
 
 import style from './avatar.module.css'
 
-type AvatarProps = { user: MinimalUser }
+type AvatarProps = { user: MinimalUser, class?: string }
 
-export function DiscordAvatar ({ user }: AvatarProps) {
+export function DiscordAvatar ({ user, class: className }: AvatarProps) {
   const avatar = user.avatar
     ? Endpoints.USER_AVATAR_DISCORD(user.id, user.avatar)
     : Endpoints.DEFAULT_AVATAR_DISCORD(Number(user.discriminator))
@@ -21,9 +21,22 @@ export function DiscordAvatar ({ user }: AvatarProps) {
   const [ effectiveAvatar, setAvatar ] = useState(avatar)
   const onError = useCallback(() => setAvatar(Endpoints.DEFAULT_AVATAR_DISCORD(Number(user.discriminator))), [])
 
-  return <img src={effectiveAvatar} alt={`${user.username}'s avatar`} onError={onError} className={style.avatar}/>
+  return (
+    <img
+      src={effectiveAvatar}
+      alt={`${user.username}'s avatar`}
+      className={className ? `${style.avatar} ${className}` : style.avatar}
+      onError={onError}
+    />
+  )
 }
 
-export default function Avatar ({ user }: AvatarProps) {
-  return <img src={Endpoints.USER_AVATAR(user.id)} alt={`${user.username}'s avatar`} className={style.avatar}/>
+export default function Avatar ({ user, class: className }: AvatarProps) {
+  return (
+    <img
+      src={Endpoints.USER_AVATAR(user.id)}
+      alt={`${user.username}'s avatar`}
+      className={className ? `${style.avatar} ${className}` : style.avatar}
+    />
+  )
 }

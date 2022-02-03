@@ -4,12 +4,15 @@
  */
 
 import type { JSX } from 'preact'
+import type { User } from './UserContext'
 import { h, Fragment } from 'preact'
 import { useContext, useState, useEffect, useMemo, useCallback } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
 
-import Modal from './util/Modal'
+import Tooltip from './util/Tooltip'
+import Avatar from './util/Avatar'
 import Spinner from './util/Spinner'
+import Modal from './util/Modal'
 
 import UserContext from './UserContext'
 import { Endpoints, Routes } from '../constants'
@@ -22,7 +25,15 @@ import Refresh from 'feather-icons/dist/icons/rotate-cw.svg'
 import AlertCircle from 'feather-icons/dist/icons/alert-circle.svg'
 import PowercordCutieBanner from '../assets/donate/banner.svg?sprite=cutie'
 import Hibiscus from '../assets/hibiscus.svg?sprite=cutie'
-import cutieSvg from '../assets/donate/cutie.svg?file'
+
+import HibiscusMono from '../assets/badges/hibiscus-mono.svg?sprite=cutie'
+import Developer from '../assets/badges/developer.svg?sprite=badges'
+import Support from '../assets/badges/support.svg?sprite=badges'
+import Staff from '../assets/badges/staff.svg?sprite=badges'
+import Contributor from '../assets/badges/contributor.svg?sprite=badges'
+import Translator from '../assets/badges/translator.svg?sprite=badges'
+import Hunter from '../assets/badges/hunter.svg?sprite=badges'
+import Early from '../assets/badges/early.svg?sprite=badges'
 
 import blobkiss from '../assets/donate/blobkiss.png'
 import blobsmilehearts from '../assets/donate/blobsmilehearts.png'
@@ -30,27 +41,6 @@ import blobhug from '../assets/donate/blobhug.png'
 
 import style from './account.module.css'
 import sharedStyle from './shared.module.css'
-
-const includes = [
-  'A custom role in our server, custom badge color',
-  'A custom role in our server, custom badge color, custom profile badge',
-  'A custom role in our server, custom badge color, custom profile badge, custom server badge',
-]
-
-function CutieOld ({ tier }: { tier: number }) {
-  return (
-    <>
-      <div className={style.cutieOld}>
-        <img className={style.cutieLogoOld} src={cutieSvg} alt='Powercord Cutie'/>
-        <div className={style.cutieContentsOld}>
-          <span>Thank you for supporting Powercord! You are a tier {tier} patron.</span>
-          <span>Includes: {includes[tier - 1]}.</span>
-        </div>
-      </div>
-      {/* Soon! <p>You can customize your perks directly within the Discord client, if you have Powercord injected.</p> */}
-    </>
-  )
-}
 
 function AccountOld () {
   useTitle('My Account')
@@ -66,7 +56,6 @@ function AccountOld () {
   return (
     <main>
       <h1>Welcome back, {user.username}#{user.discriminator}</h1>
-      {Boolean(user.patronTier) && <CutieOld tier={user.patronTier!}/>}
       <h3 className={style.headerOld}>Linked Spotify account</h3>
       {typeof user.accounts?.spotify === 'string'
         // @ts-expect-error
@@ -112,7 +101,6 @@ function AccountOld () {
           color='red'
         >
           <div>Are you sure you want to delete your account? This operation is irreversible!</div>
-          {Boolean(user.patronTier) && <p><b>Note:</b> You will lose your tier {user.patronTier} patron perks!</p>}
         </Modal>
       )}
     </main>
@@ -185,20 +173,113 @@ function PowercordCutie () {
   )
 }
 
+function ProfileBadges ({ badges: userBadges }: { badges: User['badges'] }) {
+  return (
+    <Fragment>
+      <Tooltip text={userBadges.custom.name ?? 'Powercord Cutie'} align='center'>
+        {userBadges.custom.icon
+          ? <img src={userBadges.custom.icon} className={style.profileBadge}/>
+          : <HibiscusMono className={style.profileBadge}/>}
+      </Tooltip>
+      {userBadges.developer && (
+        <Tooltip text='Powercord Developer' align='center'>
+          <Developer className={style.profileBadge}/>
+        </Tooltip>
+      )}
+      {userBadges.staff && (
+        <Tooltip text='Powercord Staff' align='center'>
+          <Staff className={style.profileBadge}/>
+        </Tooltip>
+      )}
+      {userBadges.support && (
+        <Tooltip text='Powercord Support' align='center'>
+          <Support className={style.profileBadge}/>
+        </Tooltip>
+      )}
+      {userBadges.contributor && (
+        <Tooltip text='Powercord Contributor' align='center'>
+          <Contributor className={style.profileBadge}/>
+        </Tooltip>
+      )}
+      {userBadges.translator && (
+        <Tooltip text='Powercord Translator' align='center'>
+          <Translator className={style.profileBadge}/>
+        </Tooltip>
+      )}
+      {userBadges.hunter && (
+        <Tooltip text='Powercord Bug Hunter' align='center'>
+          <Hunter className={style.profileBadge}/>
+        </Tooltip>
+      )}
+      {userBadges.early && (
+        <Tooltip text='Powercord Early User' align='center'>
+          <Early className={style.profileBadge}/>
+        </Tooltip>
+      )}
+    </Fragment>
+  )
+}
+
+function PerksPreview ({ onEdit }: { onEdit: () => void }) {
+  const user = useContext(UserContext)!
+  return (
+    <Fragment>
+      <div className={style.profile}>
+        <div className={style.profileBanner}/>
+        <div className={style.profileSection}>
+          <div className={style.profileDecoration}>
+            <Avatar user={user} class={style.profileAvatar}/>
+            <div className={style.profileBadges} style={{ color: `#${user.badges.custom.color || '7289da'}` }}>
+              <ProfileBadges badges={user.badges}/>
+            </div>
+          </div>
+          <div className={style.profileProps}>
+            <span>{user.username}</span>
+            <span className={style.profileDiscriminator}>#{user.discriminator}</span>
+          </div>
+        </div>
+        <div className={style.profileSection}>
+          <h3 className={style.profileHeader}>Roles</h3>
+          <div className={style.profileRoles}>
+            <div className={style.profileRole}>
+              <div className={`${style.profileRoleRound} ${style.profileRoleBlurple}`}/>
+              <span>Powercord Cutie</span>
+            </div>
+            <div className={style.profileRole}>
+              <div className={`${style.profileRoleRound} ${style.profileRolePink}`}/>
+              <span>Tier {user.cutieStatus.pledgeTier} Cutie</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button className={sharedStyle.button} onClick={onEdit}>Edit perks</button>
+    </Fragment>
+  )
+}
+
+function PerksEdit ({ onReturn }: { onReturn: () => void }) {
+  return null
+}
+
 function ManagePerks () {
+  const [ editing, setEditing ] = useState(false)
+
   return (
     <div className={style.cutieContainer}>
-      <h2>Donator perks</h2>
+      <h2>Powercord Cutie perks</h2>
+      {editing
+        ? <PerksEdit onReturn={() => setEditing(false)}/>
+        : <PerksPreview onEdit={() => setEditing(true)}/>}
     </div>
   )
 }
 
 function LinkedAccount ({ platform, icon, account, explainer, refreshEndpoint }: LinkedAccountProps) {
-  const user = useContext(UserContext)
+  const user = useContext(UserContext)!
   const [ refreshing, setRefreshing ] = useState(false)
   const [ refreshError, setRefreshError ] = useState<string | null>(null)
   const refresh = useCallback(async () => {
-    if (!refreshEndpoint || !user) return
+    if (!refreshEndpoint) return
 
     setRefreshing(true)
     setRefreshError(null)
@@ -260,13 +341,7 @@ function LinkedAccount ({ platform, icon, account, explainer, refreshEndpoint }:
 function Account () {
   useTitle('My Account')
   const user = useContext(UserContext)!
-  const [ canDeleteAccount, setCanDeleteAccount ] = useState(true)
   const [ deletingAccount, setDeletingAccount ] = useState(false)
-
-  useEffect(() => {
-    // todo: check if the user can delete their account
-    setCanDeleteAccount(true)
-  }, [ user.id ])
 
   return (
     <main>
@@ -280,27 +355,17 @@ function Account () {
             account={user.accounts.spotify}
             explainer={'Linking your Spotify account gives you an enhanced experience with the Spotify plugin. It\'ll let you add songs to your Liked Songs, add songs to playlists, see private playlists and more.'}
           />
-          {/* import.meta.env.DEV && <LinkedAccount
-            platform='github'
-            icon={GitHub}
-            account={user.accounts.github}
-            explainer={<>
-              Linking your GitHub is required in order to publish works in
-              the <a href={Routes.STORE_PLUGINS}>Powercord Store</a>. If you are a contributor, it will be shown on
-              the <a href={Routes.CONTRIBUTORS}>contributors page</a>.
-            </>}
-          /> */}
-          {import.meta.env.DEV && <LinkedAccount
+          <LinkedAccount
             platform='patreon'
             icon={Patreon}
             account={user.accounts.patreon}
             explainer={'Link your Patreon account to benefit from the Powercord Cutie perks, and manage them from here.'}
             refreshEndpoint={Endpoints.USER_REFRESH_PLEDGE}
-          />}
+          />
 
           <hr/>
           <h2>Delete my account</h2>
-          {canDeleteAccount
+          {user.canDeleteAccount
             ? <Fragment>
               <p>
                 You can choose to permanently delete your Powercord account. Be careful, this action is irreversible and
@@ -336,7 +401,7 @@ function Account () {
               color='red'
             >
               <div>Are you sure you want to delete your account? This operation is irreversible!</div>
-              {Boolean(user.patronTier) && <p><b>Note:</b> You will lose your tier {user.patronTier} patron perks!</p>}
+              {user.cutieStatus.donated && <p><b>Note:</b> You will lose access to your Powercord Cutie perks as well.</p>}
             </Modal>
           )}
         </div>
