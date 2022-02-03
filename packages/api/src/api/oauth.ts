@@ -114,8 +114,7 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
 
     if (request.query.code || request.query.error) {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      callback.call(this, request, reply)
-      return
+      return callback.call(this, request, reply)
     }
   }
 
@@ -238,7 +237,7 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<{ Tokenize
   }
 
   if (reply.context.config.isRestricted && !request.user?.badges?.staff) {
-    reply.redirect('/me')
+    reply.redirect('/')
     return
   }
 

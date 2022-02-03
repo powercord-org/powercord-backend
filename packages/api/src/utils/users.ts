@@ -42,9 +42,9 @@ function formatBadges (user: User): Exclude<CustomBadges, undefined> {
 export async function formatUser (user: User, bypassVisibility?: boolean): Promise<RestUser | SelfRestUser> {
   return {
     id: user._id,
-    username: user.username,
-    discriminator: user.discriminator,
-    avatar: user.avatar,
+    username: bypassVisibility ? user.username : 'Herobrine',
+    discriminator: bypassVisibility ? user.discriminator : '0000',
+    avatar: bypassVisibility ? user.avatar : null,
     badges: {
       developer: Boolean(user.badges?.developer),
       staff: Boolean(user.badges?.staff),

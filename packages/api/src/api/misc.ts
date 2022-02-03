@@ -79,9 +79,9 @@ async function getDiscordAvatar (user: User, update: (user: DiscordUser) => void
 // This route is very restricted to prevent abuse.
 // Only avatar of people shown on /contributors & authenticated user can be fetched.
 async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequest>, reply: FastifyReply): Promise<Buffer | void> {
-  let user = request.user!
+  let user = request.user
   if (request.params.id !== request.user?._id.toString()) {
-    const dbUser = await this.mongo.db!.collection<User>('users').findOne({
+    user = await this.mongo.db!.collection<User>('users').findOne({
       _id: request.params.id,
       $or: [
         { 'badges.developer': true },
@@ -90,16 +90,15 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
         { 'badges.contributor': true },
       ],
     })
+  }
 
-    user = dbUser!
-    if (!user) {
-      reply.code(422).send()
-      return
-    }
+  if (!user) {
+    reply.code(422).send()
+    return
   }
 
   const effectiveAvatarId = user.avatar ?? user.discriminator
-  const etag = `W/"${createHash('sha1').update(config.secret).update(user._id).update(effectiveAvatarId).digest('base64')}"`
+  const etag = `W/"${createHash('sha256').update(config.secret).update(user._id).update(effectiveAvatarId).digest('base64url')}"`
 
   reply.type('image/png')
   reply.header('cache-control', 'public, max-age=86400')
@@ -113,9 +112,9 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
     { _id: newUser.id },
     {
       $set: {
-        username: user.username,
-        discriminator: user.discriminator,
-        avatar: user.avatar,
+        username: newUser.username,
+        discriminator: newUser.discriminator,
+        avatar: newUser.avatar,
         updatedAt: new Date(),
       },
     }

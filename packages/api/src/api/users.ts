@@ -9,8 +9,8 @@ import { createHash } from 'crypto'
 import config from '@powercord/shared/config'
 import settingsModule from './settings.js'
 import { refreshDonatorState } from '../utils/patreon.js'
+import { refreshAuthTokens, toMongoFields } from '../utils/oauth.js'
 import { formatUser } from '../utils/users.js'
-import { fetchTokens } from '../utils/oauth.js'
 
 const DATE_ZERO = new Date(0)
 
@@ -27,18 +27,18 @@ async function sendUser (request: FastifyRequest, reply: FastifyReply, user: Use
   return formatUser(user, self)
 }
 
-async function getSelf (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply): Promise<RestUser | void> {
-  await refreshDonatorState(this.mongo.client, request.user!)
-  return sendUser(request, reply, request.user!, true)
-}
-
 /** @deprecated */
 async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
   const user = await this.mongo.db!.collection<User>('users').findOne({ _id: request.params.id })
-  if (!user) return reply.callNotFound()
+    || { _id: request.params.id, username: 'Herobrine', discriminator: '0001', avatar: null, createdAt: DATE_ZERO, accounts: <any> {} }
 
   await refreshDonatorState(this.mongo.client, user)
   return sendUser(request, reply, user)
+}
+
+async function getSelf (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply): Promise<RestUser | void> {
+  await refreshDonatorState(this.mongo.client, request.user!)
+  return sendUser(request, reply, request.user!, true)
 }
 
 async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<unknown> {
@@ -48,31 +48,13 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
   const users = this.mongo.db!.collection<User>('users')
   if (Date.now() >= spotify.expiresAt) {
     try {
-      const tokens = await fetchTokens(
-        'https://accounts.spotify.com/api/token',
-        config.spotify.clientID,
-        config.spotify.clientSecret,
-        '',
-        'refresh_token',
-        spotify.refreshToken
-      )
-
-      if (!tokens.access_token) {
-        await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 }, $set: { updatedAt: new Date() } })
-        return { token: null, revoked: 'ACCESS_DENIED' }
-      }
-
-      const updatedFields: Record<string, unknown> = {
-        'accounts.spotify.accessToken': tokens.access_token,
-        'accounts.spotify.refreshToken': tokens.refresh_token || spotify.refreshToken,
-        'accounts.spotify.expiresAt': Date.now() + (tokens.expires_in * 1000),
-        updatedAt: new Date(),
-      }
-
+      const tokens = await refreshAuthTokens('spotify', spotify.refreshToken)
+      const updatedFields: Record<string, unknown> = { ...toMongoFields(tokens, 'spotify'), updatedAt: new Date() }
       await users.updateOne({ _id: request.user!._id }, { $set: updatedFields })
-      return { token: tokens.access_token }
+      return { token: tokens.accessToken }
     } catch {
-      // todo: analyze the error? unlink the account?
+      // todo: catch 5xx errors from spotify and report them instead
+      await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 }, $set: { updatedAt: new Date() } })
       return { token: null, revoked: 'ACCESS_DENIED' }
     }
   }
@@ -97,6 +79,7 @@ async function refreshPledge (this: FastifyInstance, request: FastifyRequest<{ T
   await refreshDonatorState(this.mongo.client, request.user!, true)
   reply.send(request.user!.cutieStatus || null)
 }
+
 
 export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get<{ TokenizeUser: User }>('/@me', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSelf)
