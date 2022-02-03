@@ -17,7 +17,7 @@ import AuthBoundary from './util/AuthBoundary'
 import { SoonRoute } from './util/Soon'
 
 import Homepage from './Homepage'
-import Account from './Account'
+import Account from './account/Account'
 import Contributors from './Contributors'
 import Stats from './stats/Community'
 import Branding from './Branding'

@@ -1,0 +1,136 @@
+/*
+ * Copyright (c) 2018-2022 Powercord Developers
+ * Licensed under the Open Software License version 3.0
+ */
+
+.wrapper {
+  width: calc(100% + 4em);
+  margin: 0 -2em;
+}
+
+.container {
+  width: 440px;
+  margin: 0 auto;
+  border-radius: 5px;
+  flex: 1 0;
+}
+
+.header {
+  position: relative;
+}
+
+.banner {
+  width: 532px;
+  margin-left: -46px;
+  position: relative;
+  z-index: 1;
+}
+
+.hibiscus-left {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  bottom: 18px;
+  left: calc(37% - 16px);
+}
+
+.hibiscus-center {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  bottom: 14px;
+  left: calc(50% - 20px);
+}
+
+.hibiscus-right {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  bottom: 18px;
+  left: calc(63% - 16px);
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--background-secondary);
+}
+
+.body {
+  margin-top: -4px;
+  padding: 0 16px 16px;
+  background-color: var(--background-secondary);
+}
+
+.title {
+  text-align: center;
+  font-size: 1.3em;
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.1em;
+  margin: 0 0 24px;
+}
+
+.subtitle:before, .subtitle:after {
+  content: '';
+  background-color: var(--background-light);
+  margin: 0 10px;
+  height: 1px;
+  flex: 1;
+}
+
+.tier {
+  display: flex;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  margin-top: 4px;
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.price {
+  font-size: 1.1em;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.description {
+  margin: 0;
+  font-size: 1em;
+}
+
+.description b {
+  font-weight: 600;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--background-light);
+  padding: 16px 8px 4px;
+  width: 100%;
+}
+
+@media screen and (min-width: 1090px) {
+  .wrapper {
+    width: calc(440px + 16px + 16px);
+    padding: 0 48px;
+    margin: 0;
+  }
+}
