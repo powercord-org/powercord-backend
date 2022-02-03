@@ -6,7 +6,7 @@
     "staffChannel": "",
     "updootChannel": "",
     "formsChannel": "",
-    "badgesChannel": ""
+    "perksChannel": { "id": "", "token": "" }
   },
   "discord": {
     "clientID": "",

@@ -6,11 +6,40 @@
 import type { User, CutieStatus } from '@powercord/types/users'
 import type { MongoClient } from 'mongodb'
 import type { OAuthToken } from './oauth.js'
+import config from '@powercord/shared/config'
+import { webhooks, members } from 'crapcord/api'
 import { fetch } from 'undici'
 import { refreshAuthTokens, toMongoFields } from './oauth.js'
 
 const DONATION_TIERS = [ 100, 500, 1000 ]
 const GRACE_PERIOD = 5 * 24 * 3600e3 // 5 days
+
+export async function notifyStateChange (user: User, change: 'pledge' | 'perks') {
+  // Update role - todo: keep track of custom role
+  if (user.cutieStatus?.pledgeTier) {
+    members.addGuildMemberRole(config.discord.guildId, user._id, config.discord.roles.donator, 'Pledge status updated', config.discord.ccBotToken)
+  } else {
+    members.removeGuildMemberRole(config.discord.guildId, user._id, config.discord.roles.donator, 'Pledge status updated', config.discord.ccBotToken)
+  }
+
+  // Dispatch info
+  webhooks.executeWebhook(config.honks.perksChannel, {
+    embeds: [
+      change === 'pledge'
+        ? {
+          title: 'Pledge status update',
+          description: `${user.username}#${user.discriminator} (<@${user._id}>) is now tier ${user.cutieStatus?.pledgeTier ?? 0}`,
+        }
+        : {
+          title: 'Perks update',
+          description: `${user.username}#${user.discriminator} (<@${user._id}>, tier ${user.cutieStatus?.pledgeTier ?? 0}) updated their perks:\n`
+            + ` - Color: ${user.badges?.custom?.color ?? '`7289da`'}`
+            + ` - Badge: ${user.badges?.custom?.icon ?? '`default`'}`
+            + ` - Description: ${user.badges?.custom?.name ?? '`default`'}`,
+        },
+    ],
+  }).catch(() => void 0)
+}
 
 export async function fetchPledgeStatus (token: OAuthToken): Promise<CutieStatus> {
   const query = new URLSearchParams()
@@ -61,11 +90,14 @@ export async function updateDonatorState (mongo: MongoClient, user: User, manual
   if (!patreonAccount) return
 
   const [ cutieStatus, userUpdate, mongoUpdate ] = await prepareUpdateData(patreonAccount)
+  const statusChange = user.cutieStatus?.pledgeTier !== cutieStatus.pledgeTier
   if (manual) mongoUpdate['cutieStatus.lastManualRefresh'] = Date.now()
 
   await mongo.db().collection<User>('users').updateOne({ _id: user._id }, { $set: mongoUpdate })
   Object.assign(patreonAccount, userUpdate)
   Object.assign(user, { cutieStatus: cutieStatus })
+
+  if (statusChange) notifyStateChange(user, 'pledge')
 }
 
 // The queue avoids tripping multiple updates if a query arrives during an ongoing update

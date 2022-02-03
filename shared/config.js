@@ -23,4 +23,7 @@ if (!cfgFile) {
 }
 
 const blob = readFileSync(cfgFile, 'utf8')
-export default JSON.parse(blob)
+const cfg = JSON.parse(blob)
+
+Object.defineProperty(cfg.discord, 'ccBotToken', { get: () => ({ type: 'Bot', token: cfg.discord.botToken }) })
+export default cfg
