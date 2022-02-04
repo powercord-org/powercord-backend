@@ -46,6 +46,8 @@
 .linked-account-header {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
   flex: 1;
 }
 
@@ -72,7 +74,6 @@
 }
 
 .perks-management {
-  margin-left: 48px;
   width: 100%;
 }
 
@@ -120,5 +121,6 @@
 
   .perks-management {
     width: 420px;
+    margin-left: 48px;
   }
 }
