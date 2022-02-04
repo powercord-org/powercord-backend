@@ -307,7 +307,6 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     fastify.register(oauthPlugin, {
       prefix: '/patreon',
       data: {
-        isRestricted: true,
         platform: 'patreon',
         scopes: [ 'identity', 'identity[email]' ],
       },

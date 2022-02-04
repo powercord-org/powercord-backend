@@ -5,7 +5,7 @@
 
 import type { JSX } from 'preact'
 import { h, Fragment } from 'preact'
-import { useContext, useState, useEffect, useCallback, useMemo } from 'preact/hooks'
+import { useContext, useState, useCallback, useMemo } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
 
 import PowercordCutie from './Cutie'
@@ -26,73 +26,6 @@ import AlertCircle from 'feather-icons/dist/icons/alert-circle.svg'
 
 import style from './account.module.css'
 import sharedStyle from '../shared.module.css'
-
-function AccountOld () {
-  useTitle('My Account')
-  const user = useContext(UserContext)!
-  const [ canDeleteAccount, setCanDeleteAccount ] = useState(true)
-  const [ deletingAccount, setDeletingAccount ] = useState(false)
-
-  useEffect(() => {
-    // todo: check if the user can delete their account (or return in /@me?)
-    setCanDeleteAccount(true)
-  }, [ user.id ])
-
-  return (
-    <main>
-      <h1>Welcome back, {user.username}#{user.discriminator}</h1>
-      <h3 className={style.headerOld}>Linked Spotify account</h3>
-      {typeof user.accounts?.spotify === 'string'
-        // @ts-expect-error
-        ? <p>{user.accounts.spotify} - <a href={Endpoints.UNLINK_ACCOUNT('spotify')} native>Unlink</a></p>
-        // @ts-expect-error
-        : <p>No account linked. <a href={Endpoints.LINK_ACCOUNT('spotify')} native>Link it now!</a></p>}
-      <p>
-        Linking your Spotify account gives you an enhanced experience with the Spotify plugin. It'll let you add songs
-        to your Liked Songs, add songs to playlists, see private playlists and more.
-      </p>
-
-      <h3 className={style.headerOld}>Delete my Powercord account</h3>
-      {canDeleteAccount
-        ? <Fragment>
-          <p>
-            You can choose to permanently delete your Powercord account. This action is irreversible and will be in effect
-            immediately. We'll drop any data we have about you, and you'll no longer be able to benefit from features
-            requiring a Powercord account (such as enhanced Spotify plugin, settings sync, and more).
-          </p>
-          <p>
-            <button className={`${sharedStyle.buttonLink} ${sharedStyle.red}`} onClick={() => setDeletingAccount(true)}>
-              Delete my account
-            </button>
-          </p>
-        </Fragment>
-        : <Fragment>
-          <p>
-            You cannot delete your account as you still have items in the Store. You have to either transfer them to
-            someone else, or mark them as deprecated in order to delete your account.
-          </p>
-          <p>
-            <a href={Routes.STORE_MANAGE}>Go to the Powercord Store</a>
-          </p>
-        </Fragment>}
-
-      {deletingAccount && (
-        <Modal
-          title='Delete my account'
-          onClose={() => setDeletingAccount(false)}
-          onConfirm={() => (location.pathname = Endpoints.YEET_ACCOUNT)}
-          closeText='Cancel'
-          confirmText='Delete'
-          color='red'
-        >
-          <div>Are you sure you want to delete your account? This operation is irreversible!</div>
-        </Modal>
-      )}
-    </main>
-  )
-}
-
-// ----
 
 type LinkedAccountProps = {
   platform: string
@@ -262,7 +195,7 @@ function LinkedAccount ({ platform, icon, account, explainer, refreshEndpoint }:
   )
 }
 
-function Account () {
+export default function Account () {
   useTitle('My Account')
   const user = useContext(UserContext)!
   const [ deletingAccount, setDeletingAccount ] = useState(false)
@@ -333,10 +266,4 @@ function Account () {
       </div>
     </main>
   )
-}
-
-export default function AccountWrapper () {
-  return import.meta.env.DEV
-    ? <Account/>
-    : <AccountOld/>
 }
