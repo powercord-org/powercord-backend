@@ -16,10 +16,12 @@ const GRACE_PERIOD = 5 * 24 * 3600e3 // 5 days
 
 export async function notifyStateChange (user: User, change: 'pledge' | 'perks') {
   // Update role - todo: keep track of custom role
-  if (user.cutieStatus?.pledgeTier) {
-    members.addGuildMemberRole(config.discord.guildId, user._id, config.discord.roles.donator, 'Pledge status updated', config.discord.ccBotToken)
-  } else {
-    members.removeGuildMemberRole(config.discord.guildId, user._id, config.discord.roles.donator, 'Pledge status updated', config.discord.ccBotToken)
+  if (change === 'pledge') {
+    if (user.cutieStatus?.pledgeTier) {
+      members.addGuildMemberRole(config.discord.guildId, user._id, config.discord.roles.donator, 'Pledge status updated', config.discord.ccBotToken)
+    } else {
+      members.removeGuildMemberRole(config.discord.guildId, user._id, config.discord.roles.donator, 'Pledge status updated', config.discord.ccBotToken)
+    }
   }
 
   // Dispatch info
