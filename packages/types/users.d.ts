@@ -65,9 +65,10 @@ export type UserBanStatus = {
   events: boolean
 }
 
-export type RestUser = Omit<User, '_id' | 'badges' | 'accounts' | 'cutieStatus' | 'createdAt' | 'updatedAt'> & {
+export type RestUser = Omit<User, '_id' | 'badges' | 'accounts' | 'cutieStatus' | 'cutiePerks' | 'createdAt' | 'updatedAt'> & {
   id: User['_id']
-  badges: Required<Exclude<User['badges'], undefined>>
+  badges: Required<Exclude<User['badges'], undefined>>,
+  cutiePerks: Exclude<User['cutiePerks'], undefined>,
 }
 
 export type SelfRestUser = RestUser & {

@@ -8,6 +8,7 @@ import type { User, RestUser, CutiePerks } from '@powercord/types/users'
 import { createHash } from 'crypto'
 import config from '@powercord/shared/config'
 import settingsModule from './settings.js'
+import { getEffectivePerks } from './badges.js'
 import { notifyStateChange, refreshDonatorState } from '../utils/patreon.js'
 import { refreshAuthTokens, toMongoFields } from '../utils/oauth.js'
 import { formatUser } from '../utils/users.js'
@@ -30,9 +31,9 @@ const patchSelfSchema = {
         type: 'object',
         additionalProperties: false,
         properties: {
-          color: { type: 'string', pattern: '^[0-9a-f]{3}(?:[0-9a-f]{3})?$' },
-          badge: { type: 'string', minLength: 8, maxLength: 128 },
-          title: { type: 'string', minLength: 2, maxLength: 32 },
+          color: { type: [ 'string', 'null' ], pattern: '^[0-9a-f]{3}(?:[0-9a-f]{3})?$' },
+          badge: { type: [ 'string', 'null' ], minLength: 8, maxLength: 128 },
+          title: { type: [ 'string', 'null' ], minLength: 2, maxLength: 32 },
         },
       },
     },
@@ -68,38 +69,39 @@ async function getSelf (this: FastifyInstance, request: FastifyRequest<{ Tokeniz
 
 // this endpoint can only be used to modify perks, but implements checks as a generic update to follow REST semantics
 async function patchSelf (this: FastifyInstance, request: FastifyRequest<PatchSelfRequest>, reply: FastifyReply) {
+  const update: Record<string, any> = { updatedAt: new Date() }
+
   if ('cutiePerks' in request.body) {
-    const pledgeTier = request.user!.cutieStatus?.pledgeTier ?? 0
+    const pledgeTier = (request.user!.cutieStatus?.perksExpireAt ?? 0) > Date.now() ? request.user!.cutieStatus?.pledgeTier ?? 0 : 0
     if (('color' in request.body.cutiePerks && !pledgeTier) || (('badge' in request.body.cutiePerks || 'title' in request.body.cutiePerks) && pledgeTier < 2)) {
       reply.code(402).send({ error: 402, message: 'You must be a donator of a higher tier to modify these perks.' })
       return
     }
-  }
 
-  // Validate URL - todo: file upload?
-  if (request.body.cutiePerks.badge) {
-    try {
-      const icon = new URL(request.body.cutiePerks.badge)
-      if (!ALLOWED_HOSTS.includes(icon.hostname)) {
-        reply.code(400).send({ error: 400, message: 'Icon URL is not from a whitelisted source. Allowed URLs: *.discord.com, *.discordapp.com, media.discordapp.net' })
+    // Validate URL - todo: file upload?
+    if (request.body.cutiePerks.badge) {
+      try {
+        const icon = new URL(request.body.cutiePerks.badge)
+        if (!ALLOWED_HOSTS.includes(icon.hostname)) {
+          reply.code(400).send({ error: 400, message: 'Icon URL is not from a whitelisted source. Allowed URLs: *.discord.com, *.discordapp.com, media.discordapp.net' })
+          return
+        }
+
+        icon.protocol = 'https' // Ensure protocol is https
+        request.body.cutiePerks.badge = icon.toString()
+      } catch {
+        reply.code(400).send({ error: 400, message: 'Icon URL is malformed.' })
         return
       }
-
-      icon.protocol = 'https' // Ensure protocol is https
-      request.body.cutiePerks.badge = icon.toString()
-    } catch {
-      reply.code(400).send({ error: 400, message: 'Icon URL is malformed.' })
-      return
     }
+
+    if ('color' in request.body.cutiePerks) update['cutiePerks.color'] = request.body.cutiePerks.color
+    if ('badge' in request.body.cutiePerks) update['cutiePerks.badge'] = request.body.cutiePerks.badge
+    if ('title' in request.body.cutiePerks) update['cutiePerks.title'] = request.body.cutiePerks.title
   }
 
-  const update: Record<string, any> = {}
-  if (request.body.cutiePerks.color) update['cutiePerks.color'] = request.body.cutiePerks.color
-  if (request.body.cutiePerks.badge) update['cutiePerks.badge'] = request.body.cutiePerks.badge
-  if (request.body.cutiePerks.title) update['cutiePerks.title'] = request.body.cutiePerks.title
-
   const newUser = await this.mongo.db!.collection<User>('users').findOneAndUpdate({ _id: request.user!._id }, { $set: update }, { returnDocument: 'after' })
-  reply.send({ cutiePerks: newUser.value?.cutiePerks })
+  reply.send({ cutiePerks: getEffectivePerks(newUser.value) })
   notifyStateChange(newUser.value!, 'perks')
 }
 
@@ -144,7 +146,6 @@ async function refreshPledge (this: FastifyInstance, request: FastifyRequest<{ T
 
 export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get<{ TokenizeUser: User }>('/@me', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSelf)
-
   fastify.get<{ TokenizeUser: User }>('/@me/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSpotifyToken)
 
   if (!fastify.prefix.startsWith('/v3')) {

@@ -5,13 +5,14 @@
 
 import type { JSX } from 'preact'
 import { h, Fragment } from 'preact'
-import { useContext, useState, useEffect, useCallback } from 'preact/hooks'
+import { useContext, useState, useEffect, useCallback, useMemo } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
 
 import PowercordCutie from './Cutie'
 import Profile from './Profile'
 import Spinner from '../util/Spinner'
 import Modal from '../util/Modal'
+import { TextField } from '../util/Form'
 
 import UserContext from '../UserContext'
 import { Endpoints, Routes } from '../../constants'
@@ -102,7 +103,85 @@ type LinkedAccountProps = {
 }
 
 function PerksEdit ({ onReturn }: { onReturn: () => void }) {
-  return null
+  const user = useContext(UserContext)!
+  const [ submitting, setSubmitting ] = useState(false)
+  const [ error, setError ] = useState<string | undefined>()
+
+  const originalCutiePerks = useMemo(() => ({
+    color: user.cutiePerks.color || '',
+    badge: user.cutiePerks.badge === 'default' ? '' : user.cutiePerks.badge || '',
+    title: user.cutiePerks.title || 'Powercord Cutie'
+  }), [])
+
+  const cutiePerks = useMemo(() => ({ ...originalCutiePerks }), [])
+  const onSubmit = useCallback(async (e: JSX.TargetedEvent<HTMLFormElement, Event>) => {
+    e.preventDefault()
+    const data = new FormData(e.currentTarget)
+    // Memoize new values
+    cutiePerks.color = data.get('color') as string || ''
+    cutiePerks.badge = data.get('badge') as string || ''
+    cutiePerks.title = data.get('title') as string || 'Powercord Cutie'
+
+    if (originalCutiePerks.color === cutiePerks.color && originalCutiePerks.badge === cutiePerks.badge && originalCutiePerks.title === cutiePerks.title) {
+      onReturn()
+      return
+    }
+
+    setError(void 0)
+    setSubmitting(true)
+    const res = await fetch(Endpoints.USER_SELF, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        cutiePerks: {
+          color: cutiePerks.color || null,
+          badge: user.cutieStatus.pledgeTier > 1 ? cutiePerks.badge || null : void 0,
+          title: user.cutieStatus.pledgeTier > 1 ? cutiePerks.title || null : void 0,
+        }
+      })
+    })
+
+    const body = await res.json()
+    if (!res.ok) {
+      setError(body.message)
+      setSubmitting(false)
+      return
+    }
+
+    user.patch(body)
+    onReturn()
+  }, [ originalCutiePerks, cutiePerks, user ])
+
+  return (
+    <form onSubmit={onSubmit}>
+      {error && <div className={style.perksManagementError}>
+        <AlertCircle/>
+        <span>{error}</span>
+      </div>}
+      <TextField
+        name='color'
+        label='Badge Color'
+        note={'Color of your Powercord badges, in hex (without the #). Has no effect if you use a custom icon and you don\'t have other badges. Leave blank for default blurple.'}
+        value={cutiePerks.color}
+      />
+      {user.cutieStatus.pledgeTier > 1 && <TextField
+        name='badge'
+        label='Badge Icon'
+        note={'Icon to set as your custom badge. URL must be from Discord (no external links). Leave blank for the colored hibiscus.'}
+        value={cutiePerks.badge}
+      />}
+      {user.cutieStatus.pledgeTier > 1 && <TextField
+        name='title'
+        label='Badge Title'
+        note={'Tooltip text showing when people hover your badge. Leave blank for default text.'}
+        value={cutiePerks.title}
+      />}
+
+      <button className={sharedStyle.button} disabled={submitting} type='submit'>
+        {submitting ? <Spinner balls/> : 'Save perks'}
+      </button>
+    </form>
+  )
 }
 
 function ManagePerks () {

@@ -12,21 +12,20 @@ const ENFORCE_LINKING = new Date('2022-03-01').getTime()
 const VIRTUAL_STATUS = { donated: false, pledgeTier: 69, perksExpireAt: Infinity }
 
 function formatBadges (user: User): Exclude<CustomBadges, undefined> {
-  const badges = user.badges?.custom
   const pledgeInfo = user.cutieStatus ?? (ENFORCE_LINKING > Date.now() ? VIRTUAL_STATUS : null)
   const effectiveTier = pledgeInfo && pledgeInfo.perksExpireAt > Date.now() ? pledgeInfo.pledgeTier : 0
 
   const isLegit = effectiveTier !== VIRTUAL_STATUS.pledgeTier
-  const appliedColor = badges?.color ?? '7289da'
+  const appliedColor = user.cutiePerks?.color ?? '7289da'
   const donatorBadge: CustomBadges = {
-    color: effectiveTier >= 1 ? badges?.color || null : null,
+    color: effectiveTier >= 1 ? user.cutiePerks?.color || null : null,
     icon: null,
     name: null,
   }
 
   if (effectiveTier >= 2) {
-    donatorBadge.icon = badges?.icon || (isLegit ? `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg` : null)
-    donatorBadge.name = badges?.name || (isLegit ? 'Powercord Cutie' : null)
+    donatorBadge.icon = user.cutiePerks?.badge || (isLegit ? `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg` : null)
+    donatorBadge.name = user.cutiePerks?.title || (isLegit ? 'Powercord Cutie' : null)
   } else if (effectiveTier === 1) {
     donatorBadge.icon = `https://powercord.dev/api/v2/hibiscus/${appliedColor}.svg`
     donatorBadge.name = 'Powercord Cutie'
@@ -40,6 +39,7 @@ function formatBadges (user: User): Exclude<CustomBadges, undefined> {
 
 /** @deprecated */
 export async function formatUser (user: User, bypassVisibility?: boolean): Promise<RestUser | SelfRestUser> {
+  const customBadges = formatBadges(user)
   return {
     id: user._id,
     username: bypassVisibility ? user.username : 'Herobrine',
@@ -53,14 +53,19 @@ export async function formatUser (user: User, bypassVisibility?: boolean): Promi
       translator: Boolean(user.badges?.translator),
       hunter: Boolean(user.badges?.hunter),
       early: Boolean(user.badges?.early),
-      custom: formatBadges(user),
+      custom: customBadges, // Legacy
+    },
+    cutiePerks: {
+      color: customBadges.color,
+      badge: customBadges.icon?.startsWith('https://powercord.dev/api/v2/hibiscus') ? 'default' : customBadges.icon,
+      title: customBadges.name,
     },
     // todo: bind logic
     canDeleteAccount: bypassVisibility ? true : void 0,
     cutieStatus: bypassVisibility
       ? {
         donated: user.cutieStatus?.donated ?? false,
-        pledgeTier: user.cutieStatus?.pledgeTier ?? 0,
+        pledgeTier: (user.cutieStatus?.perksExpireAt ?? 0) > Date.now() ? user.cutieStatus?.pledgeTier ?? 0 : 0,
         perksExpireAt: user.cutieStatus?.perksExpireAt ?? 0,
       }
       : void 0,

@@ -4,13 +4,43 @@
  */
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
-import type { User } from '@powercord/types/users'
+import type { CutiePerks, User } from '@powercord/types/users'
 import { createHash } from 'crypto'
 import config from '@powercord/shared/config'
 import { refreshDonatorState } from '../utils/patreon.js'
 
 type Badge = { _id: string, name: string, icon: string }
 type RestBadge = Omit<Badge, '_id'>
+
+export function getEffectivePerks (user: User | null): CutiePerks {
+  const cutiePerks: CutiePerks = {
+    color: null,
+    badge: null,
+    title: null,
+  }
+
+  if (!user) return cutiePerks
+
+  const donated = user.cutieStatus?.donated ?? false
+  const currentTier = (user.cutieStatus?.perksExpireAt ?? 0) > Date.now() ? user.cutieStatus?.pledgeTier ?? 0 : 0
+
+  if (donated) {
+    cutiePerks.badge = 'default'
+    cutiePerks.title = 'Former Powercord Cutie'
+  }
+
+  if (currentTier >= 1) {
+    cutiePerks.color = user.cutiePerks?.color ?? null
+    cutiePerks.title = 'Powercord Cutie'
+  }
+
+  if (currentTier >= 2) {
+    if (user.cutiePerks?.badge) cutiePerks.badge = user.cutiePerks.badge
+    if (user.cutiePerks?.title) cutiePerks.title = user.cutiePerks.title
+  }
+
+  return cutiePerks
+}
 
 async function getGuildBadges (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) {
   // todo: revise storage method and check donator status of badge manager
@@ -45,21 +75,7 @@ async function getUserBadges (this: FastifyInstance, request: FastifyRequest<{ P
   }
 
   reply.header('etag', etag)
-  const donated = user?.cutieStatus?.donated ?? false
-  const currentTier = (user?.cutieStatus?.perksExpireAt ?? 0) > Date.now() ? user?.cutieStatus?.pledgeTier ?? 0 : 0
   const badges = user?.badges ?? {}
-
-  const donatorBadge: { icon: string | null, text: string | null } = { icon: null, text: null }
-  if (currentTier >= 2 || badges.staff) {
-    donatorBadge.icon = badges.custom?.icon || 'default'
-    donatorBadge.text = badges.custom?.name || 'Powercord Cutie'
-  } else if (currentTier === 1) {
-    donatorBadge.icon = 'default'
-    donatorBadge.text = 'Powercord Cutie'
-  } else if (donated) {
-    donatorBadge.icon = 'default'
-    donatorBadge.text = 'Former Powercord Cutie'
-  }
 
   return {
     developer: Boolean(badges.developer),
@@ -69,11 +85,8 @@ async function getUserBadges (this: FastifyInstance, request: FastifyRequest<{ P
     translator: Boolean(badges.translator),
     hunter: Boolean(badges.hunter),
     early: Boolean(badges.early),
-    properties: {
-      badgeColors: currentTier < 1 ? null : badges.custom?.color || null,
-      donatorBadge: donatorBadge,
-      languages: [],
-    },
+    properties: { languages: [] },
+    cutiePerks: getEffectivePerks(user),
   }
 }
 

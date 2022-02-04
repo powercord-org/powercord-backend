@@ -116,23 +116,33 @@
   opacity: 0.8;
 }
 
-.linked-account-error {
+.perks-management {
+  margin-left: 48px;
+  width: 100%;
+}
+
+.linked-account-error, .perks-management-error {
   display: flex;
   align-items: center;
+  color: var(--red);
   margin-top: 8px;
   gap: 8px;
+}
 
-  color: var(--red);
+.linked-account-error {
   font-size: 0.9em;
 }
 
 .linked-account-error svg {
   width: 16px;
   height: 16px;
+  flex-shrink: 0;
 }
 
-.perks-management {
-  margin-left: 48px;
+.perks-management-error svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
 .separator {
@@ -151,5 +161,9 @@
 
   .columns {
     display: flex;
+  }
+
+  .perks-management {
+    width: 420px;
   }
 }

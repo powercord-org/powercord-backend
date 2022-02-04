@@ -27,12 +27,14 @@ type ProfileProps = {
   onEdit: () => void
 }
 
-function ProfileBadges ({ badges: userBadges }: { badges: User['badges'] }) {
+type ProfileBadgesProps = Pick<User, 'badges' | 'cutiePerks'>
+
+function ProfileBadges ({ badges: userBadges, cutiePerks }: ProfileBadgesProps) {
   return (
-    <div className={style.badges} style={{ color: `#${userBadges.custom.color || '7289da'}` }}>
-      <Tooltip text={userBadges.custom.name ?? 'Powercord Cutie'} align='center'>
-        {userBadges.custom.icon
-          ? <img src={userBadges.custom.icon} className={style.badge}/>
+    <div className={style.badges} style={{ color: `#${cutiePerks.color || '7289da'}` }}>
+      <Tooltip text={cutiePerks.title ?? 'Powercord Cutie'} align='center'>
+        {cutiePerks.badge && cutiePerks.badge !== 'default'
+          ? <img src={cutiePerks.badge} className={style.badge}/>
           : <HibiscusMono className={style.badge}/>}
       </Tooltip>
       {userBadges.developer && (
@@ -82,7 +84,7 @@ export default function Profile ({ user, onEdit }: ProfileProps) {
         <div className={style.section}>
           <div className={style.decorations}>
             <Avatar user={user} class={style.avatar}/>
-            <ProfileBadges badges={user.badges}/>
+            <ProfileBadges badges={user.badges} cutiePerks={user.cutiePerks}/>
           </div>
           <div className={style.props}>
             <span>{user.username}</span>
