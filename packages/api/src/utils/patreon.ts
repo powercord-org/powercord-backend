@@ -11,7 +11,7 @@ import { webhooks, members } from 'crapcord/api'
 import { fetch } from 'undici'
 import { refreshAuthTokens, toMongoFields } from './oauth.js'
 
-const DONATION_TIERS = [ 100, 500, 1000 ]
+const DONATION_TIERS = [ 100, 500, 1000, Infinity ]
 const GRACE_PERIOD = 5 * 24 * 3600e3 // 5 days
 
 export async function notifyStateChange (user: User, change: 'pledge' | 'perks') {
