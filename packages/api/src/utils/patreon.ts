@@ -19,8 +19,10 @@ export async function notifyStateChange (user: User, change: 'pledge' | 'perks')
   if (change === 'pledge') {
     if (user.cutieStatus?.pledgeTier) {
       members.addGuildMemberRole(config.discord.guildId, user._id, config.discord.roles.donator, 'Pledge status updated', config.discord.ccBotToken)
+        .catch(() => void 0)
     } else {
       members.removeGuildMemberRole(config.discord.guildId, user._id, config.discord.roles.donator, 'Pledge status updated', config.discord.ccBotToken)
+        .catch(() => void 0)
     }
   }
 

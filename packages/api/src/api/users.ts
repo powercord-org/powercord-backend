@@ -31,7 +31,7 @@ const patchSelfSchema = {
         type: 'object',
         additionalProperties: false,
         properties: {
-          color: { type: [ 'string', 'null' ], pattern: '^[0-9a-f]{3}(?:[0-9a-f]{3})?$' },
+          color: { type: [ 'string', 'null' ], pattern: '^[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$' },
           badge: { type: [ 'string', 'null' ], minLength: 8, maxLength: 128 },
           title: { type: [ 'string', 'null' ], minLength: 2, maxLength: 32 },
         },
