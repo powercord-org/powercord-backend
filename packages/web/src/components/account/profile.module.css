@@ -5,6 +5,7 @@
 
 .container {
   width: 100%;
+  min-width: 416px;
   border-radius: 8px;
   overflow: hidden;
   background-color: var(--background-secondary);

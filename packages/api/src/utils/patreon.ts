@@ -33,9 +33,9 @@ export async function notifyStateChange (user: User, change: 'pledge' | 'perks')
         : {
           title: 'Perks update',
           description: `${user.username}#${user.discriminator} (<@${user._id}>, tier ${user.cutieStatus?.pledgeTier ?? 0}) updated their perks:\n`
-            + ` - Color: ${user.badges?.custom?.color ?? '`7289da`'}`
-            + ` - Badge: ${user.badges?.custom?.icon ?? '`default`'}`
-            + ` - Description: ${user.badges?.custom?.name ?? '`default`'}`,
+            + ` - Color: ${user.cutiePerks?.color ?? '`7289da`'}\n`
+            + ` - Badge: ${user.cutiePerks?.badge ?? '`default`'}\n`
+            + ` - Description: ${user.cutiePerks?.title ?? '`default`'}`,
         },
     ],
   }).catch(() => void 0)

@@ -10,7 +10,7 @@ import { h, Fragment } from 'preact'
 import Tooltip from '../util/Tooltip'
 import Avatar from '../util/Avatar'
 
-import HibiscusMono from '../../assets/badges/hibiscus-mono.svg?sprite=cutie'
+import HibiscusMono from '../../assets/badges/hibiscus-mono.svg?sprite=badges'
 import Developer from '../../assets/badges/developer.svg?sprite=badges'
 import Support from '../../assets/badges/support.svg?sprite=badges'
 import Staff from '../../assets/badges/staff.svg?sprite=badges'

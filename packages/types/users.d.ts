@@ -18,6 +18,12 @@ export type CutieStatus = {
   lastManualRefresh?: number
 }
 
+export type CutiePerks = {
+  color: string | null
+  badge: string | null
+  title: string | null
+}
+
 export type User = {
   _id: string
   username: string
@@ -43,6 +49,7 @@ export type User = {
     }
   }
   cutieStatus?: CutieStatus
+  cutiePerks?: CutiePerks
   createdAt: Date
   updatedAt?: Date
 }

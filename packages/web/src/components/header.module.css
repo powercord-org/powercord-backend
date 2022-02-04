@@ -93,7 +93,7 @@
 
 .discriminator {
   font-size: .8rem;
-  opacity: .6;
+  color: var(--text-dark);
 }
 
 .badge {

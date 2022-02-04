@@ -4,18 +4,7 @@
  */
 
 // api:v2
-
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import type { User as DiscordUser } from '@powercord/types/discord'
-import type { User } from '@powercord/types/users'
-import { URL } from 'url'
-import { createHash } from 'crypto'
-import fetch from 'node-fetch'
-import config from '@powercord/shared/config'
-import { fetchUser } from '../utils/discord.js'
-import { remoteFile } from '../utils/cache.js'
-
-type AvatarRequest = { TokenizeUser: User, Params: { id: string } }
 
 const plugXml = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 447 447">
@@ -58,74 +47,8 @@ function hibiscus (request: FastifyRequest<{ Params: { color: string } }>, reply
   reply.type('image/svg+xml').send(makeHibiscus(request.params.color))
 }
 
-async function getDiscordAvatar (user: User, update: (user: DiscordUser) => void): Promise<Buffer> {
-  if (!user.avatar) {
-    return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 6}.png`).then((r) => r.buffer())
-  }
-
-  const file = await remoteFile(new URL(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`))
-  if (!file.success) {
-    const discordUser = await fetchUser(user._id)
-    // eslint-disable-next-line require-atomic-updates
-    user.avatar = discordUser.avatar
-    update(discordUser)
-
-    return getDiscordAvatar(user, update)
-  }
-
-  return file.data
-}
-
-// This route is very restricted to prevent abuse.
-// Only avatar of people shown on /contributors & authenticated user can be fetched.
-async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequest>, reply: FastifyReply): Promise<Buffer | void> {
-  let user = request.user
-  if (request.params.id !== request.user?._id.toString()) {
-    user = await this.mongo.db!.collection<User>('users').findOne({
-      _id: request.params.id,
-      $or: [
-        { 'badges.developer': true },
-        { 'badges.staff': true },
-        { 'badges.support': true },
-        { 'badges.contributor': true },
-      ],
-    })
-  }
-
-  if (!user) {
-    reply.code(422).send()
-    return
-  }
-
-  const effectiveAvatarId = user.avatar ?? user.discriminator
-  const etag = `W/"${createHash('sha256').update(config.secret).update(user._id).update(effectiveAvatarId).digest('base64url')}"`
-
-  reply.type('image/png')
-  reply.header('cache-control', 'public, max-age=86400')
-  if (request.headers['if-none-match'] === etag) {
-    reply.code(304).send()
-    return
-  }
-
-  reply.header('etag', etag)
-  return getDiscordAvatar(user, (newUser) => this.mongo.db!.collection<User>('users').updateOne(
-    { _id: newUser.id },
-    {
-      $set: {
-        username: newUser.username,
-        discriminator: newUser.discriminator,
-        avatar: newUser.avatar,
-        updatedAt: new Date(),
-      },
-    }
-  ))
-}
-
 /** @deprecated */
 export default async function (fastify: FastifyInstance): Promise<void> {
-  const optionalAuth = fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ])
-
-  fastify.get<AvatarRequest>('/avatar/:id(\\d+).png', { preHandler: optionalAuth }, avatar)
   fastify.get('/plug/:color([a-fA-F0-9]{6})', plug)
 
   // "Polyfill" for new donator perks for tier 1 & legacy donators

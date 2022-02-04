@@ -8,11 +8,10 @@ import { h, Fragment } from 'preact'
 import { useContext, useState, useEffect, useCallback } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
 
-import Spinner from '../util/Spinner'
-import Modal from '../util/Modal'
-
 import PowercordCutie from './Cutie'
 import Profile from './Profile'
+import Spinner from '../util/Spinner'
+import Modal from '../util/Modal'
 
 import UserContext from '../UserContext'
 import { Endpoints, Routes } from '../../constants'
@@ -95,10 +94,10 @@ function AccountOld () {
 // ----
 
 type LinkedAccountProps = {
-  platform: string,
-  icon: typeof Spotify,
-  account?: string,
+  platform: string
+  icon: typeof Spotify
   explainer: string | JSX.Element
+  account?: string
   refreshEndpoint?: string
 }
 
@@ -111,7 +110,7 @@ function ManagePerks () {
   const [ editing, setEditing ] = useState(false)
 
   return (
-    <div>
+    <div className={style.perksManagement}>
       <h2 className={style.title}>Powercord Cutie perks</h2>
       {editing
         ? <PerksEdit onReturn={() => setEditing(false)}/>
@@ -205,7 +204,7 @@ function Account () {
             platform='patreon'
             icon={Patreon}
             account={user.accounts.patreon}
-            explainer={'Link your Patreon account to benefit from the Powercord Cutie perks, and manage them from here.'}
+            explainer={'Link your Patreon account to benefit from the Powercord Cutie perks, and manage them from here. If you pledged but don\'t see your perks, use the refresh button.'}
             refreshEndpoint={Endpoints.USER_REFRESH_PLEDGE}
           />
 
