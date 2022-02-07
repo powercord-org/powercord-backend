@@ -222,7 +222,10 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
     const data = await prepareUpdateData(oauthToken)
     Object.assign(update, data[2])
 
-    if (request.user!.cutieStatus?.pledgeTier !== data[0].pledgeTier) notifyStateChange(request.user!, 'pledge')
+    if (request.user!.cutieStatus?.pledgeTier !== data[0].pledgeTier) {
+      Object.assign(request.user!.cutieStatus, data[0])
+      notifyStateChange(request.user!, 'pledge')
+    }
   }
 
   await this.mongo.db!.collection<User>('users').updateOne({ _id: request.user!._id }, { $set: update })

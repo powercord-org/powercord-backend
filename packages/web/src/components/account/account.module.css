@@ -85,6 +85,33 @@
   gap: 8px;
 }
 
+.perks-management-info, .perks-management-notice {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  font-weight: 600;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  padding: 12px;
+  gap: 16px;
+}
+
+.perks-management-info {
+  background-color: var(--blurple-t);
+  border: 1px solid var(--blurple);
+}
+
+.perks-management-notice {
+  background-color: var(--orange-t);
+  border: 1px solid var(--orange);
+}
+
+.perks-management-info svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
 .linked-account-error {
   font-size: 0.9em;
 }

@@ -38,6 +38,6 @@
     "simple-icons": "^6.6.0",
     "typescript": "^4.5.4",
     "vite": "^2.7.12",
-    "vite-plugin-magical-svg": "^0.4.0"
+    "vite-plugin-magical-svg": "^1.0.0"
   }
 }

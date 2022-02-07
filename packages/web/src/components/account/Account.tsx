@@ -23,6 +23,7 @@ import Link from 'feather-icons/dist/icons/link.svg'
 import Remove from 'feather-icons/dist/icons/x-circle.svg'
 import Refresh from 'feather-icons/dist/icons/rotate-cw.svg'
 import AlertCircle from 'feather-icons/dist/icons/alert-circle.svg'
+import Info from 'feather-icons/dist/icons/info.svg'
 
 import style from './account.module.css'
 import sharedStyle from '../shared.module.css'
@@ -87,6 +88,10 @@ function PerksEdit ({ onReturn }: { onReturn: () => void }) {
 
   return (
     <form onSubmit={onSubmit}>
+      {user.cutieStatus.pledgeTier === 3 && <div className={style.perksManagementInfo}>
+        <Info/>
+        <span>For the time being, server icon perk is handled manually. Contact aetheryx#0001 on Discord.</span>
+      </div>}
       {error && <div className={style.perksManagementError}>
         <AlertCircle/>
         <span>{error}</span>
@@ -97,18 +102,26 @@ function PerksEdit ({ onReturn }: { onReturn: () => void }) {
         note={'Color of your Powercord badges, in hex (without the #). Has no effect if you use a custom icon and you don\'t have other badges. Leave blank for default blurple.'}
         value={cutiePerks.color}
       />
-      {user.cutieStatus.pledgeTier > 1 && <TextField
-        name='badge'
-        label='Badge Icon'
-        note={'Icon to set as your custom badge. URL must be from Discord (no external links). Leave blank for the colored hibiscus.'}
-        value={cutiePerks.badge}
-      />}
-      {user.cutieStatus.pledgeTier > 1 && <TextField
-        name='title'
-        label='Badge Title'
-        note={'Tooltip text showing when people hover your badge. Leave blank for default text.'}
-        value={cutiePerks.title}
-      />}
+      {user.cutieStatus.pledgeTier > 1 && (
+        <Fragment>
+          <TextField
+            name='badge'
+            label='Badge Icon'
+            note={'Icon to set as your custom badge. URL must be from Discord (no external links). Leave blank for the colored hibiscus.'}
+            value={cutiePerks.badge}
+          />
+          <TextField
+            name='title'
+            label='Badge Title'
+            note={'Tooltip text showing when people hover your badge. Leave blank for default text.'}
+            value={cutiePerks.title}
+          />
+
+          <div className={style.perksManagementNotice}>
+            <span>You are not allowed to use any official Discord badge, nor Powercord's. Badge updates are monitored and inappropriate ones will be reset. Repeated offenders may see their access to Powercord Cutie perks revoked.</span>
+          </div>
+        </Fragment>
+      )}
 
       <button className={sharedStyle.button} disabled={submitting} type='submit'>
         {submitting ? <Spinner balls/> : 'Save perks'}

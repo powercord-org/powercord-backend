@@ -218,7 +218,7 @@ importers:
       simple-icons: ^6.6.0
       typescript: ^4.5.4
       vite: ^2.7.12
-      vite-plugin-magical-svg: ^0.4.0
+      vite-plugin-magical-svg: ^1.0.0
     dependencies:
       '@preact/preset-vite': 2.1.7_preact@10.6.4+vite@2.7.12
       '@prefresh/vite': 2.2.6_preact@10.6.4+vite@2.7.12
@@ -240,7 +240,7 @@ importers:
       simple-icons: 6.6.0
       typescript: 4.5.4
       vite: 2.7.12
-      vite-plugin-magical-svg: 0.4.0_vite@2.7.12
+      vite-plugin-magical-svg: 1.0.0_vite@2.7.12
 
   shared:
     specifiers: {}
@@ -4791,8 +4791,8 @@ packages:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}
     dev: true
 
-  /vite-plugin-magical-svg/0.4.0_vite@2.7.12:
-    resolution: {integrity: sha512-IisFQYOrlhAF0x7seoPHiRmEmFBFHVpXdrQN7rCZyzVXxlWcqJxTmexdUASnBTnkxyDShw6vPBc87tEXWya60A==}
+  /vite-plugin-magical-svg/1.0.0_vite@2.7.12:
+    resolution: {integrity: sha512-wt2X2HHs1/FC80fJ6f5KKjHAclqLNRe6Q8gQJ/7eMU1Jt1L5DXmn5MhZBlr5PAiekVz58WvKIfCNngOVvF1tXw==}
     peerDependencies:
       vite: '>= 2.0.0'
     dependencies:

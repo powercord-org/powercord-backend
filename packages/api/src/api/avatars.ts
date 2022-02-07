@@ -3,9 +3,6 @@
  * Licensed under the Open Software License version 3.0
  */
 
-// api:v2
-
-import type { Blob } from 'buffer'
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { User as DiscordUser } from '@powercord/types/discord'
 import type { User } from '@powercord/types/users'
@@ -18,9 +15,11 @@ import { fetchUser } from '../utils/discord.js'
 
 type AvatarRequest = { TokenizeUser: User, Params: { id: string } }
 
-async function getDiscordAvatar (user: User, update: (user: DiscordUser) => void): Promise<Blob | Buffer> {
+async function getDiscordAvatar (user: User, update: (user: DiscordUser) => void): Promise<Buffer> {
   if (!user.avatar) {
-    return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 6}.png`).then((r) => r.blob())
+    return fetch(`https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 6}.png`)
+      .then((res) => res.arrayBuffer())
+      .then((array) => Buffer.from(array))
   }
 
   const file = await remoteFile(new URL(`https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png?size=256`))
