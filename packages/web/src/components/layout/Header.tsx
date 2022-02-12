@@ -4,20 +4,22 @@
  */
 
 import { h } from 'preact'
-import { useMemo, useState, useContext } from 'preact/hooks'
+import { useState, useContext } from 'preact/hooks'
 
-import UserContext from './UserContext'
-import Avatar from './util/Avatar'
-import Hamburger from './util/Hamburger'
-import { Endpoints, Routes } from '../constants'
+import UserContext from '../UserContext'
+import Avatar from '../util/Avatar'
+import Hamburger from '../util/Hamburger'
+import { Endpoints, Routes } from '../../constants'
 
-import PowercordPlug from '../assets/powercord.svg'
-import PowercordWordmark from '../assets/wordmark.svg'
-import spookycordPlug from '../assets/spookycord.svg?file'
-import Staff from '../assets/badges/staff.svg?sprite=badges'
+import PowercordPlug from '../../assets/powercord.svg'
+import PowercordWordmark from '../../assets/wordmark.svg'
+import spookycordPlug from '../../assets/spookycord.svg?file'
+import Staff from '../../assets/badges/staff.svg?sprite=badges'
 
 import style from './header.module.css'
-import sharedStyle from './shared.module.css'
+import sharedStyle from '../shared.module.css'
+
+const isOctober = new Date().getUTCMonth() === 9
 
 function User () {
   const user = useContext(UserContext)
@@ -49,7 +51,6 @@ function User () {
 }
 
 export default function Header () {
-  const isOctober = useMemo(() => new Date().getUTCMonth() === 9, [])
   const [ opened, setOpened ] = useState(false)
 
   return (

@@ -6,6 +6,7 @@
 import type { JSX } from 'preact'
 import { h } from 'preact'
 import { useContext } from 'preact/hooks'
+import { useRouter } from 'preact-router'
 import { useTitleTemplate } from 'hoofd/preact'
 
 import Spinner from './Spinner'
@@ -17,7 +18,7 @@ type AuthBoundaryProps = { children: JSX.Element, staff?: boolean } & Record<str
 
 export default function AuthBoundary ({ children, staff }: AuthBoundaryProps) {
   const user = useContext(UserContext)
-  const path = typeof location !== 'undefined' ? location.pathname : ''
+  const [ { url: path } ] = useRouter()
 
   if (user === void 0) {
     useTitleTemplate('Powercord')

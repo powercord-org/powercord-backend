@@ -11,7 +11,7 @@ import { Link } from 'preact-router/match'
 import Markdown from './Markdown'
 import Spinner from '../util/Spinner'
 import Redirect from '../util/Redirect'
-import LayoutWithSidebar from '../util/LayoutWithSidebar'
+import LayoutWithSidebar from '../layout/LayoutWithSidebar'
 
 import { Endpoints, Routes } from '../../constants'
 

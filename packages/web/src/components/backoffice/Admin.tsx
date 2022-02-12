@@ -8,7 +8,7 @@ import { useState, useEffect } from 'preact/hooks'
 import Router from 'preact-router'
 import { Link } from 'preact-router/match'
 
-import LayoutWithSidebar from '../util/LayoutWithSidebar'
+import LayoutWithSidebar from '../layout/LayoutWithSidebar'
 import Redirect from '../util/Redirect'
 import { SoonRoute } from '../util/Soon'
 import Users from './Users/Manage'

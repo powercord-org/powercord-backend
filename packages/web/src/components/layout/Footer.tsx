@@ -5,7 +5,7 @@
 
 import { h } from 'preact'
 
-import { Routes } from '../constants'
+import { Routes } from '../../constants'
 
 import style from './footer.module.css'
 

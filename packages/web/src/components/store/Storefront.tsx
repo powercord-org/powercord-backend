@@ -12,7 +12,7 @@ import { Router } from 'preact-router'
 import { Link } from 'preact-router/match'
 
 import Redirect from '../util/Redirect'
-import LayoutWithSidebar from '../util/LayoutWithSidebar'
+import LayoutWithSidebar from '../layout/LayoutWithSidebar'
 import MarkdownDocument from '../docs/Markdown'
 import Store from './Store'
 import PublishForm from './form/Publish'

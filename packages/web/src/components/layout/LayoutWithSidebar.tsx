@@ -7,7 +7,7 @@ import type { ComponentChild, Attributes } from 'preact'
 import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 
-import Hamburger from './Hamburger'
+import Hamburger from '../util/Hamburger'
 import style from './layout.module.css'
 
 type LayoutWithSidebarProps = Attributes & {

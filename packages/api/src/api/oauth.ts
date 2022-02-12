@@ -223,7 +223,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
     Object.assign(update, data[2])
 
     if (request.user!.cutieStatus?.pledgeTier !== data[0].pledgeTier) {
-      Object.assign(request.user!.cutieStatus, data[0])
+      request.user!.cutieStatus = data[0]
       notifyStateChange(request.user!, 'pledge')
     }
   }
@@ -236,7 +236,7 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<{ Tokenize
   if (reply.context.config.platform === 'discord') {
     // todo: check if user is allowed to delete account
     await deleteUser(this.mongo.client, request.user!._id, UserDeletionCause.REQUESTED)
-    reply.setCookie('token', '', { maxAge: 0, path: '/' }).redirect('/')
+    reply.setCookie('token', '', { maxAge: 0, path: '/' })
     reply.redirect('/')
     return
   }
