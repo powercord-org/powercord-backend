@@ -4,6 +4,7 @@
  */
 
 import type { Plugin } from 'vite'
+import type { Dependency } from 'rollup-plugin-license'
 
 import { defineConfig } from 'vite'
 import { readFileSync } from 'fs'
@@ -15,7 +16,7 @@ import magicalSvg from 'vite-plugin-magical-svg'
 import licensePlugin from 'rollup-plugin-license'
 
 const baseLicensePath = join('dist', 'assets', 'third-party-licenses.txt')
-let finalLicensePath
+let finalLicensePath = ''
 
 const additionalLicenses = [
   [ 'Open Sans Font Family (https://www.opensans.com/)', 'open-sans.txt' ],
@@ -27,7 +28,7 @@ const additionalLicenses = [
   [ 'Pawa Kodo Graphics by Algoinde (https://github.com/Algoinde)', 'pawa-graphics.txt' ],
 ]
 
-function renderLicense (deps) {
+function renderLicense (deps: Dependency[]) {
   let str = 'Licenses for open-source software used in this website are reproduced below.\n=========================\n\n'
   for (const dep of deps) {
     if (dep.name === 'index') continue

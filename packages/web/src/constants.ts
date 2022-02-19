@@ -63,9 +63,13 @@ export const Routes = {
   TERMS: '/legal/tos',
   PRIVACY: '/legal/privacy',
 
+  // Backoffice links
+  // todo: lazyload unused ones?
   BACKOFFICE: '/backoffice',
   BACKOFFICE_USERS: '/backoffice/users',
+  BACKOFFICE_USERS_MANAGE: (user: string) => `/backoffice/users/${user}`,
   BACKOFFICE_BANS: '/backoffice/bans',
+  BACKOFFICE_BANS_MANAGE: (user: string) => `/backoffice/bans/${user}`,
   BACKOFFICE_MONITORING: '/backoffice/monitoring',
   BACKOFFICE_STORE_ITEMS: '/backoffice/store/items',
   BACKOFFICE_STORE_TAGS: '/backoffice/store/tags',
@@ -77,8 +81,8 @@ export const Routes = {
   BACKOFFICE_STORE_REPORTS_REPORT: (id: string) => `/backoffice/store/reports/${id}`,
   BACKOFFICE_EVENTS_SECRET: '/backoffice/events/secret',
 
+  // External links
   DICKSWORD: 'https://discord.gg/powercord',
   PATREON: 'https://patreon.com/aetheryx',
   GITHUB: 'https://github.com/powercord-org',
-  GITHUB_USER: (user: string) => `https://github.com/${user}`,
 }

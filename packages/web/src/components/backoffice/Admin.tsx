@@ -5,13 +5,15 @@
 
 import { h, Fragment } from 'preact'
 import { useState, useEffect } from 'preact/hooks'
+import { useTitleTemplate } from 'hoofd/preact'
 import Router from 'preact-router'
 import { Link } from 'preact-router/match'
 
 import LayoutWithSidebar from '../layout/LayoutWithSidebar'
 import Redirect from '../util/Redirect'
 import { SoonRoute } from '../util/Soon'
-import Users from './Users/Manage'
+import Users from './UsersOld/Manage'
+import UsersManage from './Users/Manage'
 import Forms from './Store/Forms'
 
 import { Endpoints, Routes } from '../../constants'
@@ -33,10 +35,6 @@ import CodeSandbox from 'feather-icons/dist/icons/codesandbox.svg'
 import style from './admin.module.css'
 
 function Sidebar () {
-  // Lazy-load bugs
-  const forceUpdate = useState(0)[1]
-  useEffect(() => void setTimeout(() => forceUpdate(1), 10), [])
-
   // Unread badges
   const [ unread, setUnread ] = useState({ forms: 0, reports: 0 })
   useEffect(() => {
@@ -104,11 +102,15 @@ function Sidebar () {
 }
 
 export default function Admin () {
+  useTitleTemplate('Powercord Admin')
+
   return (
     <LayoutWithSidebar>
       <Sidebar/>
       <Router>
         <Users path={Routes.BACKOFFICE_USERS}/>
+        <UsersManage path={Routes.BACKOFFICE_USERS_MANAGE(':id')}/>
+
         <SoonRoute path={Routes.BACKOFFICE_BANS}>
           <div>banned users</div>
         </SoonRoute>

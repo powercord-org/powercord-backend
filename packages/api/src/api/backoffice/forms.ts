@@ -8,7 +8,7 @@ import type { StoreForm } from '@powercord/types/store'
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import config from '@powercord/shared/config'
 import { dispatchHonk, editHonkMessage, fetchHonkMessage, sendDm } from '../../utils/discord.js'
-import crudModule from './crud.js'
+import crudModule from './crudLegacy.js'
 
 const DmMessages = {
   publish: {

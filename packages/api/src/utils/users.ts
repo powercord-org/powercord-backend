@@ -13,7 +13,11 @@ const VIRTUAL_STATUS = { donated: false, pledgeTier: 69, perksExpireAt: Infinity
 
 function formatBadges (user: User): Exclude<CustomBadges, undefined> {
   const pledgeInfo = user.cutieStatus ?? (ENFORCE_LINKING > Date.now() ? VIRTUAL_STATUS : null)
-  const effectiveTier = pledgeInfo && pledgeInfo.perksExpireAt > Date.now() ? pledgeInfo.pledgeTier : 0
+  let effectiveTier = 0
+  if (pledgeInfo) {
+    const effectiveExpiry = pledgeInfo.perksExpireAt === -1 ? Infinity : pledgeInfo.perksExpireAt
+    effectiveTier = effectiveExpiry > Date.now() ? pledgeInfo.pledgeTier : 0
+  }
 
   const isLegit = effectiveTier !== VIRTUAL_STATUS.pledgeTier
   const appliedColor = user.cutiePerks?.color ?? '7289da'
@@ -40,6 +44,8 @@ function formatBadges (user: User): Exclude<CustomBadges, undefined> {
 /** @deprecated */
 export async function formatUser (user: User, bypassVisibility?: boolean): Promise<RestUser | SelfRestUser> {
   const customBadges = formatBadges(user)
+  const effectiveExpiry = user.cutieStatus?.perksExpireAt === -1 ? Infinity : user.cutieStatus?.perksExpireAt
+
   return {
     id: user._id,
     username: bypassVisibility ? user.username : 'Herobrine',
@@ -65,7 +71,7 @@ export async function formatUser (user: User, bypassVisibility?: boolean): Promi
     cutieStatus: bypassVisibility
       ? {
         donated: user.cutieStatus?.donated ?? false,
-        pledgeTier: (user.cutieStatus?.perksExpireAt ?? 0) > Date.now() ? user.cutieStatus?.pledgeTier ?? 0 : 0,
+        pledgeTier: (effectiveExpiry ?? 0) > Date.now() ? user.cutieStatus?.pledgeTier ?? 0 : 0,
         perksExpireAt: user.cutieStatus?.perksExpireAt ?? 0,
       }
       : void 0,

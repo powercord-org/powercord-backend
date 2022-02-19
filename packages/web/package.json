@@ -17,27 +17,29 @@
     "lint": "eslint --ext ts --ext tsx src"
   },
   "dependencies": {
-    "@preact/preset-vite": "^2.1.7",
-    "@prefresh/vite": "^2.2.6",
     "hoofd": "^1.4.0",
-    "preact": "^10.6.4",
+    "preact": "^10.6.5",
     "preact-render-to-string": "^5.1.19",
-    "preact-router": "^4.0.0",
+    "preact-router": "^4.0.1",
     "prismjs": "^1.26.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx": "^7.16.7",
     "@borkenware/spoonfeed": "workspace:*",
     "@powercord/types": "workspace:*",
-    "@types/node": "^17.0.8",
-    "@types/prismjs": "^1.16.6",
-    "@typescript-eslint/eslint-plugin": "^5.9.1",
-    "@typescript-eslint/parser": "^5.9.1",
-    "eslint": "^8.6.0",
+    "@preact/preset-vite": "2.1.6",
+    "@prefresh/vite": "^2.2.6",
+    "@types/node": "^17.0.17",
+    "@types/prismjs": "^1.26.0",
+    "@typescript-eslint/eslint-plugin": "^5.11.0",
+    "@typescript-eslint/parser": "^5.11.0",
+    "babel-plugin-transform-hook-names": "^1.0.2",
+    "eslint": "^8.9.0",
     "feather-icons": "^4.28.0",
     "rollup-plugin-license": "^2.6.1",
-    "simple-icons": "^6.6.0",
-    "typescript": "^4.5.4",
-    "vite": "^2.7.12",
-    "vite-plugin-magical-svg": "^1.0.0"
+    "simple-icons": "^6.10.0",
+    "typescript": "^4.5.5",
+    "vite": "^2.8.1",
+    "vite-plugin-magical-svg": "^1.0.1"
   }
 }

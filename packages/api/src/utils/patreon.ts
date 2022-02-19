@@ -53,7 +53,7 @@ export async function fetchPledgeStatus (token: OAuthToken): Promise<CutieStatus
   const response = await fetch(url, { headers: { authorization: `${token.tokenType} ${token.accessToken}` } })
     .then((r) => <any> r.json())
 
-  const data = { donated: false, pledgeTier: 0, perksExpireAt: Infinity }
+  const data = { donated: false, pledgeTier: 0, perksExpireAt: -1 }
   const pledgeData = response.included?.[0]?.attributes
   if (!pledgeData) return data
 
@@ -108,7 +108,10 @@ export async function updateDonatorState (mongo: MongoClient, user: User, manual
 const queue = new Map<string, Promise<void>>()
 export async function refreshDonatorState (mongo: MongoClient, user: User, manual?: boolean) {
   const patreonAccount = user.accounts.patreon
-  if (!patreonAccount || (!manual && (user.cutieStatus?.perksExpireAt ?? 0) > Date.now())) return
+
+  const perksExpireAt = user.cutieStatus?.perksExpireAt ?? 0
+  const effectiveExpiry = perksExpireAt === -1 ? Infinity : perksExpireAt
+  if (!patreonAccount || (!manual && effectiveExpiry > Date.now())) return
 
   let promise = queue.get(user._id)
   if (!promise) {

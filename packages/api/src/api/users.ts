@@ -72,7 +72,9 @@ async function patchSelf (this: FastifyInstance, request: FastifyRequest<PatchSe
   const update: Record<string, any> = { updatedAt: new Date() }
 
   if ('cutiePerks' in request.body) {
-    const pledgeTier = (request.user!.cutieStatus?.perksExpireAt ?? 0) > Date.now() ? request.user!.cutieStatus?.pledgeTier ?? 0 : 0
+    const perksExpireAt = request.user!.cutieStatus?.perksExpireAt ?? 0
+    const effectiveExpiry = perksExpireAt === -1 ? Infinity : perksExpireAt
+    const pledgeTier = effectiveExpiry > Date.now() ? request.user!.cutieStatus?.pledgeTier ?? 0 : 0
     if (('color' in request.body.cutiePerks && !pledgeTier) || (('badge' in request.body.cutiePerks || 'title' in request.body.cutiePerks) && pledgeTier < 2)) {
       reply.code(402).send({ error: 402, message: 'You must be a donator of a higher tier to modify these perks.' })
       return

@@ -1,16 +1,16 @@
 .PHONY: web
 web:
 	mkdir packages/api/dist || true
-	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker-compose --profile website up -d
+	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker compose --profile website up -d
 
 .PHONY: boat
 boat:
 	mkdir packages/boat/dist || true
-	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker-compose --profile bot up -d
+	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker compose --profile bot up -d
 
 .PHONY: down
 down:
-	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker-compose down
+	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker compose -p 'powercord-backend'
 
 .PHONY: lint
 lint:

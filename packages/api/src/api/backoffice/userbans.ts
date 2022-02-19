@@ -4,7 +4,7 @@
  */
 
 import type { FastifyInstance } from 'fastify'
-import crudModule from './crud.js'
+import crudModule from './crudLegacy.js'
 
 const updateBansSchema = {
   body: {
