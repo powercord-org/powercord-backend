@@ -5,9 +5,10 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply, ConfiguredReply } from 'fastify'
 import type { OAuthProvider, OAuthToken } from '../utils/oauth.js'
-import type { User, UserBanStatus } from '@powercord/types/users'
+import type { User } from '@powercord/types/users'
 import { randomBytes } from 'crypto'
 import config from '@powercord/shared/config'
+import { UserFlags } from '@powercord/shared/flags'
 import { OAuthEndpoints, getAuthorizationUrl, getAuthTokens, fetchAccount, toMongoFields } from '../utils/oauth.js'
 import { deleteUser, UserDeletionCause } from '../data/user.js'
 import { fetchTokens } from '../utils/oauth.js'
@@ -85,7 +86,7 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
     return
   }
 
-  if (reply.context.config.isRestricted && !request.user?.badges?.staff) {
+  if (reply.context.config.isRestricted && ((request.user?.flags ?? 0) & UserFlags.STAFF) === 0) {
     reply.redirect('/')
     return
   }
@@ -127,8 +128,10 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
 }
 
 async function callback (this: FastifyInstance, request: FastifyRequest<CallbackRequestProps>, reply: Reply) {
+  const collection = this.mongo.db!.collection<User>('users')
   const returnPath = reply.context.config.platform === 'discord' ? '/' : '/me'
   const authStatus = Boolean(reply.context.config.platform === 'discord') !== Boolean(request.user)
+
   if (!authStatus || !request.query.state) {
     reply.redirect(returnPath)
     return
@@ -162,21 +165,21 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
   }
 
   if (reply.context.config.platform === 'discord') {
-    const banStatus = await this.mongo.db!.collection<UserBanStatus>('userbans').findOne({ _id: account.id })
-    if (banStatus?.account) {
+    const user = await collection.findOne({ _id: account.id })
+    if ((user?.flags ?? 0) & UserFlags.BANNED) {
       reply.redirect(`${redirectCookie?.value ?? returnPath}?error=auth_banned`)
       return
     }
 
-    const res = await this.mongo.db!.collection<User>('users').updateOne(
+    const res = await collection.updateOne(
       { _id: account.id },
       {
+        $currentDate: { updatedAt: true },
         $setOnInsert: { createdAt: new Date() },
         $set: {
           username: account.username,
           discriminator: account.discriminator,
           avatar: account.avatar,
-          updatedAt: new Date(),
           ...toMongoFields(oauthToken, 'discord'),
         },
       },
@@ -205,7 +208,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
 
   const accountId = account.data?.id || account.id
   const accountName = account.data?.attributes.email || account.login || account.display_name
-  const accountOwner = await this.mongo.db!.collection<User>('users').findOne({ [`accounts.${reply.context.config.platform}.id`]: accountId })
+  const accountOwner = await collection.findOne({ [`accounts.${reply.context.config.platform}.id`]: accountId })
   if (accountOwner && accountOwner._id !== request.user!._id) {
     reply.redirect(`${redirectCookie?.value ?? returnPath}?error=already_linked`)
     return
@@ -228,7 +231,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
     }
   }
 
-  await this.mongo.db!.collection<User>('users').updateOne({ _id: request.user!._id }, { $set: update })
+  await collection.updateOne({ _id: request.user!._id }, { $set: update })
   reply.redirect(redirectCookie?.value ?? '/me')
 }
 
@@ -241,7 +244,7 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<{ Tokenize
     return
   }
 
-  if (reply.context.config.isRestricted && !request.user?.badges?.staff) {
+  if (reply.context.config.isRestricted && ((request.user?.flags ?? 0) & UserFlags.STAFF) === 0) {
     reply.redirect('/')
     return
   }

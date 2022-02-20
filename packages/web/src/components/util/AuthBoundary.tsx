@@ -8,6 +8,7 @@ import { h } from 'preact'
 import { useContext } from 'preact/hooks'
 import { useRouter } from 'preact-router'
 import { useTitleTemplate } from 'hoofd/preact'
+import { UserFlags } from '@powercord/shared/flags'
 
 import Spinner from './Spinner'
 import Redirect from './Redirect'
@@ -41,7 +42,7 @@ export default function AuthBoundary ({ children, staff }: AuthBoundaryProps) {
     )
   }
 
-  if (staff && !user?.badges?.staff) {
+  if (staff && ((user?.flags ?? 0) & UserFlags.STAFF)) {
     return <Redirect to='/'/>
   }
 

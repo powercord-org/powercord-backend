@@ -6,6 +6,7 @@
 import { h } from 'preact'
 import { useState, useContext } from 'preact/hooks'
 
+import { UserFlags } from '@powercord/shared/flags'
 import UserContext from '../UserContext'
 import Avatar from '../util/Avatar'
 import Hamburger from '../util/Hamburger'
@@ -23,6 +24,7 @@ const isOctober = new Date().getUTCMonth() === 9
 
 function User () {
   const user = useContext(UserContext)
+  const isStaff = (user?.flags ?? 0) & UserFlags.STAFF
 
   if (!user) {
     return (
@@ -37,14 +39,14 @@ function User () {
       <div className={style.details}>
         <div className={style.name}>
           <div className={style.username}>{user.username}<span className={style.discriminator}>#{user.discriminator}</span></div>
-          {user.badges.staff && <Staff className={style.badge}/>}
+          {isStaff && <Staff className={style.badge}/>}
         </div>
         <div>
           <a className={style.link} href={Routes.ME}>Account</a>
           {/* @ts-expect-error */}
           <a className={style.link} href={Endpoints.LOGOUT} native>Logout</a>
         </div>
-        {user.badges.staff && <a className={style.link} href={Routes.BACKOFFICE}>Administration</a>}
+        {isStaff && <a className={style.link} href={Routes.BACKOFFICE}>Administration</a>}
       </div>
     </div>
   )

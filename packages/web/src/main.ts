@@ -17,8 +17,8 @@ function Wrapper () {
       fetch(Endpoints.USER_SELF)
         .then((r) => r.json())
         .then((u) => {
-          if (u.id) {
-            const patch = (user: Partial<User>): void => setUser((u) => <User> ({ ...u, ...user, patch: patch }))
+          if (u._id) {
+            const patch = (newUser: Partial<User>): void => setUser((oldUser) => <User> ({ ...oldUser, ...newUser, patch: patch }))
             setUser({ ...u, patch: patch })
             return
           }

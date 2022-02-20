@@ -3,11 +3,12 @@
  * Licensed under the Open Software License version 3.0
  */
 
+// todo: move back to /users & /guilds
+
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import type { CutiePerks, User } from '@powercord/types/users'
 import { createHash } from 'crypto'
-import config from '@powercord/shared/config'
-import { refreshDonatorState } from '../utils/patreon.js'
+import { UserFlags } from '@powercord/shared/flags'
 
 type Badge = { _id: string, name: string, icon: string }
 type RestBadge = Omit<Badge, '_id'>
@@ -21,8 +22,8 @@ export function getEffectivePerks (user: User | null): CutiePerks {
 
   if (!user) return cutiePerks
 
-  const donated = user.cutieStatus?.donated ?? false
-  const currentTier = (user.cutieStatus?.perksExpireAt ?? 0) > Date.now() ? user.cutieStatus?.pledgeTier ?? 0 : 0
+  const donated = user.flags & UserFlags.HAS_DONATED
+  const currentTier = user.flags & UserFlags.IS_CUTIE ? user.cutieStatus?.pledgeTier ?? 0 : 0
 
   if (donated) {
     cutiePerks.badge = 'default'
@@ -63,34 +64,6 @@ async function getGuildBadges (this: FastifyInstance, request: FastifyRequest, r
   reply.send(badges)
 }
 
-async function getUserBadges (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
-  const user = await this.mongo.db!.collection<User>('users').findOne({ _id: request.params.id })
-  if (user) await refreshDonatorState(this.mongo.client, user)
-
-  const etag = `W/"${createHash('sha256').update(config.secret).update(request.params.id).update(user?.updatedAt?.toISOString() ?? '0').digest('base64url')}"`
-  reply.header('cache-control', 'public, max-age=300')
-  if (request.headers['if-none-match'] === etag) {
-    reply.code(304).send()
-    return
-  }
-
-  reply.header('etag', etag)
-  const badges = user?.badges ?? {}
-
-  return {
-    developer: Boolean(badges.developer),
-    staff: Boolean(badges.staff),
-    support: Boolean(badges.support),
-    contributor: Boolean(badges.contributor),
-    translator: Boolean(badges.translator),
-    hunter: Boolean(badges.hunter),
-    early: Boolean(badges.early),
-    properties: { languages: [] },
-    cutiePerks: getEffectivePerks(user),
-  }
-}
-
 export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.get('/guilds', getGuildBadges)
-  fastify.get('/:id(\\d+)', getUserBadges)
 }

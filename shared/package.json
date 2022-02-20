@@ -11,6 +11,7 @@
     "pnpm": ">= 6"
   },
   "exports": {
-    "./config": "./config.js"
+    "./config": "./config.js",
+    "./flags": "./flags.js"
   }
 }

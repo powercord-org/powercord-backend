@@ -3,10 +3,11 @@
  * Licensed under the Open Software License version 3.0
  */
 
-import type { MinimalUser } from '@powercord/types/users'
+import type { User, MinimalUser } from '@powercord/types/users'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import type { Db, ObjectId } from 'mongodb'
 import mongo from 'mongodb'
+import { UserFlags } from '@powercord/shared/flags'
 import { getOrCompute } from '../utils/cache.js'
 
 type Delta = { day: number, week: number, month: number }
@@ -146,50 +147,25 @@ async function contributors (this: FastifyInstance, _request: FastifyRequest, re
     contributors: [],
   }
 
-  await this.mongo.db!.collection('users').aggregate([
-    {
-      $match: {
-        $or: [
-          { 'badges.developer': true },
-          { 'badges.staff': true },
-          { 'badges.support': true },
-          { 'badges.contributor': true },
-        ],
-      },
-    },
-    {
-      $set: {
-        _rank: {
-          $cond: {
-            if: '$badges.developer',
-            then: 'developers',
-            else: {
-              $cond: {
-                if: { $or: [ '$badges.staff', '$badges.support' ] },
-                then: 'staff',
-                else: 'contributors',
-              },
-            },
-          },
-        },
-      },
-    },
-    {
-      $group: {
-        _id: '$_rank',
-        users: {
-          $push: {
-            id: '$_id',
-            username: '$username',
-            discriminator: '$discriminator',
-            avatar: '$avatar',
-            github: '$accounts.github.name',
-          },
-        },
-      },
-    },
-  ]).forEach((doc) => (res[doc._id] = doc.users))
+  const cursor = this.mongo.db!.collection<User>('users').find(
+    { flags: { $bitsAnySet: UserFlags.DEVELOPER | UserFlags.STAFF | UserFlags.SUPPORT | UserFlags.CONTRIBUTOR } },
+    { projection: { _id: 1, username: 1, discriminator: 1, avatar: 1, flags: 1 } }
+  )
 
+  for await (const user of cursor) {
+    const cleanUser: MinimalUser & { flags?: number } = { ...user }
+    delete cleanUser.flags
+
+    if (user.flags & UserFlags.DEVELOPER) {
+      res.developers.push(cleanUser)
+    } else if ((user.flags & UserFlags.STAFF) || (user.flags & UserFlags.SUPPORT)) {
+      res.staff.push(cleanUser)
+    } else if (user.flags & UserFlags.CONTRIBUTOR) {
+      res.contributors.push(cleanUser)
+    }
+  }
+
+  cursor.close()
   reply.header('cache-control', 'public, max-age=86400')
   return res
 }
@@ -201,11 +177,7 @@ async function numbers (this: FastifyInstance, _request: FastifyRequest, reply: 
     users: await getOrCompute('account_stats', () => computeUsersOverTime(this.mongo.db!)),
     guild: await getOrCompute('guild_stats', () => computeGuildStats(this.mongo.db!), true),
     helpers: await this.mongo.db!.collection('users').countDocuments({
-      $or: [
-        { 'badges.contributor': true },
-        { 'badges.hunter': true },
-        { 'badges.translator': true },
-      ],
+      $bitsAnySet: UserFlags.CONTRIBUTOR | UserFlags.BUG_HUNTER | UserFlags.TRANSLATOR,
     }),
     plugins: 0,
     themes: 0,

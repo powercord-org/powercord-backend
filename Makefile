@@ -10,7 +10,7 @@ boat:
 
 .PHONY: down
 down:
-	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker compose -p 'powercord-backend'
+	USER_ID="$$(id -u)" GROUP_ID="$$(id -g)" docker compose -p 'powercord-backend' down
 
 .PHONY: lint
 lint:

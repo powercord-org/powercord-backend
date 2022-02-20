@@ -11,15 +11,21 @@ import fastifyCookie from 'fastify-cookie'
 import fastifyRawBody from 'fastify-raw-body'
 import fastifyMongodb from 'fastify-mongodb'
 import fastifyTokenize from 'fastify-tokenize'
+import { UserFlags } from '@powercord/shared/flags'
 import config from '@powercord/shared/config'
+
+import { load as loadUserSchemas } from './schemas/user.js'
 
 import apiModule from './api/index.js'
 import { refreshUserData } from './api/oauth.js'
 
 const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'development' ? 'info' : 'warn' } })
 
+// todo: is this an acceptable pattern?
+loadUserSchemas(fastify)
+
 function verifyAdmin (request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply, next: (e?: Error) => void) {
-  if (request.user?.badges?.staff) return next()
+  if ((request.user?.flags ?? 0) & UserFlags.ADMIN) return next()
 
   reply.code(403)
   next(new Error('Missing permissions'))

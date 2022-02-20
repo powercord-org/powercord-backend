@@ -17,6 +17,7 @@
     "lint": "eslint --ext ts --ext tsx src"
   },
   "dependencies": {
+    "@powercord/shared": "workspace:*",
     "hoofd": "^1.4.0",
     "preact": "^10.6.5",
     "preact-render-to-string": "^5.1.19",

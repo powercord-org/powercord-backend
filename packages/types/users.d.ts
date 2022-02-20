@@ -12,7 +12,6 @@ export type ExternalAccount = {
 }
 
 export type CutieStatus = {
-  donated: boolean
   pledgeTier: number
   perksExpireAt: number
   lastManualRefresh?: number
@@ -29,11 +28,31 @@ export type User = {
   username: string
   discriminator: string
   avatar: string | null
+  flags: number
   accounts: {
     discord: Omit<ExternalAccount, 'name'>
     spotify?: ExternalAccount
     patreon?: ExternalAccount
   }
+  cutieStatus?: CutieStatus
+  cutiePerks?: CutiePerks
+  createdAt: Date
+  updatedAt?: Date
+}
+
+export type GhostUser = {
+  _id: string
+  username: null
+  discriminator: null
+  avatar: string | null
+  flags: number
+}
+
+export type RestUser = Omit<User, '_id' | 'accounts' | 'cutieStatus' | 'cutiePerks' | 'createdAt' | 'updatedAt'> & {
+  id: User['_id']
+  cutiePerks: Exclude<User['cutiePerks'], undefined>
+
+  /** @deprecated */
   badges?: {
     developer?: boolean
     staff?: boolean
@@ -48,44 +67,21 @@ export type User = {
       name: string | null
     }
   }
-  cutieStatus?: CutieStatus
-  cutiePerks?: CutiePerks
-  createdAt: Date
-  updatedAt?: Date
 }
 
-export type UserBanStatus = {
-  _id: string
-  account: boolean
-  publish: boolean
-  verification: boolean
-  hosting: boolean
-  reporting: boolean
-  sync: boolean
-  events: boolean
-}
-
-export type RestUser = Omit<User, '_id' | 'badges' | 'accounts' | 'cutieStatus' | 'cutiePerks' | 'createdAt' | 'updatedAt'> & {
-  id: User['_id']
-  badges: Required<Exclude<User['badges'], undefined>>,
-  cutiePerks: Exclude<User['cutiePerks'], undefined>,
-}
-
-export type SelfRestUser = RestUser & {
+export type SelfRestUser = Omit<RestUser, 'id'> & {
+  _id: User['_id']
   cutieStatus: CutieStatus
-  canDeleteAccount: boolean
   accounts: {
     spotify: string | undefined
     patreon: string | undefined
   }
 }
 
-export type RestAdminUser = RestUser & { banStatus?: UserBanStatus }
-
-export type RestAdminBans = UserBanStatus & { user?: RestAdminUser }
+export type RestAdminUser = SelfRestUser
 
 export type MinimalUser = {
-  id: string
+  _id: string
   username: string
   discriminator: string
   avatar: string | null

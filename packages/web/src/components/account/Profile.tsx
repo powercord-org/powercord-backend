@@ -6,6 +6,7 @@
 import type { User } from '../UserContext'
 
 import { h, Fragment } from 'preact'
+import { UserFlags } from '@powercord/shared/flags'
 
 import Tooltip from '../util/Tooltip'
 import Avatar from '../util/Avatar'
@@ -27,9 +28,9 @@ type ProfileProps = {
   onEdit: () => void
 }
 
-type ProfileBadgesProps = Pick<User, 'badges' | 'cutiePerks'>
+type ProfileBadgesProps = Pick<User, 'flags' | 'cutiePerks'>
 
-function ProfileBadges ({ badges: userBadges, cutiePerks }: ProfileBadgesProps) {
+function ProfileBadges ({ flags, cutiePerks }: ProfileBadgesProps) {
   return (
     <div className={style.badges} style={{ color: `#${cutiePerks.color || '7289da'}` }}>
       <Tooltip text={cutiePerks.title ?? 'Powercord Cutie'} align='center'>
@@ -37,37 +38,37 @@ function ProfileBadges ({ badges: userBadges, cutiePerks }: ProfileBadgesProps) 
           ? <img src={cutiePerks.badge} className={style.badge}/>
           : <HibiscusMono className={style.badge}/>}
       </Tooltip>
-      {userBadges.developer && (
+      {(flags & UserFlags.DEVELOPER) && (
         <Tooltip text='Powercord Developer' align='center'>
           <Developer className={style.badge}/>
         </Tooltip>
       )}
-      {userBadges.staff && (
+      {(flags & UserFlags.STAFF) && (
         <Tooltip text='Powercord Staff' align='center'>
           <Staff className={style.badge}/>
         </Tooltip>
       )}
-      {userBadges.support && (
+      {(flags & UserFlags.SUPPORT) && (
         <Tooltip text='Powercord Support' align='center'>
           <Support className={style.badge}/>
         </Tooltip>
       )}
-      {userBadges.contributor && (
+      {(flags & UserFlags.CONTRIBUTOR) && (
         <Tooltip text='Powercord Contributor' align='center'>
           <Contributor className={style.badge}/>
         </Tooltip>
       )}
-      {userBadges.translator && (
+      {(flags & UserFlags.TRANSLATOR) && (
         <Tooltip text='Powercord Translator' align='center'>
           <Translator className={style.badge}/>
         </Tooltip>
       )}
-      {userBadges.hunter && (
+      {(flags & UserFlags.BUG_HUNTER) && (
         <Tooltip text='Powercord Bug Hunter' align='center'>
           <Hunter className={style.badge}/>
         </Tooltip>
       )}
-      {userBadges.early && (
+      {(flags & UserFlags.EARLY_USER) && (
         <Tooltip text='Powercord Early User' align='center'>
           <Early className={style.badge}/>
         </Tooltip>
@@ -84,7 +85,7 @@ export default function Profile ({ user, onEdit }: ProfileProps) {
         <div className={style.section}>
           <div className={style.decorations}>
             <Avatar user={user} class={style.avatar}/>
-            <ProfileBadges badges={user.badges} cutiePerks={user.cutiePerks}/>
+            <ProfileBadges flags={user.flags} cutiePerks={user.cutiePerks}/>
           </div>
           <div className={style.props}>
             <span>{user.username}</span>

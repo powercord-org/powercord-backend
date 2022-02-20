@@ -7,6 +7,7 @@ import type { JSX } from 'preact'
 import { h, Fragment } from 'preact'
 import { useContext, useState, useCallback, useMemo } from 'preact/hooks'
 import { useTitle } from 'hoofd/preact'
+import { UserFlags } from '@powercord/shared/flags'
 
 import PowercordCutie from './Cutie'
 import Profile from './Profile'
@@ -44,7 +45,7 @@ function PerksEdit ({ onReturn }: { onReturn: () => void }) {
   const originalCutiePerks = useMemo(() => ({
     color: user.cutiePerks.color || '',
     badge: user.cutiePerks.badge === 'default' ? '' : user.cutiePerks.badge || '',
-    title: user.cutiePerks.title || 'Powercord Cutie'
+    title: user.cutiePerks.title || 'Powercord Cutie',
   }), [])
 
   const cutiePerks = useMemo(() => ({ ...originalCutiePerks }), [])
@@ -71,8 +72,8 @@ function PerksEdit ({ onReturn }: { onReturn: () => void }) {
           color: cutiePerks.color || null,
           badge: user.cutieStatus.pledgeTier > 1 ? cutiePerks.badge || null : void 0,
           title: user.cutieStatus.pledgeTier > 1 ? cutiePerks.title || null : void 0,
-        }
-      })
+        },
+      }),
     })
 
     const body = await res.json()
@@ -235,7 +236,7 @@ export default function Account () {
 
           <hr className={style.separator}/>
           <h2 className={style.title}>Delete my account</h2>
-          {user.canDeleteAccount
+          {(user.flags & UserFlags.STORE_PUBLISHER) === 0
             ? <Fragment>
               <p className={style.paragraph}>
                 You can choose to permanently delete your Powercord account. Be careful, this action is irreversible and
@@ -252,11 +253,11 @@ export default function Account () {
               </p>
             </Fragment>
             : <Fragment>
-              <p>
+              <p className={style.paragraph}>
                 You cannot delete your account right now as you still have items in the Store. You have to either
                 transfer them to someone else, or mark them as deprecated in order to delete your account.
               </p>
-              <p>
+              <p className={style.paragraph}>
                 <a href={Routes.STORE_MANAGE}>Go to the Powercord Store</a>
               </p>
             </Fragment>}
@@ -271,7 +272,7 @@ export default function Account () {
               color='red'
             >
               <div>Are you sure you want to delete your account? This operation is irreversible!</div>
-              {user.cutieStatus.donated && <p><b>Note:</b> You will lose access to your Powercord Cutie perks as well.</p>}
+              {Boolean(user.flags & UserFlags.HAS_DONATED) && <p><b>Note:</b> You will lose access to your Powercord Cutie perks as well.</p>}
             </Modal>
           )}
         </div>

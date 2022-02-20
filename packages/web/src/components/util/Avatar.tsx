@@ -15,7 +15,7 @@ type AvatarProps = { user: MinimalUser, class?: string }
 
 export function DiscordAvatar ({ user, class: className }: AvatarProps) {
   const avatar = user.avatar
-    ? Endpoints.USER_AVATAR_DISCORD(user.id, user.avatar)
+    ? Endpoints.USER_AVATAR_DISCORD(user._id, user.avatar)
     : Endpoints.DEFAULT_AVATAR_DISCORD(Number(user.discriminator))
 
   const [ effectiveAvatar, setAvatar ] = useState(avatar)
@@ -34,7 +34,7 @@ export function DiscordAvatar ({ user, class: className }: AvatarProps) {
 export default function Avatar ({ user, class: className }: AvatarProps) {
   return (
     <img
-      src={Endpoints.USER_AVATAR(user.id)}
+      src={Endpoints.USER_AVATAR(user._id)}
       alt={`${user.username}'s avatar`}
       className={className ? `${style.avatar} ${className}` : style.avatar}
     />

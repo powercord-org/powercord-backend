@@ -64,55 +64,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         stringId: true,
         projection: { accounts: 0 },
         schema: {
-          read: {
-            // todo: extract schema
-            type: 'object',
-            additionalProperties: false,
-            required: [ '_id', 'username', 'discriminator', 'avatar', 'createdAt', 'updatedAt' ],
-            properties: {
-              _id: { type: 'string' },
-              username: { type: 'string' },
-              discriminator: { type: 'string' },
-              avatar: { type: 'string' },
-
-              flags: { type: 'number' },
-              badges: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                  developer: { type: 'boolean' },
-                  staff: { type: 'boolean' },
-                  support: { type: 'boolean' },
-                  contributor: { type: 'boolean' },
-                  translator: { type: 'boolean' },
-                  hunter: { type: 'boolean' },
-                  early: { type: 'boolean' },
-                },
-              },
-
-              cutieStatus: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                  donated: { type: 'boolean' },
-                  pledgeTier: { type: 'number' },
-                  perksExpireAt: { type: 'number' },
-                },
-              },
-              cutiePerks: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                  color: { type: [ 'null', 'string' ] },
-                  badge: { type: [ 'null', 'string' ] },
-                  title: { type: [ 'null', 'string' ] },
-                },
-              },
-
-              createdAt: { type: 'string', format: 'date-time' },
-              updatedAt: { type: 'string', format: 'date-time' },
-            },
-          },
+          read: { $ref: 'https://powercord.dev/schemas/user' },
           write: {
             type: 'object',
             additionalProperties: false,

@@ -201,6 +201,7 @@ importers:
     specifiers:
       '@babel/plugin-transform-react-jsx': ^7.16.7
       '@borkenware/spoonfeed': workspace:*
+      '@powercord/shared': workspace:*
       '@powercord/types': workspace:*
       '@preact/preset-vite': 2.1.6
       '@prefresh/vite': ^2.2.6
@@ -222,6 +223,7 @@ importers:
       vite: ^2.8.1
       vite-plugin-magical-svg: ^1.0.1
     dependencies:
+      '@powercord/shared': link:../../shared
       hoofd: 1.4.0
       preact: 10.6.5
       preact-render-to-string: 5.1.19_preact@10.6.5

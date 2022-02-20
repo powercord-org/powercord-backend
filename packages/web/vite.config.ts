@@ -32,8 +32,9 @@ function renderLicense (deps: Dependency[]) {
   let str = 'Licenses for open-source software used in this website are reproduced below.\n=========================\n\n'
   for (const dep of deps) {
     if (dep.name === 'index') continue
+    // @ts-ignore
     const home = dep.homepage || dep.repository?.url || dep.repository
-    str += `${dep.name}${home ? ` (${home})` : ''}\nThis software is licensed under the following terms:\n\n${dep.licenseText.trim()}\n\n----------\n\n`
+    str += `${dep.name}${home ? ` (${home})` : ''}\nThis software is licensed under the following terms:\n\n${dep.licenseText?.trim()}\n\n----------\n\n`
   }
 
   // Additional licenses

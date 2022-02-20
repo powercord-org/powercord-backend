@@ -4,7 +4,7 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import type { User, RestUser, CutiePerks } from '@powercord/types/users'
+import type { User, CutiePerks } from '@powercord/types/users'
 import { createHash } from 'crypto'
 import config from '@powercord/shared/config'
 import settingsModule from './settings.js'
@@ -40,7 +40,7 @@ const patchSelfSchema = {
   },
 }
 
-async function sendUser (request: FastifyRequest, reply: FastifyReply, user: User, self?: boolean): Promise<RestUser | void> {
+async function sendUser (request: FastifyRequest, reply: FastifyReply, user: User, self?: boolean) {
   const etag = `W/"${createHash('sha256').update(config.secret).update(user._id).update((user.updatedAt ?? DATE_ZERO).toISOString()).digest('base64url')}"`
 
   reply.header('cache-control', 'public, max-age=0, must-revalidate')
@@ -56,13 +56,13 @@ async function sendUser (request: FastifyRequest, reply: FastifyReply, user: Use
 /** @deprecated */
 async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
   const user = await this.mongo.db!.collection<User>('users').findOne({ _id: request.params.id })
-    || { _id: request.params.id, username: 'Herobrine', discriminator: '0000', avatar: null, createdAt: DATE_ZERO, accounts: <any> {} }
+    || { _id: request.params.id, username: 'Herobrine', discriminator: '0000', avatar: null, flags: 0, accounts: <any> {}, createdAt: DATE_ZERO }
 
   await refreshDonatorState(this.mongo.client, user)
   return sendUser(request, reply, user)
 }
 
-async function getSelf (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply): Promise<RestUser | void> {
+async function getSelf (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply) {
   await refreshDonatorState(this.mongo.client, request.user!)
   return sendUser(request, reply, request.user!, true)
 }
@@ -147,7 +147,18 @@ async function refreshPledge (this: FastifyInstance, request: FastifyRequest<{ T
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
-  fastify.get<{ TokenizeUser: User }>('/@me', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSelf)
+  fastify.route({
+    method: 'GET',
+    url: '/@me',
+    preHandler: fastify.auth([ fastify.verifyTokenizeToken ]),
+    handler: getSelf,
+    schema: {
+      response: {
+        200: { $ref: 'https://powercord.dev/schemas/user' },
+      },
+    },
+  })
+
   fastify.get<{ TokenizeUser: User }>('/@me/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSpotifyToken)
 
   if (!fastify.prefix.startsWith('/v3')) {

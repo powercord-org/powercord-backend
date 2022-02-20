@@ -64,6 +64,7 @@ services:
     volumes:
       - ./node_modules:/opt/porkord/node_modules
       - ./packages:/opt/porkord/packages
+      - ./shared:/opt/porkord/shared
       - ./tsconfig.json:/opt/porkord/tsconfig.json
     profiles:
       - website

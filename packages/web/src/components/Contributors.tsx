@@ -12,7 +12,7 @@ import { useTitle } from 'hoofd/preact'
 import Spinner from './util/Spinner'
 import Avatar from './util/Avatar'
 
-import { Routes, Endpoints } from '../constants'
+import { Endpoints } from '../constants'
 
 import style from './contributors.module.css'
 
@@ -60,15 +60,15 @@ export default function Contributors (_: Attributes) {
     <main>
       <h2 className={style.section}>Developers</h2>
       <div className={style.wrapper}>
-        {contributors.developers.map((user) => <Contributor key={user.id} user={user}/>)}
+        {contributors.developers.map((user) => <Contributor key={user._id} user={user}/>)}
       </div>
       <h2 className={style.section}>Powercord Staff &amp; Support</h2>
       <div className={style.wrapper}>
-        {contributors.staff.map((user) => <Contributor key={user.id} user={user}/>)}
+        {contributors.staff.map((user) => <Contributor key={user._id} user={user}/>)}
       </div>
       <h2 className={style.section}>Contributors</h2>
       <div className={style.wrapper}>
-        {contributors.contributors.map((user) => <Contributor key={user.id} user={user}/>)}
+        {contributors.contributors.map((user) => <Contributor key={user._id} user={user}/>)}
       </div>
     </main>
   )
