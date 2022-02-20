@@ -38,37 +38,37 @@ function ProfileBadges ({ flags, cutiePerks }: ProfileBadgesProps) {
           ? <img src={cutiePerks.badge} className={style.badge}/>
           : <HibiscusMono className={style.badge}/>}
       </Tooltip>
-      {(flags & UserFlags.DEVELOPER) && (
+      {Boolean(flags & UserFlags.DEVELOPER) && (
         <Tooltip text='Powercord Developer' align='center'>
           <Developer className={style.badge}/>
         </Tooltip>
       )}
-      {(flags & UserFlags.STAFF) && (
+      {Boolean(flags & UserFlags.STAFF) && (
         <Tooltip text='Powercord Staff' align='center'>
           <Staff className={style.badge}/>
         </Tooltip>
       )}
-      {(flags & UserFlags.SUPPORT) && (
+      {Boolean(flags & UserFlags.SUPPORT) && (
         <Tooltip text='Powercord Support' align='center'>
           <Support className={style.badge}/>
         </Tooltip>
       )}
-      {(flags & UserFlags.CONTRIBUTOR) && (
+      {Boolean(flags & UserFlags.CONTRIBUTOR) && (
         <Tooltip text='Powercord Contributor' align='center'>
           <Contributor className={style.badge}/>
         </Tooltip>
       )}
-      {(flags & UserFlags.TRANSLATOR) && (
+      {Boolean(flags & UserFlags.TRANSLATOR) && (
         <Tooltip text='Powercord Translator' align='center'>
           <Translator className={style.badge}/>
         </Tooltip>
       )}
-      {(flags & UserFlags.BUG_HUNTER) && (
+      {Boolean(flags & UserFlags.BUG_HUNTER) && (
         <Tooltip text='Powercord Bug Hunter' align='center'>
           <Hunter className={style.badge}/>
         </Tooltip>
       )}
-      {(flags & UserFlags.EARLY_USER) && (
+      {Boolean(flags & UserFlags.EARLY_USER) && (
         <Tooltip text='Powercord Early User' align='center'>
           <Early className={style.badge}/>
         </Tooltip>

@@ -6,7 +6,9 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { User, CutiePerks } from '@powercord/types/users'
 import { createHash } from 'crypto'
+import { UserFlags } from '@powercord/shared/flags'
 import config from '@powercord/shared/config'
+
 import settingsModule from './settings.js'
 import { getEffectivePerks } from './badges.js'
 import { notifyStateChange, refreshDonatorState } from '../utils/patreon.js'
@@ -73,8 +75,7 @@ async function patchSelf (this: FastifyInstance, request: FastifyRequest<PatchSe
 
   if ('cutiePerks' in request.body) {
     const perksExpireAt = request.user!.cutieStatus?.perksExpireAt ?? 0
-    const effectiveExpiry = perksExpireAt === -1 ? Infinity : perksExpireAt
-    const pledgeTier = effectiveExpiry > Date.now() ? request.user!.cutieStatus?.pledgeTier ?? 0 : 0
+    const pledgeTier = perksExpireAt > Date.now() ? request.user!.cutieStatus?.pledgeTier ?? 0 : 0
     if (('color' in request.body.cutiePerks && !pledgeTier) || (('badge' in request.body.cutiePerks || 'title' in request.body.cutiePerks) && pledgeTier < 2)) {
       reply.code(402).send({ error: 402, message: 'You must be a donator of a higher tier to modify these perks.' })
       return
@@ -133,6 +134,11 @@ async function refreshPledge (this: FastifyInstance, request: FastifyRequest<{ T
   const lastManualRefresh = request.user!.cutieStatus?.lastManualRefresh ?? 0
   if (!patreonAccount) {
     reply.code(422).send({ error: 422, message: 'This operation requires a linked Patreon account' })
+    return
+  }
+
+  if (request.user!.flags & UserFlags.CUTIE_OVERRIDE) {
+    reply.code(422).send({ error: 422, message: 'Your pledge status is currently managed by Powercord Staff. Contact us for help.' })
     return
   }
 

@@ -136,7 +136,7 @@ export async function updateDonatorState (mongo: MongoClient, user: User, manual
 const queue = new Map<string, Promise<void>>()
 export async function refreshDonatorState (mongo: MongoClient, user: User, manual?: boolean) {
   const perksExpireAt = user.cutieStatus?.perksExpireAt ?? 0
-  if (!manual && perksExpireAt > Date.now()) return
+  if (!manual && (perksExpireAt > Date.now() || user.flags & UserFlags.CUTIE_OVERRIDE)) return
 
   let promise = queue.get(user._id)
   if (!promise) {

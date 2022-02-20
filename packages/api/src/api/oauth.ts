@@ -221,7 +221,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
     ...toMongoFields(oauthToken, reply.context.config.platform),
   }
 
-  if (reply.context.config.platform === 'patreon' && !('patreon' in request.user!.accounts)) {
+  if (reply.context.config.platform === 'patreon' && !('patreon' in request.user!.accounts) && (request.user!.flags & UserFlags.CUTIE_OVERRIDE) === 0) {
     const data = await prepareUpdateData(oauthToken)
     Object.assign(update, data[2])
 
@@ -237,7 +237,11 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
 
 async function unlink (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: Reply) {
   if (reply.context.config.platform === 'discord') {
-    // todo: check if user is allowed to delete account
+    if (request.user!.flags & UserFlags.STORE_PUBLISHER) {
+      reply.redirect('/me?error=delete_blocked')
+      return
+    }
+
     await deleteUser(this.mongo.client, request.user!._id, UserDeletionCause.REQUESTED)
     reply.setCookie('token', '', { maxAge: 0, path: '/' })
     reply.redirect('/')
@@ -251,7 +255,7 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<{ Tokenize
 
   await this.mongo.db!.collection<User>('users').updateOne(
     { _id: request.user!._id },
-    { $set: { updatedAt: new Date() }, $unset: { [`accounts.${reply.context.config.platform}`]: 1 } }
+    { $currentDate: { updatedAt: true }, $unset: { [`accounts.${reply.context.config.platform}`]: 1 } }
   )
 
   reply.redirect('/me')
