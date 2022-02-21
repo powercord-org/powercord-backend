@@ -42,7 +42,7 @@ export default function AuthBoundary ({ children, staff }: AuthBoundaryProps) {
     )
   }
 
-  if (staff && ((user?.flags ?? 0) & UserFlags.STAFF)) {
+  if (staff && ((user?.flags ?? 0) & UserFlags.STAFF) === 0) {
     return <Redirect to='/'/>
   }
 

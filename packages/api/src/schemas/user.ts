@@ -1,4 +1,7 @@
-import type { FastifyInstance } from 'fastify'
+/*
+ * Copyright (c) 2018-2022 Powercord Developers
+ * Licensed under the Open Software License version 3.0
+ */
 
 export const user = {
   $id: 'https://powercord.dev/schemas/user',
@@ -6,7 +9,7 @@ export const user = {
 
   type: 'object',
   additionalProperties: false,
-  required: [ '_id', 'username', 'discriminator', 'avatar' ],
+  required: [ '_id', 'username', 'discriminator', 'avatar', 'accounts', 'cutiePerks' ],
   properties: {
     _id: { type: 'string' },
     username: { type: 'string' },
@@ -47,16 +50,70 @@ export const user = {
   },
 }
 
+export const userBasic = {
+  $id: 'https://powercord.dev/schemas/user/basic',
+  $schema: 'http://json-schema.org/draft-07/schema#', // todo: draft/2020-12 when fst4 & ajv8
+
+  type: 'object',
+  additionalProperties: false,
+  required: [ '_id', 'flags', 'cutiePerks' ],
+  properties: {
+    _id: { $ref: 'https://powercord.dev/schemas/user#/properties/_id' },
+    flags: { $ref: 'https://powercord.dev/schemas/user#/properties/flags' },
+    cutiePerks: { $ref: 'https://powercord.dev/schemas/user#/properties/cutiePerks' },
+
+    // deprecated api:v2
+    id: { type: 'string' },
+    username: { type: 'string' },
+    discriminator: { type: 'string' },
+    avatar: { type: [ 'null', 'string' ] },
+    badges: {
+      type: 'object',
+      additionalProperties: false,
+      required: [ 'developer', 'staff', 'support', 'contributor', 'translator', 'hunter', 'early', 'custom' ],
+      properties: {
+        developer: { type: 'boolean' },
+        staff: { type: 'boolean' },
+        support: { type: 'boolean' },
+        contributor: { type: 'boolean' },
+        translator: { type: 'boolean' },
+        hunter: { type: 'boolean' },
+        early: { type: 'boolean' },
+        custom: {
+          type: 'object',
+          additionalProperties: false,
+          required: [ 'color', 'icon', 'name' ],
+          properties: {
+            color: { type: [ 'null', 'string' ] },
+            icon: { type: [ 'null', 'string' ] },
+            name: { type: [ 'null', 'string' ] },
+          },
+        },
+      },
+    },
+  },
+}
+
 export const userUpdate = {
   $id: 'https://powercord.dev/schemas/user/update',
   $schema: 'http://json-schema.org/draft-07/schema#', // todo: draft/2020-12 when fst4 & ajv8
 
   type: 'object',
   additionalProperties: false,
-  properties: { cutiePerks: { $ref: '/schemas/user#/properties/cutiePerks' } },
+  properties: {
+    cutiePerks: { $ref: 'https://powercord.dev/schemas/user#/properties/cutiePerks' },
+  },
 }
 
-export function load (fastify: FastifyInstance) {
-  fastify.addSchema(user)
-  fastify.addSchema(userUpdate)
+export const userSpotify = {
+  $id: 'https://powercord.dev/schemas/user/spotify',
+  $schema: 'http://json-schema.org/draft-07/schema#', // todo: draft/2020-12 when fst4 & ajv8
+
+  type: 'object',
+  additionalProperties: false,
+  required: [ 'token' ],
+  properties: { token: { type: [ 'string', 'null' ] } },
+
+  if: { properties: { token: { const: null } } },
+  then: { properties: { revoked: { enum: [ 'ACCESS_DENIED' ] } } },
 }

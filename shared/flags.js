@@ -39,7 +39,7 @@ export const UserFlags = {
   // User has at least one verified item in the store. Public.
   VERIFIED_PUBLISHER: 1 << 13,
 
-  // User is banned from logging in. Private.
+  // User is banned from logging in. NOTE: This implies the user is a ghost entry. Private.
   BANNED: 1 << 14,
   // User is banned from publishing in the store. Private.
   BANNED_PUBLISHER: 1 << 15,

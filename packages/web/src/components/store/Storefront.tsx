@@ -10,6 +10,7 @@ import { useContext, useEffect, useState } from 'preact/hooks'
 import { useTitleTemplate } from 'hoofd/preact'
 import { Router } from 'preact-router'
 import { Link } from 'preact-router/match'
+import { UserFlags } from '@powercord/shared/flags'
 
 import Redirect from '../util/Redirect'
 import LayoutWithSidebar from '../layout/LayoutWithSidebar'
@@ -85,7 +86,7 @@ function Sidebar () {
 
       <h3>Management</h3>
       <Item icon={Package} label='Your works' href={Routes.STORE_MANAGE}/>
-      {user?.badges.staff && <Item icon={Staff} label='Administration' href={Routes.BACKOFFICE_STORE_ITEMS}/>}
+      {Boolean((user?.flags ?? 0) & UserFlags.STAFF) && <Item icon={Staff} label='Administration' href={Routes.BACKOFFICE_STORE_ITEMS}/>}
 
       <h3>Get in touch</h3>
       <Item icon={Upload} label='Publish your work' href={Routes.STORE_PUBLISH}/>

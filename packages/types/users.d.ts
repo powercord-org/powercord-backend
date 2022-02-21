@@ -7,13 +7,16 @@ export type ExternalAccount = {
   tokenType: string
   accessToken: string
   refreshToken: string
+  // todo: ditch unix
   expiresAt: number
   name: string
 }
 
 export type CutieStatus = {
   pledgeTier: number
+  // todo: ditch unix
   perksExpireAt: number
+  // todo: ditch unix
   lastManualRefresh?: number
 }
 
@@ -48,41 +51,53 @@ export type GhostUser = {
   flags: number
 }
 
-export type RestUser = Omit<User, '_id' | 'accounts' | 'cutieStatus' | 'cutiePerks' | 'createdAt' | 'updatedAt'> & {
-  id: User['_id']
-  cutiePerks: Exclude<User['cutiePerks'], undefined>
-
-  /** @deprecated */
-  badges?: {
-    developer?: boolean
-    staff?: boolean
-    support?: boolean
-    contributor?: boolean
-    hunter?: boolean
-    early?: boolean
-    translator?: boolean
-    custom?: {
-      color: string | null
-      icon: string | null
-      name: string | null
-    }
-  }
-}
-
-export type SelfRestUser = Omit<RestUser, 'id'> & {
-  _id: User['_id']
-  cutieStatus: CutieStatus
-  accounts: {
-    spotify: string | undefined
-    patreon: string | undefined
-  }
-}
-
-export type RestAdminUser = SelfRestUser
-
 export type MinimalUser = {
   _id: string
   username: string
   discriminator: string
   avatar: string | null
+}
+
+// todo(type safety): Make all .collection('users') use this genetic
+export type DatabaseUser = User | GhostUser
+
+/// REST-specific types
+export type RestUser = {
+  _id: User['_id']
+  flags: User['flags']
+  cutiePerks: Exclude<User['cutiePerks'], undefined>
+}
+
+export type RestUserPrivate = RestUser & {
+  username: User['username']
+  discriminator: User['discriminator']
+  avatar: User['avatar']
+  cutieStatus: CutieStatus
+  accounts: {
+    spotify?: string
+    patreon?: string
+  }
+  createdAt: User['createdAt']
+}
+
+/** @deprecated */
+export type LegacyRestUser = RestUser & {
+  id: User['_id']
+  username: User['username']
+  discriminator: User['discriminator']
+  avatar: User['avatar']
+  badges: {
+    developer: boolean
+    staff: boolean
+    support: boolean
+    contributor: boolean
+    hunter: boolean
+    early: boolean
+    translator: boolean
+    custom: {
+      color: string | null
+      icon: string | null
+      name: string | null
+    }
+  }
 }

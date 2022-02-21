@@ -45,7 +45,7 @@ function PerksEdit ({ onReturn }: { onReturn: () => void }) {
   const originalCutiePerks = useMemo(() => ({
     color: user.cutiePerks.color || '',
     badge: user.cutiePerks.badge === 'default' ? '' : user.cutiePerks.badge || '',
-    title: user.cutiePerks.title || 'Powercord Cutie',
+    title: user.cutiePerks.title === 'Powercord Cutie' ? '' : user.cutiePerks.title || '',
   }), [])
 
   const cutiePerks = useMemo(() => ({ ...originalCutiePerks }), [])

@@ -4,16 +4,16 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import type { User, CutiePerks } from '@powercord/types/users'
+import type { DatabaseUser, User, CutiePerks } from '@powercord/types/users'
 import { createHash } from 'crypto'
 import { UserFlags } from '@powercord/shared/flags'
 import config from '@powercord/shared/config'
 
 import settingsModule from './settings.js'
-import { getEffectivePerks } from './badges.js'
+import { isGhostUser, formatUser } from '../data/user.js'
 import { notifyStateChange, refreshDonatorState } from '../utils/patreon.js'
 import { refreshAuthTokens, toMongoFields } from '../utils/oauth.js'
-import { formatUser } from '../utils/users.js'
+import { formatUser as legacyFormatUser } from '../utils/users.js'
 
 const DATE_ZERO = new Date(0)
 
@@ -22,25 +22,6 @@ const ALLOWED_HOSTS = [
   'discordapp.com', 'ptb.discordapp.com', 'canary.discordapp.com',
   'cdn.discordapp.com', 'media.discordapp.net',
 ]
-
-type PatchSelfRequest = { TokenizeUser: User, Body: { cutiePerks: Partial<CutiePerks> } }
-const patchSelfSchema = {
-  body: {
-    type: 'object',
-    additionalProperties: false,
-    properties: {
-      cutiePerks: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          color: { type: [ 'string', 'null' ], pattern: '^[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$' },
-          badge: { type: [ 'string', 'null' ], minLength: 8, maxLength: 128 },
-          title: { type: [ 'string', 'null' ], minLength: 2, maxLength: 32 },
-        },
-      },
-    },
-  },
-}
 
 async function sendUser (request: FastifyRequest, reply: FastifyReply, user: User, self?: boolean) {
   const etag = `W/"${createHash('sha256').update(config.secret).update(user._id).update((user.updatedAt ?? DATE_ZERO).toISOString()).digest('base64url')}"`
@@ -52,13 +33,24 @@ async function sendUser (request: FastifyRequest, reply: FastifyReply, user: Use
   }
 
   reply.header('etag', etag)
+  // api:v2
+  if (!request.url.startsWith('/v3')) return legacyFormatUser(user)
   return formatUser(user, self)
 }
 
-/** @deprecated */
 async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
-  const user = await this.mongo.db!.collection<User>('users').findOne({ _id: request.params.id })
-    || { _id: request.params.id, username: 'Herobrine', discriminator: '0000', avatar: null, flags: 0, accounts: <any> {}, createdAt: DATE_ZERO }
+  const user = await this.mongo.db!.collection<DatabaseUser>('users').findOne({ _id: request.params.id })
+  if (!user || isGhostUser(user)) {
+    return sendUser(request, reply, {
+      _id: request.params.id,
+      username: 'Herobrine',
+      discriminator: '0001',
+      avatar: null,
+      flags: 0,
+      accounts: <any> {},
+      createdAt: DATE_ZERO,
+    })
+  }
 
   await refreshDonatorState(this.mongo.client, user)
   return sendUser(request, reply, user)
@@ -69,13 +61,13 @@ async function getSelf (this: FastifyInstance, request: FastifyRequest<{ Tokeniz
   return sendUser(request, reply, request.user!, true)
 }
 
-// this endpoint can only be used to modify perks, but implements checks as a generic update to follow REST semantics
+// this endpoint can only be used to modify perks, but implements checks as a generic update to follow REST semantics (and future-proofing)
+type PatchSelfRequest = { TokenizeUser: User, Body: { cutiePerks: Partial<CutiePerks> } }
 async function patchSelf (this: FastifyInstance, request: FastifyRequest<PatchSelfRequest>, reply: FastifyReply) {
   const update: Record<string, any> = { updatedAt: new Date() }
-
+  const user = request.user!
   if ('cutiePerks' in request.body) {
-    const perksExpireAt = request.user!.cutieStatus?.perksExpireAt ?? 0
-    const pledgeTier = perksExpireAt > Date.now() ? request.user!.cutieStatus?.pledgeTier ?? 0 : 0
+    const pledgeTier = user.flags & UserFlags.IS_CUTIE ? user.cutieStatus?.pledgeTier ?? 1 : 0
     if (('color' in request.body.cutiePerks && !pledgeTier) || (('badge' in request.body.cutiePerks || 'title' in request.body.cutiePerks) && pledgeTier < 2)) {
       reply.code(402).send({ error: 402, message: 'You must be a donator of a higher tier to modify these perks.' })
       return
@@ -103,25 +95,25 @@ async function patchSelf (this: FastifyInstance, request: FastifyRequest<PatchSe
     if ('title' in request.body.cutiePerks) update['cutiePerks.title'] = request.body.cutiePerks.title
   }
 
-  const newUser = await this.mongo.db!.collection<User>('users').findOneAndUpdate({ _id: request.user!._id }, { $set: update }, { returnDocument: 'after' })
-  reply.send({ cutiePerks: getEffectivePerks(newUser.value) })
-  notifyStateChange(newUser.value!, 'perks')
+  const result = await this.mongo.db!.collection<DatabaseUser>('users').findOneAndUpdate({ _id: request.user!._id }, { $set: update }, { returnDocument: 'after' })
+  const newUser = result.value as User // Cast is safe because the user is authenticated
+  reply.send(formatUser(newUser, true))
+  notifyStateChange(newUser, 'perks')
 }
 
 async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<unknown> {
   const { spotify } = request.user!.accounts
   if (!spotify) return { token: null }
 
-  const users = this.mongo.db!.collection<User>('users')
+  const users = this.mongo.db!.collection<DatabaseUser>('users')
   if (Date.now() >= spotify.expiresAt) {
     try {
       const tokens = await refreshAuthTokens('spotify', spotify.refreshToken)
-      const updatedFields: Record<string, unknown> = { ...toMongoFields(tokens, 'spotify'), updatedAt: new Date() }
-      await users.updateOne({ _id: request.user!._id }, { $set: updatedFields })
+      await users.updateOne({ _id: request.user!._id }, { $currentDate: { updatedAt: true }, $set: toMongoFields(tokens, 'spotify') })
       return { token: tokens.accessToken }
     } catch {
       // todo: catch 5xx errors from spotify and report them instead
-      await users.updateOne({ _id: request.user!._id }, { $unset: { 'accounts.spotify': 1 }, $set: { updatedAt: new Date() } })
+      await users.updateOne({ _id: request.user!._id }, { $currentDate: { updatedAt: true }, $unset: { 'accounts.spotify': 1 } })
       return { token: null, revoked: 'ACCESS_DENIED' }
     }
   }
@@ -161,17 +153,71 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     schema: {
       response: {
         200: { $ref: 'https://powercord.dev/schemas/user' },
+        // todo: 4xx
       },
     },
   })
 
-  fastify.get<{ TokenizeUser: User }>('/@me/spotify', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, getSpotifyToken)
+  fastify.route({
+    method: 'GET',
+    url: '/@me/spotify',
+    preHandler: fastify.auth([ fastify.verifyTokenizeToken ]),
+    handler: getSpotifyToken,
+    schema: {
+      response: {
+        200: { $ref: 'https://powercord.dev/schemas/user/spotify' },
+        // todo: 4xx
+      },
+    },
+  })
 
-  if (!fastify.prefix.startsWith('/v3')) {
-    fastify.get('/:id(\\d+)', getUser)
-  } else {
-    fastify.patch<PatchSelfRequest>('/@me', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]), schema: patchSelfSchema }, patchSelf)
-    fastify.post<{ TokenizeUser: User }>('/@me/refresh-pledge', { preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, refreshPledge)
+  fastify.route({
+    method: 'GET',
+    url: '/:id(\\d{17,})',
+    handler: getUser,
+    schema: {
+      params: {
+        type: 'object',
+        additionalProperties: false,
+        required: [ 'id' ],
+        properties: {
+          id: { type: 'string' },
+        },
+      },
+      response: {
+        200: { $ref: 'https://powercord.dev/schemas/user/basic' },
+      },
+    },
+  })
+
+  if (fastify.prefix.startsWith('/v3')) {
+    fastify.route({
+      method: 'PATCH',
+      url: '/@me',
+      preHandler: fastify.auth([ fastify.verifyTokenizeToken ]),
+      handler: patchSelf,
+      schema: {
+        body: { $ref: 'https://powercord.dev/schemas/user/update' },
+        response: {
+          200: { $ref: 'https://powercord.dev/schemas/user' },
+          // todo: 4xx
+        },
+      },
+    })
+
+    fastify.route({
+      method: 'POST',
+      url: '/@me/refresh-pledge',
+      preHandler: fastify.auth([ fastify.verifyTokenizeToken ]),
+      handler: refreshPledge,
+      schema: {
+        response: {
+          200: { $ref: 'https://powercord.dev/schemas/user#/properties/cutieStatus' },
+          // todo: 4xx
+        },
+      },
+    })
+
     fastify.register(settingsModule, { prefix: '/@me/settings' })
   }
 }

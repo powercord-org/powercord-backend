@@ -14,16 +14,14 @@ import fastifyTokenize from 'fastify-tokenize'
 import { UserFlags } from '@powercord/shared/flags'
 import config from '@powercord/shared/config'
 
-import { load as loadUserSchemas } from './schemas/user.js'
+import schemaLoader from './schemas/loader.js'
 
 import apiModule from './api/index.js'
 import { refreshUserData } from './api/oauth.js'
 
 const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'development' ? 'info' : 'warn' } })
 
-// todo: is this an acceptable pattern?
-loadUserSchemas(fastify)
-
+// todo: ditch as part of the new token stuff
 function verifyAdmin (request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply, next: (e?: Error) => void) {
   if ((request.user?.flags ?? 0) & UserFlags.ADMIN) return next()
 
@@ -32,6 +30,7 @@ function verifyAdmin (request: FastifyRequest<{ TokenizeUser: User }>, reply: Fa
 }
 
 fastify.decorate('verifyAdmin', verifyAdmin)
+fastify.register(schemaLoader)
 fastify.register(fastifyAuth)
 fastify.register(fastifyCookie)
 fastify.register(fastifyRawBody, { global: false })
