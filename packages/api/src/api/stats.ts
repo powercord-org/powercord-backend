@@ -122,7 +122,11 @@ function formatPeriodicData (data: PeriodicData[], pointsCount = 50): GraphPerio
 }
 
 async function computeUsersOverTime (db: Db) {
-  const cursor = db.collection('users').find<{ createdAt: Date }>({}, { projection: { createdAt: true } }).sort({ createdAt: -1 })
+  const cursor = db.collection('users').find<{ createdAt: Date }>(
+    { flags: { $bitsAllClear: UserFlags.GHOST } },
+    { projection: { createdAt: true } }
+  ).sort({ createdAt: -1 })
+
   const dates = (await cursor.toArray()).map((doc) => doc.createdAt.getTime())
   cursor.close()
 
