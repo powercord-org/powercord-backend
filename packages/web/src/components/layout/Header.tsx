@@ -24,7 +24,7 @@ const isOctober = new Date().getUTCMonth() === 9
 
 function User () {
   const user = useContext(UserContext)
-  const isStaff = (user?.flags ?? 0) & UserFlags.STAFF
+  const isStaff = ((user?.flags ?? 0) & UserFlags.STAFF) !== 0
 
   if (!user) {
     return (
