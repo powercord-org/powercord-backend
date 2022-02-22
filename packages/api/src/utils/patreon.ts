@@ -3,7 +3,7 @@
  * Licensed under the Open Software License version 3.0
  */
 
-import type { User, CutieStatus } from '@powercord/types/users'
+import type { User, CutieStatus, DatabaseUser } from '@powercord/types/users'
 import type { MongoClient, UpdateFilter } from 'mongodb'
 import type { OAuthToken } from './oauth.js'
 import config from '@powercord/shared/config'
@@ -110,7 +110,7 @@ export async function prepareUpdateData (patreonAccount: OAuthToken): Promise<[ 
 export async function updateDonatorState (mongo: MongoClient, user: User, manual?: boolean) {
   const patreonAccount = user.accounts.patreon
   const perksExpireAt = user.cutieStatus?.perksExpireAt ?? 0
-  const collection = mongo.db().collection<User>('users')
+  const collection = mongo.db().collection<DatabaseUser>('users')
 
   if (!patreonAccount) {
     if (perksExpireAt <= Date.now()) {

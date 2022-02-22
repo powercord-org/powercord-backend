@@ -45,9 +45,6 @@ export type User = {
 
 export type GhostUser = {
   _id: string
-  username: null
-  discriminator: null
-  avatar: string | null
   flags: number
 }
 
@@ -58,7 +55,6 @@ export type MinimalUser = {
   avatar: string | null
 }
 
-// todo(type safety): Make all .collection('users') use this genetic
 export type DatabaseUser = User | GhostUser
 
 /// REST-specific types

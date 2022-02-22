@@ -39,7 +39,7 @@ export const UserFlags = {
   // User has at least one verified item in the store. Public.
   VERIFIED_PUBLISHER: 1 << 13,
 
-  // User is banned from logging in. NOTE: This implies the user is a ghost entry. Private.
+  // User is banned from logging in. Private.
   BANNED: 1 << 14,
   // User is banned from publishing in the store. Private.
   BANNED_PUBLISHER: 1 << 15,
@@ -64,10 +64,29 @@ export const UserFlags = {
   APPEALED_SYNC: 1 << 24,
   // User appealed a community events ban. Private.
   APPEALED_EVENTS: 1 << 25,
+
+  // User is a ghost entry (entry with no real user data, used for flag keeping purposes). Private.
+  GHOST: 1 << 26,
 }
 
 export const PrivateUserFlags = 0
  | UserFlags.CUTIE_OVERRIDE
+ | UserFlags.BANNED
+ | UserFlags.BANNED_PUBLISHER
+ | UserFlags.BANNED_VERIFICATION
+ | UserFlags.BANNED_HOSTING
+ | UserFlags.BANNED_REPORTING
+ | UserFlags.BANNED_SYNC
+ | UserFlags.BANNED_EVENTS
+ | UserFlags.APPEALED_SUPPORT
+ | UserFlags.APPEALED_MUTE
+ | UserFlags.APPEALED_BAN
+ | UserFlags.APPEALED_SYNC
+ | UserFlags.APPEALED_EVENTS
+ | UserFlags.GHOST
+
+// Flags that make a user go ghost instead of deleted.
+export const PersistentUserFlags = 0
  | UserFlags.BANNED
  | UserFlags.BANNED_PUBLISHER
  | UserFlags.BANNED_VERIFICATION

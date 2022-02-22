@@ -4,7 +4,7 @@
  */
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { User } from '@powercord/types/users'
+import type { DatabaseUser, User } from '@powercord/types/users'
 import fastifyFactory from 'fastify'
 import fastifyAuth from 'fastify-auth'
 import fastifyCookie from 'fastify-cookie'
@@ -18,6 +18,7 @@ import schemaLoader from './schemas/loader.js'
 
 import apiModule from './api/index.js'
 import { refreshUserData } from './api/oauth.js'
+import { isGhostUser } from './data/user.js'
 
 const fastify = fastifyFactory({ logger: { level: process.env.NODE_ENV === 'development' ? 'info' : 'warn' } })
 
@@ -40,9 +41,11 @@ fastify.register(fastifyTokenize, {
   fastifyAuth: true,
   cookieSigned: true,
   fetchAccount: async (id: string) => {
-    const user = await fastify.mongo.db!.collection<User>('users').findOne({ _id: id })
-    const updatedUser = user ? await refreshUserData(fastify, user) : null
-    if (updatedUser) (updatedUser as any).lastTokenReset = 0
+    const user = await fastify.mongo.db!.collection<DatabaseUser>('users').findOne({ _id: id })
+    if (!user || isGhostUser(user)) return null
+
+    const updatedUser = await refreshUserData(fastify, user)
+    ;(updatedUser as any).lastTokenReset = 0
     return updatedUser
   },
 })

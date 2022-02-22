@@ -14,9 +14,11 @@ import { ObjectId } from 'mongodb'
 export type CrudSettings = {
   entity: {
     collection: string
+    query?: any
     projection: { [key: string]: 0 | 1 }
     aggregation?: object[]
     stringId?: boolean
+    format?: (entity: any) => any
     schema: {
       read: unknown // todo: make better?
       write: unknown // todo: make better?
@@ -52,16 +54,19 @@ async function create () {
 
 async function read (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const config = reply.context.config
-  const filter = { _id: config.entity.stringId ? request.params.id : new ObjectId(request.params.id) }
+  const filter = {
+    ...config.entity.query ?? {},
+    _id: config.entity.stringId ? request.params.id : new ObjectId(request.params.id),
+  }
 
-  // todo: aggregations
-  const entity = this.mongo.db!.collection(config.entity.collection).findOne(filter, { projection: config.entity.projection })
+  // todo: aggregations?
+  const entity = await this.mongo.db!.collection(config.entity.collection).findOne(filter, { projection: config.entity.projection })
   if (!entity) {
     reply.callNotFound()
     return
   }
 
-  return entity
+  return config.entity.format ? config.entity.format(entity) : entity
 }
 
 async function readAll (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadAllQuery, Params: RouteParams }>, reply: Reply) {
@@ -69,8 +74,13 @@ async function readAll (this: FastifyInstance, request: FastifyRequest<{ Queryst
   const page = (request.query.page ?? 1) - 1
   const limit = request.query.limit ?? 50
 
-  // todo: aggregations
-  const cursor = this.mongo.db!.collection(config.entity.collection).find({}, { projection: config.entity.projection, limit: limit, skip: page * limit })
+  // todo: aggregations?
+  const cursor = this.mongo.db!.collection(config.entity.collection).find(
+    config.entity.query ?? {},
+    { projection: config.entity.projection, limit: limit, skip: page * limit }
+  )
+
+  if (config.entity.format) cursor.map(config.entity.format)
   return cursor.toArray()
 }
 

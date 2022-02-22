@@ -34,6 +34,9 @@ export const UserFlags: {
   APPEALED_BAN: number
   APPEALED_SYNC: number
   APPEALED_EVENTS: number
+
+  GHOST: number
 }
 
 export const PrivateUserFlags: number
+export const PersistentUserFlags: number

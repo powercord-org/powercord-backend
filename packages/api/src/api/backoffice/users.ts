@@ -4,10 +4,10 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import { UserFlags } from '@powercord/shared/flags'
 import crudModule from './crudLegacy.js'
 import newCrudModule from './crud.js'
-
-type RouteParams = { id: string }
+import { formatUser } from '../../data/user.js'
 
 const updateUserSchema = {
   body: {
@@ -33,7 +33,17 @@ const updateUserSchema = {
 }
 
 // @ts-ignore
-function searchUsers (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: FastifyReply) { // eslint-disable-line
+function searchUsers (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) { // eslint-disable-line
+  // todo
+}
+
+// @ts-ignore
+function banUser (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) { // eslint-disable-line
+  // todo
+}
+
+// @ts-ignore
+function refreshUserPledge (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) { // eslint-disable-line
   // todo
 }
 
@@ -62,7 +72,9 @@ export default async function (fastify: FastifyInstance): Promise<void> {
       entity: {
         collection: 'users',
         stringId: true,
-        projection: { accounts: 0 },
+        query: { flags: { $bitsAllClear: UserFlags.GHOST } },
+        projection: { _id: 1, 'accounts.accessToken': 0, 'accounts.refreshToken': 0 },
+        format: (u) => formatUser(u, true, true),
         schema: {
           read: { $ref: 'https://powercord.dev/schemas/user' },
           write: {
@@ -80,4 +92,6 @@ export default async function (fastify: FastifyInstance): Promise<void> {
 
   // And some other ones
   fastify.get('/search', { schema: void 0 }, searchUsers)
+  fastify.post('/:id(\\d{17,})/ban', { schema: void 0 }, banUser)
+  fastify.post('/:id(\\d{17,})/refresh-pledge', { schema: void 0 }, refreshUserPledge)
 }

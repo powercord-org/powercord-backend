@@ -11,7 +11,7 @@ import { unlink } from 'fs/promises'
 import config from '@powercord/shared/config'
 import { SETTINGS_STORAGE_FOLDER } from '../api/settings.js'
 import { fetchMember, setRoles } from '../utils/discord.js'
-import { UserFlags, PrivateUserFlags } from '@powercord/shared/flags'
+import { UserFlags, PrivateUserFlags, PersistentUserFlags } from '@powercord/shared/flags'
 
 export enum UserDeletionCause {
   // User initiated account deletion manually
@@ -20,7 +20,7 @@ export enum UserDeletionCause {
   // Account deletion scheduled due to inactivity
   AUTOMATIC,
 
-  // Account banned by an administrator
+  // Account deleted (or banned) by an administrator
   ADMINISTRATOR,
 }
 
@@ -33,7 +33,7 @@ const ROLES_TO_REVOKE = [
 ]
 
 export function isGhostUser (user: DatabaseUser): user is GhostUser {
-  return (user.flags & UserFlags.BANNED) !== 0
+  return (user.flags & UserFlags.GHOST) !== 0
 }
 
 export function formatUser (user: User, includePrivate?: boolean): RestUser
@@ -87,41 +87,32 @@ export function formatUser (user: User, includePrivate?: boolean, allFlags?: boo
   return restUser
 }
 
-export async function deleteUser (mongo: MongoClient, userId: string, reason: UserDeletionCause) {
+export async function deleteUser (mongo: MongoClient, userId: string, _reason: UserDeletionCause) {
+  const database = mongo.db()
+  const userCollection = database.collection<DatabaseUser>('users')
+
+  const user = await userCollection.findOne({ _id: userId })
+  if (!user || user.flags & UserFlags.GHOST) return
+
   // Wipe on-disk data
   const syncFile = new URL(userId, SETTINGS_STORAGE_FOLDER)
   if (existsSync(syncFile)) await unlink(syncFile)
 
-  // Database stuff
-  const database = mongo.db()
-  const formsQuery = { submitter: userId, reviewed: { $not: { $eq: true } } }
-
-  // Read data
-  const deletedForms = await database.collection('forms').find(formsQuery, { projection: { messageId: 1 } }).toArray()
-
-  // Update store entries
-  await database.collection('forms').deleteMany(formsQuery)
-  await database.collection<User>('users').deleteOne({ _id: userId })
-
-  // When a user is deleted, there should be no published plugins or theme
-  // However when done by an administrator, items may still be in the store
-  // For these cases, flag the package as owner-less and tell the update server to not ingest future updates
-  if (reason === UserDeletionCause.ADMINISTRATOR) {
-    // todo: revisit this
-    await database.collection('store-items').updateMany(
-      { owner: userId },
-      { $set: { deprecated: true, owner: null } }
-    )
+  // Delete user entry, or keep flags if necessary
+  if (user.flags & PersistentUserFlags) {
+    // We keep the flags we want to keep track of
+    await userCollection.replaceOne({ _id: userId }, { flags: (user.flags & PersistentUserFlags) | UserFlags.GHOST })
+  } else {
+    // We simply delete the entry as we don't need it anymore
+    await userCollection.deleteOne({ _id: userId })
   }
 
+  // todo: handle store items
+
+  // Update member on the guild
   const member = await fetchMember(userId)
   if (member) {
     const newRoles = member.roles.filter((r) => !ROLES_TO_REVOKE.includes(r))
     await setRoles(userId, newRoles, 'User deleted their powercord.dev account')
-  }
-
-  // @ts-ignore
-  for (const { messageId } of deletedForms) { // eslint-disable-line
-    // todo: notify form has been voided
   }
 }

@@ -5,13 +5,14 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { User as DiscordUser } from '@powercord/types/discord'
-import type { User } from '@powercord/types/users'
+import type { DatabaseUser, User } from '@powercord/types/users'
 import { URL } from 'url'
 import { createHash } from 'crypto'
 import { fetch } from 'undici'
 import config from '@powercord/shared/config'
 import { remoteFile } from '../utils/cache.js'
 import { fetchUser } from '../utils/discord.js'
+import { UserFlags } from '@powercord/shared/flags'
 
 type AvatarRequest = { TokenizeUser: User, Params: { id: string } }
 
@@ -40,14 +41,13 @@ async function getDiscordAvatar (user: User, update: (user: DiscordUser) => void
 async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequest>, reply: FastifyReply) {
   let user = request.user
   if (request.params.id !== request.user?._id.toString()) {
+    // type safety: because we ensure GHOST bit is clear, we'll only get User objects.
     user = await this.mongo.db!.collection<User>('users').findOne({
       _id: request.params.id,
-      $or: [
-        { 'badges.developer': true },
-        { 'badges.staff': true },
-        { 'badges.support': true },
-        { 'badges.contributor': true },
-      ],
+      flags: {
+        $bitsAnySet: UserFlags.DEVELOPER | UserFlags.ADMIN | UserFlags.STAFF | UserFlags.SUPPORT | UserFlags.MODERATOR | UserFlags.CONTRIBUTOR,
+        $bitsAllClear: UserFlags.GHOST,
+      },
     })
   }
 
@@ -59,22 +59,22 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
   const effectiveAvatarId = user.avatar ?? user.discriminator
   const etag = `W/"${createHash('sha256').update(config.secret).update(user._id).update(effectiveAvatarId).digest('base64url')}"`
 
-  reply.type('image/png')
   reply.header('cache-control', 'public, max-age=86400')
   if (request.headers['if-none-match'] === etag) {
     reply.code(304).send()
     return
   }
 
+  reply.type('image/png')
   reply.header('etag', etag)
-  return getDiscordAvatar(user, (newUser) => this.mongo.db!.collection<User>('users').updateOne(
+  return getDiscordAvatar(user, (newUser) => this.mongo.db!.collection<DatabaseUser>('users').updateOne(
     { _id: newUser.id },
     {
+      $currentDate: { updatedAt: true },
       $set: {
         username: newUser.username,
         discriminator: newUser.discriminator,
         avatar: newUser.avatar,
-        updatedAt: new Date(),
       },
     }
   ))

@@ -105,6 +105,25 @@ export const userUpdate = {
   },
 }
 
+export const userUpdateAdmin = {
+  $id: 'https://powercord.dev/schemas/admin/user/update',
+  $schema: 'http://json-schema.org/draft-07/schema#', // todo: draft/2020-12 when fst4 & ajv8
+
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    flags: { $ref: 'https://powercord.dev/schemas/user#/properties/flags' },
+    cutiePerks: { $ref: 'https://powercord.dev/schemas/user#/properties/cutiePerks' },
+    cutieStatus: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        pledgeTier: { $ref: 'https://powercord.dev/schemas/user#/properties/cutieStatus/pledgeTier' },
+      },
+    },
+  },
+}
+
 export const userSpotify = {
   $id: 'https://powercord.dev/schemas/user/spotify',
   $schema: 'http://json-schema.org/draft-07/schema#', // todo: draft/2020-12 when fst4 & ajv8

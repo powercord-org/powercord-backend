@@ -5,7 +5,7 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply, ConfiguredReply } from 'fastify'
 import type { OAuthProvider, OAuthToken } from '../utils/oauth.js'
-import type { User } from '@powercord/types/users'
+import type { DatabaseUser, User } from '@powercord/types/users'
 import { randomBytes } from 'crypto'
 import config from '@powercord/shared/config'
 import { UserFlags } from '@powercord/shared/flags'
@@ -31,19 +31,25 @@ export async function refreshUserData (fastify: FastifyInstance, user: User): Pr
     )
 
     const userData = await fetchCurrentUser(newTokens.access_token)
-    const updatedUser = await fastify.mongo.db!.collection<User>('users').findOneAndUpdate({ _id: userData.id }, {
-      $set: {
-        updatedAt: new Date(),
-        username: userData.username,
-        discriminator: userData.discriminator,
-        avatar: userData.avatar,
-        'accounts.discord.accessToken': newTokens.access_token,
-        'accounts.discord.refreshToken': newTokens.refresh_token,
-        'accounts.discord.expiresAt': Date.now() + (newTokens.expires_in * 1000),
-      },
-    }, { returnDocument: 'after' })
 
-    return updatedUser.value!
+    // type safety: we're doing appropriate flags checking
+    const updatedUser = await fastify.mongo.db!.collection<User>('users').findOneAndUpdate(
+      { _id: userData.id, flags: { $bitsAllClear: UserFlags.GHOST } },
+      {
+        $currentDate: { updatedAt: true },
+        $set: {
+          username: userData.username,
+          discriminator: userData.discriminator,
+          avatar: userData.avatar,
+          'accounts.discord.accessToken': newTokens.access_token,
+          'accounts.discord.refreshToken': newTokens.refresh_token,
+          'accounts.discord.expiresAt': Date.now() + (newTokens.expires_in * 1000),
+        },
+      },
+      { returnDocument: 'after' }
+    )
+
+    return updatedUser.value
   } catch {
     return null
   }
@@ -128,7 +134,7 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
 }
 
 async function callback (this: FastifyInstance, request: FastifyRequest<CallbackRequestProps>, reply: Reply) {
-  const collection = this.mongo.db!.collection<User>('users')
+  const collection = this.mongo.db!.collection<DatabaseUser>('users')
   const returnPath = reply.context.config.platform === 'discord' ? '/' : '/me'
   const authStatus = Boolean(reply.context.config.platform === 'discord') !== Boolean(request.user)
 
@@ -165,8 +171,8 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
   }
 
   if (reply.context.config.platform === 'discord') {
-    const user = await collection.findOne({ _id: account.id })
-    if ((user?.flags ?? 0) & UserFlags.BANNED) {
+    const isBanned = await collection.countDocuments({ _id: account.id, flags: { $bitsAllSet: UserFlags.BANNED } })
+    if (isBanned) {
       reply.redirect(`${redirectCookie?.value ?? returnPath}?error=auth_banned`)
       return
     }
@@ -175,7 +181,8 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
       { _id: account.id },
       {
         $currentDate: { updatedAt: true },
-        $setOnInsert: { createdAt: new Date() },
+        $min: { createdAt: new Date() }, // Add creation time if necessary
+        $bit: { flags: { and: ~UserFlags.GHOST } }, // Remove ghost flag
         $set: {
           username: account.username,
           discriminator: account.discriminator,
@@ -253,7 +260,7 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<{ Tokenize
     return
   }
 
-  await this.mongo.db!.collection<User>('users').updateOne(
+  await this.mongo.db!.collection<DatabaseUser>('users').updateOne(
     { _id: request.user!._id },
     { $currentDate: { updatedAt: true }, $unset: { [`accounts.${reply.context.config.platform}`]: 1 } }
   )

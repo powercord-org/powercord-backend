@@ -34,7 +34,7 @@ export async function executor (msg: Message<GuildTextableChannel>): Promise<voi
   const message = await msg.channel.createMessage('<a:loading:660094837437104138> Processing...')
 
   const { guild } = msg.channel
-  const users = await msg._client.mongo.collection<User>('users').find({}).toArray()
+  const users = await msg._client.mongo.collection<User>('users').find({ flags: { $bitsAllClear: 1 << 26 }}).toArray()
   await guild.fetchAllMembers()
   const filteredUsers = users.map((user) => ({
     ...user,
