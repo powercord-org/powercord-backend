@@ -17,6 +17,8 @@ import App from './components/App'
 
 const template = readFileSync(join(__dirname, 'index.html'), 'utf8')
 
+// todo: better csp, expose if token is present via window.HAS_TOKEN
+
 function handler (req: IncomingMessage, res: ServerResponse) {
   res.setHeader('content-type', 'text/html')
   if (req.method?.toLowerCase() !== 'get') {
@@ -43,7 +45,12 @@ function handler (req: IncomingMessage, res: ServerResponse) {
   ))
 
   if (ctx.notFound) res.writeHead(404, 'Not Found')
-  res.write(template.replace('<!--ssr-head-->', head).replace('<!--ssr-body-->', body), () => res.end())
+  res.write(
+    template
+      .replace('<!--ssr-head-->', head)
+      .replace('<!--ssr-body-->', body),
+    () => res.end()
+  )
 }
 
 createServer(handler).listen(process.env.PORT ?? 8000)

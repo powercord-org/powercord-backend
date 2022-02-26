@@ -94,10 +94,13 @@ export default async function authPlugin (fastify: FastifyInstance) {
       return
     }
 
-    if (permissions && (request.user!.flags & permissions) !== 0) {
+    console.log(permissions, request.user!.flags)
+    if (permissions && (request.user!.flags & permissions) === 0) {
       reply.code(403)
       throw new Error('Insufficient permission')
     }
+
+    // todo: update user data if necessary - refreshUserData
   })
 }
 

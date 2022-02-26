@@ -65,8 +65,6 @@ type OAuthConfig = {
 type OAuthOptions = { data: OAuthConfig }
 
 type AuthorizationRequestProps = {
-  // api:v2
-  TokenizeUser: User
   Querystring: {
     redirect?: string,
     // api:v2
@@ -76,8 +74,6 @@ type AuthorizationRequestProps = {
 }
 
 type CallbackRequestProps = {
-  // api:v2
-  TokenizeUser: User
   Querystring: {
     code?: string
     error?: string
@@ -212,15 +208,6 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
       maxAge: 24 * 3600,
     })
 
-    /* const token = this.tokenize.generate(account.id)
-    reply.setCookie('token', token, {
-      signed: true,
-      sameSite: 'lax',
-      path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 3600,
-    }) */
-
     reply.redirect(redirectCookie?.value ?? '/me')
     return
   }
@@ -254,7 +241,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
   reply.redirect(redirectCookie?.value ?? '/me')
 }
 
-async function unlink (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: Reply) {
+async function unlink (this: FastifyInstance, request: FastifyRequest, reply: Reply) {
   if (reply.context.config.platform === 'discord') {
     if (request.user!.flags & UserFlags.STORE_PUBLISHER) {
       reply.redirect('/me?error=delete_blocked')
@@ -281,16 +268,35 @@ async function unlink (this: FastifyInstance, request: FastifyRequest<{ Tokenize
 }
 
 async function oauthPlugin (fastify: FastifyInstance, options: OAuthOptions) {
-  // todo: ditch tokenize
-  fastify.get<AuthorizationRequestProps, OAuthConfig>('/', { config: options.data, preHandler: fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]) }, authorize)
-  fastify.get<CallbackRequestProps, OAuthConfig>('/callback', { config: options.data, preHandler: fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ]) }, callback)
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: authorize,
+    config: {
+      ...options.data,
+      auth: { optional: true },
+    }
+  })
 
-  // api:v2
-  if (fastify.prefix.startsWith('/v2')) {
-    fastify.get<{ TokenizeUser: User }, OAuthConfig>('/unlink', { config: options.data, preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlink)
-  } else {
-    fastify.get<{ TokenizeUser: User }, OAuthConfig>('/unlink', { config: options.data, preHandler: fastify.auth([ fastify.verifyTokenizeToken ]) }, unlink)
-  }
+  fastify.route({
+    method: 'GET',
+    url: '/callback',
+    handler: callback,
+    config: {
+      ...options.data,
+      auth: { optional: true },
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/unlink',
+    handler: unlink,
+    config: {
+      ...options.data,
+      auth: {},
+    }
+  })
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {

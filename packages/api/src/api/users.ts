@@ -56,7 +56,7 @@ async function getUser (this: FastifyInstance, request: FastifyRequest<{ Params:
   return sendUser(request, reply, user)
 }
 
-async function getSelf (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply) {
+async function getSelf (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) {
   await refreshDonatorState(this.mongo.client, request.user!)
   return sendUser(request, reply, request.user!, true)
 }
@@ -101,7 +101,7 @@ async function patchSelf (this: FastifyInstance, request: FastifyRequest<PatchSe
   notifyStateChange(newUser, 'perks')
 }
 
-async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>): Promise<unknown> {
+async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest): Promise<unknown> {
   const { spotify } = request.user!.accounts
   if (!spotify) return { token: null }
 
@@ -121,7 +121,7 @@ async function getSpotifyToken (this: FastifyInstance, request: FastifyRequest<{
   return { token: spotify.accessToken }
 }
 
-async function refreshPledge (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User }>, reply: FastifyReply) {
+async function refreshPledge (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) {
   const patreonAccount = request.user!.accounts.patreon
   const lastManualRefresh = request.user!.cutieStatus?.lastManualRefresh ?? 0
   if (!patreonAccount) {
@@ -148,8 +148,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.route({
     method: 'GET',
     url: '/@me',
-    preHandler: fastify.auth([ fastify.verifyTokenizeToken ]),
     handler: getSelf,
+    config: { auth: { allowClient: true } },
     schema: {
       response: {
         200: { $ref: 'https://powercord.dev/schemas/user' },
@@ -161,8 +161,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.route({
     method: 'GET',
     url: '/@me/spotify',
-    preHandler: fastify.auth([ fastify.verifyTokenizeToken ]),
     handler: getSpotifyToken,
+    config: { auth: { allowClient: true } },
     schema: {
       response: {
         200: { $ref: 'https://powercord.dev/schemas/user/spotify' },
@@ -194,8 +194,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     fastify.route({
       method: 'PATCH',
       url: '/@me',
-      preHandler: fastify.auth([ fastify.verifyTokenizeToken ]),
       handler: patchSelf,
+      config: { auth: { allowClient: true } },
       schema: {
         body: { $ref: 'https://powercord.dev/schemas/user/update' },
         response: {
@@ -208,8 +208,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     fastify.route({
       method: 'POST',
       url: '/@me/refresh-pledge',
-      preHandler: fastify.auth([ fastify.verifyTokenizeToken ]),
       handler: refreshPledge,
+      config: { auth: { allowClient: true } },
       schema: {
         response: {
           200: { $ref: 'https://powercord.dev/schemas/user#/properties/cutieStatus' },

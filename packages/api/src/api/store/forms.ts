@@ -159,7 +159,7 @@ async function finalizeForm (db: Db, user: User, kind: string, data: Record<stri
 }
 
 // -- Routes handlers
-async function publishForm (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User, Body: PublishBody }>, reply: FastifyReply) {
+async function publishForm (this: FastifyInstance, request: FastifyRequest<{ Body: PublishBody }>, reply: FastifyReply) {
   const eligibility = await fetchEligibility(this.mongo.db!, request.user!)
   if (eligibility.publish !== 0) return reply.code(403).send()
 
@@ -192,7 +192,7 @@ async function publishForm (this: FastifyInstance, request: FastifyRequest<{ Tok
   return finalizeForm(this.mongo.db!, request.user!, 'publish', request.body, reply)
 }
 
-async function verificationForm (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User, Body: VerificationBody }>, reply: FastifyReply) {
+async function verificationForm (this: FastifyInstance, request: FastifyRequest<{ Body: VerificationBody }>, reply: FastifyReply) {
   const eligibility = await fetchEligibility(this.mongo.db!, request.user!)
   if (eligibility.verification !== 0) return reply.code(403).send()
 
@@ -206,7 +206,7 @@ async function verificationForm (this: FastifyInstance, request: FastifyRequest<
   return finalizeForm(this.mongo.db!, request.user!, 'verification', request.body, reply)
 }
 
-async function hostingForm (this: FastifyInstance, request: FastifyRequest<{ TokenizeUser: User, Body: HostingBody }>, reply: FastifyReply) {
+async function hostingForm (this: FastifyInstance, request: FastifyRequest<{ Body: HostingBody }>, reply: FastifyReply) {
   const eligibility = await fetchEligibility(this.mongo.db!, request.user!)
   if (eligibility.hosting !== 0) return reply.code(403).send()
 
@@ -237,11 +237,8 @@ async function hostingForm (this: FastifyInstance, request: FastifyRequest<{ Tok
 export default async function (fastify: FastifyInstance): Promise<void> {
   if (process.env.NODE_ENV !== 'development') return
 
-  const optionalAuth = fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ])
-  const auth = fastify.auth([ fastify.verifyTokenizeToken ])
-
-  fastify.get<{ TokenizeUser: User }>('/eligibility', { preHandler: optionalAuth }, (request) => fetchEligibility(fastify.mongo.db!, request.user))
-  fastify.post<{ TokenizeUser: User, Body: PublishBody }>('/publish', { preHandler: auth, schema: publishSchema }, publishForm)
-  fastify.post<{ TokenizeUser: User, Body: VerificationBody }>('/verification', { preHandler: auth, schema: verificationSchema }, verificationForm)
-  fastify.post<{ TokenizeUser: User, Body: HostingBody }>('/hosting', { preHandler: auth, schema: hostingSchema }, hostingForm)
+  fastify.get('/eligibility', { config: { auth: { optional: true } } }, (request) => fetchEligibility(fastify.mongo.db!, request.user))
+  fastify.post<{ Body: PublishBody }>('/publish', { config: { auth: {} }, schema: publishSchema }, publishForm)
+  fastify.post<{ Body: VerificationBody }>('/verification', { config: { auth: {} }, schema: verificationSchema }, verificationForm)
+  fastify.post<{ Body: HostingBody }>('/hosting', { config: { auth: {} }, schema: hostingSchema }, hostingForm)
 }

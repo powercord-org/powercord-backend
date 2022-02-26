@@ -8,10 +8,12 @@
 // todo: make safe enough and modular enough for usage in public routes
 // [Cynthia] As long as routes have a strict schema, they will be safe from mongo injections
 
-import type { FastifyInstance, FastifyRequest, FastifyReply, ConfiguredReply } from 'fastify'
+import type { FastifyInstance, FastifyRequest, FastifyReply, ConfiguredReply, FastifyContextConfig } from 'fastify'
 import { ObjectId } from 'mongodb'
 
 export type CrudSettings = {
+  // todo: make this better
+  auth: Exclude<FastifyContextConfig['auth'], undefined>
   entity: {
     collection: string
     query?: any

@@ -14,11 +14,9 @@ importers:
       eslint: ^8.7.0
       fast-jwt: ^1.5.1
       fastify: ^3.27.0
-      fastify-auth: ^1.1.0
       fastify-cookie: ^5.5.0
       fastify-mongodb: ^4.1.1
       fastify-raw-body: ^3.2.0
-      fastify-tokenize: ^1.3.1
       mongodb: ^4.3.1
       node-fetch: ^3.2.0
       tsc-watch: ^4.6.0
@@ -31,11 +29,9 @@ importers:
       crapcord: link:../crapcord
       fast-jwt: 1.5.1
       fastify: 3.27.1
-      fastify-auth: 1.1.0
       fastify-cookie: 5.5.0
       fastify-mongodb: 4.1.1
       fastify-raw-body: 3.2.0
-      fastify-tokenize: 1.3.1_d15fe3e7c25ba111b55801e16943e486
       mongodb: 4.3.1
       node-fetch: 3.2.0
       undici: 4.14.1
@@ -1407,10 +1403,6 @@ packages:
     dependencies:
       '@babel/helper-validator-identifier': 7.16.7
       to-fast-properties: 2.0.0
-
-  /@cyyynthia/tokenize/1.1.3:
-    resolution: {integrity: sha512-sg/0tuXC2oF51vwjzAxhf7Hxb9pEOH9I/ACGb2ZUWaSCdQqK+T70Ss4xlg0KIy2pR+N43IP/B+2Uq2UpGJbJ6w==}
-    dev: false
 
   /@eslint/eslintrc/0.4.3:
     resolution: {integrity: sha512-J6KFFz5QCYUJq3pf0mjEcCJVERbzv71PUIDczuh9JkwGEzced6CO5ADLHB1rbf/+oPBtoPfMYNOpGDzCANlbXw==}
@@ -3058,13 +3050,6 @@ packages:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
     dev: false
 
-  /fastify-auth/1.1.0:
-    resolution: {integrity: sha512-8IajmAZB3QJ3wTP0q8Z3TG9DkxrIcAlS85TdPCBEfJi3mMKQd/sCYxtZ0dYv11v5hZaJ9z8XmNzhK3AH6/JpNw==}
-    dependencies:
-      fastify-plugin: 3.0.1
-      reusify: 1.0.4
-    dev: false
-
   /fastify-cookie/5.5.0:
     resolution: {integrity: sha512-XhexnjmAR4CUh3Cz6Ko0is+pa8k1bS6+nkf/i3viv4p7R1fwGtGhAXuz+b4nEM0x7pvdi5ApKY73Bp5CELZP7g==}
     dependencies:
@@ -3100,23 +3085,6 @@ packages:
       fastify-plugin: 2.3.4
       raw-body: 2.4.2
       secure-json-parse: 2.4.0
-    dev: false
-
-  /fastify-tokenize/1.3.1_d15fe3e7c25ba111b55801e16943e486:
-    resolution: {integrity: sha512-ucXdUyoZo6vRn0MlJA/9FeLfF+qdMDYBS3/nzTLsMcOWDkuwoSMq8XdLYGfyNtY6kDIsnvNCZzy81CmUxfsi4A==}
-    peerDependencies:
-      fastify-auth: ^1.0.1
-      fastify-cookie: ^5.0.2
-    peerDependenciesMeta:
-      fastify-auth:
-        optional: true
-      fastify-cookie:
-        optional: true
-    dependencies:
-      '@cyyynthia/tokenize': 1.1.3
-      fastify-auth: 1.1.0
-      fastify-cookie: 5.5.0
-      fastify-plugin: 3.0.1
     dev: false
 
   /fastify-warning/0.2.0:

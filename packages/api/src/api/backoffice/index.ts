@@ -8,8 +8,6 @@ import usersModule from './users.js'
 import formsModule from './forms.js'
 
 export default async function (fastify: FastifyInstance): Promise<void> {
-  fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken, fastify.verifyAdmin ], { relation: 'and' }))
-
   fastify.register(usersModule, { prefix: '/users' })
   // abuse monitoring
 

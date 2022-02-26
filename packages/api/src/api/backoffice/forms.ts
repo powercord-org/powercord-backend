@@ -7,6 +7,7 @@ import type { User } from '@powercord/types/users'
 import type { StoreForm } from '@powercord/types/store'
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import config from '@powercord/shared/config'
+import { UserFlags } from '@powercord/shared/flags'
 import { dispatchHonk, editHonkMessage, fetchHonkMessage, sendDm } from '../../utils/discord.js'
 import crudModule from './crudLegacy.js'
 
@@ -116,6 +117,7 @@ async function getFormCount (this: FastifyInstance) {
 export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.register(crudModule, {
     data: {
+      auth: { permissions: UserFlags.STAFF },
       collection: 'forms',
       projection: formsProjection,
       aggregation: [
@@ -137,6 +139,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   fastify.register(crudModule, {
     prefix: '/reviewed',
     data: {
+      auth: { permissions: UserFlags.STAFF },
       collection: 'forms',
       projection: formsProjection,
       aggregation: [

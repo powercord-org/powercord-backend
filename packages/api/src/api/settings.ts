@@ -4,7 +4,6 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import type { User } from '@powercord/types/users'
 import { URL } from 'url'
 import { unlink, rename } from 'fs/promises'
 import { existsSync, mkdirSync, createReadStream, createWriteStream } from 'fs'
@@ -14,11 +13,9 @@ const SETTINGS_UPLOAD_EYES = 1e6 // 1MB
 export const SETTINGS_STORAGE_FOLDER = new URL('file:///var/lib/powercord/settings/')
 if (!existsSync(SETTINGS_STORAGE_FOLDER)) mkdirSync(SETTINGS_STORAGE_FOLDER)
 
-type ReqProps = { TokenizeUser: User }
-
 const locks = new Set<string>()
 
-async function retrieve (this: FastifyInstance, request: FastifyRequest<ReqProps>, reply: FastifyReply) {
+async function retrieve (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) {
   const file = new URL(request.user!._id, SETTINGS_STORAGE_FOLDER)
   if (!existsSync(file)) return reply.callNotFound()
 
@@ -27,7 +24,7 @@ async function retrieve (this: FastifyInstance, request: FastifyRequest<ReqProps
   reply.send(createReadStream(file))
 }
 
-function upload (this: FastifyInstance, request: FastifyRequest<ReqProps>, reply: FastifyReply) {
+function upload (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) {
   if (locks.has(request.user!._id)) {
     reply.code(409).send({ error: 'Resource locked by another request currently processing.' })
     return
@@ -53,7 +50,7 @@ function upload (this: FastifyInstance, request: FastifyRequest<ReqProps>, reply
   })
 }
 
-async function del (this: FastifyInstance, request: FastifyRequest<ReqProps>, reply: FastifyReply) {
+async function del (this: FastifyInstance, request: FastifyRequest, reply: FastifyReply) {
   if (locks.has(request.user!._id)) {
     reply.code(409).send({ error: 'Resource locked by another request currently processing.' })
     return
@@ -69,10 +66,27 @@ async function del (this: FastifyInstance, request: FastifyRequest<ReqProps>, re
 export default async function (fastify: FastifyInstance): Promise<void> {
   if (process.env.NODE_ENV !== 'development') return
 
-  fastify.addHook('preHandler', fastify.auth([ fastify.verifyTokenizeToken ]))
   fastify.addContentTypeParser('application/octet-stream', {}, async () => void 0)
 
-  fastify.post<ReqProps>('/', { bodyLimit: SETTINGS_UPLOAD_LIMIT }, upload)
-  fastify.get<ReqProps>('/', retrieve)
-  fastify.delete<ReqProps>('/', del)
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    handler: upload,
+    config: { auth: { allowClient: true } }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: retrieve,
+    bodyLimit: SETTINGS_UPLOAD_LIMIT,
+    config: { auth: { allowClient: true } }
+  })
+
+  fastify.route({
+    method: 'DELETE',
+    url: '/',
+    handler: del,
+    config: { auth: { allowClient: true } }
+  })
 }

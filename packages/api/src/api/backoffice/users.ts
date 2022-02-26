@@ -51,6 +51,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
   // Main routes
   fastify.register(crudModule, {
     data: {
+      auth: { permissions: UserFlags.STAFF },
       idStr: true,
       collection: 'users',
       projection: { accounts: 0, settings: 0, 'banStatus._id': 0 },
@@ -69,6 +70,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
 
   fastify.register(newCrudModule, {
     data: {
+      auth: { permissions: UserFlags.STAFF },
       entity: {
         collection: 'users',
         stringId: true,

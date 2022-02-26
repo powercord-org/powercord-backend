@@ -3,16 +3,10 @@
  * Licensed under the Open Software License version 3.0
  */
 
-import type { RouteHandler } from 'fastify'
 import type { User } from '@powercord/types/users'
 import type { TokenType, JWTPayload } from './utils/auth.js'
 
 declare module 'fastify' {
-  interface FastifyInstance {
-    /** @deprecated */
-    verifyAdmin: RouteHandler
-  }
-
   interface FastifyRequest {
     jwtPayload: JWTPayload | null
     user: User | null
