@@ -14,6 +14,7 @@ import { deleteUser, UserDeletionCause } from '../data/user.js'
 import { fetchTokens } from '../utils/oauth.js'
 import { fetchCurrentUser, addRole } from '../utils/discord.js'
 import { prepareUpdateData, notifyStateChange } from '../utils/patreon.js'
+import { TokenType } from '../utils/auth.js'
 
 /** @deprecated */
 export async function refreshUserData (fastify: FastifyInstance, user: User): Promise<User | null> {
@@ -114,7 +115,7 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
   }
 
   // api:v2
-  if (apiVersion === 'v2') {
+  if (apiVersion !== 'v3') {
     if (request.query.redirect) {
       reply.setCookie('redirect', request.query.redirect, cookieSettings)
     }
@@ -129,7 +130,7 @@ async function authorize (this: FastifyInstance, request: FastifyRequest<Authori
   reply.setCookie('state', state, cookieSettings)
 
   // api:v2
-  const redirect = apiVersion === 'v2' ? request.routerPath : `${request.routerPath}/callback`
+  const redirect = apiVersion !== 'v3' ? request.routerPath : `${request.routerPath}/callback`
   reply.redirect(getAuthorizationUrl(reply.context.config.platform, redirect, reply.context.config.scopes, state))
 }
 
@@ -177,11 +178,12 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
       return
     }
 
-    const res = await collection.updateOne(
+    const date = new Date()
+    const res = await collection.findOneAndUpdate(
       { _id: account.id },
       {
         $currentDate: { updatedAt: true },
-        $min: { createdAt: new Date() }, // Add creation time if necessary
+        $min: { createdAt: date }, // Add creation time if necessary
         $bit: { flags: { and: ~UserFlags.GHOST } }, // Remove ghost flag
         $set: {
           username: account.username,
@@ -190,24 +192,34 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
           ...toMongoFields(oauthToken, 'discord'),
         },
       },
-      { upsert: true }
+      { upsert: true, returnDocument: 'after', projection: { flags: 1, createdAt: 1 } }
     )
 
-    if (res.upsertedCount === 1) {
+    // Cast is safe
+    const user = res.value as User
+    if (user.createdAt === date) {
       // New account
-      addRole(account.id, config.discord.roles.user, 'User created their powercord.dev account').catch(() => 0)
+      addRole(user._id, config.discord.roles.user, 'User created their powercord.dev account').catch(() => 0)
     }
 
-    // todo: ditch tokenize
-    const token = this.tokenize.generate(account.id)
+    const token = reply.generateToken({ id: user._id }, TokenType.WEB)
     reply.setCookie('token', token, {
-      signed: true,
-      // todo: http only?
+      // Signing the cookie is unnecessary as the JWT itself is signed
+      httpOnly: true,
       sameSite: 'lax',
       path: '/',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 3600,
     })
+
+    /* const token = this.tokenize.generate(account.id)
+    reply.setCookie('token', token, {
+      signed: true,
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 3600,
+    }) */
 
     reply.redirect(redirectCookie?.value ?? '/me')
     return

@@ -21,6 +21,7 @@
     "@powercord/shared": "workspace:*",
     "@powercord/types": "workspace:*",
     "crapcord": "workspace:*",
+    "fast-jwt": "^1.5.1",
     "fastify": "^3.27.0",
     "fastify-auth": "^1.1.0",
     "fastify-cookie": "^5.5.0",

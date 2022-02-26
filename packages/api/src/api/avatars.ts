@@ -40,7 +40,7 @@ async function getDiscordAvatar (user: User, update: (user: DiscordUser) => void
 // Only avatar of people shown on /contributors & authenticated user can be fetched.
 async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequest>, reply: FastifyReply) {
   let user = request.user
-  if (request.params.id !== request.user?._id.toString()) {
+  if (request.params.id !== request.user?._id) {
     // type safety: because we ensure GHOST bit is clear, we'll only get User objects.
     user = await this.mongo.db!.collection<User>('users').findOne({
       _id: request.params.id,
@@ -81,7 +81,16 @@ async function avatar (this: FastifyInstance, request: FastifyRequest<AvatarRequ
 }
 
 export default async function (fastify: FastifyInstance): Promise<void> {
-  const optionalAuth = fastify.auth([ fastify.verifyTokenizeToken, (_, __, next) => next() ])
-
-  fastify.get<AvatarRequest>('/:id(\\d+).png', { preHandler: optionalAuth }, avatar)
+  fastify.route({
+    method: 'GET',
+    url: '/:id(\\d+).png',
+    config: { auth: { optional: true } },
+    handler: avatar,
+    schema: {
+      params: {
+        type: 'object',
+        properties: { id: { type: 'string' } }
+      }
+    }
+  })
 }

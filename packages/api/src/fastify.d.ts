@@ -4,10 +4,30 @@
  */
 
 import type { RouteHandler } from 'fastify'
+import type { User } from '@powercord/types/users'
+import type { TokenType, JWTPayload } from './utils/auth.js'
 
 declare module 'fastify' {
-  export interface FastifyInstance {
+  interface FastifyInstance {
+    /** @deprecated */
     verifyAdmin: RouteHandler
+  }
+
+  interface FastifyRequest {
+    jwtPayload: JWTPayload | null
+    user: User | null
+  }
+
+  interface FastifyReply {
+    generateToken: (payload: JWTPayload, type: TokenType) => string
+  }
+
+  interface FastifyContextConfig {
+    auth?: {
+      optional?: boolean
+      permissions?: number
+      allowClient?: boolean
+    }
   }
 
   export type ConfiguredReply<TFReply extends FastifyReply, TConfig> =

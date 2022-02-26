@@ -12,6 +12,7 @@ importers:
       '@typescript-eslint/parser': ^5.10.0
       crapcord: workspace:*
       eslint: ^8.7.0
+      fast-jwt: ^1.5.1
       fastify: ^3.27.0
       fastify-auth: ^1.1.0
       fastify-cookie: ^5.5.0
@@ -28,6 +29,7 @@ importers:
       '@powercord/shared': link:../../shared
       '@powercord/types': link:../types
       crapcord: link:../crapcord
+      fast-jwt: 1.5.1
       fastify: 3.27.1
       fastify-auth: 1.1.0
       fastify-cookie: 5.5.0
@@ -2087,6 +2089,15 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /asn1.js/5.4.1:
+    resolution: {integrity: sha512-+I//4cYPccV8LdmBLiX8CYvf9Sp3vQsrqu2QNXRcrbiWvcx/UdlFiqUJJzxRQxgsZmvhXhn4cSKeSmoFjVdupA==}
+    dependencies:
+      bn.js: 4.12.0
+      inherits: 2.0.4
+      minimalistic-assert: 1.0.1
+      safer-buffer: 2.1.2
+    dev: false
+
   /astral-regex/2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
@@ -2170,6 +2181,10 @@ packages:
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
+    dev: false
+
+  /bn.js/4.12.0:
+    resolution: {integrity: sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==}
     dev: false
 
   /boolbase/1.0.0:
@@ -2504,6 +2519,12 @@ packages:
   /duplexer/0.1.2:
     resolution: {integrity: sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg==}
     dev: true
+
+  /ecdsa-sig-formatter/1.0.11:
+    resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
+    dependencies:
+      safe-buffer: 5.2.1
+    dev: false
 
   /electron-to-chromium/1.4.68:
     resolution: {integrity: sha512-cId+QwWrV8R1UawO6b9BR1hnkJ4EJPCPAr4h315vliHUtVUJDk39Sg1PMNnaWKfj5x+93ssjeJ9LKL6r8LaMiA==}
@@ -3013,6 +3034,15 @@ packages:
       deepmerge: 4.2.2
       rfdc: 1.3.0
       string-similarity: 4.0.4
+    dev: false
+
+  /fast-jwt/1.5.1:
+    resolution: {integrity: sha512-XmsUqmyGoyMH5JB8dLFkMs7v2aEYdNj9UdZ/SZTyd211KVkvojnd7p9HT/9UXzMdF2s6IS0cSb7gUcOQrJq2GQ==}
+    engines: {node: '>= 10.12.0'}
+    dependencies:
+      asn1.js: 5.4.1
+      ecdsa-sig-formatter: 1.0.11
+      mnemonist: 0.39.0
     dev: false
 
   /fast-levenshtein/2.0.6:
@@ -3595,6 +3625,10 @@ packages:
       mime-db: 1.51.0
     dev: true
 
+  /minimalistic-assert/1.0.1:
+    resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
+    dev: false
+
   /minimatch/3.1.1:
     resolution: {integrity: sha512-reLxBcKUPNBnc/sVtAbxgRVFSegoGeLaSjmphNhcwcolhYLRgtJscn5mRl6YRZNQv40Y7P6JM2YhSIsbL9OB5A==}
     dependencies:
@@ -3608,6 +3642,12 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dev: true
+
+  /mnemonist/0.39.0:
+    resolution: {integrity: sha512-7v08Ldk1lnlywnIShqfKYN7EW4WKLUnkoWApdmR47N1xA2xmEtWERfEvyRCepbuFCETG5OnfaGQpp/p4Bus6ZQ==}
+    dependencies:
+      obliterator: 2.0.2
+    dev: false
 
   /moment-timezone/0.5.34:
     resolution: {integrity: sha512-3zAEHh2hKUs3EXLESx/wsgw6IQdusOT8Bxm3D9UrHPQR7zlMmzwybC8zHEM1tQ4LJwP7fcxrWr8tuBg05fFCbg==}
@@ -3727,6 +3767,10 @@ packages:
       define-properties: 1.1.3
       has-symbols: 1.0.2
       object-keys: 1.1.1
+    dev: false
+
+  /obliterator/2.0.2:
+    resolution: {integrity: sha512-g0TrA7SbUggROhDPK8cEu/qpItwH2LSKcNl4tlfBNT54XY+nOsqrs0Q68h1V9b3HOSpIWv15jb1lax2hAggdIg==}
     dev: false
 
   /once/1.4.0:

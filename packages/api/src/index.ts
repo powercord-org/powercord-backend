@@ -15,6 +15,7 @@ import { UserFlags } from '@powercord/shared/flags'
 import config from '@powercord/shared/config'
 
 import schemaLoader from './schemas/loader.js'
+import authPlugin from './utils/auth.js'
 
 import apiModule from './api/index.js'
 import { refreshUserData } from './api/oauth.js'
@@ -31,11 +32,18 @@ function verifyAdmin (request: FastifyRequest<{ TokenizeUser: User }>, reply: Fa
 }
 
 fastify.decorate('verifyAdmin', verifyAdmin)
-fastify.register(schemaLoader)
-fastify.register(fastifyAuth)
+
 fastify.register(fastifyCookie)
-fastify.register(fastifyRawBody, { global: false })
+fastify.register(fastifyRawBody, { global: false }) // todo: necessary?
 fastify.register(fastifyMongodb, { url: `${config.mango}?appName=Powercord%20API` })
+
+fastify.decorateRequest('jwtPayload', null)
+fastify.decorateRequest('user', null)
+fastify.register(authPlugin)
+fastify.register(schemaLoader)
+
+// todo: remove
+fastify.register(fastifyAuth)
 fastify.register(fastifyTokenize, {
   secret: config.secret,
   fastifyAuth: true,

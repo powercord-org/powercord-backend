@@ -64,9 +64,9 @@ export const userBasic = {
 
     // deprecated api:v2
     id: { type: 'string' },
-    username: { type: 'string' },
-    discriminator: { type: 'string' },
-    avatar: { type: [ 'null', 'string' ] },
+    username: { const: 'Herobrine' },
+    discriminator: { const: '0001' },
+    avatar: { const: null },
     badges: {
       type: 'object',
       additionalProperties: false,
