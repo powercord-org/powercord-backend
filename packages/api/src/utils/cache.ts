@@ -8,7 +8,7 @@ import { tmpdir } from 'os'
 import { existsSync, mkdirSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
 import { basename } from 'path'
-import fetch from 'node-fetch'
+import { fetch } from 'undici'
 
 export type CacheResult = { success: false } | { success: true, data: Buffer }
 

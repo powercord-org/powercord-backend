@@ -3,7 +3,7 @@
  * Licensed under the Open Software License version 3.0
  */
 
-import fetch from 'node-fetch'
+import { fetch } from 'undici'
 import config from '@powercord/shared/config'
 import { getOrCompute } from '../../utils/cache.js'
 

@@ -89,8 +89,8 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     schema: {
       params: {
         type: 'object',
-        properties: { id: { type: 'string' } }
-      }
-    }
+        properties: { id: { type: 'string' } },
+      },
+    },
   })
 }

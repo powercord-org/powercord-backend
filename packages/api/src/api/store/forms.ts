@@ -8,7 +8,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import type { EligibilityStatus } from '@powercord/types/store'
 import type { User } from '@powercord/types/users'
 import { lookup } from 'dns'
-import fetch from 'node-fetch'
+import { fetch } from 'undici'
 import config from '@powercord/shared/config'
 
 import { dispatchHonk } from '../../utils/discord.js'

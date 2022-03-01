@@ -275,7 +275,7 @@ async function oauthPlugin (fastify: FastifyInstance, options: OAuthOptions) {
     config: {
       ...options.data,
       auth: { optional: true },
-    }
+    },
   })
 
   fastify.route({
@@ -285,7 +285,7 @@ async function oauthPlugin (fastify: FastifyInstance, options: OAuthOptions) {
     config: {
       ...options.data,
       auth: { optional: true },
-    }
+    },
   })
 
   fastify.route({
@@ -295,7 +295,7 @@ async function oauthPlugin (fastify: FastifyInstance, options: OAuthOptions) {
     config: {
       ...options.data,
       auth: {},
-    }
+    },
   })
 }
 

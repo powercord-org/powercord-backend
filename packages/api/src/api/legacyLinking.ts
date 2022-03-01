@@ -6,6 +6,7 @@
 // api:v2
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import { TokenType } from '../utils/auth.js'
 
 const html = (jwt: string): string => `<!doctype html>
 <html>
@@ -26,10 +27,7 @@ function legacy (request: FastifyRequest, reply: FastifyReply): void {
     return
   }
 
-  const cookie = reply.unsignCookie(request.cookies.token)
-  if (!cookie.valid) reply.redirect('/')
-
-  reply.type('text/html').send(html(cookie.value!))
+  reply.type('text/html').send(html(reply.generateToken({ id: request.user!._id }, TokenType.CLIENT)))
 }
 
 /** @deprecated */

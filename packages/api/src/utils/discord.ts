@@ -6,7 +6,7 @@
 // todo: use crapcord instead
 
 import type { User, Member, ApiMessage } from '@powercord/types/discord'
-import fetch from 'node-fetch'
+import { fetch } from 'undici'
 import config from '@powercord/shared/config'
 
 /// Users

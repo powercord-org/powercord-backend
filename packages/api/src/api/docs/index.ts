@@ -9,7 +9,7 @@ import { URL } from 'url'
 import { createHash } from 'crypto'
 import { existsSync } from 'fs'
 import { readdir, readFile } from 'fs/promises'
-import fetch from 'node-fetch'
+import { fetch } from 'undici'
 import config from '@powercord/shared/config'
 import markdown from './parser.js'
 
