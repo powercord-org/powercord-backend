@@ -183,7 +183,7 @@ async function numbers (this: FastifyInstance, _request: FastifyRequest, reply: 
     users: await getOrCompute('account_stats', () => computeUsersOverTime(this.mongo.db!)),
     guild: await getOrCompute('guild_stats', () => computeGuildStats(this.mongo.db!), true),
     helpers: await this.mongo.db!.collection('users').countDocuments({
-      $bitsAnySet: UserFlags.CONTRIBUTOR | UserFlags.BUG_HUNTER | UserFlags.TRANSLATOR,
+      flags: { $bitsAnySet: UserFlags.CONTRIBUTOR | UserFlags.BUG_HUNTER | UserFlags.TRANSLATOR },
     }),
     plugins: 0,
     themes: 0,
