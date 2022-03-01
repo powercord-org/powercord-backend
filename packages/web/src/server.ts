@@ -54,4 +54,4 @@ function handler (req: IncomingMessage, res: ServerResponse) {
   )
 }
 
-createServer(handler).listen(process.env.PORT ?? 8000)
+createServer(handler).listen(Number(process.env.PORT ?? 8000), process.env.BIND ?? '127.0.0.1')
