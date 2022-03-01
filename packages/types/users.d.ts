@@ -97,4 +97,8 @@ export type LegacyRestUser = RestUser & {
       name: string | null
     }
   }
+  accounts?: {
+    spotify?: string
+    patreon?: string
+  }
 }

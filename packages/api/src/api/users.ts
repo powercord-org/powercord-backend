@@ -35,7 +35,7 @@ async function sendUser (request: FastifyRequest, reply: FastifyReply, user: Use
 
   reply.header('etag', etag)
   // api:v2
-  if (!request.url.startsWith('/v3')) return legacyFormatUser(user)
+  if (!request.url.startsWith('/v3')) return legacyFormatUser(user, self)
   return formatUser(user, self)
 }
 

@@ -41,7 +41,7 @@ function formatBadges (user: User): DeprecatedCustomBadges {
 }
 
 /** @deprecated */
-export async function formatUser (user: User): Promise<LegacyRestUser> {
+export async function formatUser (user: User, self?: boolean): Promise<LegacyRestUser> {
   const customBadges = formatBadges(user)
   const cutiePerks = {
     color: customBadges.color,
@@ -67,5 +67,11 @@ export async function formatUser (user: User): Promise<LegacyRestUser> {
       custom: customBadges,
     },
     cutiePerks: cutiePerks,
+    accounts: !self
+      ? void 0
+      : {
+        spotify: user.accounts.spotify?.name,
+        patreon: user.accounts.patreon?.name,
+      },
   }
 }
