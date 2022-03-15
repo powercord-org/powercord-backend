@@ -10,41 +10,43 @@
 // [Cynthia] As long as routes have a strict schema, they will be safe from mongo injections
 
 import type { FastifyInstance, FastifyRequest, FastifyReply, ConfiguredReply, FastifyContextConfig } from 'fastify'
+import type { Filter } from 'mongodb'
 import { ObjectId } from 'mongodb'
 
-export type CrudSettings = {
-  // todo: make this better
-  auth: Exclude<FastifyContextConfig['auth'], undefined>
+type CrudModule<TProps = {}> =
+  | ({ enabled: false } & Partial<TProps>)
+  | (TProps & { enabled: true, auth: Exclude<FastifyContextConfig['auth'], undefined> })
+
+export type CrudSettings<TEntity> = {
   entity: {
     collection: string
-    query?: any
-    projection: { [key: string]: 0 | 1 }
-    aggregation?: object[]
     stringId?: boolean
-    format?: (entity: any) => any
-    schema: {
-      read: unknown // todo: make better?
-      write: unknown // todo: make better?
-    }
+    baseQuery?: Filter<TEntity>
+    projection: { [key: string]: 0 | 1 }
   }
-  create?: {
-    enabled?: boolean
-  }
-  read?: {
-    enabled?: boolean
+  create: CrudModule<{
+    schema: unknown
+    executor?: (data: any) => Promise<TEntity | null>
+    post?: (data: TEntity) => void
+  }>
+  read: CrudModule<{
+    schema: unknown
     allowAll?: boolean
-  }
-  update?: {
-    enabled?: boolean
-    upsert?: boolean
+    format?: (entity: TEntity) => any
+  }>
+  update: CrudModule<{
+    schema: unknown
     hasUpdatedAt?: boolean
-  }
-  delete?: {
-    enabled?: boolean
-  }
+    executor?: (data: any) => Promise<TEntity | null>
+    post?: (data: TEntity) => void
+  }>
+  delete: CrudModule<{
+    executor?: (id: string | ObjectId) => Promise<void>
+    post?: (data: TEntity) => void
+  }>
 }
 
-type Reply = ConfiguredReply<FastifyReply, CrudSettings>
+type Reply = ConfiguredReply<FastifyReply, CrudSettings<any>>
 
 type RouteParams = { id: string }
 
@@ -58,18 +60,17 @@ async function create () {
 async function read (this: FastifyInstance, request: FastifyRequest<{ Params: RouteParams }>, reply: Reply) {
   const config = reply.context.config
   const filter = {
-    ...config.entity.query ?? {},
+    ...config.entity.baseQuery ?? {},
     _id: config.entity.stringId ? request.params.id : new ObjectId(request.params.id),
   }
 
-  // todo: aggregations?
   const entity = await this.mongo.db!.collection(config.entity.collection).findOne(filter, { projection: config.entity.projection })
   if (!entity) {
     reply.callNotFound()
     return
   }
 
-  return config.entity.format ? config.entity.format(entity) : entity
+  return config.read.format ? config.read.format(entity) : entity
 }
 
 async function readAll (this: FastifyInstance, request: FastifyRequest<{ Querystring: ReadAllQuery, Params: RouteParams }>, reply: Reply) {
@@ -77,13 +78,12 @@ async function readAll (this: FastifyInstance, request: FastifyRequest<{ Queryst
   const page = (request.query.page ?? 1) - 1
   const limit = request.query.limit ?? 50
 
-  // todo: aggregations?
   const cursor = this.mongo.db!.collection(config.entity.collection).find(
-    config.entity.query ?? {},
+    config.entity.baseQuery ?? {},
     { projection: config.entity.projection, limit: limit, skip: page * limit }
   )
 
-  if (config.entity.format) cursor.map(config.entity.format)
+  if (config.read.format) cursor.map(config.read.format)
   return cursor.toArray()
 }
 
@@ -97,7 +97,7 @@ async function del () {
   return null
 }
 
-export default function (fastify: FastifyInstance, { data }: { data: CrudSettings }, next: (err?: Error) => void) {
+export default function (fastify: FastifyInstance, { data }: { data: CrudSettings<any> }, next: (err?: Error) => void) {
   const routeSchema = {
     type: 'object',
     properties: {
@@ -108,25 +108,25 @@ export default function (fastify: FastifyInstance, { data }: { data: CrudSetting
     },
   }
 
-  if (data.create?.enabled !== false) {
+  if (data.create.enabled) {
     fastify.route({
       method: 'POST',
       url: '/',
       handler: create,
-      config: data,
+      config: { ...data, auth: data.create.auth },
       schema: {
         // body: data.entity.schema.write,
-        response: { 200: data.entity.schema.read },
+        response: { 200: data.read.schema },
       },
     })
   }
 
-  if (data.read?.enabled !== false && data.read?.allowAll !== false) {
+  if (data.read.enabled && data.read.allowAll) {
     fastify.route({
       method: 'GET',
       url: '/',
       handler: readAll,
-      config: data,
+      config: { ...data, auth: data.read.auth },
       schema: {
         querystring: {
           type: 'object',
@@ -138,46 +138,46 @@ export default function (fastify: FastifyInstance, { data }: { data: CrudSetting
         response: {
           200: {
             type: 'array',
-            items: data.entity.schema.read,
+            items: data.read.schema,
           },
         },
       },
     })
   }
 
-  if (data.read?.enabled !== false) {
+  if (data.read.enabled) {
     fastify.route({
       method: 'GET',
       url: '/:id',
       handler: read,
-      config: data,
+      config: { ...data, auth: data.read.auth },
       schema: {
         params: routeSchema,
-        response: { 200: data.entity.schema.read },
+        response: { 200: data.read.schema },
       },
     })
   }
 
-  if (data.update?.enabled !== false) {
+  if (data.update.enabled) {
     fastify.route({
       method: 'PATCH',
       url: '/:id',
       handler: update,
-      config: data,
+      config: { ...data, auth: data.update.auth },
       schema: {
         params: routeSchema,
         // body: data.entity.schema.write,
-        response: { 200: data.entity.schema.read },
+        response: { 200: data.read.schema },
       },
     })
   }
 
-  if (data.delete?.enabled !== false) {
+  if (data.delete.enabled) {
     fastify.route({
       method: 'DELETE',
       url: '/:id',
       handler: del,
-      config: data,
+      config: { ...data, auth: data.delete.auth },
       schema: { params: routeSchema },
     })
   }

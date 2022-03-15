@@ -8,7 +8,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { UserFlags } from '@powercord/shared/flags'
 import crudModule from './crudLegacy.js'
 import newCrudModule from './crud.js'
-import { formatUser } from '../../data/user.js'
+import { deleteUser, formatUser, UserDeletionCause } from '../../data/user.js'
 
 const updateUserSchema = {
   body: {
@@ -65,31 +65,33 @@ export default async function (fastify: FastifyInstance): Promise<void> {
         read: false,
         readAll: false,
         update: { schema: updateUserSchema, hasUpdatedAt: true },
+        delete: false,
       },
     },
   })
 
   fastify.register(newCrudModule, {
     data: {
-      auth: { permissions: UserFlags.STAFF },
       entity: {
         collection: 'users',
         stringId: true,
-        query: { flags: { $bitsAllClear: UserFlags.GHOST } },
+        baseQuery: { flags: { $bitsAllClear: UserFlags.GHOST } },
         projection: { _id: 1, 'accounts.accessToken': 0, 'accounts.refreshToken': 0 },
+      },
+      read: {
+        enabled: true,
+        allowAll: true,
+        auth: { permissions: UserFlags.STAFF },
+        schema: { $ref: 'https://powercord.dev/schemas/user' },
         format: (u) => formatUser(u, true, true),
-        schema: {
-          read: { $ref: 'https://powercord.dev/schemas/user' },
-          write: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {},
-          },
-        },
       },
       create: { enabled: false },
-      update: { enabled: false, hasUpdatedAt: true },
-      delete: { enabled: false },
+      update: { enabled: false },
+      delete: {
+        enabled: true,
+        auth: { permissions: UserFlags.STAFF },
+        executor: (userId) => deleteUser(fastify.mongo.client, userId.toString(), UserDeletionCause.ADMINISTRATOR),
+      },
     },
   })
 
