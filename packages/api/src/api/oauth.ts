@@ -252,7 +252,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
   const prevTier = request.user!.cutieStatus?.pledgeTier ?? 0
   const updatedTier = updatedUser.cutieStatus?.pledgeTier ?? 0
   if (prevFlag !== updatedFlag || prevTier !== updatedTier) {
-    notifyStateChange(request.user!, 'pledge')
+    notifyStateChange(updatedUser, 'pledge')
   }
 
   reply.redirect(redirectCookie?.value ?? '/me')
