@@ -5,8 +5,10 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply, ConfiguredReply } from 'fastify'
+import type { UpdateFilter } from 'mongodb'
 import type { OAuthProvider, OAuthToken } from '../utils/oauth.js'
 import type { DatabaseUser, User } from '@powercord/types/users'
+import { Long } from 'mongodb'
 import { randomBytes } from 'crypto'
 import config from '@powercord/shared/config'
 import { UserFlags } from '@powercord/shared/flags'
@@ -181,7 +183,7 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
       {
         $currentDate: { updatedAt: true },
         $min: { createdAt: date }, // Add creation time if necessary
-        $bit: { flags: { and: ~UserFlags.GHOST } }, // Remove ghost flag
+        $bit: { flags: { and: new Long(((1n << 64n) - 1n) & ~BigInt(UserFlags.GHOST), true) } }, // Remove ghost flag
         $set: {
           username: account.username,
           discriminator: account.discriminator,
@@ -221,24 +223,38 @@ async function callback (this: FastifyInstance, request: FastifyRequest<Callback
     return
   }
 
-  const update = {
-    updatedAt: new Date(),
-    [`accounts.${reply.context.config.platform}.id`]: accountId,
-    [`accounts.${reply.context.config.platform}.name`]: accountName,
-    ...toMongoFields(oauthToken, reply.context.config.platform),
+  let update: UpdateFilter<User> = {
+    $currentDate: { updatedAt: true },
+    $set: {
+      [`accounts.${reply.context.config.platform}.id`]: accountId,
+      [`accounts.${reply.context.config.platform}.name`]: accountName,
+      ...toMongoFields(oauthToken, reply.context.config.platform),
+    },
   }
 
   if (reply.context.config.platform === 'patreon' && !('patreon' in request.user!.accounts) && (request.user!.flags & UserFlags.CUTIE_OVERRIDE) === 0) {
     const data = await prepareUpdateData(oauthToken)
-    Object.assign(update, data[2])
-
-    if (request.user!.cutieStatus?.pledgeTier !== data[0].pledgeTier) {
-      request.user!.cutieStatus = data[0]
-      notifyStateChange(request.user!, 'pledge')
+    update = {
+      ...data,
+      $set: {
+        ...data.$set ?? {},
+        ...update.$set,
+      },
     }
   }
 
-  await collection.updateOne({ _id: request.user!._id }, { $set: update })
+  const res = await collection.findOneAndUpdate({ _id: request.user!._id }, update, { returnDocument: 'after' })
+
+  // Patreon update report
+  const updatedUser = res.value as User
+  const prevFlag = Boolean(request.user!.flags & UserFlags.IS_CUTIE)
+  const updatedFlag = Boolean(updatedUser!.flags & UserFlags.IS_CUTIE)
+  const prevTier = request.user!.cutieStatus?.pledgeTier ?? 0
+  const updatedTier = updatedUser.cutieStatus?.pledgeTier ?? 0
+  if (prevFlag !== updatedFlag || prevTier !== updatedTier) {
+    notifyStateChange(request.user!, 'pledge')
+  }
+
   reply.redirect(redirectCookie?.value ?? '/me')
 }
 

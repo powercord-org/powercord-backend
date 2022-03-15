@@ -217,7 +217,7 @@ importers:
       simple-icons: ^6.12.0
       typescript: ^4.6.2
       vite: ^2.8.5
-      vite-plugin-magical-svg: ^1.0.1
+      vite-plugin-magical-svg: ^1.0.2
     dependencies:
       '@powercord/shared': link:../../shared
       hoofd: 1.4.0
@@ -242,7 +242,7 @@ importers:
       simple-icons: 6.12.0
       typescript: 4.6.2
       vite: 2.8.5
-      vite-plugin-magical-svg: 1.0.1_vite@2.8.5
+      vite-plugin-magical-svg: 1.0.2_vite@2.8.5
 
   shared:
     specifiers: {}
@@ -4578,8 +4578,8 @@ packages:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}
     dev: true
 
-  /vite-plugin-magical-svg/1.0.1_vite@2.8.5:
-    resolution: {integrity: sha512-Fi/nwMfoRCBXlW4lAgrMnsq4HvqiYXkZ7mVw5ytME7d9RbExPIthFI0YoCV7+wgavk9N+8SMmb93eDBDjGdEfw==}
+  /vite-plugin-magical-svg/1.0.2_vite@2.8.5:
+    resolution: {integrity: sha512-lsJ5istN22TZ2SfsQDIzxniR5q3wGqUVkBa8Cxmg5qFGEIht/ZnxjGWXYHlaZKBRaMDxtkc+ZQhqCQuzNfg+kg==}
     peerDependencies:
       vite: '>= 2.0.0'
     dependencies:

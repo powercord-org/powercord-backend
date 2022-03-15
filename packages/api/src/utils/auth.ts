@@ -26,13 +26,13 @@ const Verifiers = {
     key: KEY,
     algorithms: [ 'HS512' ],
     allowedAud: 'powercord:web',
-    allowedIss: 'powercord:api:v3'
+    allowedIss: 'powercord:api:v3',
   }),
   client: createVerifier({
     key: KEY,
     algorithms: [ 'HS512' ],
     allowedAud: [ 'powercord:web', 'powercord:client' ],
-    allowedIss: 'powercord:api:v3'
+    allowedIss: 'powercord:api:v3',
   }),
 }
 
@@ -42,7 +42,7 @@ function generateToken (this: FastifyReply, payload: JWTPayload, type: TokenType
     algorithm: 'HS512',
     iss: 'powercord:api:v3',
     aud: type === TokenType.WEB ? 'powercord:web' : 'powercord:client',
-    expiresIn: type === TokenType.WEB ? 24 * 3600e3 : void 0
+    expiresIn: type === TokenType.WEB ? 24 * 3600e3 : void 0,
   })
 
   return signer(payload)
@@ -50,7 +50,7 @@ function generateToken (this: FastifyReply, payload: JWTPayload, type: TokenType
 
 export default async function authPlugin (fastify: FastifyInstance) {
   fastify.decorateReply('generateToken', generateToken)
-  fastify.addHook('onRequest', async function (request, reply) {
+  fastify.addHook('onRequest', async function (this: FastifyInstance, request, reply) {
     request.jwtPayload = null
     request.user = null
 
@@ -81,9 +81,10 @@ export default async function authPlugin (fastify: FastifyInstance) {
       return
     }
 
+    // eslint-disable-next-line require-atomic-updates
     request.user = await this.mongo.db!.collection<User>('users').findOne({
       _id: request.jwtPayload!.id,
-      flags: { $bitsAllClear: UserFlags.GHOST | UserFlags.BANNED }
+      flags: { $bitsAllClear: UserFlags.GHOST | UserFlags.BANNED },
     })
 
     if (!request.user) {
@@ -95,7 +96,6 @@ export default async function authPlugin (fastify: FastifyInstance) {
       return
     }
 
-    console.log(permissions, request.user!.flags)
     if (permissions && (request.user!.flags & permissions) === 0) {
       reply.code(403)
       throw new Error('Insufficient permission')

@@ -7,6 +7,7 @@
 import type { User, CutieStatus, DatabaseUser } from '@powercord/types/users'
 import type { MongoClient, UpdateFilter } from 'mongodb'
 import type { OAuthToken } from './oauth.js'
+import { Long } from 'mongodb'
 import config from '@powercord/shared/config'
 import { webhooks, members } from 'crapcord/api'
 import { fetch } from 'undici'
@@ -75,37 +76,36 @@ export async function fetchPledgeStatus (token: OAuthToken): Promise<[ boolean, 
   return [ donated, data ]
 }
 
-export async function prepareUpdateData (patreonAccount: OAuthToken): Promise<[ CutieStatus, Partial<User['accounts']['patreon']>, UpdateFilter<User> ]> {
-  const userUpdate: Partial<User['accounts']['patreon']> = {}
-  const mongoUpdate = {
-    $set: <Record<string, any>> {},
-    $bit: { flags: { or: 0, and: -1 } },
-    $currentDate: { updatedAt: true },
-  }
+export async function prepareUpdateData (patreonAccount: OAuthToken): Promise<UpdateFilter<User>> {
+  let or = new Long(0)
+  let and = new Long((1n << 64n) - 1n)
+  const update: Record<string, any> = {}
 
   // todo: ditch unix
   if (Date.now() > patreonAccount.expiresAt) {
     const newToken = await refreshAuthTokens('patreon', patreonAccount.refreshToken!)
-    mongoUpdate.$set = toMongoFields(newToken, 'patreon')
-    Object.assign(userUpdate, newToken)
+    Object.assign(update, toMongoFields(newToken, 'patreon'))
   }
 
   const [ donated, cutieStatus ] = await fetchPledgeStatus(patreonAccount)
-  mongoUpdate.$set['cutieStatus.pledgeTier'] = cutieStatus.pledgeTier
-  mongoUpdate.$set['cutieStatus.perksExpireAt'] = cutieStatus.perksExpireAt
+  update['cutieStatus.pledgeTier'] = cutieStatus.pledgeTier
+  update['cutieStatus.perksExpireAt'] = cutieStatus.perksExpireAt
 
-  if (donated) mongoUpdate.$bit.flags.or |= UserFlags.HAS_DONATED
-  if (cutieStatus.pledgeTier) {
-    mongoUpdate.$bit.flags.or |= UserFlags.IS_CUTIE
-  } else {
-    mongoUpdate.$bit.flags.and &= ~UserFlags.IS_CUTIE
+  if (donated) {
+    or = or.or(UserFlags.HAS_DONATED)
   }
 
-  return [
-    cutieStatus,
-    userUpdate,
-    <UpdateFilter<User>> mongoUpdate,
-  ]
+  if (cutieStatus.pledgeTier) {
+    or = or.or(UserFlags.IS_CUTIE)
+  } else {
+    and = and.and(~UserFlags.IS_CUTIE)
+  }
+
+  return <UpdateFilter<User>> {
+    $set: update,
+    $bit: { flags: { or: or, and: and } },
+    $currentDate: { updatedAt: true },
+  }
 }
 
 export async function updateDonatorState (mongo: MongoClient, user: User, manual?: boolean) {
@@ -114,21 +114,26 @@ export async function updateDonatorState (mongo: MongoClient, user: User, manual
   const collection = mongo.db().collection<DatabaseUser>('users')
 
   if (!patreonAccount) {
-    if (perksExpireAt <= Date.now()) {
+    if (perksExpireAt <= Date.now() && (user.flags & UserFlags.IS_CUTIE)) {
       // Void the IS_CUTIE flag
-      await collection.updateOne({ _id: user._id }, { $bit: { flags: { and: ~UserFlags.IS_CUTIE } } })
+      await collection.updateOne(
+        { _id: user._id },
+        { $bit: { flags: { and: new Long(((1n << 32n) - 1n) & ~BigInt(UserFlags.IS_CUTIE)) } } }
+      )
+
+      user.flags &= ~UserFlags.IS_CUTIE
+      notifyStateChange(user, 'pledge')
     }
 
     return
   }
 
-  const [ cutieStatus, userUpdate, mongoUpdate ] = await prepareUpdateData(patreonAccount)
-  const statusChange = user.cutieStatus?.pledgeTier !== cutieStatus.pledgeTier
-  if (manual) mongoUpdate['cutieStatus.lastManualRefresh'] = Date.now()
+  const mongoUpdate = await prepareUpdateData(patreonAccount)
+  const statusChange = user.cutieStatus?.pledgeTier !== mongoUpdate.$set!['cutieStatus.pledgeTier']
+  if (manual) mongoUpdate.$set!['cutieStatus.lastManualRefresh'] = Date.now()
 
-  await collection.updateOne({ _id: user._id }, mongoUpdate)
-  Object.assign(patreonAccount, userUpdate)
-  Object.assign(user, { cutieStatus: cutieStatus })
+  const res = await collection.findOneAndUpdate({ _id: user._id }, mongoUpdate, { returnDocument: 'after' })
+  Object.assign(user, res.value!)
 
   if (statusChange) notifyStateChange(user, 'pledge')
 }

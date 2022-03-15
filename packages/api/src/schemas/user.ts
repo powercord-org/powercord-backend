@@ -102,7 +102,15 @@ export const userUpdate = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    cutiePerks: { $ref: 'https://powercord.dev/schemas/user#/properties/cutiePerks' },
+    cutiePerks: { // todo: define how to handle guild badges perk
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        color: { type: [ 'null', 'string' ], pattern: '^[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$' },
+        badge: { type: [ 'null', 'string' ], minLength: 8, maxLength: 128 },
+        title: { type: [ 'null', 'string' ], minLength: 2, maxLength: 32 },
+      },
+    },
   },
 }
 

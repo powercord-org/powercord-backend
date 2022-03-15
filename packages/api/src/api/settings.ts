@@ -73,7 +73,7 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     method: 'POST',
     url: '/',
     handler: upload,
-    config: { auth: { allowClient: true } }
+    config: { auth: { allowClient: true } },
   })
 
   fastify.route({
@@ -81,13 +81,13 @@ export default async function (fastify: FastifyInstance): Promise<void> {
     url: '/',
     handler: retrieve,
     bodyLimit: SETTINGS_UPLOAD_LIMIT,
-    config: { auth: { allowClient: true } }
+    config: { auth: { allowClient: true } },
   })
 
   fastify.route({
     method: 'DELETE',
     url: '/',
     handler: del,
-    config: { auth: { allowClient: true } }
+    config: { auth: { allowClient: true } },
   })
 }
