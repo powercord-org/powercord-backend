@@ -83,7 +83,7 @@ export const Routes = {
   BACKOFFICE_EVENTS_SECRET: '/backoffice/events/secret',
 
   // External links
-  DICKSWORD: 'https://discord.gg/powercord',
+  DICKSWORD: 'https://discord.gg/gs4ZMbBfCh',
   PATREON: 'https://patreon.com/aetheryx',
   GITHUB: 'https://github.com/powercord-org',
 }
